@@ -27,7 +27,7 @@ const partners = [
   },
   {
     name: "Fourth House",
-    location: "72 Church Street,Galle, Sri Lanka", 
+    location: "72 Church Street, Galle, Sri Lanka", 
     city: "Galle", 
     image: forthouse,
   },
@@ -37,19 +37,19 @@ export default function Partners() {
   return (
     <div className="py-16 bg-white">
       {/* Heading */}
-      <h2 className="text-5xl font-semibold mb-8 text-left pl-26 font-roboto-condensed">
+      <h2 className="text-[48px] font-semibold mb-8 text-left pl-16 pr-16 font-roboto-condensed">
         Our Trusted Partners
       </h2>
-      <p className="text-lg mb-12 text-left pl-26 font-roboto-condensed">
+      <p className="text-[25px] font-normal text-gray-700 mb-12 text-left pl-16 pr-16 font-roboto-condensed">
         Discover Sri Lanka's magic with Vibes Lanka Travel and Tours. Where our packages suit every vibe – from romance to family adventure and beyond.
       </p>
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-26">
+      {/* Cards Grid with Consistent Padding on Both Sides */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-16">
         {partners.map((partner, index) => (
           <div
             key={index}
-            className="bg-white rounded-xl shadow-lg w-[312px] h-[513px] relative transition-transform transform hover:scale-105 flex flex-col justify-between overflow-hidden"
+            className="bg-white rounded-xl shadow-lg w-full h-[513px] relative transition-transform transform hover:scale-105 flex flex-col justify-between overflow-hidden"
           >
             {/* Partner Image */}
             <div className="relative w-full h-full">
