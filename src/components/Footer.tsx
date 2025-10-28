@@ -1,0 +1,75 @@
+import { FaFacebookF, FaInstagram, FaTiktok, FaXTwitter } from "react-icons/fa6";
+import logo from "../assets/favicon.png";
+
+const Footer = () => {
+  return (
+    <footer className="bg-[#d9d9d9] text-gray-800 rounded-tl-[25px] rounded-tr-[25px]">
+      {/* Main footer content */}
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 font-roboto-condensed">
+        {/* Left Section - Logo and Info */}
+        <div>
+          <img src={logo} alt="Vibe Lanka" className="w-32 mb-3" />
+          <p className="text-[16px] mb-4 font-medium">
+            Your journey, our plan – flights, stays, cars, and activities covered!
+          </p>
+          <div className="flex space-x-4 text-xl">
+            <a href="#" className="hover:text-purple-600">
+              <FaXTwitter />
+            </a>
+            <a href="#" className="hover:text-purple-600">
+              <FaTiktok />
+            </a>
+            <a href="#" className="hover:text-purple-600">
+              <FaFacebookF />
+            </a>
+            <a href="#" className="hover:text-purple-600">
+              <FaInstagram />
+            </a>
+          </div>
+        </div>
+
+        {/* About Us */}
+        <div>
+          <h3 className="font-semibold mb-3">About Us</h3>
+          <ul className="space-y-2 text-[16px] font-normal">
+            <li><a href="#" className="hover:text-purple-600">Who we are</a></li>
+            <li><a href="#" className="hover:text-purple-600">Reviews</a></li>
+            <li><a href="#" className="hover:text-purple-600">Blogs</a></li>
+            <li><a href="#" className="hover:text-purple-600">Contact</a></li>
+          </ul>
+        </div>
+
+        {/* Travel Tips */}
+        <div>
+          <h3 className="font-semibold mb-3">Travel Tips</h3>
+          <ul className="space-y-2 text-[16px] font-normal">
+            <li><a href="#" className="hover:text-purple-600">Packages</a></li>
+            <li><a href="#" className="hover:text-purple-600">Destination</a></li>
+            <li><a href="#" className="hover:text-purple-600">Things To Do</a></li>
+          </ul>
+        </div>
+
+        {/* Newsletter */}
+        <div>
+          <h3 className="font-semibold mb-3">Newsletter</h3>
+          <p className="text-[16px] font-normal leading-relaxed">
+            Subscribe to our newsletter for the latest travel news, exclusive deals, 
+            and inspiring stories. Get insider tips and special offers straight to 
+            your inbox. Join our community and stay connected!
+          </p>
+        </div>
+      </div>
+
+      {/* Bottom line */}
+      <div className="border-t border-gray-400 font-roboto-condensed font-medium py-4 px-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-800">
+        <p>©2025 Vibe Lanka. All rights reserved.</p>
+        <div className="flex space-x-6 mt-2 md:mt-0 font-medium">
+          <a href="#" className="hover:text-purple-600">Privacy Policy</a>
+          <a href="#" className="hover:text-purple-600">Terms of Service</a>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
