@@ -1,14 +1,30 @@
-import { Link } from 'react-router-dom';
-import { IoPlayCircleOutline } from 'react-icons/io5'; // For play icon
-import heroImage from '../assets/travel.jpg';
+import { Link } from "react-router-dom";
+import { IoPlayCircleOutline } from "react-icons/io5"; // For play icon
+import { motion } from "framer-motion"; // Importing motion from framer-motion
+
+// Import the background video
+import heroVideo from "../assets/hero/bgvedio.mp4"; // Make sure to provide the correct video path
 
 const HeroSection = () => {
   return (
-    <div
-      className="relative h-screen bg-cover bg-center"
-      style={{ backgroundImage: `url(${heroImage})` }}
+    <motion.div
+      className="relative h-screen bg-cover bg-center overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
     >
-      {/* Overlay */}
+      {/* Background Video */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        autoPlay
+        loop
+        muted
+      >
+        <source src={heroVideo} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Overlay for contrast */}
       <div className="absolute inset-0 bg-black opacity-40"></div>
 
       {/* Text Content (Left Side) */}
@@ -20,24 +36,39 @@ const HeroSection = () => {
           </button>
 
           {/* Heading */}
-          <h1 className="text-[55px] font-semibold leading-snug">
+          <motion.h1
+            className="text-[75px] font-semibold leading-snug"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
             Discover the Timeless Charms of Sri Lanka
-          </h1>
+          </motion.h1>
 
           {/* Subtext */}
-          <p className="text-[20px] font-normal text-gray-200">
-            Step into a world where nature and culture weave unforgettable tales
-          </p>
+          <motion.p
+            className="text-[30px] font-normal text-gray-200"
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1.2 }}
+          >
+            Step into a world where nature and culture weave unforgettable tales.
+          </motion.p>
 
           {/* Button */}
           <Link to="/packages">
-            <button className="bg-purple-600 font-medium text-white py-3 px-8 rounded-lg text-[16px] hover:bg-purple-700 transition">
+            <motion.button
+              className="bg-purple-600 font-medium text-white py-3 px-8 rounded-lg text-[16px] hover:bg-purple-700 transition"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1.5 }}
+            >
               Explore Our Packages
-            </button>
+            </motion.button>
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
