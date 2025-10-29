@@ -20,6 +20,12 @@ const testimonials = [
       "A fantastic adventure! The tour guides were knowledgeable and the views were breathtaking.",
     rating: 5,
   },
+  {
+    name: "Jane Smith",
+    feedback:
+      "A fantastic adventure! The tour guides were knowledgeable and the views were breathtaking.",
+    rating: 5,
+  },
 ];
 
 export default function Testimonials() {
@@ -35,7 +41,7 @@ export default function Testimonials() {
         {testimonials.map((t, i) => (
           <div
             key={i}
-            className="bg-[#C550F7] text-white rounded-2xl p-6 w-[320px] relative"
+            className="bg-[#B749DB] text-white rounded-2xl p-6 w-[320px] relative"
           >
             {/* Profile Image */}
             <div className="absolute -top-8 left-6">
