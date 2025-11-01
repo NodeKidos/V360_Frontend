@@ -15,131 +15,129 @@ import negombo from "../assets/packages/family.png";
 import anuradhapura from "../assets/packages/family.png";
 
 interface Field {
-  label: string;
-  type: string;
-  placeholder?: string;
-  options?: string[];
+    label: string;
+    type: string;
+    placeholder?: string;
+    options?: string[];
 }
 
 interface Destination {
-  name: string;
-  img: string;
+    name: string;
+    img: string;
 }
 
 export default function Itinerary() {
-  const [step, setStep] = useState<number>(1);
-  const [rating, setRating] = useState<number>(0);
-  const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
+    const [step, setStep] = useState<number>(1);
+    const [rating, setRating] = useState<number>(0);
+    const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  // Restore state when coming back from ExcursionDetails
-  useEffect(() => {
-    if (location.state?.step) setStep(location.state.step);
-    if (location.state?.destination) setSelectedDestination(location.state.destination);
-  }, [location.state]);
+    // Restore state when coming back from ExcursionDetails
+    useEffect(() => {
+        if (location.state?.step) setStep(location.state.step);
+        if (location.state?.destination) setSelectedDestination(location.state.destination);
+    }, [location.state]);
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+    const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
+    const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
-  const steps = ["Personal Details", "Preferences & Requirements", "Travel Details", "Notes"];
+    const steps = ["Personal Details", "Preferences & Requirements", "Travel Details", "Notes"];
 
-  const fadeAnim = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
+    const fadeAnim = {
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    };
 
-  const destinations: Destination[] = [
-    { name: "Colombo", img: colombo },
-     { name: "Gampaha", img: kandy }, 
-     { name: "Kalutara", img: galle },
-      { name: "Kandy", img: matara },
-      { name: "Matale", img: matale }, 
-      { name: "Nuwara Eliya", img: nuwara },
-       { name: "Galle", img: galle },
-       { name: "Matara", img: matara }, 
-       { name: "Hambantota", img: badulla }, 
-       { name: "Jaffna", img: kandy },
+    const destinations: Destination[] = [
+        { name: "Colombo", img: colombo },
+        { name: "Gampaha", img: kandy },
+        { name: "Kalutara", img: galle },
+        { name: "Kandy", img: matara },
+        { name: "Matale", img: matale },
+        { name: "Nuwara Eliya", img: nuwara },
+        { name: "Galle", img: galle },
+        { name: "Matara", img: matara },
+        { name: "Hambantota", img: badulla },
+        { name: "Jaffna", img: kandy },
         { name: "Kilinochchi", img: galle },
         { name: "Mannar", img: matara },
-         { name: "Vavuniya", img: matale },
-         { name: "Mullaitivu", img: badulla }, 
-         { name: "Batticaloa", img: nuwara }, 
-         { name: "Ampara", img: negombo }, 
-         { name: "Trincomalee", img: anuradhapura },
-          { name: "Kurunegala", img: colombo }, 
-          { name: "Puttalam", img: kandy }, 
-          { name: "Anuradhapura", img: anuradhapura },
-           { name: "Polonnaruwa", img: badulla }, 
-           { name: "Badulla", img: badulla }, 
-           { name: "Monaragala", img: matale }, 
-    { name: "Ratnapura", img: nuwara },
-     { name: "Kegalle", img: negombo },
-  ];
+        { name: "Vavuniya", img: matale },
+        { name: "Mullaitivu", img: badulla },
+        { name: "Batticaloa", img: nuwara },
+        { name: "Ampara", img: negombo },
+        { name: "Trincomalee", img: anuradhapura },
+        { name: "Kurunegala", img: colombo },
+        { name: "Puttalam", img: kandy },
+        { name: "Anuradhapura", img: anuradhapura },
+        { name: "Polonnaruwa", img: badulla },
+        { name: "Badulla", img: badulla },
+        { name: "Monaragala", img: matale },
+        { name: "Ratnapura", img: nuwara },
+        { name: "Kegalle", img: negombo },
+    ];
 
-  const excursionPoints: Destination[] = [
-    { name: "Lotus Tower", img: colombo },
-    { name: "Temple of Tooth", img: kandy },
-    { name: "Dutch Fort", img: galle },
-    { name: "Light House", img: matara },
-    { name: "Sigiriya", img: matale },
-    { name: "Nine Arch Bridge", img: badulla },
-  ];
+    const excursionPoints: Destination[] = [
+        { name: "Lotus Tower", img: colombo },
+        { name: "Temple of Tooth", img: kandy },
+        { name: "Dutch Fort", img: galle },
+        { name: "Light House", img: matara },
+        { name: "Sigiriya", img: matale },
+        { name: "Nine Arch Bridge", img: badulla },
+    ];
 
-  return (
-    <div className="bg-white min-h-screen font-roboto relative overflow-hidden">
-      <Navbar />
+    return (
+        <div className="bg-white min-h-screen font-roboto relative overflow-hidden">
+            <Navbar />
 
-      <div className="flex flex-col md:flex-row px-8 md:px-20 py-16 gap-10 relative z-10">
-        {/* ===== Sidebar ===== */}
-        <div className="relative md:w-1/4 font-roboto-condensed">
-          <h2 className="text-[24px] md:text-[26px] font-bold mb-10 text-[#1E1E1E]">
-            Create Itinerary
-          </h2>
+            <div className="flex flex-col md:flex-row px-8 md:px-20 py-16 gap-10 relative z-10">
+                {/* ===== Sidebar ===== */}
+                <div className="relative md:w-1/4 font-roboto-condensed">
+                    <h2 className="text-[24px] md:text-[26px] font-bold mb-10 text-[#1E1E1E]">
+                        Create Itinerary
+                    </h2>
 
-          <div className="relative ml-4">
-            <div className="absolute top-[18px] left-[15px] w-[2px] bg-[#B749DB] h-[calc(100%-40px)]"></div>
+                    <div className="relative ml-4">
+                        <div className="absolute top-[18px] left-[15px] w-[2px] bg-[#B749DB] h-[calc(100%-40px)]"></div>
 
-            {steps.map((title, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  transition: { delay: i * 0.1, duration: 0.4 },
-                }}
-                onClick={() => setStep(i + 1)}
-                className="relative flex items-start mb-12 cursor-pointer group"
-              >
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${
-                    step === i + 1
-                      ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
-                      : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
-                  }`}
-                >
-                  {i + 1}
+                        {steps.map((title, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{
+                                    opacity: 1,
+                                    x: 0,
+                                    transition: { delay: i * 0.1, duration: 0.4 },
+                                }}
+                                onClick={() => setStep(i + 1)}
+                                className="relative flex items-start mb-12 cursor-pointer group"
+                            >
+                                <div
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${step === i + 1
+                                            ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
+                                            : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
+                                        }`}
+                                >
+                                    {i + 1}
+                                </div>
+
+                                <div className="ml-4">
+                                    <p
+                                        className={`text-[20px] font-bold transition-colors duration-200 ${step === i + 1 ? "text-[#B749DB]" : "text-[#000] group-hover:text-[#B749DB]"
+                                            }`}
+                                    >
+                                        {title}
+                                    </p>
+                                    <p className="text-[15px] text-gray-400">Step description</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="ml-4">
-                  <p
-                    className={`text-[20px] font-bold transition-colors duration-200 ${
-                      step === i + 1 ? "text-[#B749DB]" : "text-[#000] group-hover:text-[#B749DB]"
-                    }`}
-                  >
-                    {title}
-                  </p>
-                  <p className="text-[15px] text-gray-400">Step description</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* ===== Main Section ===== */}
-        <div className="md:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-12 min-h-[85vh]">
-           {/* === STEP 1 === */}
+                {/* ===== Main Section ===== */}
+                <div className="md:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-12 min-h-[85vh]">
+                    {/* === STEP 1 === */}
                     {step === 1 && (
                         <motion.div variants={fadeAnim} initial="hidden" animate="visible" className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -269,119 +267,122 @@ export default function Itinerary() {
                         </motion.div>
                     )}
 
-          {/* === STEP 3 (DESTINATION SELECTION) === */}
-          {step === 3 && (
-            <motion.div variants={fadeAnim} initial="hidden" animate="visible" className="space-y-8">
-              <h3 className="text-xl font-semibold text-[#1E1E1E]">
-                Choose Your Destination
-              </h3>
+                    {/* === STEP 3 (DESTINATION SELECTION) === */}
+                    {step === 3 && (
+                        <motion.div variants={fadeAnim} initial="hidden" animate="visible" className="space-y-8">
+                            <h3 className="text-xl font-semibold text-[#1E1E1E]">
+                                Choose Your Destination
+                            </h3>
 
-              {/* ✅ If no destination selected – show destinations */}
-              {!selectedDestination ? (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {destinations.map((district, i) => (
-                      <div
-                        key={i}
-                        onClick={() => setSelectedDestination(district.name)}
-                        className="relative rounded-xl overflow-hidden shadow-md cursor-pointer group hover:scale-[1.02] transition-all"
-                      >
-                        <img
-                          src={district.img}
-                          alt={district.name}
-                          className="w-full h-[230px] object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 w-full bg-black/60 py-3 px-4">
-                          <p className="text-white font-bold text-[18px]">{district.name}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                            {/* ✅ If no destination selected – show destinations */}
+                            {!selectedDestination ? (
+                                <>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {destinations.map((district, i) => (
+                                            <div
+                                                key={i}
+                                                onClick={() => setSelectedDestination(district.name)}
+                                                className="relative rounded-xl overflow-hidden shadow-md cursor-pointer group hover:scale-[1.02] transition-all"
+                                            >
+                                                <img
+                                                    src={district.img}
+                                                    alt={district.name}
+                                                    className="w-full h-[230px] object-cover"
+                                                />
+                                                <div className="absolute bottom-0 left-0 w-full bg-black/60 py-3 px-4">
+                                                    <p className="text-white font-bold text-[18px]">{district.name}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                  <div className="flex justify-between mt-10">
-                    <button
-                      onClick={prevStep}
-                      className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
-                    >
-                      <FaArrowLeft className="text-[#B749DB]" /> Previous
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
-                    >
-                      Next <FaArrowRight className="text-[#B749DB]" />
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* ✅ Excursion Points */}
-                  <div className="text-sm text-[#B749DB] font-semibold flex gap-2 items-center">
-                    <span
-                      className="cursor-pointer hover:underline"
-                      onClick={() => setSelectedDestination(null)}
-                    >
-                      Destination
-                    </span>
-                    <span>&gt;</span>
-                    <span>{selectedDestination}</span>
-                    <span>&gt;</span>
-                    <span className="text-[#B749DB]/70">Excursion Points</span>
-                  </div>
+                                    <div className="flex justify-between mt-10">
+                                        <button
+                                            onClick={prevStep}
+                                            className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
+                                        >
+                                            <FaArrowLeft className="text-[#B749DB]" /> Previous
+                                        </button>
+                                        <button
+                                            onClick={nextStep}
+                                            className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
+                                        >
+                                            Next <FaArrowRight className="text-[#B749DB]" />
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {/* ✅ Excursion Points */}
+                                    <div className="text-sm text-[#B749DB] font-semibold flex gap-2 items-center">
+                                        <span
+                                            className="cursor-pointer hover:underline"
+                                            onClick={() => setSelectedDestination(null)}
+                                        >
+                                            Destination
+                                        </span>
+                                        <span>&gt;</span>
+                                        <span>{selectedDestination}</span>
+                                        <span>&gt;</span>
+                                        <span className="text-[#B749DB]/70">Excursion Points</span>
+                                    </div>
 
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-                    {excursionPoints.map((place, i) => (
-                      <div
-                        key={i}
-                        onClick={() =>
-                          navigate("/excursion-details", {
-                            state: {
-                              excursion: { ...place, fromDestination: selectedDestination },
-                              fromItinerary: true,
-                              step: step,
-                              destination: selectedDestination,
-                            },
-                          })
-                        }
-                        className="relative rounded-xl overflow-hidden shadow-md cursor-pointer group hover:scale-[1.02] transition-all"
-                      >
-                        <img
-                          src={place.img}
-                          alt={place.name}
-                          className="w-full h-[230px] object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 w-full bg-black/60 py-3 px-4 flex items-center justify-between">
-                          <p className="text-white font-bold text-[18px]">
-                            {place.name}
-                          </p>
-                          <div className="bg-[#B749DB] p-2 rounded-full text-white text-sm">
-                            <FaArrowRight />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                                        {excursionPoints.map((place, i) => (
+                                            <div
+                                                key={i}
+                                                onClick={() =>
+                                                    navigate("/excursion-details", {
+                                                        state: {
+                                                            excursion: { ...place, fromDestination: selectedDestination },
+                                                            fromItinerary: true,
+                                                            step: step,
+                                                            destination: selectedDestination,
+                                                        },
+                                                    })
+                                                }
+                                                className="relative rounded-xl overflow-hidden shadow-md cursor-pointer group hover:scale-[1.02] transition-all"
+                                            >
+                                                <img
+                                                    src={place.img}
+                                                    alt={place.name}
+                                                    className="w-full h-[230px] object-cover"
+                                                />
+                                                <div className="absolute bottom-0 left-0 w-full bg-black/60 py-3 px-4 flex items-center justify-between">
+                                                    <p className="text-white font-bold text-[18px]">
+                                                        {place.name}
+                                                    </p>
+                                                    <motion.div
+                                                        className="absolute bottom-2 right-4 p-2 bg-[#B749DB] rounded-full flex items-center justify-center shadow-md cursor-pointer transition-transform duration-300"
+                                                        whileHover={{ rotate: -45 }}
+                                                    >
+                                                        <FaArrowRight size={20} className="text-white" />
+                                                    </motion.div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                  <div className="flex justify-between mt-10">
-                    <button
-                      onClick={() => setSelectedDestination(null)}
-                      className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
-                    >
-                      <FaArrowLeft className="text-[#B749DB]" /> Back
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
-                    >
-                      Next <FaArrowRight className="text-[#B749DB]" />
-                    </button>
-                  </div>
-                </>
-              )}
-              
-            </motion.div>
-          )}
-           {step === 4 && (
+                                    <div className="flex justify-between mt-10">
+                                        <button
+                                            onClick={() => setSelectedDestination(null)}
+                                            className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
+                                        >
+                                            <FaArrowLeft className="text-[#B749DB]" /> Back
+                                        </button>
+                                        <button
+                                            onClick={nextStep}
+                                            className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10"
+                                        >
+                                            Next <FaArrowRight className="text-[#B749DB]" />
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+
+                        </motion.div>
+                    )}
+                    {step === 4 && (
                         <motion.div variants={fadeAnim} initial="hidden" animate="visible" className="space-y-10">
                             <div className="flex flex-col gap-3">
                                 <label className="text-[20px] font-medium">Any Special Requirement</label>
@@ -407,8 +408,8 @@ export default function Itinerary() {
                             </div>
                         </motion.div>
                     )}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
