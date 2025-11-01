@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaStar, FaCar, FaUmbrellaBeach, FaLandmark, FaClock, FaGem, FaTaxi } from "react-icons/fa";
+import {
+  FaStar,
+  FaCar,
+  FaUmbrellaBeach,
+  FaLandmark,
+  FaClock,
+  FaGem,
+  FaTaxi,
+} from "react-icons/fa";
 import lotus1 from "../assets/packages/family.png";
 import lotus2 from "../assets/packages/family.png";
 import lotus3 from "../assets/packages/family.png";
@@ -15,12 +23,14 @@ export default function ExcursionDetails() {
 
   const fadeAnim = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
   };
 
   const images = [lotus1, lotus2, lotus3, lotus4];
-
-  // === Review Carousel Auto State ===
   const [currentReview, setCurrentReview] = useState(0);
 
   const reviews = [
@@ -29,7 +39,7 @@ export default function ExcursionDetails() {
       date: "July 2025",
       rating: 4,
       review:
-        "I recently had dinner at Blue Orbit, Lotus Tower, and it was an absolutely spectacular experience. The food was excellent with a wide variety of options to choose from, and every dish was beautifully presented. The flavors and quality exceeded expectations, making it well worth the price paid. The environment was elegant and welcoming, and the night view was truly a feast for the eyes, making the evening even more memorable with my family.",
+        "I recently had dinner at Blue Orbit, Lotus Tower, and it was an absolutely spectacular experience. The food was excellent with a wide variety of options to choose from, and every dish was beautifully presented. The environment was elegant and welcoming, and the night view was truly a feast for the eyes.",
     },
     {
       name: "Sophia Perera",
@@ -55,7 +65,6 @@ export default function ExcursionDetails() {
     return () => clearInterval(interval);
   }, [reviews.length]);
 
-  // === Tag list with icons ===
   const tags = [
     { label: "TUK TUK Tours", icon: <FaTaxi /> },
     { label: "Day Trips (10)", icon: <FaClock /> },
@@ -63,7 +72,6 @@ export default function ExcursionDetails() {
     { label: "Full Day Tours", icon: <FaCar /> },
     { label: "Beaches (10)", icon: <FaUmbrellaBeach /> },
     { label: "Points of Interest & Landmarks (23)", icon: <FaLandmark /> },
-    
   ];
 
   return (
@@ -96,8 +104,10 @@ export default function ExcursionDetails() {
                 {excursion?.name || "Lotus Tower"}
               </h1>
               <p className="text-[#382A59] font-roboto text-[20px] leading-relaxed max-w-4xl">
-                The Lotus Tower, or “Nelum Kuluna” as it is known locally, is an iconic landmark in Colombo, Sri Lanka.
-                Rising to a height of 356 meters, it is the tallest structure in South Asia and symbolizes Sri Lanka’s growth and ambition.
+                The Lotus Tower, or “Nelum Kuluna,” is an iconic landmark in
+                Colombo, Sri Lanka. Rising to a height of 356 meters, it is the
+                tallest structure in South Asia and symbolizes Sri Lanka’s
+                growth and ambition.
               </p>
 
               {/* === Icon Tags === */}
@@ -196,13 +206,20 @@ export default function ExcursionDetails() {
           </div>
         </motion.div>
 
-        {/* Back Button */}
+        {/* ✅ Back Button to Excursion Points */}
         <div className="flex justify-start mt-8 relative z-10">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() =>
+              navigate("/itinerary", {
+                state: {
+                  step: 3,
+                  destination: excursion?.fromDestination || null,
+                },
+              })
+            }
             className="flex items-center gap-2 border border-[#B749DB] text-[#5B247A] font-semibold px-8 py-2.5 rounded-lg hover:bg-[#B749DB]/10 transition"
           >
-            ← Back
+            ← Back to Excursion Points
           </button>
         </div>
 
