@@ -95,12 +95,12 @@ export default function ExcursionDetails() {
               <img
                 src={excursion?.img || lotus1}
                 alt={excursion?.name || "Excursion"}
-                className="rounded-lg shadow-md w-full h-[250px] object-cover"
+                className="rounded-lg shadow-md w-full h-[350px] object-cover"
               />
             </div>
 
             <div className="md:w-2/3 flex flex-col justify-center">
-              <h1 className="text-[28px] font-poppins font-bold text-[#1E1E1E] mb-4">
+              <h1 className="text-[36px] font-poppins font-bold text-[#1E1E1E] mb-4">
                 {excursion?.name || "Lotus Tower"}
               </h1>
               <p className="text-[#382A59] font-roboto text-[20px] leading-relaxed max-w-4xl">
@@ -127,7 +127,7 @@ export default function ExcursionDetails() {
 
           {/* === Gallery === */}
           <div>
-            <h3 className="font-semibold font-roboto-condensed text-[#1E1E1E] text-[18px] mb-4">
+            <h3 className="font-semibold font-roboto-condensed text-[#1E1E1E] text-[24px] mb-4">
               Gallery
             </h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -136,7 +136,7 @@ export default function ExcursionDetails() {
                   key={i}
                   src={img}
                   alt={`gallery-${i}`}
-                  className="w-full h-[200px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
+                  className="w-full h-[300px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
                 />
               ))}
             </div>
@@ -144,7 +144,7 @@ export default function ExcursionDetails() {
 
           {/* === Auto-Animated Reviews === */}
           <div className="pt-4">
-            <h3 className="font-semibold text-[#1E1E1E] text-[18px] mb-6 font-roboto-condensed">
+            <h3 className="font-semibold text-[#1E1E1E] text-[24px] mb-6 font-roboto-condensed">
               Reviews from our valued customers
             </h3>
 
@@ -210,7 +210,7 @@ export default function ExcursionDetails() {
         <div className="flex justify-start mt-8 relative z-10">
           <button
             onClick={() =>
-              navigate("/itinerary", {
+              navigate("/excursion-points", {
                 state: {
                   step: 3,
                   destination: excursion?.fromDestination || null,
