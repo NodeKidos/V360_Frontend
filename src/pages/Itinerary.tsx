@@ -1,3 +1,5 @@
+// Itinerary.tsx
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
@@ -5,6 +7,8 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaHotel } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
+
+// ... (existing imports for images and interfaces remain here) ...
 
 import colombo from "../assets/packages/family.png";
 import kandy from "../assets/packages/family.png";
@@ -15,6 +19,7 @@ import badulla from "../assets/packages/family.png";
 import nuwara from "../assets/packages/family.png";
 import negombo from "../assets/packages/family.png";
 import anuradhapura from "../assets/packages/family.png";
+
 
 interface Field {
     label: string;
@@ -28,7 +33,7 @@ interface Destination {
     img: string;
 }
 
-// --- CUSTOM TAILWIND PAGINATION COMPONENT ---
+// --- CUSTOM TAILWIND PAGINATION COMPONENT (No changes needed here) ---
 interface CustomPaginationProps {
     currentPage: number;
     totalPages: number;
@@ -36,9 +41,7 @@ interface CustomPaginationProps {
 }
 
 const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-    // Generate page numbers array (1, 2, 3, ...)
-    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
+    // ... (CustomPagination component logic remains unchanged) ...
     const baseClass = "h-9 w-9 flex justify-center items-center rounded-md text-sm transition-colors duration-200 font-medium";
     const linkClass = "hover:bg-[#B749DB]/10 text-gray-700 hover:text-[#B749DB] cursor-pointer";
     const activeClass = "bg-[#B749DB] text-white pointer-events-none";
@@ -226,6 +229,16 @@ export default function Itinerary() {
         <div className="bg-white min-h-screen font-roboto relative overflow-hidden">
             <Navbar />
 
+            {/* --- ADDED CIRCLE BACKGROUND --- */}
+            <div 
+                className="absolute left-10 bottom-0 w-[400px] h-[280px] bg-[#f1dbf8] opacity-40 rounded-full transform translate-x-[-50%] translate-y-[50%] z-0"
+            ></div>
+            <div 
+                className="absolute left-3 bottom-0 w-[300px] h-[300px] bg-[#b749db] opacity-60 rounded-full transform translate-x-[-50%] translate-y-[50%] z-0"
+            ></div>
+            {/* --- END ADDED CIRCLE BACKGROUND --- */}
+
+
             <div className="flex flex-col md:flex-row px-8 md:px-20 py-16 gap-10 relative z-10">
                 {/* ===== Sidebar ===== */}
                 <div className="relative md:w-1/4 font-roboto-condensed">
@@ -250,8 +263,8 @@ export default function Itinerary() {
                             >
                                 <div
                                     className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${step === i + 1
-                                        ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
-                                        : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
+                                            ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
+                                            : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
                                         }`}
                                 >
                                     {i + 1}
