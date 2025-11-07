@@ -85,7 +85,11 @@ export default function AboutUs() {
   }, []);
 
   // --- Image Collage Component (used in Hero and Sustainability sections)
-  const ImageCollage = ({ images, className = "", rotate = true }) => (
+  interface ImageType {
+    url: string;
+  }
+
+  const ImageCollage = ({ images, className = "", rotate = true }: { images: ImageType[], className?: string, rotate?: boolean }) => (
     <div className={`relative w-full h-[650px] md:h-[550px] ${className}`}>
       {images.map((img, index) => (
         <motion.div

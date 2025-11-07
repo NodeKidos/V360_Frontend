@@ -10,6 +10,7 @@ import fort from "../assets/packages/family.png";
 import lighthouse from "../assets/packages/family.png";
 import sigiriya from "../assets/packages/family.png";
 import bridge from "../assets/packages/family.png";
+import { IoSearch } from "react-icons/io5";
 
 export default function ExcursionPoints() {
   const location = useLocation();
@@ -45,10 +46,66 @@ export default function ExcursionPoints() {
   return (
     <div className="bg-white min-h-screen font-roboto relative overflow-hidden">
       <Navbar />
+{/* Background circles */}
+            <div className="absolute left-30 bottom-0 w-[350px] h-[350px] bg-[#d0a2df] opacity-40 rounded-full translate-x-[-50%] translate-y-[50%] z-0"></div>
+            <div className="absolute left-5 bottom-7 w-[350px] h-[350px] bg-[#B749DB] opacity-60 rounded-full translate-x-[-50%] translate-y-[50%] z-0"></div>
 
-      <div className="flex flex-col md:flex-row px-8 md:px-20 py-16 gap-10 relative z-10">
+            {/* -------- MOBILE + TABLET HEADER (Hidden on desktop) -------- */}
+            <div className="block lg:hidden w-full flex-col items-center mb-8 mt-6 px-4">
+                <h2 className="text-[24px] font-bold text-black mb-4 md:pl-10 text-left md:text-left">
+                    Create Itinerary
+                </h2>
+
+                {/* Search */}
+                <div className="relative w-full">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        className="w-full h-[50px] rounded-xl border border-[#E5D4EF] bg-[#F8EDFC] pl-12 pr-4 text-gray-600 placeholder-gray-500 focus:ring-2 focus:ring-[#B749DB]/40 outline-none"
+                    />
+                    <IoSearch
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#B749DB]"
+                        size={20}
+                    />
+                </div>
+
+                {/* Step circles */}
+                <div className="flex flex-wrap items-center justify-center mt-6 gap-2 sm:gap-4">
+                    {[
+                        { id: 1, title: "Personal Details" },
+                        { id: 2, title: "Preferences & Requirements" },
+                        { id: 3, title: "Travel Details" },
+                        { id: 4, title: "Notes" },
+                    ].map((item, i) => (
+                        <div key={item.id} className="flex items-center">
+                            <div className="flex flex-col items-center">
+                                <div
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm transition-all duration-300 ${step === item.id
+                                        ? "bg-[#B749DB] border-[#B749DB] text-white scale-110"
+                                        : "border-[#B749DB] text-[#B749DB] bg-white"
+                                        }`}
+                                >
+                                    {item.id}
+                                </div>
+                                <span
+                                    className={`text-[12px] sm:text-[13px] mt-1 font-semibold ${step === item.id ? "text-[#B749DB]" : "text-gray-600"}`}
+                                    onClick={() => setStep(item.id)}  // Add click handler
+                                >
+                                    {item.title}
+                                </span>
+                            </div>
+                            {i < 3 && (
+                                <div className="w-8 sm:w-10 h-[2px] bg-[#B749DB] mx-1 sm:mx-2"></div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+            </div>
+
+      <div className="flex flex-col lg:flex-row px-4 sm:px-10 md:px-14 lg:px-20 py-10 gap-10 relative z-10">
         {/* ===== Sidebar ===== */}
-        <div className="relative md:w-1/4 font-roboto-condensed">
+        <div className="hidden lg:block lg:w-1/4 font-roboto-condensed">
           <h2 className="text-[24px] md:text-[26px] font-bold mb-10 text-[#1E1E1E]">
             Create Itinerary
           </h2>
@@ -96,7 +153,7 @@ export default function ExcursionPoints() {
         </div>
 
         {/* ===== Main Section ===== */}
-        <div className="md:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-12 min-h-[85vh]">
+        <div className="lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-12 min-h-[85vh]">
           {/* ===== Breadcrumb ===== */}
           <p className="text-[#B749DB] font-semibold mb-8">
             <span

@@ -2,75 +2,75 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowLeft, FaArrowRight, FaStar, FaRegStar } from "react-icons/fa";
 import { useState } from "react";
-import Navbar from "../components/Navbar"; 
-import { IoCloseSharp } from "react-icons/io5"; 
-import grandWard from "../assets/packages/family.png"; 
+import Navbar from "../components/Navbar";
+import { IoCloseSharp, IoSearch } from "react-icons/io5";
+import grandWard from "../assets/packages/family.png";
 import cinnamon from "../assets/packages/family.png";
 import shangri from "../assets/packages/family.png";
 import jetwing from "../assets/packages/family.png";
-import kingsbury from"../assets/packages/family.png";
+import kingsbury from "../assets/packages/family.png";
 import taj from "../assets/packages/family.png";
 
 // --- CUSTOM TAILWIND PAGINATION COMPONENT ---
 // This replaces the need for Shadcn UI components.
 interface CustomPaginationProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-    // Generate page numbers array (1, 2, 3, ...)
-    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  // Generate page numbers array (1, 2, 3, ...)
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-    const baseClass = "h-9 w-15 flex justify-center items-center rounded-md text-sm transition-colors duration-200 font-medium";
-    const linkClass = "hover:bg-[#B749DB]/10 text-gray-700 hover:text-[#B749DB] cursor-pointer";
-    const activeClass = "bg-[#B749DB] text-white pointer-events-none";
-    const disabledClass = "text-gray-400 pointer-events-none opacity-50";
+  const baseClass = "h-9 w-15 flex justify-center items-center rounded-md text-sm transition-colors duration-200 font-medium";
+  const linkClass = "hover:bg-[#B749DB]/10 text-gray-700 hover:text-[#B749DB] cursor-pointer";
+  const activeClass = "bg-[#B749DB] text-white pointer-events-none";
+  const disabledClass = "text-gray-400 pointer-events-none opacity-50";
 
-    if (totalPages <= 1) return null;
+  if (totalPages <= 1) return null;
 
-    return (
-        <nav className="flex justify-center mt-10" aria-label="Pagination">
-            <ul className="flex items-center space-x-2">
-                {/* Previous Button */}
-                <li>
-                    <button
-                        onClick={() => onPageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className={`${baseClass} px-3 ${currentPage === 1 ? disabledClass : linkClass}`}
-                    >
-                        <FaArrowLeft className="w-3 h-3 mr-1" />
-                        Previous
-                    </button>
-                </li>
+  return (
+    <nav className="flex justify-center mt-10" aria-label="Pagination">
+      <ul className="flex items-center space-x-2">
+        {/* Previous Button */}
+        <li>
+          <button
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`${baseClass} px-3 ${currentPage === 1 ? disabledClass : linkClass}`}
+          >
+            <FaArrowLeft className="w-3 h-3 mr-1" />
+            Previous
+          </button>
+        </li>
 
-                {/* Page Numbers */}
-                {pageNumbers.map((page) => (
-                    <li key={page}>
-                        <button
-                            onClick={() => onPageChange(page)}
-                            className={`${baseClass} ${page === currentPage ? activeClass : linkClass}`}
-                        >
-                            {page}
-                        </button>
-                    </li>
-                ))}
+        {/* Page Numbers */}
+        {pageNumbers.map((page) => (
+          <li key={page}>
+            <button
+              onClick={() => onPageChange(page)}
+              className={`${baseClass} ${page === currentPage ? activeClass : linkClass}`}
+            >
+              {page}
+            </button>
+          </li>
+        ))}
 
-                {/* Next Button */}
-                <li>
-                    <button
-                        onClick={() => onPageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className={`${baseClass} px-3 ${currentPage === totalPages ? disabledClass : linkClass}`}
-                    >
-                        Next
-                        
-                    </button>
-                </li>
-            </ul>
-        </nav>
-    );
+        {/* Next Button */}
+        <li>
+          <button
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`${baseClass} px-3 ${currentPage === totalPages ? disabledClass : linkClass}`}
+          >
+            Next
+
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
 };
 // --- END CUSTOM PAGINATION ---
 
@@ -146,12 +146,12 @@ export default function HotelList() {
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-        setCurrentPage(page);
-        // Scroll to the top of the hotel list when page changes
-        const listTop = document.getElementById("hotel-list-start");
-        if (listTop) {
-            listTop.scrollIntoView({ behavior: 'smooth' });
-        }
+      setCurrentPage(page);
+      // Scroll to the top of the hotel list when page changes
+      const listTop = document.getElementById("hotel-list-start");
+      if (listTop) {
+        listTop.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -162,7 +162,7 @@ export default function HotelList() {
 
   const renderStars = (count: number) => {
     const stars = [];
-    const displayedRating = count === 4 && hotels[0].name === "The Grand Ward Place - Colombo 7" ? 3.5 : count; 
+    const displayedRating = count === 4 && hotels[0].name === "The Grand Ward Place - Colombo 7" ? 3.5 : count;
     const fullStars = Math.floor(displayedRating);
     const hasHalfStar = displayedRating % 1 !== 0;
 
@@ -198,114 +198,113 @@ export default function HotelList() {
         initial={{ scale: 0.8 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0.8 }}
-        
-        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-6 my-10 relative overflow-y-scroll hide-scrollbar max-h-[90vh]"
+
+        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-6 my-10 relative overflow-y-scroll hide-scrollbar max-h-[100vh]"
       >
         {/* Header Section - Title, Rating, Address, Close Button */}
-        <div className="px-6 md:px-10 pt-8 pb-4 border-b border-gray-100">
-          <div className="flex justify-between items-start mb-2">
-            {/* Hotel Title and Address */}
-            <div>
-              <h1 className="text-[24px] font-inter font-bold text-[#401A4D]">
-                {hotel.name}
-              </h1>
-              <p className="text-gray-600 font-inter text-sm mt-1">
-                No 64 Ward Place Building No 64, Floor No 18, Cinnamon Gardens, <br />
-                00700 Colombo, Sri Lanka
-              </p>
-            </div>
+<div className="px-6 md:px-10 pt-8 pb-4 border-b border-gray-100">
+  <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+    {/* Hotel Title and Address */}
+    <div className="mb-4 sm:mb-0">
+      <h1 className="text-[24px] sm:text-[26px] font-inter font-bold text-[#401A4D]">
+        {hotel.name}
+      </h1>
+      <p className="text-gray-600 font-inter sm:text-[16px] md:text-[18px] lg:text-[20px] mt-1">
+        No 64 Ward Place Building No 64, Floor No 18,<br /> Cinnamon Gardens, <br />
+        00700 Colombo, Sri Lanka
+      </p>
+    </div>
 
-            {/* Rating and Close Button */}
-            <div className="flex flex-col items-center">
-              <div className="flex gap-1">
-                {renderStars(hotel.rating)}
-              </div>
-              <p className="text-sm text-blue-700 mt-2">
-                <span className="text-gray-600 mr-2">Excellent location -</span> <a href="#" className="font-medium hover:underline">show map</a>
-              </p>
-              <IoCloseSharp className="text-xl text-gray-500 cursor-pointer absolute top-4 right-4" onClick={onClose} />
-            </div>
-          </div>
-        </div>
+    {/* Rating and Close Button */}
+    <div className="flex flex-col items-center sm:mt-4 lg:mt-0 sm:items-start">
+      <div className="flex gap-2 mb-2">
+        {renderStars(hotel.rating)}
+      </div>
+      <p className="text-sm text-blue-700 mt-2">
+        <span className="text-gray-600 mr-1">Excellent location -</span>
+        <a href="#" className="font-medium hover:underline">show map</a>
+      </p>
+      <IoCloseSharp
+        className="text-xl text-gray-500 cursor-pointer absolute top-4 right-4 md:right-10"
+        onClick={onClose}
+      />
+    </div>
+  </div>
+</div>
 
-        {/* --- Image Gallery Section (Fixed Grid Layout) --- */}
-        <div className="p-6 pt-0 md:p-10 md:pt-0">
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            
-            <img
-              src={galleryImages[0]}
-              alt="hotel-main-view"
-              className="w-full h-48 object-cover rounded-xl shadow-md col-span-1"
-            />
-            <img
-              src={galleryImages[1]}
-              alt="hotel-bedroom"
-              className="w-full h-48 object-cover rounded-xl shadow-md col-span-1"
-            />
-            <img
-              src={galleryImages[2]}
-              alt="hotel-lounge"
-              className="w-full h-48 object-cover rounded-xl shadow-md col-span-1"
-            />
+        {/* --- Image Gallery Section (Horizontal Scroll for Mobile, Grid for Tablet/Desktop) --- */}
+<div className="p-6 pt-0 md:p-10 md:pt-0">
+  {/* Horizontal Scroll for Mobile */}
+  <div className="md:hidden lg:hidden flex overflow-x-scroll gap-4 pb-4">
+    {galleryImages.map((img, i) => (
+      <img
+        key={i}
+        src={img}
+        alt={`gallery-${i}`}
+        className="w-[300px] h-[200px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
+      />
+    ))}
+  </div>
 
-            {/* Bottom Row Images */}
-            {galleryImages.slice(3).map((img: string, i: number) => (
-              <img
-                key={i + 3}
-                src={img}
-                alt={`hotel-gallery-${i + 4}`}
-                className="w-full h-48 object-cover rounded-xl shadow-md col-span-1"
-              />
-            ))}
-          </div>
-            
-        </div>
+  {/* Grid Layout for Tablet/Desktop */}
+  <div className="hidden md:grid md:grid-cols-3 lg:grid lg:grid-cols-3 gap-4 mt-6">
+    {galleryImages.map((img, i) => (
+      <img
+        key={i}
+        src={img}
+        alt={`gallery-${i}`}
+        className="w-full h-48 object-cover rounded-xl shadow-md"
+      />
+    ))}
+  </div>
+</div>
+
 
         {/* --- Room Details Section (Input Toggles) --- */}
         <div className="px-6 md:px-10 py-5 space-y-5 border-t border-gray-200 mt-4">
-          <h3 className="text-[20px] font-bold font-roboto text-gray-800">Room Details</h3>
+          <h3 className="text-[24px] font-bold font-roboto text-gray-800">Room Details</h3>
 
           {/* Room Type - Toggle Logic */}
           <div className="space-y-3 font-roboto">
-            <p className="font-semibold text-gray-700">Room Type</p>
+            <p className="font-semibold sm:md:text-[18px] md:text-[18px] lg:text-[20px] text-gray-700">Room Type</p>
             <div className="flex gap-8">
               {/* Single Room Toggle */}
-              <div 
+              <div
                 className="flex items-center space-x-2 cursor-pointer"
                 onClick={() => setRoomType('single')}
               >
                 <div className={`w-10 h-6 ${getToggleClass('single').container} rounded-full p-1 relative transition-colors duration-300`}>
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${getToggleClass('single').circle}`}></div>
                 </div>
-                <span className="text-gray-600">Single Room</span>
+                <span className="text-gray-600 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Single Room</span>
               </div>
 
               {/* Double Room Toggle */}
-              <div 
+              <div
                 className="flex items-center space-x-2 cursor-pointer"
                 onClick={() => setRoomType('double')}
               >
                 <div className={`w-10 h-6 ${getToggleClass('double').container} rounded-full p-1 relative transition-colors duration-300`}>
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${getToggleClass('double').circle}`}></div>
                 </div>
-                <span className="text-gray-600">Double Room</span>
+                <span className="text-gray-600 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Double Room</span>
               </div>
             </div>
           </div>
 
           {/* Bed Type (Checkbox style) */}
           <div className="space-y-3 font-roboto">
-            <p className="font-semibold text-gray-700">Bed Type</p>
+            <p className="font-semibold text-gray-700 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Bed Type</p>
             <div className="flex flex-wrap gap-8 ">
               {["1 King Bed", "2 Twin Beds", "3 Twin Beds", "1 full bed"].map(
                 (bed, i) => (
                   <label key={i} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      className="form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
+                      className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
                       defaultChecked={i === 0}
                     />
-                    <span className="text-gray-600 cursor-pointer">{bed}</span>
+                    <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{bed}</span>
                   </label>
                 )
               )}
@@ -314,16 +313,16 @@ export default function HotelList() {
 
           {/* Diet Plan (Checkbox style) */}
           <div className="space-y-3 font-roboto">
-            <p className="font-semibold text-gray-700">Diet Plan</p>
+            <p className="font-semibold text-gray-700 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Diet Plan</p>
             <div className="flex flex-wrap gap-8">
               {["Full Board", "Half Board", "BB"].map((plan, i) => (
                 <label key={i} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    className="form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
+                    className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
                     defaultChecked={i === 1} // Half Board checked
                   />
-                  <span className="text-gray-600 cursor-pointer">{plan}</span>
+                  <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{plan}</span>
                 </label>
               ))}
             </div>
@@ -331,12 +330,12 @@ export default function HotelList() {
         </div>
 
         {/* --- Room Features Section --- */}
-        <div className="px-6 md:px-10 py-6 space-y-4 border-t border-gray-200 font-roboto">
-          <h3 className="text-[20px] font-bold text-gray-800">Room Features</h3>
+        <div className="px-6 md:px-10 py-9 space-y-4 border-t border-gray-200 font-roboto">
+          <h3 className="text-[24px] font-bold text-gray-800">Room Features</h3>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-gray-600">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-gray-600  ">
             {hotel.features.map((feature: string, index: number) => (
-              <span key={index} className="text-sm">
+              <span key={index} className="sm:md:text-[18px] md:text-[18px] lg:text-[20px]">
                 {feature}
               </span>
             ))}
@@ -350,10 +349,62 @@ export default function HotelList() {
   return (
     <div className="bg-white min-h-screen font-['Roboto_Condensed'] overflow-hidden">
       <Navbar />
+      {/* --- Sidebar Section --- */}
+      <div className="block lg:hidden w-full flex-col items-center mb-8 mt-6 px-4">
+        <h2 className="text-[24px] font-bold text-black mb-4 md:pl-10 text-left md:text-left">
+          Create Itinerary
+        </h2>
+
+        {/* Search */}
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Search here"
+            className="w-full h-[50px] rounded-xl border border-[#E5D4EF] bg-[#F8EDFC] pl-12 pr-4 text-gray-600 placeholder-gray-500 focus:ring-2 focus:ring-[#B749DB]/40 outline-none"
+          />
+          <IoSearch
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#B749DB]"
+            size={20}
+          />
+        </div>
+
+        {/* Step circles */}
+        <div className="flex flex-wrap items-center justify-center mt-6 gap-2 sm:gap-4">
+          {[
+            { id: 1, title: "Personal Details" },
+            { id: 2, title: "Preferences & Requirements" },
+            { id: 3, title: "Travel Details" },
+            { id: 4, title: "Notes" },
+          ].map((item, i) => (
+            <div key={item.id} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm transition-all duration-300 ${step === item.id
+                    ? "bg-[#B749DB] border-[#B749DB] text-white scale-110"
+                    : "border-[#B749DB] text-[#B749DB] bg-white"
+                    }`}
+                >
+                  {item.id}
+                </div>
+                <span
+                  className={`text-[12px] sm:text-[13px] mt-1 font-semibold ${step === item.id ? "text-[#B749DB]" : "text-gray-600"}`}
+                  onClick={() => setStep(item.id)}  // Add click handler
+                >
+                  {item.title}
+                </span>
+              </div>
+              {i < 3 && (
+                <div className="w-8 sm:w-10 h-[2px] bg-[#B749DB] mx-1 sm:mx-2"></div>
+              )}
+            </div>
+          ))}
+        </div>
+
+      </div>
 
       <div className="flex flex-col md:flex-row px-8 md:px-20 py-16 gap-10">
         {/* --- Sidebar Section (UNMODIFIED) --- */}
-        <div className="md:w-1/4">
+        <div className="hidden lg:block lg:w-1/4 font-roboto-condensed">
           <h2 className="text-[26px] font-bold mb-10 text-[#1E1E1E]">
             Create Itinerary
           </h2>
@@ -366,22 +417,20 @@ export default function HotelList() {
                 className="relative flex items-start mb-12 cursor-pointer group"
               >
                 <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${
-                    step === i + 1
+                  className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${step === i + 1
                       ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
                       : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
-                  }`}
+                    }`}
                 >
                   {i + 1}
                 </div>
 
                 <div className="ml-4">
                   <p
-                    className={`text-[20px] font-bold ${
-                      step === i + 1
+                    className={`text-[20px] font-bold ${step === i + 1
                         ? "text-[#B749DB]"
                         : "text-[#000] group-hover:text-[#B749DB]"
-                    }`}
+                      }`}
                   >
                     {title}
                   </p>
@@ -393,7 +442,7 @@ export default function HotelList() {
         </div>
 
         {/* --- Main Content Area (Hotels List) --- */}
-        <div id="hotel-list-start" className="md:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-12 min-h-[85vh]">
+        <div id="hotel-list-start" className="md:w-6/6 lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-6 md:p-10 min-h-[70vh]">
           {/* Breadcrumb */}
           <p className="text-[#B749DB] font-semibold mb-8">
             <span
@@ -429,33 +478,33 @@ export default function HotelList() {
                 className="bg-[#F8ECFF] rounded-2xl shadow-lg border border-[#E2C6F4] overflow-hidden cursor-pointer p-4"
               >
                 <div className="flex flex-col md:flex-row gap-4">
-                  
+
                   {/* LEFT SIDE: Main Image */}
-                  <div className="relative md:w-1/3 min-w-[200px] h-[200px] md:h-auto"> 
+                  <div className="relative md:w-1/3 min-w-[200px] ">
                     <img
                       src={hotel.img}
                       alt={hotel.name}
-                      className="w-full h-58 object-cover rounded-2xl" 
+                      className="w-full sm:h-48 md:h-48 lg:h-58 object-cover rounded-2xl"
                     />
                     {/* Heart Icon */}
                     <div className="absolute top-4 left-4 bg-white/70 p-2 rounded-full shadow-md">
-                      <svg 
+                      <svg
                         className="w-5 h-5 text-gray-800"
-                        fill="currentColor" 
+                        fill="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>
                     </div>
                   </div>
-                    
+
                   {/* RIGHT SIDE: Details */}
                   <div className="md:w-2/3 flex flex-col justify-start pt-2">
                     <div>
                       <h3 className="text-[24px] font-bold text-[#5F3396] mb-2">
                         {hotel.name}
                       </h3>
-                      <p className="text-[16px] text-gray-700 mb-3 leading-snug">
+                      <p className="md:text-[20px] lg:text-[24px] text-gray-700 mb-3 leading-snug">
                         {hotel.desc}
                       </p>
                       <div className="flex gap-1 mb-2">
@@ -481,10 +530,10 @@ export default function HotelList() {
           </div>
 
           {/* --- CUSTOM TAILWIND PAGINATION CONTROLS --- */}
-          <CustomPagination 
-              currentPage={currentPage} 
-              totalPages={totalPages} 
-              onPageChange={handlePageChange} 
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
 
           {/* --- Navigation Buttons (Separate from pagination) --- */}

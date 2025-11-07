@@ -90,39 +90,39 @@ export default function ExcursionDetails() {
           className="bg-[#F8F2FB] border border-purple-200 rounded-2xl shadow-sm p-10 space-y-10 relative z-10"
         >
           {/* === Title Section === */}
-          <div className="flex flex-col md:flex-row gap-10">
-            <div className="md:w-1/3">
-              <img
-                src={excursion?.img || lotus1}
-                alt={excursion?.name || "Excursion"}
-                className="rounded-lg shadow-md w-full h-[350px] object-cover"
-              />
-            </div>
+<div className="flex flex-col md:flex-row gap-10">
+  <div className="md:w-1/3">
+    <img
+      src={excursion?.img || lotus1}
+      alt={excursion?.name || "Excursion"}
+      className="rounded-lg shadow-md w-full sm:w-[300px] md:w-[350px] lg:w-[350px] lg:h-[350px] md:h-[350px] object-cover"
+    />
+  </div>
 
-            <div className="md:w-2/3 flex flex-col justify-center">
-              <h1 className="text-[36px] font-poppins font-bold text-[#1E1E1E] mb-4">
-                {excursion?.name || "Lotus Tower"}
-              </h1>
-              <p className="text-[#382A59] font-roboto text-[20px] leading-relaxed max-w-4xl">
-                The Lotus Tower, or “Nelum Kuluna,” is an iconic landmark in
-                Colombo, Sri Lanka. Rising to a height of 356 meters, it is the
-                tallest structure in South Asia and symbolizes Sri Lanka’s
-                growth and ambition.
-              </p>
+  <div className="md:w-2/3 flex flex-col justify-center">
+    <h1 className="text-[36px] font-poppins font-semibold text-[#1E1E1E] mb-4">
+      {excursion?.name || "Lotus Tower"}
+    </h1>
+    <p className="text-[#382A59] font-roboto sm:text-[18px] md:text-[20px] lg:text-[22px] leading-relaxed">
+      The Lotus Tower, or “Nelum Kuluna,” is an iconic landmark in
+      Colombo, Sri Lanka. Rising to a height of 356 meters, it is the
+      tallest structure in South Asia and symbolizes Sri Lanka’s
+      growth and ambition.
+    </p>
+  </div>
+</div>
 
-              {/* === Icon Tags === */}
-              <div className="flex flex-wrap gap-3 mt-6">
-                {tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="flex items-center gap-3 border border-[#B749DB] text-black text-[16px] font-roboto font-medium px-3 py-1.5 rounded-full bg-white hover:bg-[#B749DB]/10 transition"
-                  >
-                    <span className="text-black">{tag.icon}</span>
-                    {tag.label}
-                  </span>
-                ))}
-              </div>
-            </div>
+          {/* === Icon Tags === */}
+          <div className="flex gap-3 mt-6 lg:flex-wrap sm:flex-nowrap overflow-x-scroll pb-4">
+            {tags.map((tag, i) => (
+              <span
+                key={i}
+                className="flex items-center gap-3 border  border-[#B749DB] text-black text-[16px] font-roboto font-medium px-3 py-1.5 rounded-full bg-white hover:bg-[#B749DB]/10 transition"
+              >
+                <span className="text-black">{tag.icon}</span>
+                {tag.label}
+              </span>
+            ))}
           </div>
 
           {/* === Gallery === */}
@@ -130,17 +130,32 @@ export default function ExcursionDetails() {
             <h3 className="font-semibold font-roboto-condensed text-[#1E1E1E] text-[24px] mb-4">
               Gallery
             </h3>
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+
+            {/* Gallery Grid for Desktop */}
+            <div className="hidden lg:grid lg:grid-cols-4 gap-4">
               {images.map((img, i) => (
                 <img
                   key={i}
                   src={img}
                   alt={`gallery-${i}`}
-                  className="w-full h-[300px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
+                  className="w-full h-[300px] md:w-[400px] md:h-[250px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
+                />
+              ))}
+            </div>
+
+            {/* Horizontal Scroll for Mobile and Tablet */}
+            <div className="lg:hidden flex overflow-x-scroll gap-4 pb-4">
+              {images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt={`gallery-${i}`}
+                  className="w-[900px] h-[300px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
                 />
               ))}
             </div>
           </div>
+
 
           {/* === Auto-Animated Reviews === */}
           <div className="pt-4">
@@ -148,7 +163,7 @@ export default function ExcursionDetails() {
               Reviews from our valued customers
             </h3>
 
-            <div className="relative overflow-hidden h-[220px]">
+            <div className="relative overflow-hidden h-[470px] md:h-[270px] lg:h-[320px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentReview}
@@ -158,8 +173,8 @@ export default function ExcursionDetails() {
                   transition={{ duration: 0.6, ease: "easeInOut" }}
                   className="absolute w-full"
                 >
-                  <div className="bg-white border border-purple-200 rounded-lg p-6 shadow-sm">
-                    <div className="flex justify-between items-center mb-2">
+                  <div className="bg-white border border-purple-200 rounded-lg p-5 shadow-sm">
+                    <div className="flex justify-between items-center ">
                       <div className="flex items-center gap-2">
                         {[...Array(5)].map((_, i) => (
                           <FaStar
@@ -177,10 +192,10 @@ export default function ExcursionDetails() {
                       </p>
                     </div>
 
-                    <h4 className="font-semibold text-[#1E1E1E] py-3 mb-2 text-[20px] font-roboto-condensed">
+                    <h4 className="font-semibold text-[#1E1E1E] py-3 mb-2 text-[24px] font-roboto-condensed">
                       {reviews[currentReview].name}
                     </h4>
-                    <p className="text-gray-700 font-roboto leading-relaxed text-[16px]">
+                    <p className="text-gray-700 font-roboto leading-relaxed sm:text-[12px] md:text-[16px] lg:text-[24px]">
                       {reviews[currentReview].review}
                     </p>
                   </div>
@@ -196,9 +211,8 @@ export default function ExcursionDetails() {
                     key={i}
                     animate={{ scale: i === currentReview ? 1.2 : 1 }}
                     transition={{ duration: 0.3 }}
-                    className={`w-3 h-3 rounded-full ${
-                      i === currentReview ? "bg-[#B749DB]" : "bg-[#E5D4EF]"
-                    }`}
+                    className={`w-3 h-3 rounded-full ${i === currentReview ? "bg-[#B749DB]" : "bg-[#E5D4EF]"
+                      }`}
                   ></motion.div>
                 ))}
               </div>
