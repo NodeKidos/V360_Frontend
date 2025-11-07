@@ -300,7 +300,7 @@ export default function Itinerary() {
                                     <div className="flex gap-6 sm:gap-6 flex-wrap">
                                         {["1 week", "2 weeks", "3 weeks", "Custom"].map((label) => (
                                             <label key={label} className="flex items-center gap-4 md:gap-5 lg:gap-5 text-[18px] md:text-[20px] lg:text-[20px]">
-                                                <input type="checkbox" className="w-8 h-8 accent-[#B749DB]" />
+                                                <input type="checkbox" className="w-6 h-6 accent-[#B749DB]" />
                                                 {label}
                                             </label>
                                         ))}
@@ -342,7 +342,7 @@ export default function Itinerary() {
                                     <div className="flex gap-6 ">
                                         {["Double", "Single", "Triple"].map((label) => (
                                             <label key={label} className="flex items-center gap-2 text-[18px] md:text-[20px] lg:text-[20px] cursor-pointer">
-                                                <input type="checkbox" className="w-8 h-8 accent-[#B749DB]" />
+                                                <input type="checkbox" className="w-6 h-6 accent-[#B749DB]" />
                                                 {label}
                                             </label>
                                         ))}
@@ -355,7 +355,7 @@ export default function Itinerary() {
                                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                                         {["Standard", "Semi-Luxury", "Super Luxury"].map((label) => (
                                             <label key={label} className="flex items-center gap-2 text-[18px] sm:text-[20px] cursor-pointer">
-                                                <input type="checkbox" className="w-5 h-5 accent-[#B749DB]" />
+                                                <input type="checkbox" className="w-6 h-6 accent-[#B749DB]" />
                                                 {label}
                                             </label>
                                         ))}
