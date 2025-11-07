@@ -5,6 +5,7 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaHotel } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
+import type { Variants } from "framer-motion";
 
 import colombo from "../assets/packages/family.png";
 import kandy from "../assets/packages/family.png";
@@ -131,14 +132,14 @@ export default function Itinerary() {
     const nextStep = () => setStep((s) => Math.min(4, s + 1));
     const prevStep = () => setStep((s) => Math.max(1, s - 1));
 
-    const fadeAnim = {
-        hidden: { opacity: 0, y: 40 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.5, ease: "easeOut" },
-        },
-    };
+    const fadeAnim: Variants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
 
     useEffect(() => {
         if (location.state?.step) setStep(location.state.step);
@@ -232,7 +233,7 @@ export default function Itinerary() {
                                     <p
                                         className={`text-[18px] font-bold ${step === i
                                             ? "text-[#B749DB]"
-                                            : "text-[#000] group-hover:text-[#B749DB]"
+                                            : "text-black group-hover:text-[#B749DB]"
                                             }`}
                                     >
                                         {["Personal Details", "Preferences", "Travel", "Notes"][i - 1]}
