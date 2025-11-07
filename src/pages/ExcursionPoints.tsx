@@ -95,7 +95,7 @@ export default function ExcursionPoints() {
                                 </span>
                             </div>
                             {i < 3 && (
-                                <div className="w-8 sm:w-10 h-[2px] bg-[#B749DB] mx-1 sm:mx-2"></div>
+                                <div className="w-8 sm:w-10 h-0.5 bg-[#B749DB] mx-1 sm:mx-2"></div>
                             )}
                         </div>
                     ))}
@@ -111,7 +111,7 @@ export default function ExcursionPoints() {
           </h2>
 
           <div className="relative ml-4">
-            <div className="absolute top-[18px] left-[15px] w-[2px] bg-[#B749DB] h-[calc(100%-40px)]"></div>
+            <div className="absolute top-[18px] left-[15px] w-0.5 bg-[#B749DB] h-[calc(100%-40px)]"></div>
 
             {steps.map((title, i) => (
               <motion.div
@@ -140,7 +140,7 @@ export default function ExcursionPoints() {
                     className={`text-[20px] font-bold transition-colors duration-200 ${
                       step === i + 1
                         ? "text-[#B749DB]"
-                        : "text-[#000] group-hover:text-[#B749DB]"
+                        : "text-black group-hover:text-[#B749DB]"
                     }`}
                   >
                     {title}

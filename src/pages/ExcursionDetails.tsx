@@ -164,7 +164,7 @@ export default function ExcursionDetails() {
               Reviews from our valued customers
             </h3>
 
-            <div className="relative overflow-hidden h-[470px] md:h-[270px] lg:h-[320px]">
+            <div className="relative overflow-hidden h-[470px] md:h-[270px] lg:h-80">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentReview}

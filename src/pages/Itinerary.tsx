@@ -198,7 +198,7 @@ export default function Itinerary() {
                                 </span>
                             </div>
                             {i < 3 && (
-                                <div className="w-8 sm:w-10 h-[2px] bg-[#B749DB] mx-1 sm:mx-2"></div>
+                                <div className="w-8 sm:w-10 h-0.5 bg-[#B749DB] mx-1 sm:mx-2"></div>
                             )}
                         </div>
                     ))}
@@ -214,7 +214,7 @@ export default function Itinerary() {
                         Create Itinerary
                     </h2>
                     <div className="relative ml-4">
-                        <div className="absolute top-[18px] left-[15px] sm:w-[6px] md:w-[7px] lg:w-[2px] bg-[#B749DB] h-[calc(100%-40px)]"></div>
+                        <div className="absolute top-[18px] left-[15px] sm:w-1.5 md:w-[7px] lg:w-0.5 bg-[#B749DB] h-[calc(100%-40px)]"></div>
                         {[1, 2, 3, 4].map((i) => (
                             <div
                                 key={i}
@@ -278,7 +278,7 @@ export default function Itinerary() {
                                         <div key={i} className="flex flex-col gap-2">
                                             <label className="text-[16px] sm:text-[18px] font-medium ">{field.label}</label>
                                             {field.type === "select" ? (
-                                                <select className="w-full sm:w-[400px] md:w-[270px] lg:w-[420px] h-[48px] border border-[#E5D4EF]  rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
+                                                <select className="w-full sm:w-[400px] md:w-[270px] lg:w-[420px] h-12 border border-[#E5D4EF]  rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
                                                     {field.options?.map((opt, idx) => (
                                                         <option key={idx}>{opt}</option>
                                                     ))}
@@ -287,7 +287,7 @@ export default function Itinerary() {
                                                 <input
                                                     type={field.type}
                                                     placeholder={field.placeholder}
-                                                    className="w-full sm:w-[400px] md:w-[270px] lg:w-[420px] h-[48px] placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                                    className="w-full sm:w-[400px] md:w-[270px] lg:w-[420px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                                 />
                                             )}
                                         </div>
@@ -316,7 +316,7 @@ export default function Itinerary() {
                                     <label className="text-[20px] font-medium">Dietary Preferences</label>
                                     <input
                                         placeholder="Enter dietary preferences"
-                                        className="w-full sm:w-[400px] md:w-[570px] lg:w-[820px] h-[48px] placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                        className="w-full sm:w-[400px] md:w-[570px] lg:w-[820px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                     />
                                 </div>
 
@@ -366,7 +366,7 @@ export default function Itinerary() {
                                     <label className="text-[20px] font-medium">Any Medical condition or special needs</label>
                                     <input
                                         placeholder="Enter dietary preferences"
-                                        className="w-full sm:w-[400px] md:w-[570px] lg:w-[820px] h-[48px] border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition placeholder-gray-500"
+                                        className="w-full sm:w-[400px] md:w-[570px] lg:w-[820px] h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition placeholder-gray-500"
                                     />
                                 </div>
 

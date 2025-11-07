@@ -199,7 +199,7 @@ export default function HotelList() {
         animate={{ scale: 1 }}
         exit={{ scale: 0.8 }}
 
-        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-6 my-10 relative overflow-y-scroll hide-scrollbar max-h-[100vh]"
+        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-6 my-10 relative overflow-y-scroll hide-scrollbar max-h-screen"
       >
         {/* Header Section - Title, Rating, Address, Close Button */}
 <div className="px-6 md:px-10 pt-8 pb-4 border-b border-gray-100">
@@ -394,7 +394,7 @@ export default function HotelList() {
                 </span>
               </div>
               {i < 3 && (
-                <div className="w-8 sm:w-10 h-[2px] bg-[#B749DB] mx-1 sm:mx-2"></div>
+                <div className="w-8 sm:w-10 h-0.5 bg-[#B749DB] mx-1 sm:mx-2"></div>
               )}
             </div>
           ))}
@@ -409,7 +409,7 @@ export default function HotelList() {
             Create Itinerary
           </h2>
           <div className="relative ml-4">
-            <div className="absolute top-[18px] left-[15px] w-[2px] bg-[#B749DB] h-[calc(100%-40px)]"></div>
+            <div className="absolute top-[18px] left-[15px] w-0.5 bg-[#B749DB] h-[calc(100%-40px)]"></div>
             {steps.map((title, i) => (
               <div
                 key={i}
@@ -429,7 +429,7 @@ export default function HotelList() {
                   <p
                     className={`text-[20px] font-bold ${step === i + 1
                         ? "text-[#B749DB]"
-                        : "text-[#000] group-hover:text-[#B749DB]"
+                        : "text-black group-hover:text-[#B749DB]"
                       }`}
                   >
                     {title}

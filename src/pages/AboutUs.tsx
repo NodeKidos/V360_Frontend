@@ -7,6 +7,7 @@ import hero4 from "../assets/elephantride.jpg";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect } from "react";
+import type { Variants } from "framer-motion";
 
 // --- DUMMY COMPONENTS (Required for Single File Mandate) ---
 const darkPurple = "#52368c";
@@ -43,10 +44,19 @@ const VALUES = [
 ];
 
 // --- ANIMATION VARIANTS ---
-const fadeUp = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-};
+// const fadeUp = {
+//   hidden: { opacity: 0, y: 50 },
+//   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+// };
+const fadeUp: Variants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    },
+  };
+
 
 const staggerCards = {
   hidden: {},
@@ -63,7 +73,7 @@ const cardItem = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.6, ease: "easeOut" as const },
   },
 };
 
@@ -131,25 +141,29 @@ export default function AboutUs() {
       <Navbar />
 
       {/* --- 1. Hero / Welcome Section (Image Background - Full Screen) --- */}
+       <motion.div
+      className="relative h-screen bg-cover bg-center overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+    >
+      {/* Background Image Slideshow */}
       <motion.div
-        className="relative h-screen bg-cover bg-center overflow-hidden"
+        className="absolute inset-0 w-full h-full bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${images[backgroundIndex]})`, // Dynamically change background image
+        }}
+        key={backgroundIndex} 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        {/* Background Image Slideshow */}
-        <motion.div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${images[backgroundIndex]})`, // Dynamically change background image
-          }}
-          transition={{
-            duration: 0.3,
-            ease: "linear",
-          }}
+        exit={{ opacity: 0 }}
+        transition={{
+          duration: 1, 
+          ease: "easeInOut", 
+        }}
         >
           {/* Overlay for contrast */}
-          <div className="absolute inset-0 bg-gradient-to-bl from-white/90 via-black/10 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-bl from-white/90 via-black/10 to-transparent"></div>
         </motion.div>
 
 
@@ -226,7 +240,7 @@ export default function AboutUs() {
                 variants={cardItem}
                 className="relative p-12 h-96 rounded-3xl overflow-hidden shadow-2xl group"
             >
-                <div className="absolute inset-0 bg-gradient-to-t  from-purple-950/70 via-purple-300/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-linear-to-bl from-purple-950/70 via-purple-300/30 to-transparent"></div>
                 <div className="relative text-Black h-full flex flex-col justify-end">
                     <h3 className="text-5xl font-extrabold mb-4" >Vision</h3>
                     <p className="text-lg leading-relaxed">
@@ -240,7 +254,7 @@ export default function AboutUs() {
                 variants={cardItem}
                 className="relative p-12 h-96 rounded-3xl overflow-hidden shadow-2xl group"
             >   
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-950/70 via-purple-300/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-linear-to-bl from-purple-950/70 via-purple-300/30 to-transparent"></div>
                 <div className="relative text-Black  h-full flex flex-col justify-end">
                     <h3 className="text-5xl font-extrabold mb-4">Mission</h3>
                     <p className="text-lg leading-relaxed">
@@ -267,7 +281,7 @@ export default function AboutUs() {
                   >
                       <h3 className="text-5xl font-extrabold mb-1" style={{ color: darkPurple }}>
                           {item.num}
-                          <span className="text-2xl font-bold ml-1" style={{ color: lightPurple }}>{item.suffix}</span>
+                          {/* No suffix property, so nothing to render here */}
                       </h3>
                       <p className="text-gray-600 text-lg font-semibold">{item.label}</p>
                   </motion.div>
