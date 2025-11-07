@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowLeft, FaArrowRight, FaStar, FaRegStar } from "react-icons/fa";
-import { useState } from "react";
+import { useState, type Key } from "react";
 import Navbar from "../components/Navbar";
 import { IoCloseSharp, IoSearch } from "react-icons/io5";
 import grandWard from "../assets/packages/family.png";
@@ -236,7 +236,7 @@ export default function HotelList() {
 <div className="p-6 pt-0 md:p-10 md:pt-0">
   {/* Horizontal Scroll for Mobile */}
   <div className="md:hidden lg:hidden flex overflow-x-scroll gap-4 pb-4">
-    {galleryImages.map((img, i) => (
+    {galleryImages.map((img: string | undefined, i: Key | null | undefined) => (
       <img
         key={i}
         src={img}
@@ -248,7 +248,7 @@ export default function HotelList() {
 
   {/* Grid Layout for Tablet/Desktop */}
   <div className="hidden md:grid md:grid-cols-3 lg:grid lg:grid-cols-3 gap-4 mt-6">
-    {galleryImages.map((img, i) => (
+    {galleryImages.map((img: string | undefined, i: Key | null | undefined) => (
       <img
         key={i}
         src={img}
