@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
 
 // Sri Lanka city coordinates
 export const sriLankaCities = [
-  { name: "Colombo", lat: 6.9271, lng: 79.8612 },
+  { name: "Colombo", lat: 6.9335, lng: 79.8500 },
   { name: "Gampaha", lat: 7.0917, lng: 80.0114 },
   { name: "Kalutara", lat: 6.5854, lng: 79.9607 },
   { name: "Kandy", lat: 7.2906, lng: 80.6337 },
