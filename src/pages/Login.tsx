@@ -20,7 +20,7 @@ export default function Login() {
   return (
     <div className="flex flex-col lg:flex-row h-screen font-inter">
       {/* LEFT SIDE FORM */}
-      <div className=" md:w-full lg:w-1/2 flex items-center justify-center bg-white pt-40 lg:p-0 relative">
+      <div className=" md:w-full lg:w-1/2 flex items-center justify-center bg-white pt-30 md:pt-40 lg:p-0 relative">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="sm:w-60 md:w-[500px] max-w-[500px] bg-white p-10 rounded-2xl shadow-md z-10 relative"

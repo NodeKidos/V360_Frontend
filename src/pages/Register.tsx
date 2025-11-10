@@ -50,7 +50,7 @@ export default function Register() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 font-inter p-5 sm:p-8 lg:p-10">
               <div>
-                <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">User Name</Label>
+                <Label className="text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800">User Name</Label>
                 <Input
                   {...formRegister("username", { required: "Required" })}
                   placeholder="Enter name"
@@ -62,7 +62,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">Email</Label>
+                <Label className="text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800">Email</Label>
                 <Input
                   type="email"
                   {...formRegister("email", {
@@ -81,7 +81,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">Phone</Label>
+                <Label className="text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800">Phone</Label>
                 <Input
                   {...formRegister("phone", { required: "Required" })}
                   placeholder="Enter phone"
@@ -93,7 +93,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label className="text-[20px] sm:text-[24px] lg:text-[28px] font-medium text-gray-800">Country</Label>
+                <Label className="text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800">Country</Label>
                 <Input
                   {...formRegister("country", { required: "Required" })}
                   placeholder="Enter country"
@@ -105,7 +105,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label className="text-[20px] sm:text-[24px] lg:text-[28px] font-medium text-gray-800">Password</Label>
+                <Label className="text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800">Password</Label>
                 <Input
                   type="password"
                   {...formRegister("password", {
@@ -125,7 +125,7 @@ export default function Register() {
                 Register
               </Button>
 
-              <p className="text-center text-[16px] md:text-[20px] lg:text-[20px] text-gray-700 font-poppins">
+              <p className="text-center text-[16px] md:text-[20px] lg:text-[24px] text-gray-700 font-poppins">
                 Already have an account?{" "}
                 <Link to="/login" className="font-semibold text-purple-600 hover:underline">
                   Login

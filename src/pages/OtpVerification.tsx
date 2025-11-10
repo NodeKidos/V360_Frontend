@@ -45,7 +45,7 @@ export default function OtpVerification() {
 
       {/* RIGHT FORM SECTION */}
       <div className="flex items-center justify-center p-5 sm:p-8 lg:p-10 z-10 relative">
-        <Card className="w-full max-w-[500px] rounded-[24px] shadow-md border border-gray-200 bg-white">
+        <Card className="w-full max-w-[500px] rounded-3xl shadow-md border border-gray-200 bg-white">
           <CardContent className="p-8 sm:p-10">
             <h1 className="text-[24px] sm:text-[30px] lg:text-[40px] font-albertsans font-extrabold text-center text-gray-900 mb-3">
               OTP Verification

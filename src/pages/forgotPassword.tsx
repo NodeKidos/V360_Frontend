@@ -5,7 +5,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
-import hero from "../assets/waterfall.jpg"; // Add your background image here
+import hero from "../assets/sustainablityImage/nineedge.jpg"; // Add your background image here
 
 interface ForgotPasswordForm {
   email: string;

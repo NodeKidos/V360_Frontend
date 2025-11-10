@@ -1,6 +1,5 @@
-import { useState } from "react";
+
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -43,7 +42,7 @@ export default function VerifyOtp() {
 
       {/* RIGHT FORM SECTION */}
       <div className="flex items-center justify-center p-5 sm:p-8 lg:p-10 z-10 relative">
-        <Card className="w-full max-w-xl rounded-[24px] shadow-md border border-gray-200 bg-white">
+        <Card className="w-full max-w-xl rounded-3xl shadow-md border border-gray-200 bg-white">
           <CardContent className="p-8 sm:p-10 text-center">
             <h1 className="text-[24px] sm:text-[30px] lg:text-[40px] font-albertsans font-extrabold text-gray-900 mb-3">
               {otpMode === "email" ? "Email" : "Phone"} OTP Verification
