@@ -5,6 +5,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
+import hero from "../assets/waterfall.jpg"; // Add your background image here
 
 interface ForgotPasswordForm {
   email: string;
@@ -22,53 +23,67 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-white">
-      <Card className="w-full max-w-sm rounded-[28px] shadow-lg border border-black/5">
-        <CardContent className="p-8">
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-6">Forgot Password</h1>
-          <p className="text-gray-500 mb-6 text-sm sm:text-base leading-relaxed">
-            Enter your email address to receive a password reset link.
-          </p>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
+      {/* LEFT SIDE IMAGE */}
+      <div className="w-screen h-full lg:w-1/2 absolute top-0 right-0 z-0">
+        <img
+          src={hero}
+          alt="natural"
+          className="h-full w-full object-cover opacity-60 lg:opacity-100" // Apply opacity consistently across mobile and tablet
+        />
+      </div>
 
-          {/* Forgot Password Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 font-poppins">
-            <div>
-              <Label className="text-[16px] font-poppins font-medium">Email</Label>
-              <Input
-                type="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Invalid email",
-                  },
-                })}
-                placeholder="Enter your email"
-                className="w-full p-3 text-[16px] focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full mt-4 rounded-[15px] bg-black text-white p-3 text-[18px] font-poppins font-medium hover:bg-purple-600 transition"
-            >
-              Send Reset Link
-            </Button>
-
-            {/* Link to Login */}
-            <p className="text-center mt-4 text-sm">
-              Remembered your password?{" "}
-              <Link to="/login" className="text-purple-600 font-semibold hover:underline">
-                Login Here
-              </Link>
+      {/* RIGHT FORM */}
+      <div className="flex items-center justify-center p-6 lg:p-10 z-10 relative">
+        <Card className="w-full  max-w-[600px] rounded-[28px] shadow-lg border border-gray-200 bg-white">
+          <CardContent className="p-8">
+            <h1 className="text-[30px] md:text-[40px] lg:text-[50px] font-extrabold text-gray-900 mb-6 text-center">
+              Forgot Password
+            </h1>
+            <p className="text-gray-500 mb-6 text-[16px] md:text-[24px] lg:text-[28px] sm:text-base leading-relaxed text-center">
+              Enter your email address to receive a password reset link.
             </p>
-          </form>
-        </CardContent>
-      </Card>
+
+            {/* Forgot Password Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 font-inter">
+              <div>
+                <Label className="text-[16px] md:text-[24px] lg:text-[28px] font-medium">Email</Label>
+                <Input
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email",
+                    },
+                  })}
+                  placeholder="Enter your email"
+                  className="w-full p-3 text-[16px] focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                className="w-60 lg:w-[300px] h-15 mx-auto block mt-4 rounded-[15px] bg-black text-white p-3 text-[18px] font-inter font-medium hover:bg-purple-600 transition"
+              >
+                Send Reset Link
+              </Button>
+
+              {/* Link to Login */}
+              <p className="text-center mt-4 text-[16px] md:text-[20px] lg:text-[24px]">
+                Remembered your password?{" "}
+                <Link to="/login" className="text-purple-600 font-semibold hover:underline">
+                  Login Here
+                </Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
