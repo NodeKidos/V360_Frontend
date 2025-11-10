@@ -1,8 +1,10 @@
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import hero from "../assets/waterfall.jpg";
+import hero from "../assets/waterfall.jpg"; // ✅ background image
 
 interface FormData {
   otp1: string;
@@ -29,66 +31,64 @@ export default function VerifyOtp() {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
-      {/* LEFT image */}
-      <div className="hidden lg:block relative">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white relative">
+      {/* LEFT SIDE IMAGE */}
+     <div className="w-screen h-full lg:w-1/2 absolute top-0 right-0 z-0">
         <img
           src={hero}
           alt="Travel"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="h-full w-full object-cover opacity-60 lg:opacity-100" // Apply opacity consistently across mobile and tablet
         />
       </div>
 
-      {/* RIGHT form */}
-      <div className="flex items-center justify-center p-6 lg:p-10">
-        <Card className="w-full max-w-xl h-[500px] rounded-[28px] shadow-md border border-gray-200">
+      {/* RIGHT FORM SECTION */}
+      <div className="flex items-center justify-center p-5 sm:p-8 lg:p-10 z-10 relative">
+        <Card className="w-full max-w-xl rounded-[24px] shadow-md border border-gray-200 bg-white">
           <CardContent className="p-8 sm:p-10 text-center">
-            <h1 className="text-3xl sm:text-4xl font-albertsans font-extrabold text-gray-900 mb-3">
+            <h1 className="text-[24px] sm:text-[30px] lg:text-[40px] font-albertsans font-extrabold text-gray-900 mb-3">
               {otpMode === "email" ? "Email" : "Phone"} OTP Verification
             </h1>
-            <p className="text-gray-500 mb-8 font-poppins text-[36px] font-medium sm:text-base">
-              Enter {otpMode} verification code we just sent to {" "}
+            <p className="text-gray-500 mb-6 font-poppins text-[18px] sm:text-[20px] lg:text-[22px] leading-relaxed">
+              Enter {otpMode} verification code we just sent to{" "}
               <span className="font-semibold text-gray-700">{otpTarget}</span>
             </p>
 
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="space-y-15 font-poppins"
-            >
-              {/* OTP boxes */}
-              <div className="flex justify-center gap-3 sm:gap-5">
+            {/* OTP Input Fields */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-left">
+              <div className="flex justify-center gap-4 sm:gap-5">
+                {/* OTP input boxes */}
                 <input
                   {...register("otp1")}
                   maxLength={1}
                   onInput={(e) => e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '')}
                   onChange={() => setFocus("otp2")}
-                  className="w-12 h-12 sm:w-14 sm:h-14 border border-gray-300 text-center text-lg rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-14 h-14 sm:w-16 sm:h-16 border border-gray-300 text-center text-xl sm:text-2xl rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 <input
                   {...register("otp2")}
                   maxLength={1}
                   onInput={(e) => e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '')}
                   onChange={() => setFocus("otp3")}
-                  className="w-12 h-12 sm:w-14 sm:h-14 border border-gray-300 text-center text-lg rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-14 h-14 sm:w-16 sm:h-16 border border-gray-300 text-center text-xl sm:text-2xl rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 <input
                   {...register("otp3")}
                   maxLength={1}
                   onInput={(e) => e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '')}
                   onChange={() => setFocus("otp4")}
-                  className="w-12 h-12 sm:w-14 sm:h-14 border border-gray-300 text-center text-lg rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-14 h-14 sm:w-16 sm:h-16 border border-gray-300 text-center text-xl sm:text-2xl rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 <input
                   {...register("otp4")}
                   maxLength={1}
                   onInput={(e) => e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '')}
-                  className="w-12 h-12 sm:w-14 sm:h-14 border border-gray-300 text-center text-lg rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-14 h-14 sm:w-16 sm:h-16 border border-gray-300 text-center text-xl sm:text-2xl rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
 
               {/* Resend link */}
-              <p className="text-gray-500 text-sm sm:text-base">
-                Didn’t receive code?{" "}
+              <p className="text-gray-500 text-[16px] sm:text-[20px] lg:text-[24px] leading-relaxed text-center">
+                Didn’t receive the code?{" "}
                 <button
                   type="button"
                   className="text-purple-600 font-medium hover:underline"
@@ -98,10 +98,10 @@ export default function VerifyOtp() {
                 </button>
               </p>
 
-              {/* Verify button */}
+              {/* Verify Button */}
               <Button
                 type="submit"
-                className="w-full mt-4 h-11 sm:h-12 bg-gray-300 hover:bg-black hover:text-white transition-all"
+                className="w-full mt-4 h-12 sm:h-14 bg-gray-400 hover:bg-black hover:text-white transition-all text-[16px] sm:text-[20px] lg:text-[24px]"
               >
                 Verify
               </Button>
