@@ -36,7 +36,7 @@ export default function Register() {
         <img
           src={hero}
           alt="Travel"
-          className="h-full w-full object-cover opacity-80 lg:opacity-100" // Apply opacity consistently across mobile and tablet
+          className="h-full w-full object-cover opacity-60 lg:opacity-100" // Apply opacity consistently across mobile and tablet
         />
       </div>
 
@@ -50,7 +50,7 @@ export default function Register() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 font-poppins p-5 sm:p-8 lg:p-10">
               <div>
-                <Label className="text-[20px] sm:text-[24px] lg:text-[28px] font-medium text-gray-800">User Name</Label>
+                <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">User Name</Label>
                 <Input
                   {...formRegister("username", { required: "Required" })}
                   placeholder="Enter name"
@@ -62,7 +62,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label className="text-[20px] sm:text-[24px] lg:text-[28px] font-medium text-gray-800">Email</Label>
+                <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">Email</Label>
                 <Input
                   type="email"
                   {...formRegister("email", {
@@ -81,7 +81,7 @@ export default function Register() {
               </div>
 
               <div>
-                <Label className="text-[20px] sm:text-[24px] lg:text-[28px] font-medium text-gray-800">Phone</Label>
+                <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">Phone</Label>
                 <Input
                   {...formRegister("phone", { required: "Required" })}
                   placeholder="Enter phone"
