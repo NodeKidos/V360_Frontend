@@ -48,7 +48,7 @@ export default function Register() {
               Create an Account
             </h1>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 font-poppins p-5 sm:p-8 lg:p-10">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 font-inter p-5 sm:p-8 lg:p-10">
               <div>
                 <Label className="text-[20px] md:text-[24px] lg:text-[28px] font-medium text-gray-800">User Name</Label>
                 <Input

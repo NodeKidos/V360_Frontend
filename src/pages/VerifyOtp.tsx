@@ -48,7 +48,7 @@ export default function VerifyOtp() {
             <h1 className="text-[24px] sm:text-[30px] lg:text-[40px] font-albertsans font-extrabold text-gray-900 mb-3">
               {otpMode === "email" ? "Email" : "Phone"} OTP Verification
             </h1>
-            <p className="text-gray-500 mb-6 font-poppins text-[18px] sm:text-[20px] lg:text-[22px] leading-relaxed">
+            <p className="text-gray-500 mb-6 font-inter text-[18px] sm:text-[20px] lg:text-[22px] leading-relaxed">
               Enter {otpMode} verification code we just sent to{" "}
               <span className="font-semibold text-gray-700">{otpTarget}</span>
             </p>

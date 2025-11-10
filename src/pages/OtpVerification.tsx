@@ -50,7 +50,7 @@ export default function OtpVerification() {
             <h1 className="text-[24px] sm:text-[30px] lg:text-[40px] font-albertsans font-extrabold text-center text-gray-900 mb-3">
               OTP Verification
             </h1>
-            <p className="text-gray-500 mb-6 font-poppins text-[16px] sm:text-[18px] lg:text-[20px] leading-relaxed">
+            <p className="text-gray-500 mb-6 font-inter text-[16px] sm:text-[18px] lg:text-[20px] leading-relaxed">
               {mode === "email"
                 ? "Enter email verification code we just sent to your email xxxxxx@gmail.com"
                 : "Enter the verification code we just sent to your Phone No xxxxxxxxxx"}
