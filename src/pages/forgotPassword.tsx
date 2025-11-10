@@ -58,7 +58,7 @@ export default function ForgotPassword() {
                     },
                   })}
                   placeholder="Enter your email"
-                  className="w-full p-3 text-[16px] focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full p-3 text-[16px] border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
               </Button>
 
               {/* Link to Login */}
-              <p className="text-center mt-4 text-[16px] md:text-[20px] lg:text-[24px]">
+              <p className="text-center mt-4 text-[14px] md:text-[20px] lg:text-[24px]">
                 Remembered your password?{" "}
                 <Link to="/login" className="text-purple-600 font-semibold hover:underline">
                   Login Here
