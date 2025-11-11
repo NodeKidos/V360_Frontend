@@ -1,16 +1,18 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import OtpVerification from "./pages/OtpVerification";
-import VerifyOtp from "./pages/VerifyOtp";
-import HomePage from "./pages/HomePage";
-import AboutUs from "./pages/AboutUs";
-import Itinerary from "./pages/Itinerary";
-import ExcursionDetails from "./pages/ExcursionDetails"; // ✅ newly added page
-import ForgotPassword from "./pages/forgotPassword";
-
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import OtpVerification from "./pages/auth/OtpVerification";
+import VerifyOtp from "./pages/auth/VerifyOtp";
+import AboutUs from "./pages/main/AboutUs";
+import Itinerary from "./pages/main/Itinerary";
+import ExcursionDetails from "./pages/ExcursionDetails";
+import ForgotPassword from "./pages/auth/forgotPassword";
 import ExcursionPoints from "./pages/ExcursionPoints";
 import HotelList from "./pages/HotelList";
+import HomePage from "./pages/main/HomePage";
+
+// ✅ Import Admin Dashboard
+// import AdminDashboard from "./pages/dashboard/AdminDashboard";
 
 export default function App() {
   return (
@@ -29,13 +31,13 @@ export default function App() {
       {/* Informational & Feature Pages */}
       <Route path="/about-us" element={<AboutUs />} />
       <Route path="/itinerary" element={<Itinerary />} />
+      <Route path="/excursion-points" element={<ExcursionPoints />} />
+      <Route path="/hotel-list" element={<HotelList />} />
+      <Route path="/excursion-details" element={<ExcursionDetails />} />
 
-        {/* ✅ CONNECTED NEW PAGES */}
-        <Route path="/excursion-points" element={<ExcursionPoints />} />
-        <Route path="/hotel-list" element={<HotelList />} />
-        
-      <Route path="/excursion-details" element={<ExcursionDetails />} /> {/* ✅ new route */}
-      
+      {/* ✅ Admin Dashboard */}
+      {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
+
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>

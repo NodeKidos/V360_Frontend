@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { FaArrowRight, FaGlobe, FaHeart, FaStarOfLife, FaCoins, FaPlane } from "react-icons/fa";
-import hero from "../assets/Swing.jpg"; 
-import hero2 from "../assets/waterfall1.jpg"; 
-import hero3 from "../assets/tiger1.jpg"; 
-import hero4 from "../assets/elephantride.jpg"; 
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import hero from "../../assets/Swing.jpg"; 
+import hero2 from "../../assets/waterfall1.jpg"; 
+import hero3 from "../../assets/tiger1.jpg"; 
+import hero4 from "../../assets/elephantride.jpg"; 
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 import { useState, useEffect } from "react";
 import type { Variants } from "framer-motion";
 

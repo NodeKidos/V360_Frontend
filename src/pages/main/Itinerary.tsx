@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaHotel } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import type { Variants } from "framer-motion";
-import SriLankaMap from "../components/SriLankaMap";
+import SriLankaMap from "../../components/SriLankaMap";
 
-import colombo from "../assets/packages/family.png";
-import kandy from "../assets/packages/family.png";
-import galle from "../assets/packages/family.png";
-import matara from "../assets/packages/family.png";
-import matale from "../assets/packages/family.png";
-import badulla from "../assets/packages/family.png";
-import nuwara from "../assets/packages/family.png";
-import negombo from "../assets/packages/family.png";
-import anuradhapura from "../assets/packages/family.png";
+import colombo from "../../assets/packages/family.png";
+import kandy from "../../assets/packages/family.png";
+import galle from "../../assets/packages/family.png";
+import matara from "../../assets/packages/family.png";
+import matale from "../../assets/packages/family.png";
+import badulla from "../../assets/packages/family.png";
+import nuwara from "../../assets/packages/family.png";
+import negombo from "../../assets/packages/family.png";
+import anuradhapura from "../../assets/packages/family.png";
 import { IoSearch } from "react-icons/io5";
 
 interface Destination {

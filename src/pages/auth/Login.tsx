@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
-import { useAuthStore } from "../store/useAuthStore";
+import { useAuthStore } from "../../store/useAuthStore";
 import { Link } from "react-router-dom";
-import hero from "../assets/travel.jpg"; 
+import hero from "../../assets/travel.jpg"; // ✅ background image
 
 interface LoginForm {
   emailOrPhone: string;

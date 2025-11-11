@@ -1,9 +1,9 @@
 
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAuthStore } from "../store/useAuthStore";
-import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import hero from "../assets/waterfall.jpg"; // ✅ background image
+import { useAuthStore } from "../../store/useAuthStore";
+import { Card, CardContent } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import hero from "../../assets/waterfall.jpg"; // ✅ background image
 
 interface FormData {
   otp1: string;

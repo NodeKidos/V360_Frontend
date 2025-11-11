@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
-import { Card, CardContent } from "../components/ui/card";
-import { Label } from "../components/ui/label";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
-import hero from "../assets/waterfall.jpg"; // ✅ background image
+import { useAuthStore } from "../../store/useAuthStore";
+import { Card, CardContent } from "../../components/ui/card";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import hero from "../../assets/waterfall.jpg"; // ✅ background image
 
 interface FormData {
   email?: string;
