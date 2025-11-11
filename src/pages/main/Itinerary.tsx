@@ -215,7 +215,7 @@ export default function Itinerary() {
                                 </span>
                             </div>
                             {i < 3 && (
-                                <div className="w-8 sm:w-10 h-0.5 bg-[#B749DB] mx-1 sm:mx-2 mt-4 flex-shrink-0"></div>
+                                <div className="w-8 sm:w-10 h-0.5 bg-[#B749DB] mx-1 sm:mx-2 mt-4 shrink"></div>
                             )}
                         </div>
                     ))}
