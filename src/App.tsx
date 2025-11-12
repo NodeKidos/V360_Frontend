@@ -12,7 +12,7 @@ import HotelList from "./pages/HotelList";
 import HomePage from "./pages/main/HomePage";
 
 // ✅ Import Admin Dashboard
-// import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 
 export default function App() {
   return (
@@ -36,7 +36,7 @@ export default function App() {
       <Route path="/excursion-details" element={<ExcursionDetails />} />
 
       {/* ✅ Admin Dashboard */}
-      {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
