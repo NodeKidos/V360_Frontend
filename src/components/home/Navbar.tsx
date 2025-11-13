@@ -4,7 +4,7 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import { TbWorld } from "react-icons/tb";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "../assets/favicon.png";
+import logo from "../../assets/favicon.png";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

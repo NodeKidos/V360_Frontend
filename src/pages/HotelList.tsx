@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowLeft, FaArrowRight, FaStar, FaRegStar } from "react-icons/fa";
 import { useState, type Key } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/home/Navbar";
 import { IoCloseSharp, IoSearch } from "react-icons/io5";
 import grandWard from "../assets/packages/family.png";
 import cinnamon from "../assets/packages/family.png";

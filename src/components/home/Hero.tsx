@@ -3,7 +3,7 @@ import { IoPlayCircleOutline } from "react-icons/io5"; // For play icon
 import { motion } from "framer-motion"; // Importing motion from framer-motion
 
 // Import the background video
-import heroVideo from "../assets/hero/bgvedio.mp4"; // Make sure to provide the correct video path
+import heroVideo from "../../assets/hero/bgvedio.mp4"; // Make sure to provide the correct video path
 
 const HeroSection = () => {
   return (

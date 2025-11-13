@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Navbar from "../../components/Navbar";
+import Navbar from "../../components/home/Navbar";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaHotel } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import type { Variants } from "framer-motion";
-import SriLankaMap from "../../components/SriLankaMap";
+import SriLankaMap from "../../components/home/SriLankaMap";
 
 import colombo from "../../assets/packages/family.png";
 import kandy from "../../assets/packages/family.png";

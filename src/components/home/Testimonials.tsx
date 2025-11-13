@@ -1,5 +1,5 @@
 import { FaStar } from "react-icons/fa";
-import profilePic from "../assets/travel.jpg"; // replace with your actual image
+import profilePic from "../../assets/travel.jpg"; // replace with your actual image
 
 const testimonials = [
   {

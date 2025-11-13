@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import bgImage from "../assets/bg.jpg"; // Background image
-import soloVibes from "../assets/packages/family.png";
-import familyPackage from "../assets/packages/family.png";
+import bgImage from "../../assets/bg.jpg"; // Background image
+import soloVibes from "../../assets/packages/family.png";
+import familyPackage from "../../assets/packages/family.png";
 
 const packages = [
   {
@@ -95,7 +95,7 @@ export default function ExplorePackages() {
             {[...packages, ...packages].map((pkg, index) => (
               <motion.div
                 key={index}
-                className="bg-white text-black rounded-2xl overflow-hidden shadow-xl w-[260px] h-[400px] flex-shrink-0 hover:scale-105 transition-transform duration-300"
+                className="bg-white text-black rounded-2xl overflow-hidden shadow-xl w-[260px] h-[400px] shrink-0 hover:scale-105 transition-transform duration-300"
                 whileHover={{ y: -10 }}
               >
                 <img

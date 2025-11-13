@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/home/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaStar,

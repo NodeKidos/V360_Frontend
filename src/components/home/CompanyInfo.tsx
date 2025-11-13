@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 
 // Import images directly from the src folder
-import templeImg from "../assets/companyinfo/temple.jpg";
-import trainrideImg from "../assets/companyinfo/trainride.jpg";
-import beachImg from "../assets/companyinfo/beach.jpg";
-import elephantImg from "../assets/companyinfo/Elephant.jpg";
-import mountainImg from "../assets/companyinfo/Mountain.jpg";
+import templeImg from "../../assets/companyinfo/temple.jpg";
+import trainrideImg from "../../assets/companyinfo/trainride.jpg";
+import beachImg from "../../assets/companyinfo/beach.jpg";
+import elephantImg from "../../assets/companyinfo/Elephant.jpg";
+import mountainImg from "../../assets/companyinfo/Mountain.jpg";
 
 const CompanyInfo = () => {
   return (
@@ -24,7 +24,7 @@ const CompanyInfo = () => {
         {/* Button on the Right */}
         <Link
           to="/packages"
-          className="text-center bg-[#B749DB] text-white py-2 px-8 rounded-[8px] hover:bg-purple-700 transition duration-300 text-[16px] font-medium font-roboto-condensed"
+          className="text-center bg-[#B749DB] text-white py-2 px-8 rounded-xl hover:bg-purple-700 transition duration-300 text-[16px] font-medium font-roboto-condensed"
         >
           Begin Your Journey
         </Link>

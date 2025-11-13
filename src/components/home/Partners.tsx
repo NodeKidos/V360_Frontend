@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 
 // Import images
-import hilton from "../assets/hotels/hilton.jpg";
-import cityOfDream from "../assets/hotels/cityof dream.jpg";
-import goldenCrown from "../assets/hotels/golden crown.jpg";
-import forthouse from "../assets/hotels/forthouse.jpg";
+import hilton from "../../assets/hotels/hilton.jpg";
+import cityOfDream from "../../assets/hotels/cityof dream.jpg";
+import goldenCrown from "../../assets/hotels/golden crown.jpg";
+import forthouse from "../../assets/hotels/forthouse.jpg";
 
 const partners = [
   {

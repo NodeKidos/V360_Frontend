@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useState } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/home/Navbar";
 
 import lotus from "../assets/packages/family.png";
 import temple from "../assets/packages/family.png";
