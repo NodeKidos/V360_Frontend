@@ -13,7 +13,6 @@ import HomePage from "./pages/main/HomePage";
 
 // ✅ Import Admin Dashboard
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
-
 export default function App() {
   return (
     <Routes>
@@ -37,6 +36,13 @@ export default function App() {
 
       {/* ✅ Admin Dashboard */}
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+       {/* <Route path="/user" element={<UserPage />} /> */}
+        {/* <Route path="/tour" element={<TourPage />} />
+        <Route path="/hotel" element={<HotelPage />} />
+        <Route path="/vehicle" element={<VehiclePage />} />
+        <Route path="/driver" element={<DriverPage />} />
+        <Route path="/trip" element={<TripPage />} />
+        <Route path="/reward" element={<RewardPage />} /> */}
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />

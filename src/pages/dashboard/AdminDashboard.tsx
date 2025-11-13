@@ -13,6 +13,8 @@ import {
   TooltipProvider,
 } from "../../components/ui/Tooltip";
 import { useNavigate } from "react-router-dom";
+import { RxDashboard } from "react-icons/rx";
+import { HiOutlineTruck } from "react-icons/hi";
 import {
   FiHome,
   FiUser,
@@ -41,15 +43,15 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
-    { label: "Dashboard", icon: <FiHome /> },
-    { label: "User", icon: <FiUser /> },
-    { label: "Tour", icon: <FaMapMarkedAlt /> },
-    { label: "Hotel & Destination", icon: <FaHotel /> },
-    { label: "Vehicle", icon: <FaCarSide /> },
-    { label: "Driver", icon: <FiTruck /> },
-    { label: "Staff", icon: <FaUsers /> },
-    { label: "Trip", icon: <FaMapMarkedAlt /> },
-    { label: "Reward", icon: <FaGift /> },
+    { label: "Dashboard", icon: <RxDashboard />, link: "/admin-dashboard" },
+    { label: "User", icon: <FiUser />, link: "/user" },
+    { label: "Tour", icon: <FaMapMarkedAlt />, link: "/tour" },
+    { label: "Hotel & Destination", icon: <FaHotel />, link: "/hotel" },
+    { label: "Vehicle", icon: <FaCarSide />, link: "/vehicle" },
+    { label: "Driver", icon: <FiTruck />, link: "/driver" },
+    { label: "Staff", icon: <FaUsers />, link: "/staff" },
+    { label: "Trip", icon: <FaMapMarkedAlt />, link: "/trip" },
+    { label: "Reward", icon: <FaGift />, link: "/reward" },
   ];
 
   // ✅ Detect Mobile Screen
@@ -78,7 +80,7 @@ export default function AdminDashboard() {
                 src={logo}
                 alt="Logo"
                 onClick={() => setCollapsed(!collapsed)}
-                className="cursor-pointer w-16 h-16 object-contain"
+                className="cursor-pointer w-25 h-30 object-contain"
               />
             </div>
           )}
@@ -96,19 +98,20 @@ export default function AdminDashboard() {
           {/* Sidebar Menu */}
           <div className="flex-1 overflow-y-auto px-4 pb-6">
             <TooltipProvider>
-              <nav className="space-y-4 font-medium">
+              <nav className="space-y-6 font-medium">
                 {menuItems.map((item) => (
                   <Tooltip key={item.label}>
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
+                        onClick={() => navigate(item.link)} // Updated to use navigate
                         className={`w-full flex items-center gap-3 text-gray-700 hover:bg-purple-100 hover:text-purple-700 ${collapsed && !isMobile
-                            ? "justify-center"
-                            : "justify-start pl-4"}`}
+                          ? "justify-center"
+                          : "justify-start pl-4"}`}
                       >
-                        <span className="text-[20px]">{item.icon}</span>
+                        <span className="text-[24px]">{item.icon}</span>
                         {(!collapsed || isMobile) && (
-                          <span className="text-[18px]">{item.label}</span>
+                          <span className="text-[20px]">{item.label}</span>
                         )}
                       </Button>
                     </TooltipTrigger>
@@ -123,16 +126,16 @@ export default function AdminDashboard() {
 
           {/* Bottom Section (Visible in Mobile too) */}
           <div className="p-4 border-t border-gray-100">
-            <div className="space-y-3">
+            <div className="space-y-7">
               {/* Settings Button with Tooltip */}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
-                      className={`w-full flex items-center gap-3 text-gray-700 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
+                      className={`w-full flex text-[20px] items-center gap-3 text-gray-700 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
                     >
-                      <FiSettings className="text-lg" />
+                      <FiSettings className="text-[24px]" />
                       {!collapsed && <span>Settings</span>}
                     </Button>
                   </TooltipTrigger>
@@ -147,9 +150,9 @@ export default function AdminDashboard() {
                     <Button
                       variant="outline"
                       onClick={() => navigate("/login")}
-                      className={`w-full flex items-center gap-3 text-gray-700 border-gray-300 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
+                      className={`w-full flex text-[20px] items-center gap-3 text-gray-700 border-gray-300 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
                     >
-                      <FiLogOut className="text-lg" />
+                      <FiLogOut className="text-[24px]" />
                       {!collapsed && <span>Log Out</span>}
                     </Button>
                   </TooltipTrigger>
@@ -171,8 +174,8 @@ export default function AdminDashboard() {
                   </Tooltip>
                 </TooltipProvider>
                 <div>
-                  <p className={`font-semibold text-sm ${collapsed ? "hidden" : "block"}`}>Jacqueline Fernando</p>
-                  <p className={`text-xs text-gray-500 ${collapsed ? "hidden" : "block"}`}>jack@gmail.com</p>
+                  <p className={`font-semibold text-lg ${collapsed ? "hidden" : "block"}`}>Jacqueline Fernando</p>
+                  <p className={`text-sm text-gray-500 ${collapsed ? "hidden" : "block"}`}>jack@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -207,58 +210,63 @@ export default function AdminDashboard() {
           ) : (
             <>
               <div className="flex-1 flex justify-center">
-                <div className="relative w-full max-w-[600px]">
-                  <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+                <div className="relative lg:w-[700px] sm:w-[500px]">
+                  <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B749DB] text-xl" />
                   <input
                     type="text"
                     placeholder="Search here..."
-                    className="border px-12 py-2 w-full bg-[#B749DB]/10 rounded-full focus:ring-2 focus:ring-purple-400 placeholder:text-gray-500 text-center shadow-sm"
+                    className="border px-12 py-2 w-full bg-[#B749DB]/10 rounded-full focus:ring-2 focus:ring-purple-400 placeholder:text-[#B749DB] text-center shadow-sm"
                   />
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <FiBell className="text-lg text-gray-500 cursor-pointer hover:text-purple-600" />
+                <Avatar>
+                  <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
+                  <AvatarFallback>ADMIN</AvatarFallback>
+                </Avatar>
               </div>
             </>
           )}
         </div>
 
         {/* Top Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 ">
           {[{ label: "Total Customer", value: "50" },
           { label: "Total Vehicle", value: "28" },
           { label: "Total Driver", value: "40" },
-          { label: "Driving Hours", value: "16 hr 12 m" },
+          { label: "Driving Hours", value: "16hr 12m" },
           ].map((item) => (
             <Card
               key={item.label}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 "
+              className="bg-white rounded-2xl shadow-sm border border-gray-100  "
             >
               <CardContent className="p-6 text-center">
-                <p className="text-black font-roboto-condensed font-bold lg:text-[20px] md:text-[18px] sm:text-[16px]">{item.label}</p>
-                <h3 className="text-3xl font-bold mt-2 text-purple-600">
+                <p className="text-black text-left font-roboto-condensed font-bold lg:text-[28px] sm:text-[24px] text-[20px]">{item.label}</p>
+                <h3 className="text-[26px] sm:text-[24px] lg:text-[28px] font-bold mt-2 text-purple-600">
                   {item.value}
                 </h3>
+
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Middle Section */}
-        <div className="grid grid-cols-1 md:grid-cols-[250px_1fr_300px] gap-4 lg:gap-6 mb-6 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 ">
           {/* Calendar + Trip */}
           <div className="flex flex-col gap-8">
             {/* Calendar */}
-            <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 h-60">
+            <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 h-70 lg:w-100%">
               <CardContent className="p-5">
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-black font-roboto-condensed font-bold text-[20px]">Calendar</p>
-                  <div className="bg-gradient-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
-                    <FiArrowUpRight className="text-sm" />
+                  <p className="text-black font-roboto-condensed font-bold lg:text-[28px] sm:text-[24px] text-[20px]">Calendar</p>
+                  <div className="bg-linear-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
+                    <FiArrowUpRight className="text-lg" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-7 gap-1.5 text-center text-[10px] sm:text-xs">
+                <div className="grid grid-cols-7 gap-2.5 text-center text-[16px] ">
                   {"MTWTFSS".split("").map((d, i) => (
                     <span key={i} className="font-semibold text-gray-600">
                       {d}
@@ -267,11 +275,11 @@ export default function AdminDashboard() {
                   {[...Array(30)].map((_, i) => (
                     <div
                       key={i}
-                      className={`w-5 h-5 rounded-md mx-auto ${i % 7 === 0
-                          ? "bg-purple-300"
-                          : i % 5 === 0
-                            ? "bg-green-400"
-                            : "bg-gray-200"
+                      className={`w-6 h-6 rounded-md mx-auto ${i % 7 === 0
+                        ? "bg-purple-300"
+                        : i % 5 === 0
+                          ? "bg-green-400"
+                          : "bg-gray-200"
                         }`}></div>
                   ))}
                 </div>
@@ -279,22 +287,22 @@ export default function AdminDashboard() {
             </Card>
 
             {/* Total Trip */}
-            <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 text-center h-30">
+            <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 text-center h-35 lg:w-100%">
               <CardContent className="p-5">
-                <p className="text-left font-semibold mb-1 text-[20px] text-black font-roboto-condensed ">Total Trip</p>
-                <h2 className="text-2xl font-bold text-purple-600">1200</h2>
+                <p className="text-left font-semibold mb-1 lg:text-[28px] sm:text-[24px] text-[20px] text-black font-roboto-condensed ">Total Trip</p>
+                <h2 className="text-[26px] sm:text-[24px] lg:text-[28px] font-bold text-purple-600 ">1200</h2>
               </CardContent>
             </Card>
           </div>
 
           {/* Reward Details */}
-          <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto ">
-            <CardContent className="p-5 h-[300px] lg:h-full flex flex-col justify-start">
+          <Card className="bg-white lg:w-100% rounded-2xl shadow-sm border border-gray-100 overflow-x-auto ">
+            <CardContent className="p-5 sm:h-[400px] lg:h-full flex flex-col justify-start">
               {/* Header */}
               <div className="flex justify-between items-center mb-3">
-                <p className="font-semibold text-black font-roboto-condensed text-[20px] ">Reward Details</p>
-                <div className="bg-gradient-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
-                  <FiArrowUpRight className="text-sm" />
+                <p className="font-semibold text-black font-roboto-condensed lg:text-[28px] sm:text-[24px] text-[20px] ">Reward Details</p>
+                <div className="bg-linear-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
+                  <FiArrowUpRight className="text-lg" />
                 </div>
               </div>
 
@@ -330,18 +338,18 @@ export default function AdminDashboard() {
           </Card>
 
           {/* Map */}
-          <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+          <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full md:h-100% lg:h-100% md:w-160 lg:w-full">
             <CardContent className="p-0 flex flex-col flex-1">
               {/* Header */}
               <div className="flex justify-between items-center px-5 pt-4 pb-2">
                 <p className="font-semibold text-black font-roboto-condensed text-[20px]">Map</p>
-                <div className="bg-gradient-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
-                  <FiArrowUpRight className="text-sm" />
+                <div className="bg-lineart-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
+                  <FiArrowUpRight className="text-lg" />
                 </div>
               </div>
 
               {/* Google Map (auto fill height) */}
-              <div className="flex-1">
+              <div className="flex flex-1 ">
                 <iframe
                   title="Map"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63346.5686232434!2d79.8282095750634!3d6.927078293065846!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae25960d01982b9%3A0x4dded76d7a5dc0f8!2sColombo!5e0!3m2!1sen!2slk!4v1698672328116!5m2!1sen!2slk"
@@ -358,101 +366,96 @@ export default function AdminDashboard() {
         </div>
 
         {/* Bottom Section */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-  {/* Itinerary Details */}
-  <Card className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 w-full h-full">
-    <CardContent className="p-6 h-full">
-      {/* Flex container for heading and arrow */}
-      <div className="flex justify-between items-center mb-4">
-        <p className="font-semibold text-black font-roboto-condensed lg:text-[20px] md:text-[18px] text-[20px]">
-          Itinerary Details
-        </p>
-        <div className="bg-gradient-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
-          <FiArrowUpRight className="text-sm" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          {/* Itinerary Details */}
+          <Card className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 w-full h-full">
+            <CardContent className="p-6 h-full">
+              {/* Flex container for heading and arrow */}
+              <div className="flex justify-between items-center mb-4">
+                <p className="font-semibold text-black font-roboto-condensed lg:text-[28px] sm:text-[24px] text-[20px]">
+                  Itinerary Details
+                </p>
+                <div className="bg-linear-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
+                  <FiArrowUpRight className="text-lg" />
+                </div>
+              </div>
+
+              {/* Table Container with overflow-x-scroll on mobile and tablet */}
+              <div className="overflow-x-auto rounded-xl border border-gray-100">
+                <table className="w-full text-center font-inter ">
+                  <thead>
+                    <tr className="text-gray-600 border-b lg:text-[20px] md:text-[18px] text-[20px]">
+                      <th className="p-2">Itinerary</th>
+                      <th className="p-2">Name</th>
+                      <th className="p-2">Phone</th>
+                      <th className="p-2">Date</th>
+                      <th className="p-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...Array(5)].map((_, i) => (
+                      <tr key={i} className="border-b hover:bg-gray-50 lg:text-[20px] sm:text-[16px] text-[16px]">
+                        <td className="p-2">ID00{i + 1}</td>
+                        <td className="p-2">Alice</td>
+                        <td className="p-2 whitespace-nowrap">{`+94 74 455 2676`}</td> {/* Prevent phone number from breaking into multiple lines */}
+                        <td className="p-2 whitespace-nowrap">
+                          <div>{`07-Sep-2025`}</div> {/* Date */}
+                          <div className="text-sm text-gray-500">{`14:30`}</div> {/* Time */}
+                        </td>
+                        <td className="p-2">Started</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Best Destination */}
+          <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 w-full md:w-[590px] lg:w-full h-full">
+            <CardContent className="p-5 h-full">
+              <div className="flex justify-between items-center mb-3">
+                <p className="font-semibold text-black font-roboto-condensed lg:text-[28px] sm:text-[24px] text-[20px]">
+                  Best Destination
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-10px sm:text-sm h-8 px-4 py-1 items-end"
+                >
+                  Filters
+                </Button>
+              </div>
+
+              {/* Destination List */}
+              <div className="space-y-2">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-10 p-2 rounded-xl border border-gray-100 hover:shadow-md transition-all bg-white"
+                  >
+                    {/* Image */}
+                    <img
+                      src="https://i.ibb.co/7R1D2zH/waterfall.jpg"
+                      alt="Lotus Tower"
+                      className="w-12 h-12 rounded-md object-cover shrink-0"
+                    />
+
+                    {/* Info */}
+                    <div>
+                      <p className="font-medium text-[20px] leading-tight">
+                        Lotus Tower
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        📍 Colombo · ⭐ 4.8
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
-      
-     {/* Table Container with overflow-x-scroll on mobile and tablet */}
-<div className="overflow-x-auto rounded-xl border border-gray-100">
-  <table className="w-full text-center font-inter ">
-    <thead>
-      <tr className="text-gray-600 border-b lg:text-[20px] md:text-[18px] text-[20px]">
-        <th className="p-2">Itinerary</th>
-        <th className="p-2">Name</th>
-        <th className="p-2">Phone</th>
-        <th className="p-2">Date</th>
-        <th className="p-2">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {[...Array(5)].map((_, i) => (
-        <tr key={i} className="border-b hover:bg-gray-50 lg:text-[20px] sm:text-[16px] text-[16px]">
-          <td className="p-2">ID00{i + 1}</td>
-          <td className="p-2">Alice</td>
-          <td className="p-2 whitespace-nowrap">{`+94 74 455 2676`}</td> {/* Prevent phone number from breaking into multiple lines */}
-          <td className="p-2 whitespace-nowrap">
-            <div>{`07-Sep-2025`}</div> {/* Date */}
-            <div className="text-sm text-gray-500">{`14:30`}</div> {/* Time */}
-          </td>
-          <td className="p-2">Started</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
-
-    </CardContent>
-  </Card>
-
-  {/* Best Destination */}
-  <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 w-full md:w-[100px] lg:w-[420px] h-full">
-    <CardContent className="p-5 h-full">
-      <div className="flex justify-between items-center mb-3">
-        <p className="font-semibold text-black font-roboto-condensed lg:text-[20px] md:text-[18px] text-[20px]">
-          Best Destination 🌈
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          className="text-10px sm:text-sm h-8 px-4 py-1"
-        >
-          Filters
-        </Button>
-        <div className="bg-linear-to-r from-purple-500 to-pink-400 text-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform">
-          <FiArrowUpRight className="text-sm" />
-        </div>
-      </div>
-
-      {/* Destination List */}
-      <div className="space-y-2">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-10 p-2 rounded-xl border border-gray-100 hover:shadow-md transition-all bg-white"
-          >
-            {/* Image */}
-            <img
-              src="https://i.ibb.co/7R1D2zH/waterfall.jpg"
-              alt="Lotus Tower"
-              className="w-12 h-12 rounded-md object-cover shrink-0"
-            />
-
-            {/* Info */}
-            <div>
-              <p className="font-medium text-[20px] leading-tight">
-                Lotus Tower
-              </p>
-              <p className="text-xs sm:text-sm text-gray-500">
-                📍 Colombo · ⭐ 4.8
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-</div>
       </main>
     </div>
   );
