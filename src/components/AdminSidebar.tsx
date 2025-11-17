@@ -103,7 +103,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
         </div>
 
         {/* Bottom Section (Visible in Mobile too) */}
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4
+         border-t border-gray-100">
           <div className="space-y-7">
             {/* Settings Button with Tooltip */}
             <TooltipProvider>

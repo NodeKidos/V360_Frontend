@@ -13,6 +13,7 @@ import HomePage from "./pages/main/HomePage";
 
 // ✅ Import Admin Dashboard
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import CustomerManagement from "./components/dashboard/User/UserView";
 export default function App() {
   return (
     <Routes>
@@ -36,7 +37,7 @@ export default function App() {
 
       {/* ✅ Admin Dashboard */}
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
-       {/* <Route path="/user" element={<UserPage />} /> */}
+       <Route path="/user" element={<CustomerManagement/>} />
         {/* <Route path="/tour" element={<TourPage />} />
         <Route path="/hotel" element={<HotelPage />} />
         <Route path="/vehicle" element={<VehiclePage />} />

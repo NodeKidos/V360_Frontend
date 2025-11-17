@@ -2,10 +2,8 @@ import  { useState, useEffect } from "react";
 import Sidebar from "../../components/AdminSidebar";
 import { Button } from "../../components/ui/button";
 import { FiArrowUpRight, FiBell, FiMenu } from "react-icons/fi";
-import { IoSearch } from "react-icons/io5";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Card, CardContent } from "../../components/ui/card";
-import logo from "../../assets/favicon.png"; // Your logo
+import TopBar from "../../components/Topbar";
 
 const AdminDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -31,51 +29,23 @@ const AdminDashboard = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-     
-       {/* Main Section */}
+     {/* Main Section */}
       <main className="flex-1 p-4 md:p-6 overflow-y-auto w-full md:ml-0 overflow-x-hidden">
         {/* Top Bar */}
-        <div className="flex justify-between items-center mb-6">
-          {/* Mobile Menu + Logo */}
-          {isMobile ? (
-            <div className="flex items-center justify-between w-full">
-              <Button
-                variant="ghost"
-                onClick={() => setSidebarOpen(true)}
-                className="text-2xl text-gray-700 hover:text-purple-600"
-              >
-                <FiMenu />
-              </Button>
-              <div className="flex items-center justify-center flex-1">
-                <img
-                  src={logo}
-                  alt="Logo"
-                  className="w-20 h-20 object-contain mx-auto"
-                />
-              </div>
-              <FiBell className="text-xl text-gray-500 cursor-pointer hover:text-purple-600" />
-            </div>
-          ) : (
-            <>
-              <div className="flex-1 flex justify-center">
-                <div className="relative lg:w-[700px] sm:w-[500px]">
-                  <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B749DB] text-xl" />
-                  <input
-                    type="text"
-                    placeholder="Search here..."
-                    className="border px-12 py-2 w-full bg-[#B749DB]/10 rounded-full focus:ring-2 focus:ring-purple-400 placeholder:text-[#B749DB] text-center shadow-sm"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <FiBell className="text-lg text-gray-500 cursor-pointer hover:text-purple-600" />
-                <Avatar>
-                  <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-                  <AvatarFallback>ADMIN</AvatarFallback>
-                </Avatar>
-              </div>
-            </>
-          )}
+        <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
+
+        {/* Top Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {[{ label: "Total Customer", value: "50" }, { label: "Total Vehicle", value: "28" }, { label: "Total Driver", value: "40" }, { label: "Driving Hours", value: "16hr 12m" }].map((item) => (
+            <Card key={item.label} className="bg-white rounded-2xl shadow-sm border border-gray-100">
+              <CardContent className="p-6 text-center">
+                <p className="text-black text-left font-roboto-condensed font-bold lg:text-[28px] sm:text-[24px] text-[20px]">{item.label}</p>
+                <h3 className="text-[26px] sm:text-[24px] lg:text-[28px] font-bold mt-2 text-purple-600">
+                  {item.value}
+                </h3>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Top Stats */}
