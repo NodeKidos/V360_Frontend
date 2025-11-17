@@ -63,7 +63,7 @@ const CustomerManagement = () => {
         {/* TITLE */}
         <div className="flex justify-between items-center mb-4 mt-4">
           <h2
-            className="font-poppins font-bold text-black text-[36px] md:text-[40px]lg:text-[48px]"
+            className="font-poppins font-bold text-black text-[30px] md:text-[40px] not-even:lg:text-[48px]"
           >
             Customer Management
           </h2>
