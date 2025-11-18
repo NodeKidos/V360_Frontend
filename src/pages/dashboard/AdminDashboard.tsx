@@ -1,7 +1,7 @@
 import  { useState, useEffect } from "react";
 import Sidebar from "../../components/AdminSidebar";
 import { Button } from "../../components/ui/button";
-import { FiArrowUpRight, FiBell, FiMenu } from "react-icons/fi";
+import { FiArrowUpRight } from "react-icons/fi";
 import { Card, CardContent } from "../../components/ui/card";
 import TopBar from "../../components/Topbar";
 

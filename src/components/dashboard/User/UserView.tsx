@@ -233,7 +233,7 @@ const CustomerManagement = () => {
         </div>
 
         {/* TABLE */}
-        <div className={`mb-6 ${isIPad ? "overflow-y-auto overflow-x-auto h-[40vh]" : "overflow-x-scroll"}`}>
+        <div className={`mb-6 ${isIPad ? "overflow-y-auto overflow-x-auto h-[40vh]" : "overflow-x-scroll lg:overflow-x-hidden"}`}>
           <table className="min-w-full bg-white shadow-sm rounded-lg">
             <thead>
               <tr className="bg-gray-100 text-[#382A59] font-semibold text-[20px] md:text-[24px] lg:text-[26px] text-left lg:text-center">
