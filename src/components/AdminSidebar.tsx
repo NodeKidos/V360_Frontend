@@ -1,10 +1,9 @@
 import { Button } from "./ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./ui/Tooltip";
 import { useNavigate } from "react-router-dom";
-import { RxDashboard } from "react-icons/rx"; 
+import { TiThLargeOutline } from "react-icons/ti"; 
+import { BiTrip } from "react-icons/bi";
 import {
-  FiUser,
-  FiTruck,
   FiSettings,
   FiLogOut,
   FiX,
@@ -15,6 +14,8 @@ import {
   FaMapMarkedAlt,
   FaCarSide,
   FaUsers,
+  FaUser,
+  FaTruck,
 } from "react-icons/fa";
 import logo from "../assets/favicon.png"; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -31,14 +32,14 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
   const navigate = useNavigate();
 
   const menuItems = [
-    { label: "Dashboard", icon: <RxDashboard />, link: "/admin-dashboard" },
-    { label: "User", icon: <FiUser />, link: "/user" },
+    { label: "Dashboard", icon: <TiThLargeOutline />, link: "/admin-dashboard" },
+    { label: "User", icon: <FaUser/>, link: "/user" },
     { label: "Tour", icon: <FaMapMarkedAlt />, link: "/tour" },
     { label: "Hotel & Destination", icon: <FaHotel />, link: "/hotel" },
     { label: "Vehicle", icon: <FaCarSide />, link: "/vehicle" },
-    { label: "Driver", icon: <FiTruck />, link: "/driver" },
+    { label: "Driver", icon: <FaTruck />, link: "/driver" },
     { label: "Staff", icon: <FaUsers />, link: "/staff" },
-    { label: "Trip", icon: <FaMapMarkedAlt />, link: "/trip" },
+    { label: "Trip", icon: <BiTrip />, link: "/trip" },
     { label: "Reward", icon: <FaGift />, link: "/reward" },
   ];
 
