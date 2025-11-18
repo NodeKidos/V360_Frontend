@@ -10,10 +10,15 @@ import ForgotPassword from "./pages/auth/forgotPassword";
 import ExcursionPoints from "./pages/ExcursionPoints";
 import HotelList from "./pages/HotelList";
 import HomePage from "./pages/main/HomePage";
+import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Import Admin Dashboard
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import CustomerManagement from "./components/dashboard/User/UserView";
+import AddCustomer from "./components/dashboard/User/AddUser";
+import EditCustomer from "./components/dashboard/User/EditUser";
+
+
 export default function App() {
   return (
     <Routes>
@@ -38,6 +43,9 @@ export default function App() {
       {/* ✅ Admin Dashboard */}
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
        <Route path="/user" element={<CustomerManagement/>} />
+       <Route path="/user/add" element={<AddCustomer />} />
+       <Route path="/user/edit/:customerId" element={<EditCustomer />} />
+
         {/* <Route path="/tour" element={<TourPage />} />
         <Route path="/hotel" element={<HotelPage />} />
         <Route path="/vehicle" element={<VehiclePage />} />
