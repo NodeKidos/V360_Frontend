@@ -84,7 +84,7 @@ const CustomerManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col sm:flex-row">
+    <div className="h-screen flex overflow-hidden bg-white">
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -94,12 +94,14 @@ const CustomerManagement = () => {
       />
 
       {/* MAIN CONTAINER */}
-      <div
-        className={`flex-1 ${isIPad
-          ? "px-6 py-4 h-[calc(100vh-70px)] overflow-hidden"
-          : "p-4 md:p-8"
-          }`}
+    <div
+        className={`
+          flex-1 flex flex-col overflow-auto transition-all duration-300
+          ${!isMobile ? (collapsed ? "ml-2" : "ml-5") : "ml-0"}
+          ${isIPad ? "px-3 py-4" : "p-4 md:p-8"}
+        `}
       >
+
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
         {/* TITLE */}
