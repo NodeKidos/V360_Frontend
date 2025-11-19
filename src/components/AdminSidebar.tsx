@@ -1,7 +1,7 @@
 import { Button } from "./ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./ui/Tooltip";
 import { useNavigate } from "react-router-dom";
-import { TiThLargeOutline } from "react-icons/ti"; 
+import { TiThLargeOutline } from "react-icons/ti";
 import { BiTrip } from "react-icons/bi";
 import {
   FiSettings,
@@ -19,6 +19,8 @@ import {
 } from "react-icons/fa";
 import logo from "../assets/favicon.png"; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { IoSettingsOutline } from "react-icons/io5";
+import { IoMdSettings } from "react-icons/io";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -33,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
 
   const menuItems = [
     { label: "Dashboard", icon: <TiThLargeOutline />, link: "/admin-dashboard" },
-    { label: "User", icon: <FaUser/>, link: "/user" },
+    { label: "User", icon: <FaUser />, link: "/user" },
     { label: "Tour", icon: <FaMapMarkedAlt />, link: "/tour" },
     { label: "Hotel & Destination", icon: <FaHotel />, link: "/hotel" },
     { label: "Vehicle", icon: <FaCarSide />, link: "/vehicle" },
@@ -41,6 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
     { label: "Staff", icon: <FaUsers />, link: "/staff" },
     { label: "Trip", icon: <BiTrip />, link: "/trip" },
     { label: "Reward", icon: <FaGift />, link: "/reward" },
+    { label: "Settings", icon: <IoMdSettings />, link: "/setting" },
+
   ];
 
   return (
@@ -88,9 +92,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
                         ? "justify-center"
                         : "justify-start pl-4"}`}
                     >
-                      <span className="text-[24px]">{item.icon}</span>
+                      <span className="text-[20px]">{item.icon}</span>
                       {(!collapsed || isMobile) && (
-                        <span className="text-[20px]">{item.label}</span>
+                        <span className="text-[20px] font-roboto font-medium">{item.label}</span>
                       )}
                     </Button>
                   </TooltipTrigger>
@@ -103,64 +107,49 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
           </TooltipProvider>
         </div>
 
-        {/* Bottom Section (Visible in Mobile too) */}
-        <div className="p-4
-         border-t border-gray-100">
-          <div className="space-y-7">
-            {/* Settings Button with Tooltip */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={`w-full flex text-[20px] items-center gap-3 text-gray-700 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
-                  >
-                    <FiSettings className="text-[24px]" />
-                    {!collapsed && <span>Settings</span>}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Settings</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/login")}
+                className={`w-full flex text-[20px] font-roboto font-medium items-center gap-3 text-gray-700 border-gray-300 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
+              >
+                <FiLogOut className="text-[20px]" />
+                {!collapsed && <span>Log Out</span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Log Out</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-            {/* Log Out Button with Tooltip */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate("/login")}
-                    className={`w-full flex text-[20px] items-center gap-3 text-gray-700 border-gray-300 hover:bg-purple-50 justify-start pl-4 ${collapsed ? "justify-center" : "justify-start"}`}
-                  >
-                    <FiLogOut className="text-[24px]" />
-                    {!collapsed && <span>Log Out</span>}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Log Out</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        <div
+          className={`mt-6 mb-4 flex ${collapsed ? "justify-center" : "items-center gap-3"
+            }`}
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className={`${collapsed ? "mx-auto" : ""}`}>
+                  <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
+                  <AvatarFallback>AD</AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>Jacqueline Fernando</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-            {/* Profile Section with Tooltip */}
-            <div className="flex items-center gap-3 mt-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Avatar>
-                      <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-                      <AvatarFallback>AD</AvatarFallback>
-                    </Avatar>
-                  </TooltipTrigger>
-                  <TooltipContent>Jacqueline Fernando</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <div>
-                <p className={`font-semibold text-lg ${collapsed ? "hidden" : "block"}`}>Jacqueline Fernando</p>
-                <p className={`text-sm text-gray-500 ${collapsed ? "hidden" : "block"}`}>jack@gmail.com</p>
-              </div>
+          {!collapsed && (
+            <div>
+              <p className="text-[16px] font-roboto font-medium">
+                Jacqueline Fernando
+              </p>
+              <p className="text-[14px] font-roboto font-medium text-gray-500">
+                jack@gmail.com
+              </p>
             </div>
-          </div>
+          )}
         </div>
-
       </div>
     </aside>
   );
