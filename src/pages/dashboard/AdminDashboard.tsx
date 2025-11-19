@@ -35,20 +35,6 @@ const AdminDashboard = () => {
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
         {/* Top Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {[{ label: "Total Customer", value: "50" }, { label: "Total Vehicle", value: "28" }, { label: "Total Driver", value: "40" }, { label: "Driving Hours", value: "16hr 12m" }].map((item) => (
-            <Card key={item.label} className="bg-white rounded-2xl shadow-sm border border-gray-100">
-              <CardContent className="p-6 text-center">
-                <p className="text-black text-left font-roboto-condensed font-bold lg:text-[28px] sm:text-[24px] text-[20px]">{item.label}</p>
-                <h3 className="text-[26px] sm:text-[24px] lg:text-[28px] font-bold mt-2 text-purple-600">
-                  {item.value}
-                </h3>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Top Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 ">
           {[{ label: "Total Customer", value: "50" },
           { label: "Total Vehicle", value: "28" },
@@ -57,11 +43,11 @@ const AdminDashboard = () => {
           ].map((item) => (
             <Card
               key={item.label}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100  "
+              className="bg-white rounded-[20px] shadow-sm border border-gray-100  "
             >
               <CardContent className="p-6 text-center">
                 <p className="text-black text-left font-roboto-condensed font-bold lg:text-[28px] sm:text-[24px] text-[20px]">{item.label}</p>
-                <h3 className="text-[26px] sm:text-[24px] lg:text-[28px] font-bold mt-2 text-purple-600">
+                <h3 className="text-[26px] sm:text-[24px] lg:text-[30px] font-bold mt-2 text-purple-600">
                   {item.value}
                 </h3>
 
@@ -75,7 +61,7 @@ const AdminDashboard = () => {
           {/* Calendar + Trip */}
           <div className="flex flex-col gap-8">
             {/* Calendar */}
-            <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 h-70 lg:w-100%">
+            <Card className="bg-white rounded-[20px] shadow-sm border border-gray-100 h-70 lg:w-100%">
               <CardContent className="p-5">
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-black font-roboto-condensed font-bold lg:text-[28px] sm:text-[24px] text-[20px]">Calendar</p>
@@ -105,7 +91,7 @@ const AdminDashboard = () => {
             </Card>
 
             {/* Total Trip */}
-            <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 text-center h-35 lg:w-100%">
+            <Card className="bg-white rounded-[20px] shadow-sm border border-gray-100 text-center h-35 lg:w-100%">
               <CardContent className="p-5">
                 <p className="text-left font-semibold mb-1 lg:text-[28px] sm:text-[24px] text-[20px] text-black font-roboto-condensed ">Total Trip</p>
                 <h2 className="text-[26px] sm:text-[24px] lg:text-[28px] font-bold text-purple-600 ">1200</h2>
@@ -114,7 +100,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Reward Details */}
-          <Card className="bg-white lg:w-100% rounded-2xl shadow-sm border border-gray-100 overflow-x-auto ">
+          <Card className="bg-white lg:w-100% rounded-[20px] shadow-sm border border-gray-100 overflow-x-auto ">
             <CardContent className="p-5 sm:h-[400px] lg:h-full flex flex-col justify-start">
               {/* Header */}
               <div className="flex justify-between items-center mb-3">
@@ -125,14 +111,14 @@ const AdminDashboard = () => {
               </div>
 
               {/* Table (reduced gap) */}
-              <div className="overflow-x-auto rounded-xl border border-gray-100">
-                <table className="min-w-full text-center text-xs sm:text-sm">
+              <div className="overflow-x-scroll rounded-xl border border-gray-100" style={{scrollbarWidth: "none", msOverflowStyle: "none",}}>
+                <table className="min-w-full text-center text-xs sm:text-sm font-inter font-medium">
                   <thead>
-                    <tr className="text-gray-700 font-semibold border-b bg-gray-50 lg:text-[20px] md:text-[18px] text-[16px]">
-                      <th className="p-2">Reward Id</th>
-                      <th className="p-2">Reward Type</th>
+                    <tr className="text-[#382A59] border-b lg:text-[20px] md:text-[18px] text-[20px]">
+                      <th className="p-2 whitespace-nowrap">Reward Id</th>
+                      <th className="p-2 whitespace-nowrap">Reward Type</th>
                       <th className="p-2">Date</th>
-                      <th className="p-2">Customer Id</th>
+                      <th className="p-2 whitespace-nowrap">Customer Id</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -156,7 +142,7 @@ const AdminDashboard = () => {
           </Card>
 
           {/* Map */}
-          <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full md:h-100% lg:h-100% md:w-160 lg:w-full">
+          <Card className="bg-white rounded-[20px] shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full md:h-100% lg:h-100% md:w-160 lg:w-full">
             <CardContent className="p-0 flex flex-col flex-1">
               {/* Header */}
               <div className="flex justify-between items-center px-5 pt-4 pb-2">
@@ -186,7 +172,7 @@ const AdminDashboard = () => {
         {/* Bottom Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           {/* Itinerary Details */}
-          <Card className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 w-full h-full">
+          <Card className="md:col-span-2 bg-white rounded-[20px] shadow-sm border border-gray-100 w-full h-full">
             <CardContent className="p-6 h-full">
               {/* Flex container for heading and arrow */}
               <div className="flex justify-between items-center mb-4">
@@ -200,9 +186,9 @@ const AdminDashboard = () => {
 
               {/* Table Container with overflow-x-scroll on mobile and tablet */}
               <div className="overflow-x-auto rounded-xl border border-gray-100">
-                <table className="w-full text-center font-inter ">
+                <table className="w-full text-center font-inter font-medium ">
                   <thead>
-                    <tr className="text-gray-600 border-b lg:text-[20px] md:text-[18px] text-[20px]">
+                    <tr className="text-[#382A59] border-b lg:text-[20px] md:text-[18px] text-[20px]">
                       <th className="p-2">Itinerary</th>
                       <th className="p-2">Name</th>
                       <th className="p-2">Phone</th>
@@ -230,7 +216,7 @@ const AdminDashboard = () => {
           </Card>
 
           {/* Best Destination */}
-          <Card className="bg-white rounded-2xl shadow-sm border border-gray-100 w-full md:w-[590px] lg:w-full h-full">
+          <Card className="bg-white rounded-[20px] shadow-sm border border-gray-100 w-full md:w-[590px] lg:w-full h-full">
             <CardContent className="p-5 h-full">
               <div className="flex justify-between items-center mb-3">
                 <p className="font-semibold text-black font-roboto-condensed lg:text-[28px] sm:text-[24px] text-[20px]">
