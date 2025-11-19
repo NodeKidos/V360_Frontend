@@ -84,7 +84,7 @@ const CustomerManagement = () => {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-white">
+    <div className="h-screen bg-white flex flex-col sm:flex-row">
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -94,14 +94,11 @@ const CustomerManagement = () => {
       />
 
       {/* MAIN CONTAINER */}
-    <div
-        className={`
-          flex-1 flex flex-col overflow-auto transition-all duration-300
-          ${!isMobile ? (collapsed ? "ml-2" : "ml-5") : "ml-0"}
-          ${isIPad ? "px-3 py-4" : "p-4 md:p-8"}
-        `}
-      >
-
+      <div
+  className={`flex-1 flex flex-col min-h-screen ${
+    isIPad ? "px-6 py-4 overflow-hidden" : "p-4 md:p-3"
+  }`}
+>
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
         {/* TITLE */}
@@ -238,7 +235,7 @@ const CustomerManagement = () => {
         <div className={`mb-6 ${isIPad ? "overflow-y-auto overflow-x-auto h-[40vh]" : "overflow-x-scroll lg:overflow-x-hidden"}`}>
           <table className="min-w-full bg-white shadow-sm rounded-lg">
             <thead>
-              <tr className="bg-gray-100 text-[#382A59] font-semibold text-[20px] md:text-[24px] lg:text-[26px] text-left lg:text-center">
+              <tr className="bg-gray-100 text-[#382A59] font-semibold text-[20px] md:text-[24px] lg:text-[24px] text-left lg:text-center">
                 <th className="px-3 py-3 whitespace-nowrap">Customer Id</th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-10 py-3">Email</th>
@@ -254,7 +251,7 @@ const CustomerManagement = () => {
 
             <tbody>
               {currentCustomers.map((c) => (
-                <tr key={c.id} className="border-b text-center text-[18px] md:text-[20px] lg:text-[24px]">
+                <tr key={c.id} className="border-b text-center text-[18px] md:text-[20px] lg:text-[20px]">
                   <td className="py-3">{c.id}</td>
 
                   <td className="py-3 flex items-center gap-1 lg:justify-center">
