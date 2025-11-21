@@ -97,14 +97,17 @@ const VehicleManagement = () => {
                             + Add Customer
                         </button>
                     </div>
-
+                    {/* FILTERS */}
                     <div className="mb-4">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            {/* LEFT: Title */}
                             <h4 className="font-poppins font-semibold text-black text-[16px] sm:text-[18px] lg:text-[20px]">
-                                View & manage Vehicle Details
+                                View & manage Customer Details
                             </h4>
-                            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-1 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
+
+                            {/* RIGHT: Filters */}
+                            <div className="flex items-center gap-2 sm:gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
                                     <option>Seat Count</option>
                                     <option>3</option>
                                     <option>5</option>
@@ -112,25 +115,28 @@ const VehicleManagement = () => {
                                     <option>9</option>
                                     <option>11</option>
                                 </select>
-                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-1 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
-                                    <option>Vehicle Type</option>
+
+                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
+                                    <option>V_Type</option>
                                     <option>Car</option>
                                     <option>Van</option>
                                     <option>SUV</option>
                                 </select>
-                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-1 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
+
+                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
                                     <option>Status</option>
                                     <option>Active</option>
                                     <option>In Service</option>
                                     <option>Need Repair</option>
                                 </select>
-                                <button className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 py-2 hover:bg-purple-50">
+                                <button className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50">
                                     <LuListFilter className="text-[18px]" />
                                 </button>
                             </div>
                         </div>
                     </div>
 
+                    {/* TABLE */}
                     <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200">
                         <table className="min-w-full bg-white">
                             <thead>
@@ -173,7 +179,7 @@ const VehicleManagement = () => {
                             </tbody>
                         </table>
                     </div>
-
+                    {/* PAGINATION */}
                     <div className="mt-4">
                         <Pagination
                             currentPage={page}
@@ -183,16 +189,18 @@ const VehicleManagement = () => {
                             onItemsPerPageChange={setItemsPerPage}
                         />
                     </div>
-
+                    {/* Delete Confirmation Overlay */}
                     {deleteConfirmationVisible && (
                         <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
                             <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-[450px] relative">
+                                {/* Close icon at the top-right */}
                                 <button
                                     className="absolute top-2 right-2 text-gray-500 text-2xl"
                                     onClick={cancelDelete}
                                 >
                                     &times;
                                 </button>
+                                {/* Image above confirmation message */}
                                 <div className="mb-4 flex justify-center">
                                     <img
                                         src={deleteicon}
@@ -203,6 +211,7 @@ const VehicleManagement = () => {
                                 <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
                                     Are you sure you want to delete this?
                                 </h3>
+                                {/* Buttons */}
                                 <div className="flex gap-3 md:gap-4 mt-4 md:mt-6 justify-center">
                                     <button
                                         className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"

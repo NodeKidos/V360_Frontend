@@ -105,7 +105,6 @@ const CustomerManagement = () => {
           </button>
         </div>
 
-
         {/* FILTERS */}
         <div className="mb-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -115,7 +114,7 @@ const CustomerManagement = () => {
             </h4>
 
             {/* RIGHT: Filters */}
-            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
               <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
                 <option>Country</option>
                 <option>Australia</option>
@@ -211,7 +210,7 @@ const CustomerManagement = () => {
             onItemsPerPageChange={setItemsPerPage}
           />
         </div>
-
+        
         {/* Delete Confirmation Overlay */}
         {deleteConfirmationVisible && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
