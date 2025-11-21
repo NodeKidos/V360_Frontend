@@ -9,6 +9,8 @@ import deleteicon from "../../../assets/delete.png"; // Import delete icon image
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
+import { CiSearch } from "react-icons/ci"; // Import search icon
+import { IoMdAdd } from "react-icons/io"; // Import add icon
 
 const CustomerManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function
@@ -24,15 +26,39 @@ const CustomerManagement = () => {
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(3);
-  const indexOfLastCustomer = page * itemsPerPage;
-  const indexOfFirstCustomer = indexOfLastCustomer - itemsPerPage;
-  const currentCustomers = customers.slice(indexOfFirstCustomer, indexOfLastCustomer);
-
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [genderFilter, setGenderFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  // Filter customers based on search query, gender, and status
+  const filteredCustomers = customers.filter((customer) => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = (
+      customer.id.toLowerCase().includes(searchLower) ||
+      customer.name.toLowerCase().includes(searchLower) ||
+      customer.email.toLowerCase().includes(searchLower) ||
+      customer.gender.toLowerCase().includes(searchLower) ||
+      customer.contact.toLowerCase().includes(searchLower) ||
+      customer.country.toLowerCase().includes(searchLower) ||
+      customer.passport.toLowerCase().includes(searchLower) ||
+      customer.age.toString().includes(searchLower) ||
+      customer.status.toLowerCase().includes(searchLower)
+    );
+
+    const matchesGender = genderFilter === "" || customer.gender === genderFilter;
+    const matchesStatus = statusFilter === "" || customer.status === statusFilter;
+
+    return matchesSearch && matchesGender && matchesStatus;
+  });
+
+  const indexOfLastCustomer = page * itemsPerPage;
+  const indexOfFirstCustomer = indexOfLastCustomer - itemsPerPage;
+  const currentCustomers = filteredCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
 
   useEffect(() => {
     const handleResize = () => {
@@ -43,6 +69,11 @@ const CustomerManagement = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Reset to page 1 when search query or filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, genderFilter, statusFilter]);
 
   // Navigate to EditCustomer page
   const handleEditClick = (customerId: string) => {
@@ -92,52 +123,78 @@ const CustomerManagement = () => {
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
         {/* TITLE */}
-        <div className="flex justify-between items-center mb-4 mt-4">
+        <div className="mb-4 mt-4">
           <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
             Customer Management
           </h2>
+        </div>
 
-          <button
-            className="bg-[#B749DB] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-xl text-[14px] md:text-[16px] cursor-pointer whitespace-nowrap"
-            onClick={handleAddCustomerClick}
-          >
-            + Add Customer
-          </button>
+        {/* SEARCH BAR */}
+        <div className="mb-6 relative">
+          <div className="relative">
+            <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
+            <input
+              type="text"
+              placeholder="Search here"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
+            />
+          </div>
+        </div>
+
+        {/* VIEW & MANAGE SECTION */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center">
+            {/* LEFT: Title */}
+            <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
+              View & manage Tour Details
+            </h4>
+
+            {/* RIGHT: Add button */}
+            <button
+              className="md:w-8 md:h-8 w-5 h-5 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
+              onClick={handleAddCustomerClick}
+            >
+              <IoMdAdd className="text-[20px]" />
+            </button>
+          </div>
         </div>
 
         {/* FILTERS */}
         <div className="mb-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            {/* LEFT: Title */}
-            <h4 className="font-poppins font-semibold text-black text-[16px] sm:text-[18px] lg:text-[20px]">
-              View & manage Customer Details
-            </h4>
+          <div className="flex items-center gap-2 justify-start">
+            <select
+              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+              value={genderFilter}
+              onChange={(e) => setGenderFilter(e.target.value)}
+            >
+              <option value="">Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
 
-            {/* RIGHT: Filters */}
-            <div className="flex items-center gap-2 sm:gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-              <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
-                <option>Country</option>
-                <option>Australia</option>
-                <option>Singapore</option>
-                <option>Canada</option>
-              </select>
+            <select
+              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="Unblock">Unblock</option>
+              <option value="Block">Block</option>
+            </select>
 
-              <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
-                <option>Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-
-              <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
-                <option>Status</option>
-                <option>Unblock</option>
-                <option>Block</option>
-              </select>
-
-              <button className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50">
-                <LuListFilter className="text-[18px]" />
-              </button>
-            </div>
+            <button
+              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50 cursor-pointer"
+              onClick={() => {
+                setGenderFilter("");
+                setStatusFilter("");
+                setSearchQuery("");
+              }}
+              title="Clear all filters"
+            >
+              <LuListFilter className="text-[18px]" />
+            </button>
           </div>
         </div>
 
@@ -145,51 +202,51 @@ const CustomerManagement = () => {
         <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{scrollbarWidth: "thin"}}>
           <table className="min-w-full bg-white">
             <thead>
-              <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-center font-poppins">
-                <th className="px-3 py-3 whitespace-nowrap">Customer Id</th>
-                <th className="px-3 py-3">Name</th>
-                <th className="px-3 py-3">Email</th>
-                <th className="px-3 py-3">Gender</th>
-                <th className="px-3 py-3">Contact</th>
-                <th className="px-3 py-3">Country</th>
-                <th className="px-3 py-3">Passport</th>
-                <th className="px-3 py-3">Age</th>
-                <th className="px-3 py-3">Status</th>
-                <th className="px-3 py-3">Actions</th>
+              <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
+                <th className="px-4 py-4 whitespace-nowrap">Customer Id</th>
+                <th className="px-4 py-4">C_Name</th>
+                <th className="px-4 py-4">Email</th>
+                <th className="px-4 py-4">Gender</th>
+                <th className="px-4 py-4">Contact</th>
+                <th className="px-4 py-4">Country</th>
+                <th className="px-4 py-4">Passport</th>
+                <th className="px-4 py-4">Age</th>
+                <th className="px-4 py-4">Status</th>
+                <th className="px-4 py-4 text-center">Actions</th>
               </tr>
             </thead>
 
             <tbody className="font-poppins">
               {currentCustomers.map((c) => (
-                <tr key={c.id} className="border-b border-gray-100 text-center text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
-                  <td className="py-3 px-2">{c.id}</td>
+                <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                  <td className="py-4 px-4 text-gray-600">{c.id}</td>
 
-                  <td className="py-3 px-2">
-                    <div className="flex items-center gap-2 justify-center">
-                      <img src="https://i.pravatar.cc/40" className="w-7 h-7 md:w-8 md:h-8 rounded-full" />
-                      <span className="font-medium">{c.name}</span>
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.name} />
+                      <span className="font-medium text-gray-800">{c.name}</span>
                     </div>
                   </td>
 
-                  <td className="px-2 py-3">{c.email}</td>
-                  <td className="px-2 py-3">{c.gender}</td>
-                  <td className="px-2 py-3 whitespace-nowrap">{c.contact}</td>
-                  <td className="px-2 py-3">{c.country}</td>
-                  <td className="px-2 py-3">{c.passport}</td>
-                  <td className="px-2 py-3">{c.age}</td>
+                  <td className="px-4 py-4 text-gray-600">{c.email}</td>
+                  <td className="px-4 py-4 text-gray-600">{c.gender}</td>
+                  <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.contact}</td>
+                  <td className="px-4 py-4 text-gray-600">{c.country}</td>
+                  <td className="px-4 py-4 text-gray-600">{c.passport}</td>
+                  <td className="px-4 py-4 text-gray-600">{c.age}</td>
 
-                  <td className={`px-2 py-3 font-medium ${c.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
+                  <td className={`px-4 py-4 font-medium ${c.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
                     {c.status}
                   </td>
 
-                  <td className="px-2 py-3">
-                    <div className="flex gap-2 justify-center">
+                  <td className="px-4 py-4">
+                    <div className="flex gap-3 justify-center">
                       <CiEdit
-                        className="text-[#B749DB] cursor-pointer text-[18px] md:text-[20px] hover:text-purple-700"
+                        className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
                         onClick={() => handleEditClick(c.id)}
                       />
                       <MdDeleteOutline
-                        className="text-[#B749DB] cursor-pointer text-[18px] md:text-[20px] hover:text-purple-700"
+                        className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
                         onClick={() => handleDeleteClick(c.id)}
                       />
                     </div>
@@ -204,7 +261,7 @@ const CustomerManagement = () => {
         <div className="mt-4">
           <Pagination
             currentPage={page}
-            totalItems={customers.length}
+            totalItems={filteredCustomers.length}
             itemsPerPage={itemsPerPage}
             onPageChange={setPage}
             onItemsPerPageChange={setItemsPerPage}
