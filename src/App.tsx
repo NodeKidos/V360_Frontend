@@ -17,6 +17,9 @@ import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import CustomerManagement from "./components/dashboard/User/UserView";
 import AddCustomer from "./components/dashboard/User/AddUser";
 import EditCustomer from "./components/dashboard/User/EditUser";
+import VehicleManagement from "./components/dashboard/Vehicle/VehicleView";
+import AddVehicle from "./components/dashboard/Vehicle/AddVehicle";
+import EditVehicle from "./components/dashboard/Vehicle/EditVehicle";
 
 
 export default function App() {
@@ -46,9 +49,11 @@ export default function App() {
        <Route path="/user/add" element={<AddCustomer />} />
        <Route path="/user/edit/:customerId" element={<EditCustomer />} />
 
+       <Route path="/vehicle" element={<VehicleManagement/>} />
+       <Route path="/vehicle/add" element={<AddVehicle />} />
+       <Route path="/vehicle/edit/:vehicleId" element={<EditVehicle/>} />
         {/* <Route path="/tour" element={<TourPage />} />
         <Route path="/hotel" element={<HotelPage />} />
-        <Route path="/vehicle" element={<VehiclePage />} />
         <Route path="/driver" element={<DriverPage />} />
         <Route path="/trip" element={<TripPage />} />
         <Route path="/reward" element={<RewardPage />} /> */}
