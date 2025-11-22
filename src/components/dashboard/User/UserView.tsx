@@ -34,6 +34,7 @@ const CustomerManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
 
   // Filter customers based on search query, gender, and status
   const filteredCustomers = customers.filter((customer) => {
@@ -50,10 +51,11 @@ const CustomerManagement = () => {
       customer.status.toLowerCase().includes(searchLower)
     );
 
+    const matchesCountry = countryFilter === "" || customer.country === countryFilter;
     const matchesGender = genderFilter === "" || customer.gender === genderFilter;
     const matchesStatus = statusFilter === "" || customer.status === statusFilter;
 
-    return matchesSearch && matchesGender && matchesStatus;
+    return matchesSearch && matchesGender && matchesStatus && matchesCountry;
   });
 
   const indexOfLastCustomer = page * itemsPerPage;
@@ -174,8 +176,8 @@ const CustomerManagement = () => {
             <div className="flex items-center gap-3">
               <select
                 className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
-                value={genderFilter}
-                onChange={(e) => setGenderFilter(e.target.value)}
+                value={countryFilter}
+                onChange={(e) => setCountryFilter(e.target.value)}
               >
                 <option value="">Country</option>
                 <option value="Male">Male</option>

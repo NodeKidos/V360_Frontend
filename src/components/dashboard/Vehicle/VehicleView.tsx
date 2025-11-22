@@ -26,9 +26,6 @@ const VehicleManagement = () => {
 
     const [page, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(3);
-    const indexOfLastVehicle = page * itemsPerPage;
-    const indexOfFirstVehicle = indexOfLastVehicle - itemsPerPage;
-    const currentVehicles = vehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
     const [searchQuery, setSearchQuery] = useState("");
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,6 +35,29 @@ const VehicleManagement = () => {
     const [SeatCountFilter, setSeatCountFilter] = useState("");
     const [V_TypeFilter, setV_TypeFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+
+    // Filter vehicle based on search query, V_Type,SeatCount, and status
+    const filteredVehicles = vehicles.filter((vehicle) => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = (
+      vehicle.id.toLowerCase().includes(searchLower) ||
+      vehicle.name.toLowerCase().includes(searchLower) ||
+      vehicle.type.toLowerCase().includes(searchLower) ||
+      vehicle.plate.toLowerCase().includes(searchLower) ||
+      vehicle.model.toLowerCase().includes(searchLower) ||
+      String(vehicle.seats).toLowerCase().includes(searchLower) ||
+      vehicle.driver.toLowerCase().includes(searchLower) ||
+      vehicle.status.toLowerCase().includes(searchLower)
+    );
+     const matchesSeatCount = SeatCountFilter === "" || String(vehicle.seats) === SeatCountFilter;    const matchesV_Type = V_TypeFilter === "" || vehicle.type === V_TypeFilter;
+    const matchesStatus = statusFilter === "" || vehicle.status === statusFilter;
+
+    return matchesSearch && matchesV_Type && matchesStatus && matchesSeatCount ;
+  });
+
+    const indexOfLastVehicle = page * itemsPerPage;
+    const indexOfFirstVehicle = indexOfLastVehicle - itemsPerPage;
+    const currentVehicles = filteredVehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
 
     useEffect(() => {
         const handleResize = () => {
@@ -295,7 +315,7 @@ const VehicleManagement = () => {
                             </tbody>
                         </table>
                     </div>
-
+                    
                     {/* PAGINATION */}
                     <div className="mt-4">
                         <Pagination
@@ -306,7 +326,6 @@ const VehicleManagement = () => {
                             onItemsPerPageChange={setItemsPerPage}
                         />
                     </div>
-                    
                     {/* Delete Confirmation Overlay */}
                     {deleteConfirmationVisible && (
                         <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
