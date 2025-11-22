@@ -16,11 +16,11 @@ const TourManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function
 
   const [tours, setTour] = useState([
-    { id: "TD001", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Completed" },
-    { id: "TD002", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Pending" },
-    { id: "TD003", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Completed" },
+    { id: "TD001", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 05, 2025", endDate: "July 08, 2025", status: "Completed" },
+    { id: "TD002", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 15, 2025", endDate: "July 18, 2025", status: "Pending" },
+    { id: "TD003", name: "Alice", tour: "Beach", destination: "Kandy", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Completed" },
     { id: "TD004", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Started" },
-    { id: "TD005", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Pending" },
+    { id: "TD005", name: "Alice", tour: "Beach", destination: "Kandy", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Pending" },
     { id: "TD006", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Completed" },
     { id: "TD007", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Started" },
     { id: "TD008", name: "Alice", tour: "Beach", destination: "Colombo", startDate: "July 25, 2025", endDate: "July 28, 2025", status: "Initiated" },
@@ -102,10 +102,10 @@ const TourManagement = () => {
     setDeleteConfirmationVisible(false); // Hide the overlay
   };
 
-  // Navigate to AddCustomer page
-  const handleAddCustomerClick = () => {
-    navigate("/user/add"); // Navigate to AddCustomer page
-  };
+//   // Navigate to AddCustomer page
+//   const handleAddCustomerClick = () => {
+//     navigate("/user/add"); // Navigate to AddCustomer page
+//   };
 
   return (
     <div className="h-screen bg-white flex overflow-hidden">
@@ -219,12 +219,12 @@ const TourManagement = () => {
               </h4>
 
               {/* RIGHT: Add button */}
-              <button
+              {/* <button
                 className="w-8 h-8 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
                 onClick={handleAddCustomerClick}
               >
                 <IoMdAdd className="text-[20px]" />
-              </button>
+              </button> */}
             </div>
 
             {/* FILTERS - Mobile */}
