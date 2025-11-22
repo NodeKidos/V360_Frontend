@@ -1,6 +1,7 @@
 // TopBar.tsx
 import { FiArrowUpRight, FiBell, FiMenu } from "react-icons/fi";
 import { IoSearch } from "react-icons/io5";
+import { CiSearch } from "react-icons/ci";
 import logo from "../assets/favicon.png"; // Your logo
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -8,11 +9,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 interface TopBarProps {
   isMobile: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  searchQuery?: string;
+  onSearchChange?: (value: string) => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen }) => {
+const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery = "", onSearchChange }) => {
   return (
-    <div className="flex justify-between items-center mb-6">
+    <div className="flex justify-between items-center mb-6 gap-2">
       {/* Mobile Menu + Logo */}
       {isMobile ? (
         <div className="flex items-center justify-between w-full">
@@ -36,11 +39,13 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen }) => {
         <>
           <div className="flex-1 flex justify-center">
             <div className="relative lg:w-[700px] sm:w-[500px]">
-              <IoSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B749DB] text-xl" />
+              <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
               <input
                 type="text"
-                placeholder="Search here..."
-                className="border px-12 py-2 w-full bg-[#B749DB]/10 rounded-full focus:ring-2 focus:ring-purple-400 placeholder:text-[#B749DB] text-center shadow-sm"
+                placeholder="Search here"
+                value={searchQuery}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
               />
             </div>
           </div>

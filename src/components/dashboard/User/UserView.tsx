@@ -120,17 +120,36 @@ const CustomerManagement = () => {
       {/* MAIN CONTAINER */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="p-4 md:p-6 lg:p-8">
-        <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
+        <TopBar
+          isMobile={isMobile}
+          setSidebarOpen={setSidebarOpen}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
-        {/* TITLE */}
-        <div className="mb-4 mt-4">
+        {/* TITLE - Desktop with Add button */}
+        <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
           <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+            Customer Management
+          </h2>
+          <button
+            className="bg-[#B749DB] text-white rounded-lg px-4 py-2 text-[14px] font-poppins flex items-center gap-2 hover:bg-[#9f37c9] cursor-pointer"
+            onClick={handleAddCustomerClick}
+          >
+            Add
+            <IoMdAdd className="text-[18px]" />
+          </button>
+        </div>
+
+        {/* TITLE - Mobile */}
+        <div className="mb-4 mt-4 md:hidden">
+          <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
             Customer Management
           </h2>
         </div>
 
-        {/* SEARCH BAR */}
-        <div className="mb-6 relative">
+        {/* SEARCH BAR - Mobile Only */}
+        <div className="mb-6 relative md:hidden">
           <div className="relative">
             <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
             <input
@@ -143,29 +162,82 @@ const CustomerManagement = () => {
           </div>
         </div>
 
-        {/* VIEW & MANAGE SECTION */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center">
+        {/* VIEW & MANAGE SECTION - Desktop */}
+        <div className="mb-6 hidden md:block">
+          <div className="flex justify-between items-center p-2">
             {/* LEFT: Title */}
             <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
+              View & manage vehicle Details
+            </h4>
+
+            {/* RIGHT: Filters */}
+            <div className="flex items-center gap-3">
+              <select
+                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                value={genderFilter}
+                onChange={(e) => setGenderFilter(e.target.value)}
+              >
+                <option value="">Country</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+
+              <select
+                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                value={genderFilter}
+                onChange={(e) => setGenderFilter(e.target.value)}
+              >
+                <option value="">Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+
+              <select
+                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="">Active</option>
+                <option value="Unblock">Unblock</option>
+                <option value="Block">Block</option>
+              </select>
+
+              <button
+                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 hover:bg-purple-50 cursor-pointer"
+                onClick={() => {
+                  setGenderFilter("");
+                  setStatusFilter("");
+                  setSearchQuery("");
+                }}
+                title="Clear all filters"
+              >
+                <LuListFilter className="text-[18px]" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* VIEW & MANAGE SECTION - Mobile */}
+        <div className="mb-6 md:hidden">
+          <div className="flex justify-between items-center mb-4">
+            {/* LEFT: Title */}
+            <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px]">
               View & manage Tour Details
             </h4>
 
             {/* RIGHT: Add button */}
             <button
-              className="md:w-8 md:h-8 w-5 h-5 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
+              className="w-8 h-8 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
               onClick={handleAddCustomerClick}
             >
               <IoMdAdd className="text-[20px]" />
             </button>
           </div>
-        </div>
 
-        {/* FILTERS */}
-        <div className="mb-4">
+          {/* FILTERS - Mobile */}
           <div className="flex items-center gap-2 justify-start">
             <select
-              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
               value={genderFilter}
               onChange={(e) => setGenderFilter(e.target.value)}
             >
@@ -175,7 +247,7 @@ const CustomerManagement = () => {
             </select>
 
             <select
-              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+              className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -198,48 +270,48 @@ const CustomerManagement = () => {
           </div>
         </div>
 
-        {/* TABLE */}
+        {/* TABLE - Both Desktop and Mobile (Horizontally Scrollable) */}
         <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{scrollbarWidth: "thin"}}>
           <table className="min-w-full bg-white">
             <thead>
               <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
                 <th className="px-4 py-4 whitespace-nowrap">Customer Id</th>
-                <th className="px-4 py-4">C_Name</th>
-                <th className="px-4 py-4">Email</th>
-                <th className="px-4 py-4">Gender</th>
-                <th className="px-4 py-4">Contact</th>
-                <th className="px-4 py-4">Country</th>
-                <th className="px-4 py-4">Passport</th>
-                <th className="px-4 py-4">Age</th>
-                <th className="px-4 py-4">Status</th>
-                <th className="px-4 py-4 text-center">Actions</th>
+                <th className="px-4 py-4 whitespace-nowrap">C_Name</th>
+                <th className="px-4 py-4 whitespace-nowrap">Email</th>
+                <th className="px-4 py-4 whitespace-nowrap">Gender</th>
+                <th className="px-4 py-4 whitespace-nowrap">Contact_No</th>
+                <th className="px-4 py-4 whitespace-nowrap">Country</th>
+                <th className="px-4 py-4 whitespace-nowrap">Passport_No</th>
+                <th className="px-4 py-4 whitespace-nowrap">Age</th>
+                <th className="px-4 py-4 whitespace-nowrap">Active</th>
+                <th className="px-4 py-4 text-center whitespace-nowrap"></th>
               </tr>
             </thead>
 
             <tbody className="font-poppins">
               {currentCustomers.map((c) => (
                 <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
-                  <td className="py-4 px-4 text-gray-600">{c.id}</td>
+                  <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td>
 
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.name} />
                       <span className="font-medium text-gray-800">{c.name}</span>
                     </div>
                   </td>
 
-                  <td className="px-4 py-4 text-gray-600">{c.email}</td>
-                  <td className="px-4 py-4 text-gray-600">{c.gender}</td>
+                  <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
+                  <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.gender}</td>
                   <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.contact}</td>
-                  <td className="px-4 py-4 text-gray-600">{c.country}</td>
-                  <td className="px-4 py-4 text-gray-600">{c.passport}</td>
-                  <td className="px-4 py-4 text-gray-600">{c.age}</td>
+                  <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.country}</td>
+                  <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.passport}</td>
+                  <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.age}</td>
 
-                  <td className={`px-4 py-4 font-medium ${c.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
+                  <td className={`px-4 py-4 font-medium whitespace-nowrap ${c.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
                     {c.status}
                   </td>
 
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex gap-3 justify-center">
                       <CiEdit
                         className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
