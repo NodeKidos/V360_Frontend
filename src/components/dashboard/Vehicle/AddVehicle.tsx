@@ -172,11 +172,11 @@ export default function AddVehicle() {
                             </div>
 
                             {/* ACTION BUTTONS */}
-                            <div className="flex flex-col sm:flex-row justify-end gap-3 md:gap-4 mt-6">
+                            <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => navigate("/vehicle")}
-                                    className="px-4 md:px-6 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
+                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                                 >
                                     Cancel
                                 </button>
