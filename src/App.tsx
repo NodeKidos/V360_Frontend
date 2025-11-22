@@ -20,6 +20,7 @@ import EditCustomer from "./components/dashboard/User/EditUser";
 import VehicleManagement from "./components/dashboard/Vehicle/VehicleView";
 import AddVehicle from "./components/dashboard/Vehicle/AddVehicle";
 import EditVehicle from "./components/dashboard/Vehicle/EditVehicle";
+import TourManagement from "./components/dashboard/Tour/TourView";
 
 
 export default function App() {
@@ -52,6 +53,9 @@ export default function App() {
        <Route path="/vehicle" element={<VehicleManagement/>} />
        <Route path="/vehicle/add" element={<AddVehicle />} />
        <Route path="/vehicle/edit/:vehicleId" element={<EditVehicle/>} />
+
+       <Route path="/tour" element={<TourManagement />} />
+       
         {/* <Route path="/tour" element={<TourPage />} />
         <Route path="/hotel" element={<HotelPage />} />
         <Route path="/driver" element={<DriverPage />} />
