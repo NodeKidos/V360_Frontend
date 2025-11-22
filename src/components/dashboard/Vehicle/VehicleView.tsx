@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CiEdit } from "react-icons/ci"; // Import the Edit icon
+import { CiEdit, CiSearch } from "react-icons/ci"; // Import the Edit icon
 import { MdDeleteOutline } from "react-icons/md"; // Import the Delete icon
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Sidebar from "../../AdminSidebar";
@@ -9,6 +9,7 @@ import deleteicon from "../../../assets/delete.png"; // Import delete icon image
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
+import { IoMdAdd } from "react-icons/io";
 
 const VehicleManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
@@ -28,12 +29,15 @@ const VehicleManagement = () => {
     const indexOfLastVehicle = page * itemsPerPage;
     const indexOfFirstVehicle = indexOfLastVehicle - itemsPerPage;
     const currentVehicles = vehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
-
+    const [searchQuery, setSearchQuery] = useState("");
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
     const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+    const [SeatCountFilter, setSeatCountFilter] = useState("");
+    const [V_TypeFilter, setV_TypeFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
 
     useEffect(() => {
         const handleResize = () => {
@@ -81,33 +85,63 @@ const VehicleManagement = () => {
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
             />
+            {/* MAIN CONTAINER */}
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <div className="p-4 md:p-6 lg:p-8">
-                    <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
-                    {/* TITLE */}
-                    <div className="flex justify-between items-center mb-4 mt-4">
+                    <TopBar
+                        isMobile={isMobile}
+                        setSidebarOpen={setSidebarOpen}
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                    />
+                    {/* TITLE - Desktop with Add button */}
+                    <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
                         <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
                             Vehicle Management
                         </h2>
-
                         <button
-                            className="bg-[#B749DB] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-xl text-[14px] md:text-[16px] cursor-pointer whitespace-nowrap"
+                            className="bg-[#B749DB] text-white rounded-lg px-4 py-2 text-[14px] font-poppins flex items-center gap-2 hover:bg-[#9f37c9] cursor-pointer"
                             onClick={handleAddVehicleClick}
                         >
-                            + Add Customer
+                            Add
+                            <IoMdAdd className="text-[18px]" />
                         </button>
                     </div>
-                    {/* FILTERS */}
-                    <div className="mb-4">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    {/* TITLE - Mobile */}
+                    <div className="mb-4 mt-4 md:hidden">
+                        <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
+                            Vehicle Management
+                        </h2>
+                    </div>
+                    {/* SEARCH BAR - Mobile Only */}
+                    <div className="mb-6 relative md:hidden">
+                        <div className="relative">
+                            <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
+                            <input
+                                type="text"
+                                placeholder="Search here"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
+                            />
+                        </div>
+                    </div>
+
+                    {/* VIEW & MANAGE SECTION - Desktop */}
+                    <div className="mb-6 hidden md:block">
+                        <div className="flex justify-between items-center p-2">
                             {/* LEFT: Title */}
-                            <h4 className="font-poppins font-semibold text-black text-[16px] sm:text-[18px] lg:text-[20px]">
-                                View & manage Customer Details
+                            <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
+                                View & manage vehicle Details
                             </h4>
 
                             {/* RIGHT: Filters */}
-                            <div className="flex items-center gap-2 sm:gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
+                            <div className="flex items-center gap-3">
+                                <select
+                                    className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                                    value={SeatCountFilter}
+                                    onChange={(e) => setSeatCountFilter(e.target.value)}
+                                >
                                     <option>Seat Count</option>
                                     <option>3</option>
                                     <option>5</option>
@@ -116,60 +150,142 @@ const VehicleManagement = () => {
                                     <option>11</option>
                                 </select>
 
-                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
-                                    <option>V_Type</option>
+                                <select
+                                    className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                                    value={V_TypeFilter}
+                                    onChange={(e) => setV_TypeFilter(e.target.value)}
+                                >                                    <option>V_Type</option>
                                     <option>Car</option>
                                     <option>Van</option>
                                     <option>SUV</option>
                                 </select>
 
-                                <select className="border border-[#B749DB] text-[#B749DB] rounded-lg px-2 sm:px-3 py-2 text-[12px] sm:text-[14px] font-poppins flex-1 sm:flex-none">
-                                    <option>Status</option>
+                                <select
+                                    className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                                    value={statusFilter}
+                                    onChange={(e) => setStatusFilter(e.target.value)}
+                                >                                    <option>Status</option>
                                     <option>Active</option>
                                     <option>In Service</option>
                                     <option>Need Repair</option>
                                 </select>
-                                <button className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50">
+                                <button
+                                    className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 hover:bg-purple-50 cursor-pointer"
+                                    onClick={() => {
+                                        setSeatCountFilter("");
+                                        setV_TypeFilter("");
+                                        setStatusFilter("");
+                                        setSearchQuery("");
+                                    }}
+                                    title="Clear all filters"
+                                >
                                     <LuListFilter className="text-[18px]" />
                                 </button>
                             </div>
                         </div>
                     </div>
+                    {/* VIEW & MANAGE SECTION - Mobile */}
+                    <div className="mb-6 md:hidden">
+                        <div className="flex justify-between items-center mb-4">
+                            {/* LEFT: Title */}
+                            <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px]">
+                                View & manage Tour Details
+                            </h4>
+
+                            {/* RIGHT: Add button */}
+                            <button
+                                className="w-8 h-8 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
+                                onClick={handleAddVehicleClick}
+                            >
+                                <IoMdAdd className="text-[20px]" />
+                            </button>
+                        </div>
+
+                        {/* FILTERS - Mobile */}
+                        <div className="flex items-center gap-2 justify-start">
+                            <select
+                                className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
+                                value={SeatCountFilter}
+                                onChange={(e) => setSeatCountFilter(e.target.value)}
+                            >
+                                <option>Seat Count</option>
+                                <option>3</option>
+                                <option>5</option>
+                                <option>7</option>
+                                <option>9</option>
+                                <option>11</option>
+                            </select>
+
+                            <select
+                                className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
+                                value={V_TypeFilter}
+                                onChange={(e) => setV_TypeFilter(e.target.value)}
+                            >                                    <option>V_Type</option>
+                                <option>Car</option>
+                                <option>Van</option>
+                                <option>SUV</option>
+                            </select>
+
+                            <select
+                                className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            >
+                                <option value="">Status</option>
+                                <option value="Unblock">Unblock</option>
+                                <option value="Block">Block</option>
+                            </select>
+
+                            <button
+                                className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50 cursor-pointer"
+                                onClick={() => {
+                                    setSeatCountFilter("");
+                                    setV_TypeFilter("");
+                                    setStatusFilter("");
+                                    setSearchQuery("");
+                                }}
+                                title="Clear all filters"
+                            >
+                                <LuListFilter className="text-[18px]" />
+                            </button>
+                        </div>
+                    </div>
 
                     {/* TABLE */}
-                    <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200">
+                    <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
                         <table className="min-w-full bg-white">
                             <thead>
                                 <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-center font-poppins">
                                     <th className="px-3 py-3 whitespace-nowrap">Vehicle Id</th>
-                                    <th className="px-3 py-3">V_Name</th>
-                                    <th className="px-3 py-3">V_Type</th>
-                                    <th className="px-3 py-3">V_No_Plate</th>
-                                    <th className="px-3 py-3">V_Model</th>
-                                    <th className="px-3 py-3">Seat_Count</th>
-                                    <th className="px-3 py-3">Assign Driver</th>
-                                    <th className="px-3 py-3">Active</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">V_Name</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">V_Type</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">V_No_Plate</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">V_Model</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">Seat_Count</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">Assign Driver</th>
+                                    <th className="px-3 py-3 whitespace-nowrap">Active</th>
                                 </tr>
                             </thead>
+
                             <tbody className="font-poppins">
                                 {currentVehicles.map((v) => (
                                     <tr key={v.id} className="border-b border-gray-100 text-center text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
-                                        <td className="py-3 px-2">{v.id}</td>
-                                        <td className="py-3 px-2">{v.name}</td>
-                                        <td className="px-2 py-3">{v.type}</td>
-                                        <td className="px-2 py-3">{v.plate}</td>
-                                        <td className="px-2 py-3">{v.model}</td>
-                                        <td className="px-2 py-3">{v.seats}</td>
-                                        <td className="px-2 py-3">{v.driver}</td>
-                                        <td className={`px-2 py-3 font-medium ${v.status === "Active" ? "text-green-600" : v.status === "In Service" ? "text-[#FF8D28]" : "text-red-600"}`}>{v.status}</td>
-                                        <td className="px-2 py-3">
-                                            <div className="flex gap-2 justify-center">
+                                        <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td>
+                                        <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
+                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.type}</td>
+                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>
+                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.model}</td>
+                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.seats}</td>
+                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.driver}</td>
+                                        <td className={`px-2 py-3 font-medium whitespace-nowrap ${v.status === "Active" ? "text-green-600" : v.status === "In Service" ? "text-[#FF8D28]" : "text-red-600"}`}>{v.status}</td>
+                                        <td className="px-4 py-4 whitespace-nowrap">
+                                            <div className="flex gap-3 justify-center">
                                                 <CiEdit
-                                                    className="text-[#B749DB] cursor-pointer text-[18px] md:text-[20px] hover:text-purple-700"
+                                                    className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
                                                     onClick={() => handleEditClick(v.id)}
                                                 />
                                                 <MdDeleteOutline
-                                                    className="text-[#B749DB] cursor-pointer text-[18px] md:text-[20px] hover:text-purple-700"
+                                                    className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
                                                     onClick={() => handleDeleteClick(v.id)}
                                                 />
                                             </div>
@@ -179,6 +295,7 @@ const VehicleManagement = () => {
                             </tbody>
                         </table>
                     </div>
+
                     {/* PAGINATION */}
                     <div className="mt-4">
                         <Pagination
@@ -189,6 +306,7 @@ const VehicleManagement = () => {
                             onItemsPerPageChange={setItemsPerPage}
                         />
                     </div>
+                    
                     {/* Delete Confirmation Overlay */}
                     {deleteConfirmationVisible && (
                         <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
