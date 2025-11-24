@@ -14,6 +14,7 @@ export default function EditHotel() {
     const { id } = useParams();
     const [hotelData, setHotelData] = useState({
         name: "",
+        type: "",
         image: "",
         location: "",
         contactNo: "",
@@ -22,20 +23,21 @@ export default function EditHotel() {
         rating: 0,
     });
 
- useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     useEffect(() => {
         // Fetch the hotel data based on the `id` (replace with actual API call)
         setHotelData({
             name: "Cinnamon Life Colombo",
+            type: "Luxury",
             image: "https://example.com/images/hotel_a.jpg",
             location: "Colombo",
             contactNo: "011 5678530",
@@ -55,20 +57,20 @@ export default function EditHotel() {
         });
 
         setTimeout(() => {
-          navigate("destination-hotel"); // Redirect to the hotel list page
+            navigate("destination-hotel"); // Redirect to the hotel list page
         }, 2000);
     };
 
     return (
-     <div className="h-screen bg-white flex overflow-hidden">
-        <Sidebar
-           collapsed={collapsed}
+        <div className="h-screen bg-white flex overflow-hidden">
+            <Sidebar
+                collapsed={collapsed}
                 setCollapsed={setCollapsed}
                 isMobile={isMobile}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
-            />    
-        {/* Main Section */}
+            />
+            {/* Main Section */}
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <div className="p-4 md:p-6 lg:p-8">
                     <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
@@ -104,6 +106,21 @@ export default function EditHotel() {
                                     onChange={(e) => setHotelData({ ...hotelData, name: e.target.value })}
                                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
                                 />
+                            </div>
+                            {/* Hotel Type */}
+                            <div>
+                                <label className="text-gray-700">Hotel Type</label>
+                                <select
+                                    value={hotelData.type}
+                                    onChange={(e) => setHotelData({ ...hotelData, name: e.target.value })}
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                >
+                                    <option value="">Select Hotel Type</option>
+                                    <option value="Luxury">Luxury</option>
+                                    <option value="Heritage">Heritage</option>
+                                    <option value="Standard">Standard</option>
+                                    <option value="Premium">Premium</option>
+                                </select>
                             </div>
 
                             {/* Hotel Image */}
