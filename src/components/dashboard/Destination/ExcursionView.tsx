@@ -5,7 +5,7 @@ import Pagination from "../../ui/Pagination";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import deleteicon from "../../../assets/delete.png"; // Import delete icon image
-import { ToastContainer,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 // Function to render stars based on rating
 const renderStars = (rating: number) => {
@@ -20,12 +20,12 @@ const renderStars = (rating: number) => {
     return stars.join(" ");
 };
 
-const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onAdd ,onEdit }: any) => {
+const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onAdd, onEdit }: any) => {
     const [excursionFilter, setExcursionFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
 
-     const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
+    const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
     const [selectedExcursionId, setSelectedExcursionId] = useState<string | null>(null);
 
     // Filter excursions based on search query and selected filter
@@ -50,14 +50,9 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
     const indexOfFirstExcursion = indexOfLastExcursion - itemsPerPage;
     const currentExcursions = filteredExcursions.slice(indexOfFirstExcursion, indexOfLastExcursion);
 
- // Navigate to EditCustomer page
-    // const handleEditClick = (excursionId: string) => {
-    //     navigate(`/excursion/edit/${excursionId}`); // Navigate to the EditCustomer page with the customerId
-    // };
-
     // Handle delete action
     const handleDeleteClick = (excursionId: string) => {
-        setSelectedExcursionId(excursionId); // Store the selected customer ID
+        setSelectedExcursionId(excursionId); // Store the selected excursion ID
         setDeleteConfirmationVisible(true); // Show confirmation overlay
     };
 
@@ -222,7 +217,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                                 <td className="px-2 py-3 r">{e.destinationId}</td>
                                 <td className="px-3 py-1">
                                     <div className="flex gap-2 justify-center">
-                                        <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(e.id)}/>
+                                        <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(e.id)} />
                                         <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(e.id)} />
                                     </div>
                                 </td>
@@ -243,52 +238,52 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                 />
             </div>
             {/* Delete Confirmation Overlay */}
-                    {deleteConfirmationVisible && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
-                            <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-[450px] relative">
-                                {/* Close icon at the top-right */}
-                                <button
-                                    className="absolute top-2 right-2 text-gray-500 text-2xl"
-                                    onClick={cancelDelete}
-                                >
-                                    &times;
-                                </button>
+            {deleteConfirmationVisible && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
+                    <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-[450px] relative">
+                        {/* Close icon at the top-right */}
+                        <button
+                            className="absolute top-2 right-2 text-gray-500 text-2xl"
+                            onClick={cancelDelete}
+                        >
+                            &times;
+                        </button>
 
-                                {/* Image above confirmation message */}
-                                <div className="mb-4 flex justify-center">
-                                    <img
-                                        src={deleteicon}
-                                        alt="Delete Confirmation"
-                                        className="w-full max-w-[300px] h-auto object-contain"
-                                    />
-                                </div>
-
-                                <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
-                                    Are you sure you want to delete this?
-                                </h3>
-
-                                {/* Buttons */}
-                                <div className="flex gap-3 md:gap-4 mt-4 md:mt-6 justify-center">
-                                    <button
-                                        className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"
-                                        onClick={cancelDelete}
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button
-                                        className="bg-[#B749DB] font-medium font-inter text-white px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#9f37c9] text-[14px] md:text-[16px]"
-                                        onClick={confirmDelete}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-
-                            </div>
+                        {/* Image above confirmation message */}
+                        <div className="mb-4 flex justify-center">
+                            <img
+                                src={deleteicon}
+                                alt="Delete Confirmation"
+                                className="w-full max-w-[300px] h-auto object-contain"
+                            />
                         </div>
-                    )}
-                    <ToastContainer />
+
+                        <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
+                            Are you sure you want to delete this?
+                        </h3>
+
+                        {/* Buttons */}
+                        <div className="flex gap-3 md:gap-4 mt-4 md:mt-6 justify-center">
+                            <button
+                                className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"
+                                onClick={cancelDelete}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                className="bg-[#B749DB] font-medium font-inter text-white px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#9f37c9] text-[14px] md:text-[16px]"
+                                onClick={confirmDelete}
+                            >
+                                Delete
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
+            )}
+            <ToastContainer />
+        </div>
 
     );
 };
