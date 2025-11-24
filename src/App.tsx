@@ -22,6 +22,13 @@ import AddVehicle from "./components/dashboard/Vehicle/AddVehicle";
 import EditVehicle from "./components/dashboard/Vehicle/EditVehicle";
 import TourManagement from "./components/dashboard/Tour/TourView";
 import EditTour from "./components/dashboard/Tour/EditTour";
+import AddDestination from "./components/dashboard/Destination/AddDestination";
+import DestinationHotelManagement from "./components/dashboard/Destination/DestinationView";
+import AddHotel from "./components/dashboard/Destination/AddHotel";
+import AddExcursion from "./components/dashboard/Destination/AddExcursion";
+import EditDestination from "./components/dashboard/Destination/EditDestination";
+import EditExcursion from "./components/dashboard/Destination/EditExcursion";
+import EditHotel from "./components/dashboard/Destination/EditHotel";
 
 
 export default function App() {
@@ -58,11 +65,13 @@ export default function App() {
        <Route path="/tour" element={<TourManagement />} />
        <Route path="/tour/edit/:tourId" element={<EditTour/>} />
 
-        {/* 
-        <Route path="/hotel" element={<HotelPage />} />
-        <Route path="/driver" element={<DriverPage />} />
-        <Route path="/trip" element={<TripPage />} />
-        <Route path="/reward" element={<RewardPage />} /> */}
+       <Route path="/destination-hotel" element={<DestinationHotelManagement/>} />
+       <Route path="/destination/add" element={<AddDestination />}/>
+       <Route path="/hotel/add" element={<AddHotel />} />
+       <Route path="/excursion/add" element={<AddExcursion />} /> 
+       <Route path="/destination/edit/:destinationrId" element={<EditDestination/>} />    
+       <Route path="/hotel/edit/:hotelId" element={<EditHotel/>} />
+       <Route path="/excursion/edit/:excursionId" element={<EditExcursion/>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />

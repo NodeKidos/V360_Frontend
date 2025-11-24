@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, isMobile, si
     { label: "Dashboard", icon: <TiThLargeOutline />, link: "/admin-dashboard" },
     { label: "User", icon: <FaUser />, link: "/user" },
     { label: "Tour", icon: <FaMapMarkedAlt />, link: "/tour" },
-    { label: "Hotel & Destination", icon: <FaHotel />, link: "/hotel" },
+    { label: "Hotel & Destination", icon: <FaHotel />, link: "/destination-hotel" },
     { label: "Vehicle", icon: <FaCarSide />, link: "/vehicle" },
     { label: "Driver", icon: <FaTruck />, link: "/driver" },
     { label: "Staff", icon: <FaUsers />, link: "/staff" },
