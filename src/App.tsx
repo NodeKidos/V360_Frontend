@@ -29,6 +29,7 @@ import AddExcursion from "./components/dashboard/Destination/AddExcursion";
 import EditDestination from "./components/dashboard/Destination/EditDestination";
 import EditExcursion from "./components/dashboard/Destination/EditExcursion";
 import EditHotel from "./components/dashboard/Destination/EditHotel";
+import ExDetails from "./components/dashboard/Destination/ExcursionDetails";
 
 
 export default function App() {
@@ -72,6 +73,8 @@ export default function App() {
        <Route path="/destination/edit/:destinationrId" element={<EditDestination/>} />    
        <Route path="/hotel/edit/:hotelId" element={<EditHotel/>} />
        <Route path="/excursion/edit/:excursionId" element={<EditExcursion/>} />
+        <Route path="/excursion/details/:excursionId" element={<ExDetails/>} />
+       
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />

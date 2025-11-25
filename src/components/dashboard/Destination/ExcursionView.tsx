@@ -6,6 +6,7 @@ import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import deleteicon from "../../../assets/delete.png"; // Import delete icon image
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 // Function to render stars based on rating
 const renderStars = (rating: number) => {
@@ -21,6 +22,12 @@ const renderStars = (rating: number) => {
 };
 
 const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onAdd, onEdit }: any) => {
+     const navigate = useNavigate(); // Use navigate from react-router-dom
+
+  // Function to navigate to Excursion Details page
+  const handleViewDetailsClick = (id: string) => {
+    navigate(`/excursion/details/${id}`); // Redirect to Excursion Details page
+  };
     const [excursionFilter, setExcursionFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
@@ -203,7 +210,9 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                     <tbody className="font-poppins">
                         {currentExcursions.map((e: any) => (
                             <tr key={e.id} className="border-b border-gray-100 text-center text-gray-600 text-[15px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
-                                <td className="py-3 px-2">{e.id}</td>
+                                 <td className="py-3 px-2" onClick={() => handleViewDetailsClick(e.id)}>
+                                    <span className="text-blue-500 cursor-pointer">{e.id}</span> {/* Make ID clickable */}
+                                </td>
                                 <td className="py-3 px-2 ">{e.name}</td>
                                 <td className="px-2 py-3">
                                     <img src={e.images} alt={e.name} className="w-16 h-16 object-cover"
