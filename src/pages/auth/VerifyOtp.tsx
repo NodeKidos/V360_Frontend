@@ -1,5 +1,5 @@
 
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";

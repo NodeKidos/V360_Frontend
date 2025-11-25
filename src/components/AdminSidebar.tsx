@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { TiThLargeOutline } from "react-icons/ti";
 import { BiTrip } from "react-icons/bi";
 import {
-  FiSettings,
   FiLogOut,
   FiX,
 } from "react-icons/fi";
@@ -19,7 +18,6 @@ import {
 } from "react-icons/fa";
 import logo from "../assets/favicon.png"; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { IoSettingsOutline } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 
 interface SidebarProps {

@@ -14,9 +14,12 @@ export default function EditDestination() {
     const { id } = useParams();
     const [destinationData, setDestinationData] = useState({
         name: "",
-        image: "",
+        location: "",
+        category: "",
         reviews: "",
     });
+    const [destinationImages, setDestinationImages] = useState<File[]>([]);
+    const [existingImages, setExistingImages] = useState<string[]>([]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -32,10 +35,25 @@ export default function EditDestination() {
         // Fetch the destination data based on the `id` (replace with actual API call)
         setDestinationData({
             name: "Sigiriya Rock Fortress",
-            image: "https://example.com/images/sigiriya.jpg",
+            location: "Matale",
+            category: "Historical / Cultural",
             reviews: "Great landmark with breathtaking views!",
         });
+        setExistingImages([
+            "https://example.com/images/sigiriya.jpg",
+            "https://example.com/images/sigiriya2.jpg"
+        ]);
     }, [id]);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setDestinationImages(Array.from(event.target.files));
+        }
+    };
+
+    const removeExistingImage = (index: number) => {
+        setExistingImages(existingImages.filter((_, i) => i !== index));
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,7 +65,7 @@ export default function EditDestination() {
         });
 
         setTimeout(() => {
-          navigate("destination-hotel"); // Redirect to the destination list page
+          navigate("/destination-hotel"); // Redirect to the destination list page
         }, 2000);
     };
 
@@ -95,42 +113,126 @@ export default function EditDestination() {
                                     type="text"
                                     value={destinationData.name}
                                     onChange={(e) => setDestinationData({ ...destinationData, name: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
-                            {/* Destination Image */}
+                            {/* Location */}
                             <div>
-                                <label className="text-gray-700">Destination Image</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
+                                <input
+                                    type="text"
+                                    value={destinationData.location}
+                                    onChange={(e) => setDestinationData({ ...destinationData, location: e.target.value })}
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                />
+                            </div>
+
+                            {/* Category */}
+                            <div>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
+                                <select
+                                    value={destinationData.category}
+                                    onChange={(e) => setDestinationData({ ...destinationData, category: e.target.value })}
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="Historical / Cultural">Historical / Cultural</option>
+                                    <option value="Beach / Nature">Beach / Nature</option>
+                                    <option value="Hiking / Spiritual">Hiking / Spiritual</option>
+                                    <option value="Historical / Heritage">Historical / Heritage</option>
+                                    <option value="Nature / Hiking">Nature / Hiking</option>
+                                    <option value="Heritage / City Tour">Heritage / City Tour</option>
+                                    <option value="Wildlife">Wildlife</option>
+                                    <option value="Adventure">Adventure</option>
+                                </select>
+                            </div>
+
+                            {/* Destination Images */}
+                            <div>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Images (Multiple)</label>
+
+                                {/* Existing Images */}
+                                {existingImages.length > 0 && (
+                                    <div className="mb-3">
+                                        <p className="text-sm text-gray-600 font-poppins mb-2">Current Images:</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                            {existingImages.map((img, index) => (
+                                                <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                                                    <img
+                                                        src={img}
+                                                        alt={`Existing ${index + 1}`}
+                                                        className="w-full h-20 object-cover rounded"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeExistingImage(index)}
+                                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <input
                                     type="file"
-                                    onChange={(e) => setDestinationData({ ...destinationData, image: e.target.files![0].name })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                    multiple
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
+
+                                {/* New Images Preview */}
+                                {destinationImages.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-600 font-poppins">{destinationImages.length} new image(s) selected</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                                            {destinationImages.map((file, index) => (
+                                                <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt={`Preview ${index + 1}`}
+                                                        className="w-full h-20 object-cover rounded"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setDestinationImages(destinationImages.filter((_, i) => i !== index))}
+                                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Reviews */}
                             <div>
-                                <label className="text-gray-700">Reviews</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Reviews</label>
                                 <textarea
                                     value={destinationData.reviews}
                                     onChange={(e) => setDestinationData({ ...destinationData, reviews: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex justify-end gap-4 mt-6">
+                            <div className="flex flex-col sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => navigate("/destination-hotel")}
-                                    className="px-8 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
+                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
+                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
                                 >
                                     Save
                                 </button>

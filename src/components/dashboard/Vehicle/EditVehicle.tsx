@@ -12,7 +12,16 @@ export default function EditVehicle() {
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [vehicleData, setVehicleData] = useState({
+  const [vehicleData, setVehicleData] = useState<{
+    vehicleName: string;
+    vehicleType: string;
+    vehicleNoPlate: string;
+    vehicleModel: string;
+    seatCount: string;
+    assignDriver: string;
+    status: string;
+    vehicleImage: File | null;
+  }>({
     vehicleName: "",
     vehicleType: "",
     vehicleNoPlate: "",
@@ -39,7 +48,7 @@ export default function EditVehicle() {
         vehicleType: "Car",
         vehicleNoPlate: "NP QL-9505",
         vehicleModel: "Toyota",
-        seatCount: 3,
+        seatCount: "3",
         assignDriver: "John",
         status: "Active",
         vehicleImage: null,
@@ -50,8 +59,10 @@ export default function EditVehicle() {
 
 }, [vehicleId]);
 
-  const handleImageChange = (event: { target: { files: any[]; }; }) => {
-    setVehicleData({ ...vehicleData, vehicleImage: event.target.files[0] });
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setVehicleData({ ...vehicleData, vehicleImage: event.target.files[0] });
+    }
   };
 
   const handleChange = (e: { target: { name: any; value: any; }; }) => {

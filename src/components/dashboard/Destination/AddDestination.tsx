@@ -14,7 +14,9 @@ export default function AddDestination() {
 
   // Track form data
   const [destinationName, setDestinationName] = useState("");
-  const [destinationImage, setDestinationImage] = useState<File | null>(null);
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [destinationImages, setDestinationImages] = useState<File[]>([]);
   const [reviews, setReviews] = useState("");
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function AddDestination() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setDestinationImage(event.target.files[0]);
+      setDestinationImages(Array.from(event.target.files));
     }
   };
 
@@ -37,14 +39,16 @@ export default function AddDestination() {
     e.preventDefault();
 
     // Validate form fields
-    if (!destinationName || !destinationImage || !reviews) {
+    if (!destinationName || !location || !category || destinationImages.length === 0 || !reviews) {
       toast.error("All fields are required!");
       return;
     }
 
     const newDestination = {
       destinationName,
-      destinationImage,
+      location,
+      category,
+      destinationImages,
       reviews,
     };
 
@@ -57,7 +61,7 @@ export default function AddDestination() {
     });
 
     // Navigate back to destination list page
-    navigate("/destination"); 
+    navigate("/destination-hotel"); 
   };
 
   return (
@@ -112,15 +116,71 @@ export default function AddDestination() {
                 />
               </div>
 
-              {/* Destination Image */}
+              {/* Location */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Image</label>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  placeholder="Enter location"
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                >
+                  <option value="">Select Category</option>
+                  <option value="Historical / Cultural">Historical / Cultural</option>
+                  <option value="Beach / Nature">Beach / Nature</option>
+                  <option value="Hiking / Spiritual">Hiking / Spiritual</option>
+                  <option value="Historical / Heritage">Historical / Heritage</option>
+                  <option value="Nature / Hiking">Nature / Hiking</option>
+                  <option value="Heritage / City Tour">Heritage / City Tour</option>
+                  <option value="Wildlife">Wildlife</option>
+                  <option value="Adventure">Adventure</option>
+                </select>
+              </div>
+
+              {/* Destination Images */}
+              <div>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Images (Multiple)</label>
                 <input
                   type="file"
                   onChange={handleFileChange}
                   accept="image/*"
+                  multiple
                   className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 />
+                {destinationImages.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 font-poppins">{destinationImages.length} image(s) selected</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                      {destinationImages.map((file, index) => (
+                        <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-20 object-cover rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setDestinationImages(destinationImages.filter((_, i) => i !== index))}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Reviews */}
@@ -138,7 +198,7 @@ export default function AddDestination() {
               <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                 <button
                   type="button"
-                  onClick={() => navigate("/destination")}
+                  onClick={() => navigate("/destination-hotel")}
                   className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                 >
                   Cancel

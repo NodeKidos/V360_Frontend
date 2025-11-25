@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../AdminSidebar"; // Assuming Sidebar component is reusable
 import TopBar from "../../Topbar"; // Assuming TopBar component is reusable
+import StarRating from "../../ui/StarRating";
 
 export default function AddExcursion() {
   const navigate = useNavigate();
@@ -20,7 +21,17 @@ export default function AddExcursion() {
   const [rating, setRating] = useState(0);
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
-  const [excursionImage, setExcursionImage] = useState<File | null>(null);
+  const [excursionImages, setExcursionImages] = useState<File[]>([]);
+
+  // Available destinations (this should come from API in real implementation)
+  const [availableDestinations] = useState([
+    { id: "D001", name: "Sigiriya Rock Fortress" },
+    { id: "D002", name: "Mirissa Beach" },
+    { id: "D003", name: "Adam's Peak" },
+    { id: "D004", name: "Polonnaruwa Ancient City" },
+    { id: "D005", name: "Horton Plains & World's End" },
+    { id: "D006", name: "Galle Dutch Fort Walk" },
+  ]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,7 +45,7 @@ export default function AddExcursion() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setExcursionImage(event.target.files[0]);
+      setExcursionImages(Array.from(event.target.files));
     }
   };
 
@@ -42,7 +53,7 @@ export default function AddExcursion() {
     e.preventDefault();
 
     // Validate form fields
-    if (!excursionName || !destinationId || !bestTime || !duration || !rating || !location || !category || !excursionImage) {
+    if (!excursionName || !destinationId || !bestTime || !duration || !rating || !location || !category || excursionImages.length === 0) {
       toast.error("All fields are required!");
       return;
     }
@@ -55,7 +66,7 @@ export default function AddExcursion() {
       rating,
       location,
       category,
-      excursionImage,
+      excursionImages,
     };
 
     // Handle the backend save or API call here (e.g., save to database)
@@ -67,7 +78,7 @@ export default function AddExcursion() {
     });
 
     // Navigate back to excursion list page
-    navigate("/excursion");
+    navigate("/destination-hotel");
   };
 
   return (
@@ -122,16 +133,21 @@ export default function AddExcursion() {
                 />
               </div>
 
-              {/* Destination ID */}
+              {/* Destination Selection */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination ID</label>
-                <input
-                  type="text"
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Select Destination</label>
+                <select
                   value={destinationId}
                   onChange={(e) => setDestinationId(e.target.value)}
                   className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter destination ID"
-                />
+                >
+                  <option value="">Select a destination</option>
+                  {availableDestinations.map((destination) => (
+                    <option key={destination.id} value={destination.id}>
+                      {destination.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Best Time */}
@@ -161,14 +177,13 @@ export default function AddExcursion() {
               {/* Rating */}
               <div>
                 <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Rating</label>
-                <input
-                  type="number"
-                  value={rating}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  min={1}
-                  max={5}
-                />
+                <div className="mt-2">
+                  <StarRating
+                    rating={rating}
+                    onRatingChange={setRating}
+                    maxStars={5}
+                  />
+                </div>
               </div>
 
               {/* Location */}
@@ -195,22 +210,46 @@ export default function AddExcursion() {
                 />
               </div>
 
-              {/* Excursion Image */}
+              {/* Excursion Images */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Excursion Image</label>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Excursion Images (Multiple)</label>
                 <input
                   type="file"
                   onChange={handleFileChange}
                   accept="image/*"
+                  multiple
                   className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 />
+                {excursionImages.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 font-poppins">{excursionImages.length} image(s) selected</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                      {excursionImages.map((file, index) => (
+                        <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-20 object-cover rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setExcursionImages(excursionImages.filter((_, i) => i !== index))}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                 <button
                   type="button"
-                  onClick={() => navigate("/excursion")}
+                  onClick={() => navigate("/destination-hotel")}
                   className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                 >
                   Cancel

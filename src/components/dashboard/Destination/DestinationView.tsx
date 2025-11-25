@@ -334,11 +334,13 @@ const DestinationHotelManagement = () => {
 
                     {/* Tabs Component */}
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-                        <TabsList className="ml-15 md:ml-45 lg:ml-120">
-                            <TabsTrigger value="destination">Destination</TabsTrigger>
-                            <TabsTrigger value="hotel">Hotel</TabsTrigger>
-                            <TabsTrigger value="excursion">Excursion</TabsTrigger>
-                        </TabsList>
+                        <div className="flex justify-center">
+                            <TabsList>
+                                <TabsTrigger value="destination">Destination</TabsTrigger>
+                                <TabsTrigger value="hotel">Hotel</TabsTrigger>
+                                <TabsTrigger value="excursion">Excursion</TabsTrigger>
+                            </TabsList>
+                        </div>
 
                         {/* VIEW & MANAGE SECTION - Desktop */}
                         <TabsContent value="destination">

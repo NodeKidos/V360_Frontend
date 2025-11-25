@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../AdminSidebar"; // Assuming Sidebar component is reusable
 import TopBar from "../../Topbar"; // Assuming TopBar component is reusable
+import StarRating from "../../ui/StarRating";
 
 export default function AddHotel() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function AddHotel() {
   const [location, setLocation] = useState("");
   const [reviews, setReviews] = useState("");
   const [starRating, setStarRating] = useState(1);
-  const [hotelImage, setHotelImage] = useState<File | null>(null);
+  const [hotelImages, setHotelImages] = useState<File[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,7 +34,7 @@ export default function AddHotel() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setHotelImage(event.target.files[0]);
+      setHotelImages(Array.from(event.target.files));
     }
   };
 
@@ -41,7 +42,7 @@ export default function AddHotel() {
     e.preventDefault();
 
     // Validate form fields
-    if (!hotelName || !hotelType || !contactNo || !location || !reviews || !hotelImage) {
+    if (!hotelName || !hotelType || !contactNo || !location || !reviews || hotelImages.length === 0) {
       toast.error("All fields are required!");
       return;
     }
@@ -53,7 +54,7 @@ export default function AddHotel() {
       location,
       reviews,
       starRating,
-      hotelImage,
+      hotelImages,
     };
 
     // Handle the backend save or API call here (e.g., save to database)
@@ -65,7 +66,7 @@ export default function AddHotel() {
     });
 
     // Navigate back to hotel list page
-    navigate("/hotel");
+    navigate("/destination-hotel");
   };
 
   return (
@@ -174,33 +175,55 @@ export default function AddHotel() {
               {/* Star Rating */}
               <div>
                 <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Star Rating</label>
-                <input
-                  type="number"
-                  value={starRating}
-                  onChange={(e) => setStarRating(Number(e.target.value))}
-                  min={1}
-                  max={5}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Rate the hotel (1-5)"
-                />
+                <div className="mt-2">
+                  <StarRating
+                    rating={starRating}
+                    onRatingChange={setStarRating}
+                    maxStars={5}
+                  />
+                </div>
               </div>
 
-              {/* Hotel Image */}
+              {/* Hotel Images */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Hotel Image</label>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Hotel Images (Multiple)</label>
                 <input
                   type="file"
                   onChange={handleFileChange}
                   accept="image/*"
+                  multiple
                   className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 />
+                {hotelImages.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 font-poppins">{hotelImages.length} image(s) selected</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                      {hotelImages.map((file, index) => (
+                        <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-20 object-cover rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setHotelImages(hotelImages.filter((_, i) => i !== index))}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                 <button
                   type="button"
-                  onClick={() => navigate("/hotel")}
+                  onClick={() => navigate("/destination-hotel")}
                   className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                 >
                   Cancel

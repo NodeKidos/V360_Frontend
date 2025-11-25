@@ -1,5 +1,3 @@
-import * as React from "react"
-
 export function Separator({
   className = "",
   orientation = "horizontal",

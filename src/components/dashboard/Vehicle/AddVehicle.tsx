@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../AdminSidebar";
-import { useState, useEffect, type SetStateAction } from "react";
+import { useState, useEffect } from "react";
 import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,7 +12,7 @@ export default function AddVehicle() {
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const [vehicleImage, setVehicleImage] = useState(null);
+    const [vehicleImage, setVehicleImage] = useState<File | null>(null);
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
@@ -23,8 +23,10 @@ export default function AddVehicle() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const handleImageChange = (event: { target: { files: SetStateAction<null>[]; }; }) => {
-        setVehicleImage(event.target.files[0]);
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            setVehicleImage(event.target.files[0]);
+        }
     };
 
     return (

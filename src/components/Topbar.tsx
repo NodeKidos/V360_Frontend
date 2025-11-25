@@ -1,6 +1,5 @@
 // TopBar.tsx
-import { FiArrowUpRight, FiBell, FiMenu } from "react-icons/fi";
-import { IoSearch } from "react-icons/io5";
+import { FiBell, FiMenu } from "react-icons/fi";
 import { CiSearch } from "react-icons/ci";
 import logo from "../assets/favicon.png"; // Your logo
 import { Button } from "./ui/button";

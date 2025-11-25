@@ -10,7 +10,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci"; // Import search icon
-import { IoMdAdd } from "react-icons/io"; // Import add icon
 
 const TourManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function

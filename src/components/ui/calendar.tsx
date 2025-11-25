@@ -193,7 +193,7 @@ function CalendarDayButton({
     <Button
       ref={ref}
       variant="ghost"
-      size="icon"
+      size="sm"
       data-day={formattedDate}
       data-selected-single={
         modifiers.selected &&

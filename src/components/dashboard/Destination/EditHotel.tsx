@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
+import StarRating from "../../ui/StarRating";
 
 export default function EditHotel() {
     const navigate = useNavigate();
@@ -15,13 +16,14 @@ export default function EditHotel() {
     const [hotelData, setHotelData] = useState({
         name: "",
         type: "",
-        image: "",
         location: "",
         contactNo: "",
         city: "",
         review: "",
         rating: 0,
     });
+    const [hotelImages, setHotelImages] = useState<File[]>([]);
+    const [existingImages, setExistingImages] = useState<string[]>([]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -38,14 +40,27 @@ export default function EditHotel() {
         setHotelData({
             name: "Cinnamon Life Colombo",
             type: "Luxury",
-            image: "https://example.com/images/hotel_a.jpg",
             location: "Colombo",
             contactNo: "011 5678530",
             city: "Colombo",
             review: "Excellent hotel",
             rating: 5,
         });
+        setExistingImages([
+            "https://example.com/images/hotel_a.jpg",
+            "https://example.com/images/hotel_a2.jpg"
+        ]);
     }, [id]);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setHotelImages(Array.from(event.target.files));
+        }
+    };
+
+    const removeExistingImage = (index: number) => {
+        setExistingImages(existingImages.filter((_, i) => i !== index));
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,7 +72,7 @@ export default function EditHotel() {
         });
 
         setTimeout(() => {
-            navigate("destination-hotel"); // Redirect to the hotel list page
+            navigate("/destination-hotel"); // Redirect to the hotel list page
         }, 2000);
     };
 
@@ -99,20 +114,20 @@ export default function EditHotel() {
                         <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>
                             {/* Hotel Name */}
                             <div>
-                                <label className="text-gray-700">Hotel Name</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Hotel Name</label>
                                 <input
                                     type="text"
                                     value={hotelData.name}
                                     onChange={(e) => setHotelData({ ...hotelData, name: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
                             {/* Hotel Type */}
                             <div>
-                                <label className="text-gray-700">Hotel Type</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Hotel Type</label>
                                 <select
                                     value={hotelData.type}
-                                    onChange={(e) => setHotelData({ ...hotelData, name: e.target.value })}
+                                    onChange={(e) => setHotelData({ ...hotelData, type: e.target.value })}
                                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 >
                                     <option value="">Select Hotel Type</option>
@@ -123,73 +138,125 @@ export default function EditHotel() {
                                 </select>
                             </div>
 
-                            {/* Hotel Image */}
+                            {/* Hotel Images */}
                             <div>
-                                <label className="text-gray-700">Hotel Image</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Hotel Images (Multiple)</label>
+
+                                {/* Existing Images */}
+                                {existingImages.length > 0 && (
+                                    <div className="mb-3">
+                                        <p className="text-sm text-gray-600 font-poppins mb-2">Current Images:</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                            {existingImages.map((img, index) => (
+                                                <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                                                    <img
+                                                        src={img}
+                                                        alt={`Existing ${index + 1}`}
+                                                        className="w-full h-20 object-cover rounded"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeExistingImage(index)}
+                                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <input
                                     type="file"
-                                    onChange={(e) => setHotelData({ ...hotelData, image: e.target.files![0].name })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                    multiple
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
+
+                                {/* New Images Preview */}
+                                {hotelImages.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-600 font-poppins">{hotelImages.length} new image(s) selected</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                                            {hotelImages.map((file, index) => (
+                                                <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt={`Preview ${index + 1}`}
+                                                        className="w-full h-20 object-cover rounded"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setHotelImages(hotelImages.filter((_, i) => i !== index))}
+                                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Location */}
                             <div>
-                                <label className="text-gray-700">Location</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
                                 <input
                                     type="text"
                                     value={hotelData.location}
                                     onChange={(e) => setHotelData({ ...hotelData, location: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
                             {/* Contact Number */}
                             <div>
-                                <label className="text-gray-700">Contact No</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No</label>
                                 <input
                                     type="text"
                                     value={hotelData.contactNo}
                                     onChange={(e) => setHotelData({ ...hotelData, contactNo: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
                             {/* Review */}
                             <div>
-                                <label className="text-gray-700">Review</label>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Review</label>
                                 <textarea
                                     value={hotelData.review}
                                     onChange={(e) => setHotelData({ ...hotelData, review: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
+                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
                             {/* Rating */}
                             <div>
-                                <label className="text-gray-700">Rating</label>
-                                <input
-                                    type="number"
-                                    value={hotelData.rating}
-                                    onChange={(e) => setHotelData({ ...hotelData, rating: Number(e.target.value) })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 py-2"
-                                    max={5}
-                                    min={1}
-                                />
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Rating</label>
+                                <div className="mt-2">
+                                    <StarRating
+                                        rating={hotelData.rating}
+                                        onRatingChange={(rating) => setHotelData({ ...hotelData, rating })}
+                                        maxStars={5}
+                                    />
+                                </div>
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex justify-end gap-4 mt-6">
+                            <div className="flex flex-col sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                                 <button
                                     type="button"
                                     onClick={() => navigate("/destination-hotel")}
-                                    className="px-6 py-2 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50"
+                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600"
+                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
                                 >
                                     Save
                                 </button>
