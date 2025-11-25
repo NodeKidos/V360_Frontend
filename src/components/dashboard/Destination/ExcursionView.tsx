@@ -187,7 +187,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
             <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
                 <table className="min-w-full bg-white">
                     <thead>
-                        <tr className="bg-gray-50 text-[#382A59] text-center font-semibold text-[16px] sm:text-[16px] md:text-[16px] font-poppins">
+                        <tr className="bg-gray-50 text-[#382A59] text-center font-semibold text-[15px] sm:text-[16px] md:text-[16px] font-poppins">
                             <th className="px-3 py-4 whitespace-nowrap">Excursion Id</th>
                             <th className="px-3 py-3 whitespace-nowrap ">Excursion Points</th>
                             <th className="px-3 py-3">Image</th>
@@ -202,11 +202,11 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                     </thead>
                     <tbody className="font-poppins">
                         {currentExcursions.map((e: any) => (
-                            <tr key={e.id} className="border-b border-gray-100 text-center text-[15px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                            <tr key={e.id} className="border-b border-gray-100 text-center text-gray-600 text-[15px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
                                 <td className="py-3 px-2">{e.id}</td>
                                 <td className="py-3 px-2 ">{e.name}</td>
                                 <td className="px-2 py-3">
-                                    <img src={e.images} alt={e.name} className="w-12 h-12 object-cover"
+                                    <img src={e.images} alt={e.name} className="w-16 h-16 object-cover"
                                     />
                                 </td>
                                 <td className="px-2 py-3 whitespace-nowrap">{e.location}</td>
@@ -215,7 +215,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                                 <td className="px-2 py-3">{e.duration}</td>
                                 <td className="px-2 py-3 whitespace-nowrap">{renderStars(e.rating)}</td>
                                 <td className="px-2 py-3 r">{e.destinationId}</td>
-                                <td className="px-3 py-1">
+                                <td className="px-2 py-1">
                                     <div className="flex gap-2 justify-center">
                                         <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(e.id)} />
                                         <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(e.id)} />

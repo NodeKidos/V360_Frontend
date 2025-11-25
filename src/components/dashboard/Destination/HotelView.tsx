@@ -197,26 +197,26 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
       <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
         <table className="min-w-full bg-white">
           <thead>
-            <tr className="bg-gray-50 text-[#382A59] font-semibold text-[16px] sm:text-[14px] md:text-[15px] text-center font-poppins">
-              <th className="px-3 py-2 whitespace-nowrap">Hotel Id</th>
-              <th className="px-3 py-1 whitespace-nowrap">Hotel Name</th>
-              <th className="px-3 py-1 whitespace-nowrap">Hotel Type</th>
-              <th className="px-3 py-1 whitespace-nowrap">Image</th>
-              <th className="px-3 py-1 whitespace-nowrap">Star Rating</th>
-              <th className="px-3 py-1 whitespace-nowrap">Contact No</th>
-              <th className="px-3 py-1 whitespace-nowrap">Location</th>
-              <th className="px-3 py-1 whitespace-nowrap">Review</th>
-              <th className="px-3 py-1 text-center whitespace-nowrap"></th>
+            <tr className="bg-gray-50 text-[#382A59] font-semibold text-[15px] sm:text-[16px] md:text-[16px] text-center font-poppins">
+              <th className="px-3 py-4 whitespace-nowrap">Hotel Id</th>
+              <th className="px-3 py-3 whitespace-nowrap">Hotel Name</th>
+              <th className="px-3 py-3 whitespace-nowrap">Hotel Type</th>
+              <th className="px-3 py-3 whitespace-nowrap">Image</th>
+              <th className="px-3 py-3 whitespace-nowrap">Star Rating</th>
+              <th className="px-3 py-3 whitespace-nowrap">Contact No</th>
+              <th className="px-3 py-3 whitespace-nowrap">Location</th>
+              <th className="px-3 py-3 whitespace-nowrap">Review</th>
+              <th className="px-3 py-3 text-center whitespace-nowrap"></th>
             </tr>
           </thead>
           <tbody className="font-poppins">
             {currentHotels.map((h: any) => (
-              <tr key={h.id} className="border-b border-gray-100 text-center text-[15px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
+              <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[15px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
                 <td className="py-1 px-3">{h.id}</td>
                 <td className="py-1 px-3 ">{h.name}</td>
                 <td className="px-3 py-1 ">{h.hotelType}</td>
                 <td className="px-5 py-1 text-center">
-                  <img src={h.images} alt={h.name} className="w-15 h-15 object-cover " />
+                  <img src={h.images} alt={h.name} className="w-16 h-16 object-cover " />
                 </td>
                 <td className="px-3 py-1 text-center">{renderStars(Number(h.starRating))}</td>
                 <td className="px-3 py-1 text-center">{h.contactNo}</td>
