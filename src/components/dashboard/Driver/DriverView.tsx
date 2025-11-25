@@ -298,7 +298,7 @@ const DriverManagement = () => {
                     <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
                         <table className="min-w-full bg-white">
                             <thead>
-                                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
+                                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-center font-poppins">
                                     <th className="px-4 py-4 whitespace-nowrap">Driver Id</th>
                                     <th className="px-4 py-4 whitespace-nowrap">Driver Name</th>
                                     <th className="px-4 py-4 whitespace-nowrap">Contact No</th>
@@ -314,7 +314,7 @@ const DriverManagement = () => {
 
                             <tbody className="font-poppins">
                                 {currentDrivers.map((d) => (
-                                    <tr key={d.id} className="border-b border-gray-100 text-left text-[16px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
+                                    <tr key={d.id} className="border-b border-gray-100 text-center text-[16px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
                                         <td className="py-4 px-4 text-gray-600">{d.id}</td>
                                         <td className="py-4 px-4 text-gray-600">{d.name}</td>
                                         <td className="py-4 px-4 text-gray-600">{d.contact}</td>
