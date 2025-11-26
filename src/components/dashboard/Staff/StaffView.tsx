@@ -228,7 +228,7 @@ const StaffManagement = () => {
           <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
             <table className="min-w-full bg-white">
               <thead>
-                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-center font-poppins">
+                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
                   <th className="px-4 py-4 whitespace-nowrap">Staff Id</th>
                   <th className="px-4 py-4 whitespace-nowrap">Staff Name</th>
                   <th className="px-4 py-4 whitespace-nowrap">Email</th>
@@ -243,7 +243,7 @@ const StaffManagement = () => {
               </thead>
               <tbody className="font-poppins">
                 {currentStaff.map((s) => (
-                  <tr key={s.id} className="border-b border-gray-100 text-center text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                  <tr key={s.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
                     <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s.id}</td>
                     <td className="py-4 px-4 whitespace-nowrap">{s.name}</td>
                     <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.email}</td>
@@ -259,7 +259,7 @@ const StaffManagement = () => {
                       <div className="flex gap-3 justify-center">
                         <CiEdit
                           className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                          onClick={() => navigate(`/staff/edit/${s.id}`)}
+                          onClick={() =>handleEditClick(s.id)}
                         />
                         <MdDeleteOutline
                           className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
