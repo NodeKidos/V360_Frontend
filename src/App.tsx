@@ -34,6 +34,9 @@ import DriverManagement from "./components/dashboard/Driver/DriverView";
 import AddDriver from "./components/dashboard/Driver/AddDriver";
 import EditDriver from "./components/dashboard/Driver/EditDriver";
 import DriverInfo from "./components/dashboard/Driver/DriverInfo";
+import StaffManagement from "./components/dashboard/Staff/StaffView";
+import EditStaff from "./components/dashboard/Staff/EditStaff";
+import AddStaff from "./components/dashboard/Staff/AddStaff";
 
 
 export default function App() {
@@ -84,6 +87,10 @@ export default function App() {
        <Route path="/driver/edit/:driverId" element={<EditDriver/>} />
        <Route path="//driver/:driverId" element={<DriverInfo />} />
 
+      <Route path="/staff" element={<StaffManagement />} />
+             <Route path="/staff/add" element={<AddStaff/>}/>
+
+             <Route path="/staff/edit/:staffId" element={<EditStaff/>}/>
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
