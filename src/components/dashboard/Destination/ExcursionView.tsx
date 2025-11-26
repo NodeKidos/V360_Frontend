@@ -194,7 +194,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
             <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
                 <table className="min-w-full bg-white">
                     <thead>
-                        <tr className="bg-gray-50 text-[#382A59] text-center font-semibold text-[15px] sm:text-[16px] md:text-[16px] font-poppins">
+                        <tr className="bg-gray-50 text-[#382A59] text-center font-semibold text-[14px] sm:text-[15px] md:text-[16px] font-poppins">
                             <th className="px-3 py-4 whitespace-nowrap">Excursion Id</th>
                             <th className="px-3 py-3 whitespace-nowrap ">Excursion Points</th>
                             <th className="px-3 py-3">Image</th>
@@ -209,7 +209,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                     </thead>
                     <tbody className="font-poppins">
                         {currentExcursions.map((e: any) => (
-                            <tr key={e.id} className="border-b border-gray-100 text-center text-gray-600 text-[15px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
+                            <tr key={e.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
                                  <td className="py-3 px-2" onClick={() => handleViewDetailsClick(e.id)}>
                                     <span className="text-blue-500 cursor-pointer">{e.id}</span> {/* Make ID clickable */}
                                 </td>

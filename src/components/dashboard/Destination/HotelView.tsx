@@ -197,7 +197,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
       <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
         <table className="min-w-full bg-white">
           <thead>
-            <tr className="bg-gray-50 text-[#382A59] font-semibold text-[15px] sm:text-[16px] md:text-[16px] text-center font-poppins">
+            <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
               <th className="px-3 py-4 whitespace-nowrap">Hotel Id</th>
               <th className="px-3 py-3 whitespace-nowrap">Hotel Name</th>
               <th className="px-3 py-3 whitespace-nowrap">Hotel Type</th>
@@ -211,7 +211,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
           </thead>
           <tbody className="font-poppins">
             {currentHotels.map((h: any) => (
-              <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[15px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
+              <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
                 <td className="py-1 px-3">{h.id}</td>
                 <td className="py-1 px-3 ">{h.name}</td>
                 <td className="px-3 py-1 ">{h.hotelType}</td>
