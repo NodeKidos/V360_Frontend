@@ -109,6 +109,9 @@ const DriverManagement = () => {
     const handleAddDriverClick = () => {
         navigate("/driver/add"); // Navigate to Add Driver page
     };
+    const handleViewClick = (driverId: string) => {
+        navigate(`/driver/${driverId}`);  // Navigates to the DriverInfo page with driverId in the URL
+    };
 
     return (
         <div className="h-screen bg-white flex overflow-hidden">
@@ -315,8 +318,15 @@ const DriverManagement = () => {
                             <tbody className="font-poppins">
                                 {currentDrivers.map((d) => (
                                     <tr key={d.id} className="border-b border-gray-100 text-center text-[16px] sm:text-[16px] md:text-[16px] hover:bg-gray-50">
-                                        <td className="py-4 px-4 text-gray-600">{d.id}</td>
-                                        <td className="py-4 px-4 text-gray-600">{d.name}</td>
+                                        <td className="py-3 px-2" onClick={() => handleViewClick(d.id)}>
+                                            <span className="text-blue-500 cursor-pointer">{d.id}</span> {/* Make ID clickable */}
+                                        </td>                                       
+                                         <td className="py-4 px-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
+                                                <span className="font-medium text-gray-800">{d.name}</span>
+                                            </div>
+                                        </td>
                                         <td className="py-4 px-4 text-gray-600">{d.contact}</td>
                                         <td className="py-4 px-4 text-gray-600">{d.email}</td>
                                         <td className="py-4 px-4 text-gray-600">{d.bod}</td>

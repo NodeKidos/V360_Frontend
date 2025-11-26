@@ -33,6 +33,7 @@ import ExDetails from "./components/dashboard/Destination/ExcursionDetails";
 import DriverManagement from "./components/dashboard/Driver/DriverView";
 import AddDriver from "./components/dashboard/Driver/AddDriver";
 import EditDriver from "./components/dashboard/Driver/EditDriver";
+import DriverInfo from "./components/dashboard/Driver/DriverInfo";
 
 
 export default function App() {
@@ -81,6 +82,7 @@ export default function App() {
        <Route path="/driver" element={<DriverManagement />} />
        <Route path="/driver/add" element={<AddDriver/>}/>
        <Route path="/driver/edit/:driverId" element={<EditDriver/>} />
+       <Route path="//driver/:driverId" element={<DriverInfo />} />
 
 
       {/* Fallback */}
