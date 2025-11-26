@@ -268,7 +268,7 @@ const TourManagement = () => {
           <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
             <table className="min-w-full bg-white">
               <thead>
-                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
+                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-left font-poppins">
                   <th className="px-4 py-4 whitespace-nowrap">Tour Id</th>
                   <th className="px-4 py-4 whitespace-nowrap">C_Name</th>
                   <th className="px-4 py-4 whitespace-nowrap">Tour</th>
@@ -282,7 +282,7 @@ const TourManagement = () => {
 
               <tbody className="font-poppins text-center">
                 {currentTour.map((t) => (
-                  <tr key={t.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                  <tr key={t.id} className="border-b border-gray-100 text-left text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
                     <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{t.id}</td>
 
                     <td className="py-4 px-4 whitespace-nowrap">
