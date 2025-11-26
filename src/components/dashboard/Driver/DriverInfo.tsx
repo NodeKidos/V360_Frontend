@@ -2,7 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
-import { MdArrowBack } from "react-icons/md";  // Import back icon
+import { MdArrowBack } from "react-icons/md";  // Back icon
+import { CiEdit } from "react-icons/ci"; // Edit icon
 
 export default function DriverInfo() {
     const { id } = useParams();  // Get driver ID from URL
@@ -45,15 +46,22 @@ export default function DriverInfo() {
                             <MdArrowBack className="mr-2 text-[18px]" />  {/* Back icon */}
                             Back
                         </button>
-
                     </div>
 
                     {/* Driver Information Section */}
                     {driver && (
                         <div className="mt-4 md:mt-6 bg-white rounded-2xl p-6 border border-purple-100 shadow-sm">
-                            <h2 className="text-[18px] md:text-[20px] lg:text-[24px] font-semibold text-[#B749DB] font-poppins">
-                                Driver Information
-                            </h2>
+                            {/* Title Section with Edit Icon */}
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-[18px] md:text-[20px] lg:text-[24px] font-semibold text-[#B749DB] font-poppins">
+                                    Driver Information
+                                </h2>
+                                <CiEdit 
+                                    className="text-[#B749DB] cursor-pointer text-[24px] hover:text-[#9f37c9]" 
+                                    onClick={() => navigate(`/driver/edit/${id}`)}  // Navigate to Edit Driver page
+                                />
+                            </div>
+                            
                             <p className="text-gray-500 text-[12px] md:text-[14px] mt-1 font-poppins">
                                 Details about {driver.name}
                             </p>
