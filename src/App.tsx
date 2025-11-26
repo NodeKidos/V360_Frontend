@@ -31,6 +31,8 @@ import EditExcursion from "./components/dashboard/Destination/EditExcursion";
 import EditHotel from "./components/dashboard/Destination/EditHotel";
 import ExDetails from "./components/dashboard/Destination/ExcursionDetails";
 import DriverManagement from "./components/dashboard/Driver/DriverView";
+import AddDriver from "./components/dashboard/Driver/AddDriver";
+import EditDriver from "./components/dashboard/Driver/EditDriver";
 
 
 export default function App() {
@@ -77,6 +79,8 @@ export default function App() {
        <Route path="/excursion/details/:excursionId" element={<ExDetails/>} />
        
        <Route path="/driver" element={<DriverManagement />} />
+       <Route path="/driver/add" element={<AddDriver/>}/>
+       <Route path="/driver/edit/:driverId" element={<EditDriver/>} />
 
 
       {/* Fallback */}
