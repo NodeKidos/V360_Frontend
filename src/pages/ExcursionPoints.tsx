@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/home/Navbar";
 import { useItineraryStore } from "../store/useItineraryStore";
 import { toast } from "react-toastify";
-import { excursionService, Excursion } from "../services/excursion.service";
+import { excursionService, type Excursion } from "../services/excursion.service";
 
 import defaultImage from "../assets/packages/family.png";
 import { IoSearch } from "react-icons/io5";
@@ -27,20 +27,16 @@ export default function ExcursionPoints() {
   const [step, setStep] = useState<number>(3);
 
   const [excursions, setExcursions] = useState<Excursion[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Fetch excursions from API
   useEffect(() => {
     const fetchExcursions = async () => {
       try {
-        setLoading(true);
         const data = await excursionService.getAll();
         setExcursions(data);
       } catch (error) {
         console.error("Failed to fetch excursions:", error);
         toast.error("Failed to load excursions");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -157,7 +153,7 @@ export default function ExcursionPoints() {
 
             {steps.map((title, i) => (
               <motion.div
-                key={place.id}
+                key={i}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{
                   opacity: 1,
@@ -220,7 +216,7 @@ export default function ExcursionPoints() {
 
           {/* ===== Excursion Cards ===== */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {excursions.map((place, i) => {
+            {excursions.map((place) => {
               const isSelected = isExcursionSelected(place.id);
               const imageUrl = place.images && place.images.length > 0 ? place.images[0] : defaultImage;
               return (
