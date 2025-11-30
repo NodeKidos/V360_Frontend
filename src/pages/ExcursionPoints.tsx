@@ -1,17 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/home/Navbar";
 import { useItineraryStore } from "../store/useItineraryStore";
 import { toast } from "react-toastify";
+import { excursionService, Excursion } from "../services/excursion.service";
 
-import lotus from "../assets/packages/family.png";
-import temple from "../assets/packages/family.png";
-import fort from "../assets/packages/family.png";
-import lighthouse from "../assets/packages/family.png";
-import sigiriya from "../assets/packages/family.png";
-import bridge from "../assets/packages/family.png";
+import defaultImage from "../assets/packages/family.png";
 import { IoSearch } from "react-icons/io5";
 
 export default function ExcursionPoints() {
@@ -30,14 +26,26 @@ export default function ExcursionPoints() {
 
   const [step, setStep] = useState<number>(3);
 
-  const excursions = [
-    { id: "1", name: "Lotus Tower", img: lotus },
-    { id: "2", name: "Temple of Tooth", img: temple },
-    { id: "3", name: "Dutch Fort", img: fort },
-    { id: "4", name: "Light House", img: lighthouse },
-    { id: "5", name: "Sigiriya", img: sigiriya },
-    { id: "6", name: "Nine Arch Bridge", img: bridge },
-  ];
+  const [excursions, setExcursions] = useState<Excursion[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch excursions from API
+  useEffect(() => {
+    const fetchExcursions = async () => {
+      try {
+        setLoading(true);
+        const data = await excursionService.getAll();
+        setExcursions(data);
+      } catch (error) {
+        console.error("Failed to fetch excursions:", error);
+        toast.error("Failed to load excursions");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExcursions();
+  }, []);
 
   // ✅ Function to handle sidebar navigation
   const handleStepClick = (clickedStep: number) => {
@@ -47,19 +55,19 @@ export default function ExcursionPoints() {
     navigate("/itinerary", { state: { destination, step: clickedStep } });
   };
 
-  const isExcursionSelected = (excursionName: string) => {
+  const isExcursionSelected = (excursionId: string) => {
     const selectedExcursions = formData.selectedDestinations?.[destination]?.excursions || [];
-    return selectedExcursions.some((ex: any) => ex.name === excursionName);
+    return selectedExcursions.some((ex: any) => ex.id === excursionId);
   };
 
-  const handleSelectExcursion = (excursion: any) => {
+  const handleSelectExcursion = (excursion: Excursion) => {
     const currentSelection = formData.selectedDestinations?.[destination] || {};
     const currentExcursions = currentSelection.excursions || [];
-    const isSelected = isExcursionSelected(excursion.name);
+    const isSelected = isExcursionSelected(excursion.id);
 
     let updatedExcursions;
     if (isSelected) {
-      updatedExcursions = currentExcursions.filter((ex: any) => ex.name !== excursion.name);
+      updatedExcursions = currentExcursions.filter((ex: any) => ex.id !== excursion.id);
       toast.info(`${excursion.name} removed from ${destination}`);
     } else {
       updatedExcursions = [...currentExcursions, excursion];
@@ -149,7 +157,7 @@ export default function ExcursionPoints() {
 
             {steps.map((title, i) => (
               <motion.div
-                key={i}
+                key={place.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{
                   opacity: 1,
@@ -213,16 +221,17 @@ export default function ExcursionPoints() {
           {/* ===== Excursion Cards ===== */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {excursions.map((place, i) => {
-              const isSelected = isExcursionSelected(place.name);
+              const isSelected = isExcursionSelected(place.id);
+              const imageUrl = place.images && place.images.length > 0 ? place.images[0] : defaultImage;
               return (
                 <motion.div
-                  key={i}
+                  key={place.id}
                   whileHover={{ scale: 1.02 }}
                   className={`relative rounded-xl overflow-hidden shadow-md cursor-pointer group border-2 transition-all ${isSelected ? "border-green-500 ring-2 ring-green-500" : "border-transparent"}`}
                 >
                   <div onClick={() => handleSelectExcursion(place)}>
                     <img
-                      src={place.img}
+                      src={imageUrl}
                       alt={place.name}
                       className="w-full h-[220px] object-cover"
                     />
@@ -284,3 +293,4 @@ export default function ExcursionPoints() {
     </div>
   );
 }
+

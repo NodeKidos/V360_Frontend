@@ -122,9 +122,14 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       type: ItineraryType.CUSTOM,
       startDate: formData.arrivalDate,
       endDate: formData.departureDate,
-      numberOfParticipants: parseInt(formData.groupComposition || "1"),
+      numberOfParticipants: parseInt(formData.groupComposition || "1") || 1,
       specialRequests: formData.specialRequirements,
-      days
+      days,
+      // Add guest fields if provided (for unauthenticated users)
+      guestEmail: formData.email,
+      guestFirstName: formData.firstName,
+      guestLastName: formData.lastName,
+      guestPhone: formData.contactNumber,
     };
 
     return dto;
@@ -133,6 +138,7 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
   createItinerary: async (data) => {
     set({ isLoading: true, error: null });
     try {
+      console.log('📤 Sending itinerary data:', JSON.stringify(data, null, 2));
       const itinerary = await itineraryService.create(data);
       set((state) => ({
         itineraries: [...state.itineraries, itinerary],
@@ -142,6 +148,8 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       toast.success("Itinerary created successfully!");
       return itinerary;
     } catch (error: any) {
+      console.error('❌ Itinerary creation error:', error);
+      console.error('❌ Error response:', error.response?.data);
       const errorMessage = error.response?.data?.message || "Failed to create itinerary";
       set({ error: errorMessage, isLoading: false });
       toast.error(errorMessage);

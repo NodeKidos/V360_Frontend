@@ -127,17 +127,18 @@ export default function Itinerary() {
 
     // Handle form submission
     const handleSubmit = async () => {
-        // Check if user is logged in
-        if (!isLoggedIn) {
-            toast.error("Please login to create an itinerary");
-            navigate("/login");
-            return;
-        }
-
         // Validate required fields
         if (!formData.arrivalDate || !formData.departureDate) {
             toast.error("Please provide arrival and departure dates");
             return;
+        }
+
+        // If not logged in, validate guest fields
+        if (!isLoggedIn) {
+            if (!formData.email || !formData.firstName || !formData.lastName) {
+                toast.error("Please provide your email, first name, and last name");
+                return;
+            }
         }
 
         // Convert and create itinerary

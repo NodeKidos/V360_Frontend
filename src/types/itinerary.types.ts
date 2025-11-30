@@ -74,6 +74,11 @@ export type CreateItineraryDto = {
   specialRequests?: string;
   packageId?: string;
   days?: CreateItineraryDayDto[];
+  // Guest user fields (for unauthenticated itinerary creation)
+  guestEmail?: string;
+  guestFirstName?: string;
+  guestLastName?: string;
+  guestPhone?: string;
 }
 
 export type UpdateItineraryDto = Partial<CreateItineraryDto>;
