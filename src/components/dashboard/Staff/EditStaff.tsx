@@ -53,7 +53,7 @@ export default function EditStaff() {
   }, [id]);
 
   // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setStaffData((prevData) => ({ ...prevData, [name]: value }));
   };

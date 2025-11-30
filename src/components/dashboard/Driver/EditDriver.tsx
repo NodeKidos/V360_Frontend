@@ -6,6 +6,20 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+interface DriverData {
+    name: string;
+    email: string;
+    contact: string;
+    licenseNo: string;
+    assignedVehicle: string;
+    status: string;
+    profileImage: File | null;
+    licenseInfo: File | null;
+    joinDate: string;
+    dob: string;
+    bloodGroup: string;
+}
+
 export default function EditDriver() {
     const navigate = useNavigate(); // Initialize the navigation function
     const [collapsed, setCollapsed] = useState(false);
@@ -13,7 +27,7 @@ export default function EditDriver() {
     const [isMobile, setIsMobile] = useState(false);
 
     // Initialize driver data
-    const [driverData, setDriverData] = useState({
+    const [driverData, setDriverData] = useState<DriverData>({
         name: "",
         email: "",
         contact: "",
@@ -23,6 +37,8 @@ export default function EditDriver() {
         profileImage: null,
         licenseInfo: null,
         joinDate: "",
+        dob: "",
+        bloodGroup: "",
     });
 
     useEffect(() => {
@@ -47,6 +63,8 @@ export default function EditDriver() {
             profileImage: null,
             licenseInfo: null,
             joinDate: "2023-03-15",
+            dob: "1990-01-01",
+            bloodGroup: "O+",
         });
     }, []);
 
@@ -62,9 +80,9 @@ export default function EditDriver() {
         }, 2000);
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-        if (e.target.files) {
-            setDriverData((prevData) => ({ ...prevData, [field]: e.target.files[0] }));
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof DriverData) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setDriverData((prevData) => ({ ...prevData, [field]: e.target.files![0] }));
         }
     };
 

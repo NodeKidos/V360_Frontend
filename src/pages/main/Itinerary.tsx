@@ -7,6 +7,9 @@ import { FaHotel } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import type { Variants } from "framer-motion";
 import SriLankaMap from "../../components/home/SriLankaMap";
+import { useItineraryStore } from "../../store/useItineraryStore";
+import { useAuthStore } from "../../store/useAuthStore";
+import { toast } from "react-toastify";
 
 import colombo from "../../assets/packages/family.png";
 import kandy from "../../assets/packages/family.png";
@@ -24,83 +27,19 @@ interface Destination {
     img: string;
 }
 
-interface CustomPaginationProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
-}
-
-interface Field {
-    label: string;
-    type: string;
-    placeholder?: string;
-    options?: string[];
-}
-
-const CustomPagination: React.FC<CustomPaginationProps> = ({
-    currentPage,
-    totalPages,
-    onPageChange,
-}) => {
-    const baseClass =
-        "h-9 w-9 flex justify-center items-center rounded-md text-sm transition-colors duration-200 font-medium";
-    const linkClass =
-        "hover:bg-[#B749DB]/10 text-gray-700 hover:text-[#B749DB] cursor-pointer";
-    const activeClass = "bg-[#B749DB] text-white pointer-events-none";
-    const disabledClass = "text-gray-400 pointer-events-none opacity-50";
-
-    if (totalPages <= 1) return null;
-
-    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-    return (
-        <nav className="flex justify-center mt-10" aria-label="Pagination">
-            <ul className="flex items-center space-x-2">
-                <li>
-                    <button
-                        onClick={() => onPageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className={`${baseClass} px-3 ${currentPage === 1 ? disabledClass : linkClass
-                            }`}
-                    >
-                        <FaArrowLeft className="w-3 h-3 mr-1" />
-                        Prev
-                    </button>
-                </li>
-                {pages.map((page) => (
-                    <li key={page}>
-                        <button
-                            onClick={() => onPageChange(page)}
-                            className={`${baseClass} ${page === currentPage ? activeClass : linkClass
-                                }`}
-                        >
-                            {page}
-                        </button>
-                    </li>
-                ))}
-                <li>
-                    <button
-                        onClick={() => onPageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className={`${baseClass} px-3 ${currentPage === totalPages ? disabledClass : linkClass
-                            }`}
-                    >
-                        Next
-                        <FaArrowRight className="w-3 h-3 ml-1" />
-                    </button>
-                </li>
-            </ul>
-        </nav>
-    );
-};
+import CustomPagination from "../../components/CustomPagination";
 
 export default function Itinerary() {
     const [step, setStep] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rating, setRating] = useState<number>(0);
-    const [selectedCities, setSelectedCities] = useState<string[]>([]);
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Auth and Itinerary stores
+    const { isLoggedIn } = useAuthStore();
+    const { updateFormData, createItinerary, convertFormDataToDto, isLoading, formData } = useItineraryStore();
+
+    // Form state - Removed localFormData to use global store
 
     const destinationsPerPage = 6;
     const destinations: Destination[] = [
@@ -138,30 +77,80 @@ export default function Itinerary() {
     );
 
     const handlePageChange = (p: number) => setCurrentPage(p);
-    const nextStep = () => setStep((s) => Math.min(4, s + 1));
+
+    // Validation for steps
+    const validateStep = (currentStep: number) => {
+        if (currentStep === 1) {
+            if (!formData.firstName) return "First Name is required";
+            if (!formData.lastName) return "Last Name is required";
+            if (!formData.email) return "Email is required";
+            if (!formData.contactNumber) return "Contact Number is required";
+            if (!formData.arrivalDate) return "Arrival Date is required";
+            if (!formData.departureDate) return "Departure Date is required";
+        }
+        return null;
+    };
+
+    const nextStep = () => {
+        const error = validateStep(step);
+        if (error) {
+            toast.error(error);
+            return;
+        }
+        setStep((s) => Math.min(4, s + 1));
+    };
+
     const prevStep = () => setStep((s) => Math.max(1, s - 1));
 
     // Handle city selection/deselection
     const handleCityClick = (cityName: string) => {
-        setSelectedCities((prev) =>
-            prev.includes(cityName)
-                ? prev.filter((c) => c !== cityName)
-                : [...prev, cityName]
-        );
+        const currentCities = formData.selectedCities || [];
+        const newCities = currentCities.includes(cityName)
+            ? currentCities.filter((c) => c !== cityName)
+            : [...currentCities, cityName];
+
+        updateFormData({ selectedCities: newCities });
     };
 
     const fadeAnim: Variants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+        },
+    };
 
     useEffect(() => {
         if (location.state?.step) setStep(location.state.step);
     }, [location.state]);
+
+    // Handle form submission
+    const handleSubmit = async () => {
+        // Check if user is logged in
+        if (!isLoggedIn) {
+            toast.error("Please login to create an itinerary");
+            navigate("/login");
+            return;
+        }
+
+        // Validate required fields
+        if (!formData.arrivalDate || !formData.departureDate) {
+            toast.error("Please provide arrival and departure dates");
+            return;
+        }
+
+        // Convert and create itinerary
+        const dto = convertFormDataToDto();
+        if (!dto) return;
+
+        const itinerary = await createItinerary(dto);
+
+        if (itinerary) {
+            toast.success("Itinerary created successfully!");
+            navigate("/my-itineraries");
+        }
+    };
 
     return (
         <div className="bg-white min-h-screen font-roboto relative overflow-hidden">
@@ -281,22 +270,25 @@ export default function Itinerary() {
                                 {/* Grid Layout for Inputs */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 ">
                                     {[
-                                        { label: "First Name", type: "text", placeholder: "Enter first name" },
-                                        { label: "Last Name", type: "text", placeholder: "Enter last name" },
-                                        { label: "Date of Birth", type: "date" },
-                                        { label: "Gender", type: "select", options: ["Choose gender", "Male", "Female"] },
-                                        { label: "Email Address", type: "email", placeholder: "Enter email" },
-                                        { label: "Group Composition", type: "select", options: ["Select group type", "Solo", "Couple", "Family"] },
-                                        { label: "Contact Number", type: "text", placeholder: "Enter contact number" },
-                                        { label: "Country of Residence", type: "select", options: ["Select country", "Sri Lanka", "India", "UK", "USA", "Australia"] },
-                                        { label: "Arrival Date", type: "date" },
-                                        { label: "Departure Date", type: "date" },
-                                    ].map((field: Field, i: number) => (
+                                        { label: "First Name", type: "text", placeholder: "Enter first name", fieldName: "firstName" },
+                                        { label: "Last Name", type: "text", placeholder: "Enter last name", fieldName: "lastName" },
+                                        { label: "Date of Birth", type: "date", fieldName: "dateOfBirth" },
+                                        { label: "Gender", type: "select", options: ["Choose gender", "Male", "Female"], fieldName: "gender" },
+                                        { label: "Email Address", type: "email", placeholder: "Enter email", fieldName: "email" },
+                                        { label: "Group Composition", type: "select", options: ["Select group type", "Solo", "Couple", "Family"], fieldName: "groupComposition" },
+                                        { label: "Contact Number", type: "text", placeholder: "Enter contact number", fieldName: "contactNumber" },
+                                        { label: "Country of Residence", type: "select", options: ["Select country", "Sri Lanka", "India", "UK", "USA", "Australia"], fieldName: "country" },
+                                        { label: "Arrival Date", type: "date", fieldName: "arrivalDate" },
+                                        { label: "Departure Date", type: "date", fieldName: "departureDate" },
+                                    ].map((field: any, i: number) => (
                                         <div key={i} className="flex flex-col gap-2">
                                             <label className="text-[16px] sm:text-[18px] font-medium ">{field.label}</label>
                                             {field.type === "select" ? (
-                                                <select className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 border border-[#E5D4EF]  rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
-                                                    {field.options?.map((opt, idx) => (
+                                                <select
+                                                    value={(formData as any)[field.fieldName || ""] || ""}
+                                                    onChange={(e) => updateFormData({ [field.fieldName || ""]: e.target.value })}
+                                                    className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 border border-[#E5D4EF]  rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
+                                                    {field.options?.map((opt: string, idx: number) => (
                                                         <option key={idx}>{opt}</option>
                                                     ))}
                                                 </select>
@@ -304,6 +296,8 @@ export default function Itinerary() {
                                                 <input
                                                     type={field.type}
                                                     placeholder={field.placeholder}
+                                                    value={(formData as any)[field.fieldName || ""] || ""}
+                                                    onChange={(e) => updateFormData({ [field.fieldName || ""]: e.target.value })}
                                                     className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                                 />
                                             )}
@@ -333,6 +327,8 @@ export default function Itinerary() {
                                     <label className="text-[20px] font-medium">Dietary Preferences</label>
                                     <input
                                         placeholder="Enter dietary preferences"
+                                        value={formData.dietaryPreferences || ""}
+                                        onChange={(e) => updateFormData({ dietaryPreferences: e.target.value })}
                                         className="w-full max-w-full sm:max-w-[400px] md:max-w-[570px] lg:max-w-[820px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                     />
                                 </div>
@@ -344,8 +340,8 @@ export default function Itinerary() {
                                         {[1, 2, 3, 4, 5].map((i) => (
                                             <span
                                                 key={i}
-                                                onClick={() => setRating(i)}
-                                                className={`cursor-pointer  transition ${i <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                                                onClick={() => updateFormData({ hotelCategory: i })}
+                                                className={`cursor-pointer  transition ${i <= (formData.hotelCategory || 0) ? "text-yellow-400" : "text-gray-300"}`}
                                             >
                                                 ★
                                             </span>
@@ -359,7 +355,18 @@ export default function Itinerary() {
                                     <div className="flex gap-6 ">
                                         {["Double", "Single", "Triple"].map((label) => (
                                             <label key={label} className="flex items-center gap-2 text-[18px] md:text-[20px] lg:text-[20px] cursor-pointer">
-                                                <input type="checkbox" className="w-6 h-6 accent-[#B749DB]" />
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-6 h-6 accent-[#B749DB]"
+                                                    checked={formData.roomCategory?.includes(label) || false}
+                                                    onChange={(e) => {
+                                                        const current = formData.roomCategory || [];
+                                                        const updated = e.target.checked
+                                                            ? [...current, label]
+                                                            : current.filter(c => c !== label);
+                                                        updateFormData({ roomCategory: updated });
+                                                    }}
+                                                />
                                                 {label}
                                             </label>
                                         ))}
@@ -372,7 +379,18 @@ export default function Itinerary() {
                                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                                         {["Standard", "Semi-Luxury", "Super Luxury"].map((label) => (
                                             <label key={label} className="flex items-center gap-2 text-[18px] sm:text-[20px] cursor-pointer">
-                                                <input type="checkbox" className="w-6 h-6 accent-[#B749DB]" />
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-6 h-6 accent-[#B749DB]"
+                                                    checked={formData.vehicleType?.includes(label) || false}
+                                                    onChange={(e) => {
+                                                        const current = formData.vehicleType || [];
+                                                        const updated = e.target.checked
+                                                            ? [...current, label]
+                                                            : current.filter(c => c !== label);
+                                                        updateFormData({ vehicleType: updated });
+                                                    }}
+                                                />
                                                 {label}
                                             </label>
                                         ))}
@@ -382,7 +400,9 @@ export default function Itinerary() {
                                 <div className="flex flex-col gap-3">
                                     <label className="text-[20px] font-medium">Any Medical condition or special needs</label>
                                     <input
-                                        placeholder="Enter dietary preferences"
+                                        placeholder="Enter medical conditions"
+                                        value={formData.medicalConditions || ""}
+                                        onChange={(e) => updateFormData({ medicalConditions: e.target.value })}
                                         className="w-full max-w-full sm:max-w-[400px] md:max-w-[570px] lg:max-w-[820px] h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition placeholder-gray-500"
                                     />
                                 </div>
@@ -397,16 +417,16 @@ export default function Itinerary() {
                                         Select Destinations on Map
                                     </h3>
                                     <SriLankaMap
-                                        selectedCities={selectedCities}
+                                        selectedCities={formData.selectedCities || []}
                                         onCityClick={handleCityClick}
                                     />
-                                    {selectedCities.length > 0 && (
+                                    {(formData.selectedCities || []).length > 0 && (
                                         <div className="mt-4 p-4 bg-[#F8EDFC] rounded-lg border border-[#E5D4EF]">
                                             <p className="text-[16px] font-medium text-[#5B247A] mb-2">
-                                                Selected Cities ({selectedCities.length}):
+                                                Selected Cities ({(formData.selectedCities || []).length}):
                                             </p>
                                             <div className="flex flex-wrap gap-2">
-                                                {selectedCities.map((city) => (
+                                                {(formData.selectedCities || []).map((city) => (
                                                     <span
                                                         key={city}
                                                         className="px-3 py-1 bg-[#B749DB] text-white rounded-full text-sm font-medium flex items-center gap-2"
@@ -434,22 +454,20 @@ export default function Itinerary() {
                                     {/* Image Grid */}
                                     <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {currentDestinations.map((d, i) => {
-                                            const isSelected = selectedCities.includes(d.name);
+                                            const isSelected = (formData.selectedCities || []).includes(d.name);
                                             return (
                                                 <div
                                                     key={i}
-                                                    className={`relative rounded-xl overflow-hidden shadow-md group cursor-pointer transition-all ${
-                                                        isSelected ? "ring-4 ring-[#B749DB]" : ""
-                                                    }`}
+                                                    className={`relative rounded-xl overflow-hidden shadow-md group cursor-pointer transition-all ${isSelected ? "ring-4 ring-[#B749DB]" : ""
+                                                        }`}
                                                     onClick={() => handleCityClick(d.name)}
                                                 >
                                                     {/* Image */}
                                                     <img
                                                         src={d.img}
                                                         alt={d.name}
-                                                        className={`w-full h-[230px] object-cover transition-all ${
-                                                            isSelected ? "brightness-90" : ""
-                                                        }`}
+                                                        className={`w-full h-[230px] object-cover transition-all ${isSelected ? "brightness-90" : ""
+                                                            }`}
                                                     />
 
                                                     {/* Selection Badge */}
@@ -460,9 +478,8 @@ export default function Itinerary() {
                                                     )}
 
                                                     {/* Overlay with Text */}
-                                                    <div className={`absolute bottom-0 left-0 w-full py-3 px-4 ${
-                                                        isSelected ? "bg-[#B749DB]" : "bg-black/60"
-                                                    }`}>
+                                                    <div className={`absolute bottom-0 left-0 w-full py-3 px-4 ${isSelected ? "bg-[#B749DB]" : "bg-black/60"
+                                                        }`}>
                                                         <p className="text-white font-bold text-[18px]">{d.name}</p>
                                                     </div>
 
@@ -540,10 +557,21 @@ export default function Itinerary() {
                                 </button>
                             ) : (
                                 <button
-                                    onClick={() => alert("Submitted!")}
-                                    className="flex items-center gap-2 bg-[#B749DB] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#8B2BB9]"
+                                    onClick={handleSubmit}
+                                    disabled={isLoading}
+                                    className="flex items-center gap-2 bg-[#B749DB] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#8B2BB9] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Submit
+                                    {isLoading ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        "Submit"
+                                    )}
                                 </button>
                             )}
                         </div>

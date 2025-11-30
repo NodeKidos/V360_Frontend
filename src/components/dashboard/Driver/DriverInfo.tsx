@@ -5,10 +5,24 @@ import TopBar from "../../Topbar";
 import { MdArrowBack } from "react-icons/md";  // Back icon
 import { CiEdit } from "react-icons/ci"; // Edit icon
 
+interface Driver {
+    id: string | undefined;
+    name: string;
+    contact: string;
+    email: string;
+    bod: string;
+    bloodGroup: string;
+    nic: string;
+    assignedVehicle: string;
+    status: string;
+    joinDate: string;
+    licenseInfo: string;
+}
+
 export default function DriverInfo() {
     const { id } = useParams();  // Get driver ID from URL
     const navigate = useNavigate();  // Initialize navigate function
-    const [driver, setDriver] = useState(null);
+    const [driver, setDriver] = useState<Driver | null>(null);
 
     useEffect(() => {
         // Dummy data fetch simulation (replace this with your actual data fetching logic)
@@ -56,12 +70,12 @@ export default function DriverInfo() {
                                 <h2 className="text-[18px] md:text-[20px] lg:text-[24px] font-semibold text-[#B749DB] font-poppins">
                                     Driver Information
                                 </h2>
-                                <CiEdit 
-                                    className="text-[#B749DB] cursor-pointer text-[24px] hover:text-[#9f37c9]" 
+                                <CiEdit
+                                    className="text-[#B749DB] cursor-pointer text-[24px] hover:text-[#9f37c9]"
                                     onClick={() => navigate(`/driver/edit/${id}`)}  // Navigate to Edit Driver page
                                 />
                             </div>
-                            
+
                             <p className="text-gray-500 text-[12px] md:text-[14px] mt-1 font-poppins">
                                 Details about {driver.name}
                             </p>

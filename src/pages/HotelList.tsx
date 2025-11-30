@@ -1,85 +1,233 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaArrowLeft, FaArrowRight, FaStar, FaRegStar } from "react-icons/fa";
 import { useState, type Key } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/home/Navbar";
-import { IoCloseSharp, IoSearch } from "react-icons/io5";
-import grandWard from "../assets/packages/family.png";
-import cinnamon from "../assets/packages/family.png";
-import shangri from "../assets/packages/family.png";
-import jetwing from "../assets/packages/family.png";
-import kingsbury from "../assets/packages/family.png";
-import taj from "../assets/packages/family.png";
+import { IoSearch, IoCloseSharp } from "react-icons/io5";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+import { motion, AnimatePresence } from "framer-motion";
+import CustomPagination from "../components/CustomPagination";
+import { useItineraryStore } from "../store/useItineraryStore";
+import { toast } from "react-toastify";
 
-// --- CUSTOM TAILWIND PAGINATION COMPONENT ---
-// This replaces the need for Shadcn UI components.
-interface CustomPaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
+const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void }) => {
+  const [roomType, setRoomType] = useState('single');
+  const { formData, updateFormData } = useItineraryStore();
+  const { destination } = useLocation().state || { destination: "Colombo" };
 
-const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-  // Generate page numbers array (1, 2, 3, ...)
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const isSelected = formData.selectedDestinations?.[destination]?.hotel?.name === hotel.name;
+  const galleryImages = hotel.gallery.slice(0, 6);
 
-  const baseClass = "h-9 w-15 flex justify-center items-center rounded-md text-sm transition-colors duration-200 font-medium";
-  const linkClass = "hover:bg-[#B749DB]/10 text-gray-700 hover:text-[#B749DB] cursor-pointer";
-  const activeClass = "bg-[#B749DB] text-white pointer-events-none";
-  const disabledClass = "text-gray-400 pointer-events-none opacity-50";
+  const getToggleClass = (type: 'single' | 'double') => {
+    return roomType === type
+      ? { container: 'bg-[#B749DB]', circle: 'right-1' }
+      : { container: 'bg-gray-300', circle: 'left-1' };
+  };
 
-  if (totalPages <= 1) return null;
+  const handleSelectHotel = () => {
+    const currentSelection = formData.selectedDestinations?.[destination] || {};
+
+    updateFormData({
+      selectedDestinations: {
+        ...formData.selectedDestinations,
+        [destination]: {
+          ...currentSelection,
+          hotel: hotel
+        }
+      }
+    });
+
+    toast.success(`${hotel.name} selected for ${destination}`);
+    onClose();
+  };
 
   return (
-    <nav className="flex justify-center mt-10" aria-label="Pagination">
-      <ul className="flex items-center space-x-2">
-        {/* Previous Button */}
-        <li>
-          <button
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`${baseClass} px-3 ${currentPage === 1 ? disabledClass : linkClass}`}
-          >
-            <FaArrowLeft className="w-3 h-3 mr-1" />
-            Previous
-          </button>
-        </li>
+    <motion.div
+      initial={{ scale: 0.8 }}
+      animate={{ scale: 1 }}
+      exit={{ scale: 0.8 }}
+      className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-6 my-10 relative overflow-y-scroll hide-scrollbar max-h-screen"
+    >
+      <div className="px-6 md:px-10 pt-8 pb-4 border-b border-gray-100">
+        <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+          <div className="mb-4 sm:mb-0">
+            <h1 className="text-[24px] sm:text-[26px] font-inter font-bold text-[#401A4D]">
+              {hotel.name}
+            </h1>
+            <p className="text-gray-600 font-inter sm:text-[16px] md:text-[18px] lg:text-[20px] mt-1">
+              No 64 Ward Place Building No 64, Floor No 18,<br /> Cinnamon Gardens, <br />
+              00700 Colombo, Sri Lanka
+            </p>
+          </div>
+          <div className="flex flex-col items-center sm:mt-4 lg:mt-0 sm:items-start">
+            <div className="flex gap-2 mb-2">
+              {Array.from({ length: 5 }, (_, i) => (
+                <span key={i} className={i < hotel.rating ? "text-yellow-400" : "text-gray-300"}>
+                  ★
+                </span>
+              ))}
+            </div>
+            <p className="text-sm text-blue-700 mt-2">
+              <span className="text-gray-600 mr-1">Excellent location -</span>
+              <a href="#" className="font-medium hover:underline">show map</a>
+            </p>
+            <IoCloseSharp
+              className="text-xl text-gray-500 cursor-pointer absolute top-4 right-4 md:right-10"
+              onClick={onClose}
+            />
+          </div>
+        </div>
+      </div>
 
-        {/* Page Numbers */}
-        {pageNumbers.map((page) => (
-          <li key={page}>
-            <button
-              onClick={() => onPageChange(page)}
-              className={`${baseClass} ${page === currentPage ? activeClass : linkClass}`}
+      <div className="p-6 pt-0 md:p-10 md:pt-0">
+        <div className="md:hidden lg:hidden flex overflow-x-scroll gap-4 pb-4">
+          {galleryImages.map((img: string | undefined, i: Key | null | undefined) => (
+            <img
+              key={i}
+              src={img}
+              alt={`gallery-${i}`}
+              className="w-[300px] h-[200px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
+            />
+          ))}
+        </div>
+        <div className="hidden md:grid md:grid-cols-3 lg:grid lg:grid-cols-3 gap-4 mt-6">
+          {galleryImages.map((img: string | undefined, i: Key | null | undefined) => (
+            <img
+              key={i}
+              src={img}
+              alt={`gallery-${i}`}
+              className="w-full h-48 object-cover rounded-xl shadow-md"
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="px-6 md:px-10 py-5 space-y-5 border-t border-gray-200 mt-4">
+        <h3 className="text-[24px] font-bold font-roboto text-gray-800">Room Details</h3>
+        <div className="space-y-3 font-roboto">
+          <p className="font-semibold sm:md:text-[18px] md:text-[18px] lg:text-[20px] text-gray-700">Room Type</p>
+          <div className="flex gap-8">
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setRoomType('single')}
             >
-              {page}
-            </button>
-          </li>
-        ))}
+              <div className={`w-10 h-6 ${getToggleClass('single').container} rounded-full p-1 relative transition-colors duration-300`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${getToggleClass('single').circle}`}></div>
+              </div>
+              <span className="text-gray-600 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Single Room</span>
+            </div>
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setRoomType('double')}
+            >
+              <div className={`w-10 h-6 ${getToggleClass('double').container} rounded-full p-1 relative transition-colors duration-300`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${getToggleClass('double').circle}`}></div>
+              </div>
+              <span className="text-gray-600 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Double Room</span>
+            </div>
+          </div>
+        </div>
 
-        {/* Next Button */}
-        <li>
-          <button
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`${baseClass} px-3 ${currentPage === totalPages ? disabledClass : linkClass}`}
-          >
-            Next
+        <div className="space-y-3 font-roboto">
+          <p className="font-semibold text-gray-700 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Bed Type</p>
+          <div className="flex flex-wrap gap-8 ">
+            {["1 King Bed", "2 Twin Beds", "3 Twin Beds", "1 full bed"].map(
+              (bed, i) => (
+                <label key={i} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
+                    defaultChecked={i === 0}
+                  />
+                  <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{bed}</span>
+                </label>
+              )
+            )}
+          </div>
+        </div>
 
-          </button>
-        </li>
-      </ul>
-    </nav>
+        <div className="space-y-3 font-roboto">
+          <p className="font-semibold text-gray-700 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Diet Plan</p>
+          <div className="flex flex-wrap gap-8">
+            {["Full Board", "Half Board", "BB"].map((plan, i) => (
+              <label key={i} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
+                  defaultChecked={i === 1}
+                />
+                <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{plan}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-6 md:px-10 py-9 space-y-4 border-t border-gray-200 font-roboto">
+        <h3 className="text-[24px] font-bold text-gray-800">Room Features</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-gray-600  ">
+          {hotel.features.map((feature: string, index: number) => (
+            <span key={index} className="sm:md:text-[18px] md:text-[18px] lg:text-[20px]">
+              {feature}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-6 md:px-10 pb-10 pt-4 flex justify-end">
+        <button
+          onClick={handleSelectHotel}
+          className={`px-8 py-3 rounded-xl font-bold text-white transition-all ${isSelected
+            ? "bg-green-500 hover:bg-green-600 cursor-default"
+            : "bg-[#B749DB] hover:bg-[#8B2BB9]"
+            }`}
+          disabled={isSelected}
+        >
+          {isSelected ? "Selected" : "Select Hotel"}
+        </button>
+      </div>
+    </motion.div>
   );
 };
-// --- END CUSTOM PAGINATION ---
 
-
-// --- START OF HOTEL LIST COMPONENT ---
-export default function HotelList() {
-  const location = useLocation();
+const HotelList = () => {
   const navigate = useNavigate();
-  const destination = location.state?.destination || "Colombo";
+  const location = useLocation();
+  const { destination, step } = location.state || { destination: "Colombo", step: 3 };
+
+  const { formData } = useItineraryStore();
+  const [selectedHotel, setSelectedHotel] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Dummy data for hotels (replace with API data later)
+  const hotels = [
+    {
+      id: 1,
+      name: "Cinnamon Red Colombo",
+      desc: "South Asia's first lean luxury hotel, situated in the heart of Colombo...",
+      rating: 4,
+      img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+      gallery: [
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
+      ],
+      features: ["Free Wi-Fi", "Pool", "Gym", "Restaurant", "Bar", "Spa"],
+    },
+    // Add more dummy hotels here if needed
+  ];
+
+  const totalPages = Math.ceil(hotels.length / itemsPerPage);
+  const currentHotels = hotels.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const steps = [
     "Personal Details",
@@ -87,275 +235,30 @@ export default function HotelList() {
     "Travel Details",
     "Notes",
   ];
-  const [step, setStep] = useState<number>(3);
-  const [selectedHotel, setSelectedHotel] = useState<any>(null); // Modal state
 
-  // --- PAGINATION STATE & LOGIC ---
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const hotelsPerPage: number = 2; // Display 2 hotels per page
-
-  // Dummy Data matching UI requirements (UNMODIFIED)
-  const hotels = [
-    {
-      name: "The Grand Ward Place - Colombo 7",
-      img: grandWard,
-      desc: "Just a 14-minute walk from Colombo Town Hall and 1.1 miles from National Art Gallery, The Grand Ward Place features modern rooms, luxurious dining, and an indoor pool.",
-      rating: 4,
-      gallery: [grandWard, cinnamon, shangri, jetwing, kingsbury, taj],
-      features: ["Outdoor swimming pool", "Fitness center", "Spa", "Airport shuttle", "3 restaurants", "Bar", "Free Wifi", "Tea/Coffee Maker in All Rooms", "Wonderful Breakfast", "Family rooms"],
-    },
-    {
-      name: "Cinnamon Grand Colombo",
-      img: cinnamon,
-      desc: "A 5-star hotel offering elegant rooms, outdoor pools, and award-winning restaurants near Galle Face Green. Perfect for business and leisure.",
-      rating: 5,
-      gallery: [cinnamon, shangri, taj, kingsbury, grandWard, jetwing],
-      features: ["Outdoor pool", "Free Wifi", "5 restaurants", "Bar", "Business Center", "Spa & Wellness"],
-    },
-    {
-      name: "Shangri-La Colombo",
-      img: shangri,
-      desc: "Shangri-La Colombo offers world-class service, ocean views, fine dining, and modern luxury, located in the heart of the city.",
-      rating: 5,
-      gallery: [shangri, cinnamon, grandWard, jetwing, kingsbury, taj],
-      features: ["Infinity Pool", "Ocean View", "Fine Dining", "Gym", "Airport shuttle (paid)", "Free Wifi", "Family rooms"],
-    },
-    {
-      name: "Jetwing Colombo Seven",
-      img: jetwing,
-      desc: "A stylish urban hotel featuring a rooftop infinity pool, spa, and city skyline views — blending comfort and luxury.",
-      rating: 4,
-      gallery: [jetwing, taj, cinnamon, kingsbury, grandWard, shangri],
-      features: ["Rooftop Pool", "Spa", "Free Wifi", "City View Rooms", "Restaurant", "Bar"],
-    },
-    {
-      name: "The Kingsbury Colombo",
-      img: kingsbury,
-      desc: "A contemporary beachfront property with spacious rooms, gourmet cuisine, and proximity to major attractions.",
-      rating: 4,
-      gallery: [kingsbury, grandWard, taj, cinnamon, jetwing, shangri],
-      features: ["Beachfront", "Gourmet Dining", "Spa", "Fitness center", "Free Wifi", "Airport shuttle"],
-    },
-  ];
-
-  const totalHotels = hotels.length;
-  const totalPages = Math.ceil(totalHotels / hotelsPerPage);
-  const indexOfLastHotel = currentPage * hotelsPerPage;
-  const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
-  const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      // Scroll to the top of the hotel list when page changes
-      const listTop = document.getElementById("hotel-list-start");
-      if (listTop) {
-        listTop.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+  const handleStepClick = (stepId: number) => {
+    navigate("/itinerary", { state: { step: stepId } });
   };
 
-
-  const handleStepClick = (clickedStep: number) => {
-    navigate("/itinerary", { state: { destination, step: clickedStep } });
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <span key={i} className={i < rating ? "text-yellow-400" : "text-gray-300"}>
+        ★
+      </span>
+    ));
   };
 
-  const renderStars = (count: number) => {
-    const stars = [];
-    const displayedRating = count === 4 && hotels[0].name === "The Grand Ward Place - Colombo 7" ? 3.5 : count;
-    const fullStars = Math.floor(displayedRating);
-    const hasHalfStar = displayedRating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<FaStar key="half" className="text-yellow-400 opacity-50" />);
-    }
-
-    const totalStars = fullStars + (hasHalfStar ? 1 : 0);
-    for (let i = totalStars; i < 5; i++) {
-      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
-    }
-
-    return stars;
+  const isHotelSelected = (hotelName: string) => {
+    return formData.selectedDestinations?.[destination]?.hotel?.name === hotelName;
   };
-
-  // --- Hotel Details Modal Component (UNMODIFIED) ---
-  const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void }) => {
-    const [roomType, setRoomType] = useState('single');
-    const galleryImages = hotel.gallery.slice(0, 6);
-
-    const getToggleClass = (type: 'single' | 'double') => {
-      return roomType === type
-        ? { container: 'bg-[#B749DB]', circle: 'right-1' }
-        : { container: 'bg-gray-300', circle: 'left-1' };
-    };
-
-    return (
-      <motion.div
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.8 }}
-
-        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-6 my-10 relative overflow-y-scroll hide-scrollbar max-h-screen"
-      >
-        {/* Header Section - Title, Rating, Address, Close Button */}
-<div className="px-6 md:px-10 pt-8 pb-4 border-b border-gray-100">
-  <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
-    {/* Hotel Title and Address */}
-    <div className="mb-4 sm:mb-0">
-      <h1 className="text-[24px] sm:text-[26px] font-inter font-bold text-[#401A4D]">
-        {hotel.name}
-      </h1>
-      <p className="text-gray-600 font-inter sm:text-[16px] md:text-[18px] lg:text-[20px] mt-1">
-        No 64 Ward Place Building No 64, Floor No 18,<br /> Cinnamon Gardens, <br />
-        00700 Colombo, Sri Lanka
-      </p>
-    </div>
-
-    {/* Rating and Close Button */}
-    <div className="flex flex-col items-center sm:mt-4 lg:mt-0 sm:items-start">
-      <div className="flex gap-2 mb-2">
-        {renderStars(hotel.rating)}
-      </div>
-      <p className="text-sm text-blue-700 mt-2">
-        <span className="text-gray-600 mr-1">Excellent location -</span>
-        <a href="#" className="font-medium hover:underline">show map</a>
-      </p>
-      <IoCloseSharp
-        className="text-xl text-gray-500 cursor-pointer absolute top-4 right-4 md:right-10"
-        onClick={onClose}
-      />
-    </div>
-  </div>
-</div>
-
-        {/* --- Image Gallery Section (Horizontal Scroll for Mobile, Grid for Tablet/Desktop) --- */}
-<div className="p-6 pt-0 md:p-10 md:pt-0">
-  {/* Horizontal Scroll for Mobile */}
-  <div className="md:hidden lg:hidden flex overflow-x-scroll gap-4 pb-4">
-    {galleryImages.map((img: string | undefined, i: Key | null | undefined) => (
-      <img
-        key={i}
-        src={img}
-        alt={`gallery-${i}`}
-        className="w-[300px] h-[200px] object-cover rounded-lg shadow-sm hover:scale-[1.03] transition-transform"
-      />
-    ))}
-  </div>
-
-  {/* Grid Layout for Tablet/Desktop */}
-  <div className="hidden md:grid md:grid-cols-3 lg:grid lg:grid-cols-3 gap-4 mt-6">
-    {galleryImages.map((img: string | undefined, i: Key | null | undefined) => (
-      <img
-        key={i}
-        src={img}
-        alt={`gallery-${i}`}
-        className="w-full h-48 object-cover rounded-xl shadow-md"
-      />
-    ))}
-  </div>
-</div>
-
-
-        {/* --- Room Details Section (Input Toggles) --- */}
-        <div className="px-6 md:px-10 py-5 space-y-5 border-t border-gray-200 mt-4">
-          <h3 className="text-[24px] font-bold font-roboto text-gray-800">Room Details</h3>
-
-          {/* Room Type - Toggle Logic */}
-          <div className="space-y-3 font-roboto">
-            <p className="font-semibold sm:md:text-[18px] md:text-[18px] lg:text-[20px] text-gray-700">Room Type</p>
-            <div className="flex gap-8">
-              {/* Single Room Toggle */}
-              <div
-                className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => setRoomType('single')}
-              >
-                <div className={`w-10 h-6 ${getToggleClass('single').container} rounded-full p-1 relative transition-colors duration-300`}>
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${getToggleClass('single').circle}`}></div>
-                </div>
-                <span className="text-gray-600 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Single Room</span>
-              </div>
-
-              {/* Double Room Toggle */}
-              <div
-                className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => setRoomType('double')}
-              >
-                <div className={`w-10 h-6 ${getToggleClass('double').container} rounded-full p-1 relative transition-colors duration-300`}>
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${getToggleClass('double').circle}`}></div>
-                </div>
-                <span className="text-gray-600 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Double Room</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bed Type (Checkbox style) */}
-          <div className="space-y-3 font-roboto">
-            <p className="font-semibold text-gray-700 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Bed Type</p>
-            <div className="flex flex-wrap gap-8 ">
-              {["1 King Bed", "2 Twin Beds", "3 Twin Beds", "1 full bed"].map(
-                (bed, i) => (
-                  <label key={i} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
-                      defaultChecked={i === 0}
-                    />
-                    <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{bed}</span>
-                  </label>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Diet Plan (Checkbox style) */}
-          <div className="space-y-3 font-roboto">
-            <p className="font-semibold text-gray-700 sm:md:text-[18px] md:text-[18px] lg:text-[20px]">Diet Plan</p>
-            <div className="flex flex-wrap gap-8">
-              {["Full Board", "Half Board", "BB"].map((plan, i) => (
-                <label key={i} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
-                    defaultChecked={i === 1} // Half Board checked
-                  />
-                  <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{plan}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* --- Room Features Section --- */}
-        <div className="px-6 md:px-10 py-9 space-y-4 border-t border-gray-200 font-roboto">
-          <h3 className="text-[24px] font-bold text-gray-800">Room Features</h3>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-gray-600  ">
-            {hotel.features.map((feature: string, index: number) => (
-              <span key={index} className="sm:md:text-[18px] md:text-[18px] lg:text-[20px]">
-                {feature}
-              </span>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
-  // --- Modal Component ends here ---
 
   return (
     <div className="bg-white min-h-screen font-['Roboto_Condensed'] overflow-hidden">
       <Navbar />
-      {/* --- Sidebar Section --- */}
       <div className="block lg:hidden w-full flex-col items-center mb-8 mt-6 px-4">
         <h2 className="text-[24px] font-bold text-black mb-4 md:pl-10 text-left md:text-left">
           Create Itinerary
         </h2>
-
-        {/* Search */}
         <div className="relative w-full">
           <input
             type="text"
@@ -367,8 +270,6 @@ export default function HotelList() {
             size={20}
           />
         </div>
-
-        {/* Step circles */}
         <div className="flex flex-wrap items-center justify-center mt-6 gap-2 sm:gap-4">
           {[
             { id: 1, title: "Personal Details" },
@@ -388,7 +289,7 @@ export default function HotelList() {
                 </div>
                 <span
                   className={`text-[12px] sm:text-[13px] mt-1 font-semibold ${step === item.id ? "text-[#B749DB]" : "text-gray-600"}`}
-                  onClick={() => setStep(item.id)}  // Add click handler
+                  onClick={() => handleStepClick(item.id)}
                 >
                   {item.title}
                 </span>
@@ -399,11 +300,9 @@ export default function HotelList() {
             </div>
           ))}
         </div>
-
       </div>
 
       <div className="flex flex-col md:flex-row px-8 md:px-20 py-16 gap-10">
-        {/* --- Sidebar Section (UNMODIFIED) --- */}
         <div className="hidden lg:block lg:w-1/4 font-roboto-condensed">
           <h2 className="text-[26px] font-bold mb-10 text-[#1E1E1E]">
             Create Itinerary
@@ -418,8 +317,8 @@ export default function HotelList() {
               >
                 <div
                   className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${step === i + 1
-                      ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
-                      : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
+                    ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
+                    : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
                     }`}
                 >
                   {i + 1}
@@ -428,8 +327,8 @@ export default function HotelList() {
                 <div className="ml-4">
                   <p
                     className={`text-[20px] font-bold ${step === i + 1
-                        ? "text-[#B749DB]"
-                        : "text-black group-hover:text-[#B749DB]"
+                      ? "text-[#B749DB]"
+                      : "text-black group-hover:text-[#B749DB]"
                       }`}
                   >
                     {title}
@@ -441,9 +340,7 @@ export default function HotelList() {
           </div>
         </div>
 
-        {/* --- Main Content Area (Hotels List) --- */}
         <div id="hotel-list-start" className="md:w-6/6 lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-6 md:p-10 min-h-[70vh]">
-          {/* Breadcrumb */}
           <p className="text-[#B749DB] font-semibold mb-8">
             <span
               onClick={() => navigate("/destination")}
@@ -467,76 +364,75 @@ export default function HotelList() {
             Hotels in {destination}
           </h2>
 
-          {/* --- Hotel Cards Section (PAGINATED List) --- */}
           <div className="flex flex-col gap-8">
-            {/* Maps over the sliced list of hotels (currentHotels) */}
-            {currentHotels.map((hotel, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.005 }}
-                onClick={() => setSelectedHotel(hotel)} // open modal
-                className="bg-[#F8ECFF] rounded-2xl shadow-lg border border-[#E2C6F4] overflow-hidden cursor-pointer p-4"
-              >
-                <div className="flex flex-col md:flex-row gap-4">
-
-                  {/* LEFT SIDE: Main Image */}
-                  <div className="relative md:w-1/3 min-w-[200px] ">
-                    <img
-                      src={hotel.img}
-                      alt={hotel.name}
-                      className="w-full sm:h-48 md:h-48 lg:h-58 object-cover rounded-2xl"
-                    />
-                    {/* Heart Icon */}
-                    <div className="absolute top-4 left-4 bg-white/70 p-2 rounded-full shadow-md">
-                      <svg
-                        className="w-5 h-5 text-gray-800"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                      </svg>
+            {currentHotels.map((hotel, index) => {
+              const isSelected = isHotelSelected(hotel.name);
+              return (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.005 }}
+                  onClick={() => setSelectedHotel(hotel)}
+                  className={`bg-[#F8ECFF] rounded-2xl shadow-lg border ${isSelected ? "border-green-500 ring-2 ring-green-500" : "border-[#E2C6F4]"} overflow-hidden cursor-pointer p-4`}
+                >
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="relative md:w-1/3 min-w-[200px] ">
+                      <img
+                        src={hotel.img}
+                        alt={hotel.name}
+                        className="w-full sm:h-48 md:h-48 lg:h-58 object-cover rounded-2xl"
+                      />
+                      <div className="absolute top-4 left-4 bg-white/70 p-2 rounded-full shadow-md">
+                        <svg
+                          className="w-5 h-5 text-gray-800"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute bottom-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
+                          Selected
+                        </div>
+                      )}
                     </div>
-                  </div>
 
-                  {/* RIGHT SIDE: Details */}
-                  <div className="md:w-2/3 flex flex-col justify-start pt-2">
-                    <div>
-                      <h3 className="text-[24px] font-bold text-[#5F3396] mb-2">
-                        {hotel.name}
-                      </h3>
-                      <p className="md:text-[20px] lg:text-[24px] text-gray-700 mb-3 leading-snug">
-                        {hotel.desc}
-                      </p>
-                      <div className="flex gap-1 mb-2">
-                        {renderStars(hotel.rating)}
+                    <div className="md:w-2/3 flex flex-col justify-start pt-2">
+                      <div>
+                        <h3 className="text-[24px] font-bold text-[#5F3396] mb-2">
+                          {hotel.name}
+                        </h3>
+                        <p className="md:text-[20px] lg:text-[24px] text-gray-700 mb-3 leading-snug">
+                          {hotel.desc}
+                        </p>
+                        <div className="flex gap-1 mb-2">
+                          {renderStars(hotel.rating)}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* BOTTOM SECTION: Horizontal Gallery Row */}
-                <div className="flex gap-3 mt-4 overflow-x-scroll hide-scrollbar pb-2 justify-start px-1">
-                  {hotel.gallery.slice(0, 6).map((img: string, i: number) => (
-                    <img
-                      key={i}
-                      src={img}
-                      alt={`gallery-${i}`}
-                      className="min-w-[220px] h-[200px] object-cover rounded-lg shadow-sm"
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+                  <div className="flex gap-3 mt-4 overflow-x-scroll hide-scrollbar pb-2 justify-start px-1">
+                    {hotel.gallery.slice(0, 6).map((img: string, i: number) => (
+                      <img
+                        key={i}
+                        src={img}
+                        alt={`gallery-${i}`}
+                        className="min-w-[220px] h-[200px] object-cover rounded-lg shadow-sm"
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* --- CUSTOM TAILWIND PAGINATION CONTROLS --- */}
           <CustomPagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
 
-          {/* --- Navigation Buttons (Separate from pagination) --- */}
           <div className="flex justify-between mt-12">
             <button
               onClick={() =>
@@ -547,7 +443,6 @@ export default function HotelList() {
               <FaArrowLeft className="text-[#B749DB]" /> Previous
             </button>
 
-            {/* Navigates to the next step (Notes) */}
             <button
               onClick={() =>
                 navigate("/itinerary", { state: { destination, step: 4 } })
@@ -560,7 +455,6 @@ export default function HotelList() {
         </div>
       </div>
 
-      {/* --- Modal Wrapper (UNMODIFIED) --- */}
       <AnimatePresence>
         {selectedHotel && (
           <motion.div
@@ -576,3 +470,5 @@ export default function HotelList() {
     </div>
   );
 }
+
+export default HotelList;
