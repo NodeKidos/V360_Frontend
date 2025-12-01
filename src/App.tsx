@@ -37,6 +37,8 @@ import DriverInfo from "./components/dashboard/Driver/DriverInfo";
 import StaffManagement from "./components/dashboard/Staff/StaffView";
 import EditStaff from "./components/dashboard/Staff/EditStaff";
 import AddStaff from "./components/dashboard/Staff/AddStaff";
+import ItinerarySummary from "./pages/main/ItinerarySummary";
+import UserDashboard from "./pages/dashboard/UserDashboard";
 
 
 export default function App() {
@@ -62,35 +64,37 @@ export default function App() {
 
       {/* ✅ Admin Dashboard */}
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
-       <Route path="/user" element={<CustomerManagement/>} />
-       <Route path="/user/add" element={<AddCustomer />} />
-       <Route path="/user/edit/:customerId" element={<EditCustomer />} />
+      <Route path="/user" element={<CustomerManagement />} />
+      <Route path="/user/add" element={<AddCustomer />} />
+      <Route path="/user/edit/:customerId" element={<EditCustomer />} />
 
-       <Route path="/vehicle" element={<VehicleManagement/>} />
-       <Route path="/vehicle/add" element={<AddVehicle />} />
-       <Route path="/vehicle/edit/:vehicleId" element={<EditVehicle/>} />
+      <Route path="/vehicle" element={<VehicleManagement />} />
+      <Route path="/vehicle/add" element={<AddVehicle />} />
+      <Route path="/vehicle/edit/:vehicleId" element={<EditVehicle />} />
 
-       <Route path="/tour" element={<TourManagement />} />
-       <Route path="/tour/edit/:tourId" element={<EditTour/>} />
+      <Route path="/tour" element={<TourManagement />} />
+      <Route path="/tour/edit/:tourId" element={<EditTour />} />
 
-       <Route path="/destination-hotel" element={<DestinationHotelManagement/>} />
-       <Route path="/destination/add" element={<AddDestination />}/>
-       <Route path="/hotel/add" element={<AddHotel />} />
-       <Route path="/excursion/add" element={<AddExcursion />} /> 
-       <Route path="/destination/edit/:destinationrId" element={<EditDestination/>} />    
-       <Route path="/hotel/edit/:hotelId" element={<EditHotel/>} />
-       <Route path="/excursion/edit/:excursionId" element={<EditExcursion/>} />
-       <Route path="/excursion/details/:excursionId" element={<ExDetails/>} />
-       
-       <Route path="/driver" element={<DriverManagement />} />
-       <Route path="/driver/add" element={<AddDriver/>}/>
-       <Route path="/driver/edit/:driverId" element={<EditDriver/>} />
-       <Route path="//driver/:driverId" element={<DriverInfo />} />
+      <Route path="/destination-hotel" element={<DestinationHotelManagement />} />
+      <Route path="/destination/add" element={<AddDestination />} />
+      <Route path="/hotel/add" element={<AddHotel />} />
+      <Route path="/excursion/add" element={<AddExcursion />} />
+      <Route path="/destination/edit/:destinationrId" element={<EditDestination />} />
+      <Route path="/hotel/edit/:hotelId" element={<EditHotel />} />
+      <Route path="/excursion/edit/:excursionId" element={<EditExcursion />} />
+      <Route path="/excursion/details/:excursionId" element={<ExDetails />} />
+
+      <Route path="/driver" element={<DriverManagement />} />
+      <Route path="/driver/add" element={<AddDriver />} />
+      <Route path="/driver/edit/:driverId" element={<EditDriver />} />
+      <Route path="//driver/:driverId" element={<DriverInfo />} />
 
       <Route path="/staff" element={<StaffManagement />} />
-             <Route path="/staff/add" element={<AddStaff/>}/>
+      <Route path="/staff/add" element={<AddStaff />} />
+      <Route path="/staff/edit/:staffId" element={<EditStaff />} />
 
-             <Route path="/staff/edit/:staffId" element={<EditStaff/>}/>
+      <Route path="/user-dashboard" element={<UserDashboard />} />
+      <Route path="/itinerary-summary" element={<ItinerarySummary />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
