@@ -12,20 +12,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { toast } from "react-toastify";
 
 import colombo from "../../assets/packages/family.png";
-import kandy from "../../assets/packages/family.png";
-import galle from "../../assets/packages/family.png";
-import matara from "../../assets/packages/family.png";
-import matale from "../../assets/packages/family.png";
-import badulla from "../../assets/packages/family.png";
-import nuwara from "../../assets/packages/family.png";
-import negombo from "../../assets/packages/family.png";
-import anuradhapura from "../../assets/packages/family.png";
 import { IoSearch } from "react-icons/io5";
-
-interface Destination {
-    name: string;
-    img: string;
-}
 
 import CustomPagination from "../../components/CustomPagination";
 
@@ -37,38 +24,21 @@ export default function Itinerary() {
 
     // Auth and Itinerary stores
     const { isLoggedIn } = useAuthStore();
-    const { updateFormData, createItinerary, convertFormDataToDto, isLoading, formData } = useItineraryStore();
+    const {
+        updateFormData,
+        createItinerary,
+        convertFormDataToDto,
+        isLoading,
+        formData,
+        fetchDestinations,
+        destinations
+    } = useItineraryStore();
 
-    // Form state - Removed localFormData to use global store
+    useEffect(() => {
+        fetchDestinations();
+    }, []);
 
     const destinationsPerPage = 6;
-    const destinations: Destination[] = [
-        { name: "Colombo", img: colombo },
-        { name: "Gampaha", img: kandy },
-        { name: "Kalutara", img: galle },
-        { name: "Kandy", img: matara },
-        { name: "Matale", img: matale },
-        { name: "Nuwara Eliya", img: nuwara },
-        { name: "Galle", img: galle },
-        { name: "Matara", img: matara },
-        { name: "Hambantota", img: badulla },
-        { name: "Jaffna", img: kandy },
-        { name: "Kilinochchi", img: galle },
-        { name: "Mannar", img: matara },
-        { name: "Vavuniya", img: matale },
-        { name: "Mullaitivu", img: badulla },
-        { name: "Batticaloa", img: nuwara },
-        { name: "Ampara", img: negombo },
-        { name: "Trincomalee", img: anuradhapura },
-        { name: "Kurunegala", img: colombo },
-        { name: "Puttalam", img: kandy },
-        { name: "Anuradhapura", img: anuradhapura },
-        { name: "Polonnaruwa", img: badulla },
-        { name: "Badulla", img: badulla },
-        { name: "Monaragala", img: matale },
-        { name: "Ratnapura", img: nuwara },
-        { name: "Kegalle", img: negombo },
-    ];
 
     const totalPages = Math.ceil(destinations.length / destinationsPerPage);
     const currentDestinations = destinations.slice(
@@ -465,7 +435,7 @@ export default function Itinerary() {
                                                 >
                                                     {/* Image */}
                                                     <img
-                                                        src={d.img}
+                                                        src={d.images && d.images.length > 0 ? d.images[0] : colombo}
                                                         alt={d.name}
                                                         className={`w-full h-[230px] object-cover transition-all ${isSelected ? "brightness-90" : ""
                                                             }`}

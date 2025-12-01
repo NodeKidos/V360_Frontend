@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { itineraryService } from "../services/itinerary.service";
+import { destinationService, type Destination } from "../services/destination.service";
 import type {
   Itinerary,
   CreateItineraryDto,
@@ -13,6 +14,7 @@ import { toast } from "react-toastify";
 interface ItineraryState {
   itineraries: Itinerary[];
   currentItinerary: Itinerary | null;
+  destinations: Destination[];
   formData: Partial<ItineraryFormData>;
   isLoading: boolean;
   error: string | null;
@@ -22,6 +24,7 @@ interface ItineraryState {
   resetFormData: () => void;
 
   // API actions
+  fetchDestinations: () => Promise<void>;
   createItinerary: (data: CreateItineraryDto) => Promise<Itinerary | null>;
   updateItinerary: (id: string, data: UpdateItineraryDto) => Promise<boolean>;
   deleteItinerary: (id: string) => Promise<boolean>;
@@ -38,6 +41,7 @@ interface ItineraryState {
 export const useItineraryStore = create<ItineraryState>((set, get) => ({
   itineraries: [],
   currentItinerary: null,
+  destinations: [],
   formData: {},
   isLoading: false,
   error: null,
@@ -54,9 +58,19 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
     set({ formData: {} });
   },
 
+  // Fetch destinations
+  fetchDestinations: async () => {
+    try {
+      const destinations = await destinationService.getAll();
+      set({ destinations });
+    } catch (error) {
+      console.error("Failed to fetch destinations:", error);
+    }
+  },
+
   // Convert form data to DTO
   convertFormDataToDto: () => {
-    const { formData } = get();
+    const { formData, destinations } = get();
 
     if (
       !formData.firstName ||
@@ -76,6 +90,9 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
+    const selectedCityNames = formData.selectedCities || [];
+    const daysPerCity = selectedCityNames.length > 0 ? Math.ceil(diffDays / selectedCityNames.length) : diffDays;
+
     // Create days
     for (let i = 0; i < diffDays; i++) {
       const currentDate = new Date(start);
@@ -85,24 +102,30 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       let hotelId = undefined;
       let excursionIds: string[] = [];
 
-      // Check if we have a selected hotel for the current destination
-      // This is a simplified logic - you might want to map specific days to specific destinations
-      if (formData.selectedDestinations) {
-        // Example: Check if any destination has a hotel selected
-        // In a real app, you'd know which destination corresponds to which day
-        const destinations = Object.keys(formData.selectedDestinations);
-        if (destinations.length > 0) {
-          // For simplicity, just taking the first one or matching by some logic
-          const dest = destinations[0];
-          const selectedDest = formData.selectedDestinations[dest];
+      // Determine destination for this day
+      if (selectedCityNames.length > 0) {
+        const cityIndex = Math.min(Math.floor(i / daysPerCity), selectedCityNames.length - 1);
+        const cityName = selectedCityNames[cityIndex];
 
-          if (selectedDest?.hotel) {
-            // Assuming hotel object has an ID, otherwise we might need to look it up or send the whole object
-            // hotelId = selectedDest.hotel.id; 
+        // Find destination ID
+        const destination = destinations.find(d => d.name === cityName);
+        if (destination) {
+          destinationId = destination.id;
+
+          // Get additional data for this destination
+          const selectedDestData = formData.selectedDestinations?.[cityName];
+
+          if (selectedDestData?.hotel) {
+            // hotelId = selectedDestData.hotel.id; 
           }
 
-          if (selectedDest?.excursions) {
-            excursionIds = selectedDest.excursions.map((ex: any) => ex.id).filter(Boolean);
+          if (selectedDestData?.excursions) {
+            // Add excursions only if they haven't been added to previous days for the same destination?
+            // For now, let's add them to the first day of the destination stay
+            const isFirstDayOfCity = i % daysPerCity === 0 || i === 0;
+            if (isFirstDayOfCity) {
+              excursionIds = selectedDestData.excursions.map((ex: any) => ex.id).filter(Boolean);
+            }
           }
         }
       }

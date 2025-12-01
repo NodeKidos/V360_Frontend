@@ -1,4 +1,4 @@
-import api from './api';
+import { publicApi } from './api';
 
 export interface Hotel {
   id: string;
@@ -14,17 +14,17 @@ export interface Hotel {
 
 export const hotelService = {
   getAll: async (): Promise<Hotel[]> => {
-    const response = await api.get<Hotel[]>('/hotels');
+    const response = await publicApi.get<Hotel[]>('/hotels');
     return response.data;
   },
 
   getByDestination: async (destinationId: string): Promise<Hotel[]> => {
-    const response = await api.get<Hotel[]>(`/hotels?destinationId=${destinationId}`);
+    const response = await publicApi.get<Hotel[]>(`/hotels?destinationId=${destinationId}`);
     return response.data;
   },
 
   getById: async (id: string): Promise<Hotel> => {
-    const response = await api.get<Hotel>(`/hotels/${id}`);
+    const response = await publicApi.get<Hotel>(`/hotels/${id}`);
     return response.data;
   },
 };

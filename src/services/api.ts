@@ -9,6 +9,14 @@ export const api = axios.create({
   },
 });
 
+// Public API instance for endpoints that don't require authentication
+export const publicApi = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {

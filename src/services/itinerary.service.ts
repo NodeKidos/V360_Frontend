@@ -1,4 +1,4 @@
-import api from './api';
+import api, { publicApi } from './api';
 import type {
   Itinerary,
   CreateItineraryDto,
@@ -7,9 +7,12 @@ import type {
 } from '../types/itinerary.types';
 
 export const itineraryService = {
-  // Create new itinerary
+  // Create new itinerary (supports both authenticated and guest users)
   create: async (data: CreateItineraryDto): Promise<Itinerary> => {
-    const response = await api.post<Itinerary>('/itineraries', data);
+    // Use publicApi if user is not logged in (guest user)
+    const token = localStorage.getItem('accessToken');
+    const apiInstance = token ? api : publicApi;
+    const response = await apiInstance.post<Itinerary>('/itineraries', data);
     return response.data;
   },
 
