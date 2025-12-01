@@ -26,14 +26,14 @@ const ItinerarySummary = () => {
   const navigate = useNavigate(); // Initialize navigate function
 
   useEffect(() => {
-      const handleResize = () => {
-        setIsMobile(window.innerWidth < 768);
-      };
-  
-      handleResize();
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleNextClick = () => {
     if (step === 1) {
@@ -81,56 +81,56 @@ const ItinerarySummary = () => {
         {/* TopBar */}
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
- {/* SEARCH BAR - Mobile Only */}
-          <div className="mb-6 relative md:hidden">
-            <div className="relative">
-              <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
-              <input
-                type="text"
-                placeholder="Search here"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
-              />
-            </div>
+        {/* SEARCH BAR - Mobile Only */}
+        <div className="mb-6 relative md:hidden">
+          <div className="relative">
+            <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
+            <input
+              type="text"
+              placeholder="Search here"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
+            />
           </div>
+        </div>
         {/* Main Content */}
         <div className="bg-white border border-purple-200 rounded-2xl shadow-sm p-4 min-h-[80vh]">
           <motion.div className="space-y-6">
             {/* Main Heading for the Itinerary Summary */}
-            <h1 className="text-3xl font-semibold text-[#5B247A] mb-6">Itinerary Summary</h1>
+            <h1 className="text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-6">Itinerary Summary</h1>
 
             {/* Step 1 – Personal Details */}
-{step === 1 && (
-  <>
-    <div className="mt-6 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-lg font-poppins">
-      <h2 className="text-[20px] font-semibold mb-4">Personal Details</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px]">
-        <div className="mb-2"><span className="font-semibold">First Name:</span> Alice</div>
-        <div className="mb-2"><span className="font-semibold">Last Name:</span> Kirstoper</div>
-        <div className="mb-2"><span className="font-semibold">Date of Birth:</span> 05.10.1994</div>
-        <div className="mb-2"><span className="font-semibold">Contact No:</span> +1 (555) 123-4567</div>
-        <div className="mb-2"><span className="font-semibold">Email Address:</span> alice@gmail.com</div>
-        <div className="mb-2"><span className="font-semibold">Country of Residence:</span> USA</div>
-        <div className="mb-2"><span className="font-semibold">Arrival Date:</span> 03.10.2025</div>
-        <div className="mb-2"><span className="font-semibold">Departure Date:</span> 03.11.2025</div>
-        <div className="mb-2"><span className="font-semibold">Preferred Duration of Stay:</span> 1 month</div>
-        <div className="mb-2"><span className="font-semibold">Group Composition:</span> 2 Adults, 2 Children</div>
-      </div>
-    </div>
+            {step === 1 && (
+              <>
+                <div className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
+                  <h2 className="text-[20px] font-semibold mb-4">Personal Details</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px]">
+                    <div className="mb-2"><span className="font-semibold">First Name:</span> Alice</div>
+                    <div className="mb-2"><span className="font-semibold">Last Name:</span> Kirstoper</div>
+                    <div className="mb-2"><span className="font-semibold">Date of Birth:</span> 05.10.1994</div>
+                    <div className="mb-2"><span className="font-semibold">Contact No:</span> +1 (555) 123-4567</div>
+                    <div className="mb-2"><span className="font-semibold">Email Address:</span> alice@gmail.com</div>
+                    <div className="mb-2"><span className="font-semibold">Country of Residence:</span> USA</div>
+                    <div className="mb-2"><span className="font-semibold">Arrival Date:</span> 03.10.2025</div>
+                    <div className="mb-2"><span className="font-semibold">Departure Date:</span> 03.11.2025</div>
+                    <div className="mb-2"><span className="font-semibold">Preferred Duration of Stay:</span> 1 month</div>
+                    <div className="mb-2"><span className="font-semibold">Group Composition:</span> 2 Adults, 2 Children</div>
+                  </div>
+                </div>
 
-    <div className="mt-6 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-lg font-poppins">
-      <h2 className="text-[20px] font-semibold mb-4">Preference & Requirements</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px]">
-        <div className="mb-2"><span className="font-semibold">Dietary Preferences:</span> Non-Veg</div>
-        <div className="mb-2"><span className="font-semibold">Hotel Category:</span> 5 Star</div>
-        <div className="mb-2"><span className="font-semibold">Room Category:</span> Single</div>
-        <div className="mb-2"><span className="font-semibold">Vehicle Type:</span> Semi-Luxury</div>
-        <div className="mb-2"><span className="font-semibold">Special Needs:</span> None</div>
-      </div>
-    </div>
-  </>
-)}
+                <div className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
+                  <h2 className="text-[20px] font-semibold mb-4">Preference & Requirements</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px]">
+                    <div className="mb-2"><span className="font-semibold">Dietary Preferences:</span> Non-Veg</div>
+                    <div className="mb-2"><span className="font-semibold">Hotel Category:</span> 5 Star</div>
+                    <div className="mb-2"><span className="font-semibold">Room Category:</span> Single</div>
+                    <div className="mb-2"><span className="font-semibold">Vehicle Type:</span> Semi-Luxury</div>
+                    <div className="mb-2"><span className="font-semibold">Special Needs:</span> None</div>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Step 2 – Destinations */}
             {step === 2 && showDetails && (
@@ -140,9 +140,9 @@ const ItinerarySummary = () => {
                   <div className="space-y-4">
                     {["Colombo", "Kandy", "Galle"].map((location) => (
                       <div key={location}>
-                        <div className="flex items-center justify-between bg-[#B723F2]/5 border border-[#B723F2] rounded-md p-2 mb-2">
+                        <div className="flex items-center justify-between bg-[#B723F2]/5 border border-[#B723F2] rounded-[25px] p-2 mb-2">
                           <button
-                            className="w-full text-left font-semibold"
+                            className="w-full text-left font-semibold ml-4 text-[18px]"
                             onClick={() => toggleDestination(location)}
                           >
                             {location}
@@ -155,7 +155,7 @@ const ItinerarySummary = () => {
                         </div>
 
                         {expandedDestinations.includes(location) && (
-                          <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-lg">
+                          <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px]">
                             <div className="flex flex-col md:flex-row items-center">
                               <img
                                 className="w-full sm:w-40 md:w-45 lg:w-52 h-40 rounded-md mb-4 md:mb-0 object-cover"
@@ -176,11 +176,12 @@ const ItinerarySummary = () => {
                             </div>
 
                             <div className="mt-5 ml-6 mr-6 flex overflow-x-auto space-x-6">
-                              <img className="w-40 h-35 rounded-md" src={Img1} alt="Port City" />
-                              <img className="w-40 h-35 rounded-md" src={Img2} alt="Galle" />
-                              <img className="w-40 h-35 rounded-md" src={Img3} alt="Lotus Tower" />
-                              <img className="w-40 h-35 rounded-md" src={Img4} alt="Independence Memorial" />
-                              <img className="w-40 h-35 rounded-md" src={Img5} alt="Gangaramaya Temple" />
+                              {/* Centering the images */}
+                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img1} alt="Port City" />
+                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img2} alt="Galle" />
+                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img3} alt="Lotus Tower" />
+                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img4} alt="Independence Memorial" />
+                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img5} alt="Gangaramaya Temple" />
                             </div>
                           </div>
                         )}
@@ -189,7 +190,7 @@ const ItinerarySummary = () => {
                   </div>
                 </div>
 
-                <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 mx-5 rounded-lg mt-5 font-poppins">
+                <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 mx-5 rounded-[25px] mt-5 font-poppins">
                   <h2 className="text-xl font-semibold mb-4">Notes</h2>
                   <p>Special Request for birthday</p>
                 </div>
