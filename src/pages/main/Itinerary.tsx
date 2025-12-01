@@ -460,7 +460,7 @@ export default function Itinerary() {
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 navigate("/excursion-points", {
-                                                                    state: { destination: d.name, step },
+                                                                    state: { destination: d.name, destinationId: d.id, step },
                                                                 });
                                                             }}
                                                             className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition"
@@ -474,7 +474,7 @@ export default function Itinerary() {
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 navigate("/hotel-list", {
-                                                                    state: { destination: d.name, step },
+                                                                    state: { destination: d.name, destinationId: d.id, step },
                                                                 });
                                                             }}
                                                             className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition"

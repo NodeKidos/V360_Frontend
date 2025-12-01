@@ -1,4 +1,4 @@
-import { useState, type Key } from "react";
+import { useState, useEffect, type Key } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/home/Navbar";
 import { IoSearch, IoCloseSharp } from "react-icons/io5";
@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import CustomPagination from "../components/CustomPagination";
 import { useItineraryStore } from "../store/useItineraryStore";
 import { toast } from "react-toastify";
+import { hotelService, type Hotel } from "../services/hotel.service";
+import defaultImage from "../assets/packages/family.png";
 
 const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void }) => {
   const [roomType, setRoomType] = useState('single');
@@ -191,33 +193,52 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
 const HotelList = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { destination, step } = location.state || { destination: "Colombo", step: 3 };
+  const { destination, destinationId, step } = location.state || { destination: "Colombo", destinationId: null, step: 3 };
 
   const { formData } = useItineraryStore();
   const [selectedHotel, setSelectedHotel] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [hotels, setHotels] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 5;
 
-  // Dummy data for hotels (replace with API data later)
-  const hotels = [
-    {
-      id: 1,
-      name: "Cinnamon Red Colombo",
-      desc: "South Asia's first lean luxury hotel, situated in the heart of Colombo...",
-      rating: 4,
-      img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-      gallery: [
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/36465403.jpg?k=6223760447167676767676767676767676767676767676767676767676767676&o=&hp=1",
-      ],
-      features: ["Free Wi-Fi", "Pool", "Gym", "Restaurant", "Bar", "Spa"],
-    },
-    // Add more dummy hotels here if needed
-  ];
+  // Fetch hotels from API filtered by destination
+  useEffect(() => {
+    const fetchHotels = async () => {
+      try {
+        setLoading(true);
+        let data: Hotel[];
+        if (destinationId) {
+          data = await hotelService.getByDestination(destinationId);
+        } else {
+          data = await hotelService.getAll();
+        }
+
+        // Transform the API data to match the expected format
+        const transformedHotels = data.map((hotel: any) => ({
+          id: hotel.id,
+          name: hotel.name,
+          desc: hotel.description || "No description available",
+          rating: hotel.rating || hotel.starRating || 0,
+          img: hotel.images && hotel.images.length > 0 ? hotel.images[0] : defaultImage,
+          gallery: hotel.images && hotel.images.length > 0 ? hotel.images : [defaultImage],
+          features: hotel.amenities || [],
+          roomTypes: hotel.roomTypes || [],
+          bedTypes: hotel.bedTypes || [],
+          dietPlans: hotel.dietPlans || [],
+        }));
+
+        setHotels(transformedHotels);
+      } catch (error) {
+        console.error("Failed to fetch hotels:", error);
+        toast.error("Failed to load hotels");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHotels();
+  }, [destinationId]);
 
   const totalPages = Math.ceil(hotels.length / itemsPerPage);
   const currentHotels = hotels.slice(
@@ -364,6 +385,19 @@ const HotelList = () => {
             Hotels in {destination}
           </h2>
 
+          {loading ? (
+            <div className="flex justify-center items-center min-h-[300px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B749DB] mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading hotels...</p>
+              </div>
+            </div>
+          ) : hotels.length === 0 ? (
+            <div className="flex justify-center items-center min-h-[300px]">
+              <p className="text-gray-600 text-lg">No hotels found for this destination</p>
+            </div>
+          ) : (
+            <>
           <div className="flex flex-col gap-8">
             {currentHotels.map((hotel, index) => {
               const isSelected = isHotelSelected(hotel.name);
@@ -432,6 +466,8 @@ const HotelList = () => {
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
+          </>
+          )}
 
           <div className="flex justify-between mt-12">
             <button

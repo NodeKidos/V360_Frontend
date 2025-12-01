@@ -14,6 +14,7 @@ export default function ExcursionPoints() {
   const location = useLocation();
   const navigate = useNavigate();
   const destination = location.state?.destination || "Colombo";
+  const destinationId = location.state?.destinationId;
 
   const { formData, updateFormData } = useItineraryStore();
 
@@ -27,21 +28,30 @@ export default function ExcursionPoints() {
   const [step, setStep] = useState<number>(3);
 
   const [excursions, setExcursions] = useState<Excursion[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch excursions from API
+  // Fetch excursions from API filtered by destination
   useEffect(() => {
     const fetchExcursions = async () => {
       try {
-        const data = await excursionService.getAll();
-        setExcursions(data);
+        setLoading(true);
+        if (destinationId) {
+          const data = await excursionService.getByDestination(destinationId);
+          setExcursions(data);
+        } else {
+          const data = await excursionService.getAll();
+          setExcursions(data);
+        }
       } catch (error) {
         console.error("Failed to fetch excursions:", error);
         toast.error("Failed to load excursions");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchExcursions();
-  }, []);
+  }, [destinationId]);
 
   // ✅ Function to handle sidebar navigation
   const handleStepClick = (clickedStep: number) => {
@@ -215,6 +225,18 @@ export default function ExcursionPoints() {
           </h2>
 
           {/* ===== Excursion Cards ===== */}
+          {loading ? (
+            <div className="flex justify-center items-center min-h-[300px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B749DB] mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading excursions...</p>
+              </div>
+            </div>
+          ) : excursions.length === 0 ? (
+            <div className="flex justify-center items-center min-h-[300px]">
+              <p className="text-gray-600 text-lg">No excursions found for this destination</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {excursions.map((place) => {
               const isSelected = isExcursionSelected(place.id);
@@ -261,6 +283,7 @@ export default function ExcursionPoints() {
               );
             })}
           </div>
+          )}
 
           {/* ===== Buttons ===== */}
           <div className="flex justify-between mt-12">
