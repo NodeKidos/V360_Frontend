@@ -7,7 +7,7 @@ import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift } 
 import { BiTrip } from 'react-icons/bi';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { IoMdSettings } from 'react-icons/io';
+import { IoMdClose, IoMdSettings } from 'react-icons/io';
 
 // Define the menu configuration for each role
 const sidebarMenuConfig = {
@@ -106,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Mobile Close */}
           {isMobile && (
             <div className="flex justify-end p-4">
-              <FaUser
+              <IoMdClose
                 onClick={() => setSidebarOpen(false)}
                 className="text-3xl text-gray-600 cursor-pointer hover:text-purple-600"
               />
