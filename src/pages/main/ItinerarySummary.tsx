@@ -148,43 +148,121 @@ const ItinerarySummary = () => {
                             {location}
                           </button>
                           {expandedDestinations.includes(location) ? (
-                            <IoIosArrowDropupCircle className="text-[#B749DB]" />
+                            <IoIosArrowDropupCircle className="text-[#B749DB] w-10 h-6" />
                           ) : (
-                            <IoIosArrowDropdownCircle className="text-[#B749DB]" />
+                            <IoIosArrowDropdownCircle className="text-[#B749DB] w-10 h-6" />
                           )}
                         </div>
 
                         {expandedDestinations.includes(location) && (
-                          <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px]">
-                            <div className="flex flex-col md:flex-row items-center">
+                          <div className="bg-[#F8EDFC] border border-[#D9B7F2] p-5 rounded-[25px] shadow-sm">
+
+                            {/* TOP SECTION */}
+                            <div className="flex flex-col lg:flex-row gap-6">
+
+                              {/* HOTEL IMAGE */}
                               <img
-                                className="w-full sm:w-40 md:w-45 lg:w-52 h-40 rounded-md mb-4 md:mb-0 object-cover"
                                 src={hotelImg}
+                                className="w-full sm:w-56 lg:w-60 h-40 object-cover rounded-xl"
                                 alt="Hotel"
                               />
-                              <div className="md:ml-4 font-poppins">
-                                <h3 className="font-semibold text-[20px] text-[#B723F2]">The Grand Ward Place - Colombo 7</h3>
-                                <p className="font-semibold">Single Room | 1 King Bed</p>
-                                <h4 className="mt-2 font-semibold">Room Features:</h4>
-                                <ul className="list-disc pl-5">
-                                  <li>Outdoor swimming pool</li>
-                                  <li>Fitness center </li>
-                                  <li>Breakfast included</li>
-                                  <li>Restaurants, Coffee makers</li>
-                                </ul>
+
+                              {/* DETAILS SECTION */}
+                              <div className="flex-1">
+
+                                {/* TITLE + RATING */}
+                                <div className="flex items-start justify-between gap-3">
+                                  <h3 className="text-[20px] font-semibold text-[#7A1CAC]">
+                                    The Grand Ward Place – Colombo 7
+                                  </h3>
+
+                                  {/* Stars */}
+                                  <div className="flex text-yellow-400 text-xl">
+                                    ★★★★☆
+                                  </div>
+                                </div>
+
+                                {/* TAGS */}
+                                <div className="flex flex-wrap gap-3 mt-3">
+                                  <span className="px-4 py-1 bg-white border border-[#CBA5EF] rounded-full text-sm flex items-center gap-2">
+                                    🛏 Single Room
+                                  </span>
+
+                                  <span className="px-4 py-1 bg-white border border-[#CBA5EF] rounded-full text-sm flex items-center gap-2">
+                                    👑 1 King Bed
+                                  </span>
+
+                                  <span className="px-4 py-1 bg-white border border-[#CBA5EF] rounded-full text-sm flex items-center gap-2">
+                                    🏨 Double Room
+                                  </span>
+                                </div>
+
+                                {/* FEATURES */}
+                                <h4 className="font-semibold mt-4 mb-2 text-[16px]">Room Features</h4>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[15px] leading-relaxed">
+                                  <ul className="list-disc ml-6 space-y-1">
+                                    <li>Outdoor swimming pool</li>
+                                    <li>Airport shuttle</li>
+                                    <li>Free Wifi</li>
+                                    <li>Family rooms</li>
+                                    <li>Spa</li>
+                                  </ul>
+
+                                  <ul className="list-disc ml-6 space-y-1">
+                                    <li>Fitness center</li>
+                                    <li>3 restaurants</li>
+                                    <li>Tea/Coffee Maker in All Rooms</li>
+                                    <li>Bar</li>
+                                    <li>Wonderful Breakfast</li>
+                                  </ul>
+                                </div>
                               </div>
                             </div>
 
+                            {/* IMAGE CAROUSEL */}
                             <div className="mt-5 ml-6 mr-6 flex overflow-x-auto space-x-6">
-                              {/* Centering the images */}
-                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img1} alt="Port City" />
-                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img2} alt="Galle" />
-                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img3} alt="Lotus Tower" />
-                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img4} alt="Independence Memorial" />
-                              <img className="w-40 h-35 rounded-md lg:mx-auto" src={Img5} alt="Gangaramaya Temple" />
+
+                              {[
+                                { img: Img3, name: "Lotus Tower" },
+                                { img: Img1, name: "Port City" },
+                                { img: Img2, name: "Galle Face Beach" },
+                                { img: Img5, name: "Gangaramaya Temple" },
+                                { img: Img4, name: "Independence Memorial Hall" }
+                              ].map((item, index) => (
+                                <div key={index} className="relative shrink-0">
+
+                                  {/* IMAGE */}
+                                  <img
+                                    src={item.img}
+                                    className="w-full h-36 object-cover rounded-xl"
+                                    alt={item.name}
+                                  />
+
+                                  {/* TEXT OVERLAY */}
+                                  <div
+                                    className="absolute bottom-0 left-0 w-full bg-black/60 text-white rounded-b-xl py-1 px-2"
+                                  >
+                                    <p className="text-[16px] font-normal font-poppins truncate">{item.name}</p>
+                                  </div>
+
+                                </div>
+                              ))}
+
+                            </div>
+
+
+                            {/* DOT INDICATORS */}
+                            <div className="flex justify-center mt-3 gap-2">
+                              <span className="w-3 h-3 bg-[#D19CF8] rounded-full"></span>
+                              <span className="w-3 h-3 bg-[#C38AF2] rounded-full"></span>
+                              <span className="w-3 h-3 bg-[#B777EE] rounded-full"></span>
+                              <span className="w-3 h-3 bg-[#C38AF2] rounded-full"></span>
+                              <span className="w-3 h-3 bg-[#D19CF8] rounded-full"></span>
                             </div>
                           </div>
                         )}
+
                       </div>
                     ))}
                   </div>
