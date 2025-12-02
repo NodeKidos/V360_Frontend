@@ -1,14 +1,15 @@
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  STAFF = 'STAFF',
-  DRIVER = 'DRIVER',
-  CUSTOMER = 'CUSTOMER',
+  ADMIN = 'admin',
+  STAFF = 'staff',
+  DRIVER = 'driver',
+  CUSTOMER = 'customer',
+  LEAD = 'lead',
 }
 
 export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  SUSPENDED = 'suspended',
 }
 
 export enum OtpType {
