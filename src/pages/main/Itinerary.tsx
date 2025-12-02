@@ -390,6 +390,7 @@ export default function Itinerary() {
                                     <SriLankaMap
                                         selectedCities={formData.selectedCities || []}
                                         onCityClick={handleCityClick}
+                                        destinations={destinations}
                                     />
                                     {(formData.selectedCities || []).length > 0 && (
                                         <div className="mt-4 p-4 bg-[#F8EDFC] rounded-lg border border-[#E5D4EF]">
@@ -426,6 +427,11 @@ export default function Itinerary() {
                                     <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {currentDestinations.map((d, i) => {
                                             const isSelected = (formData.selectedCities || []).includes(d.name);
+                                            const destinationData = formData.selectedDestinations?.[d.name];
+                                            const hasHotel = !!destinationData?.hotel;
+                                            const excursionCount = destinationData?.excursions?.length || 0;
+                                            const needsAttention = isSelected && (!hasHotel || excursionCount === 0);
+
                                             return (
                                                 <div
                                                     key={i}
@@ -463,12 +469,20 @@ export default function Itinerary() {
                                                                     state: { destination: d.name, destinationId: d.id, step },
                                                                 });
                                                             }}
-                                                            className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition"
+                                                            className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${
+                                                                isSelected && excursionCount === 0 ? 'animate-pulse ring-2 ring-yellow-400' : ''
+                                                            }`}
+                                                            title={excursionCount > 0 ? `${excursionCount} excursion${excursionCount > 1 ? 's' : ''} selected` : 'Select excursions'}
                                                         >
                                                             <MdOutlineTravelExplore
                                                                 size={20}
-                                                                className="text-[#B749DB]"
+                                                                className={excursionCount > 0 ? "text-green-600" : "text-[#B749DB]"}
                                                             />
+                                                            {excursionCount > 0 && (
+                                                                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                                                    {excursionCount}
+                                                                </span>
+                                                            )}
                                                         </button>
                                                         <button
                                                             onClick={(e) => {
@@ -477,9 +491,20 @@ export default function Itinerary() {
                                                                     state: { destination: d.name, destinationId: d.id, step },
                                                                 });
                                                             }}
-                                                            className="p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition"
+                                                            className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${
+                                                                isSelected && !hasHotel ? 'animate-pulse ring-2 ring-yellow-400' : ''
+                                                            }`}
+                                                            title={hasHotel ? 'Hotel selected' : 'Select a hotel'}
                                                         >
-                                                            <FaHotel size={20} className="text-[#B749DB]" />
+                                                            <FaHotel
+                                                                size={20}
+                                                                className={hasHotel ? "text-green-600" : "text-[#B749DB]"}
+                                                            />
+                                                            {hasHotel && (
+                                                                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                                                    ✓
+                                                                </span>
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </div>

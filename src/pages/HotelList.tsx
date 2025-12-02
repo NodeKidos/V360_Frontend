@@ -27,17 +27,30 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
   const handleSelectHotel = () => {
     const currentSelection = formData.selectedDestinations?.[destination] || {};
 
-    updateFormData({
-      selectedDestinations: {
-        ...formData.selectedDestinations,
-        [destination]: {
-          ...currentSelection,
-          hotel: hotel
+    if (isSelected) {
+      // Unselect the hotel
+      const { hotel: _, ...rest } = currentSelection;
+      updateFormData({
+        selectedDestinations: {
+          ...formData.selectedDestinations,
+          [destination]: rest
         }
-      }
-    });
+      });
+      toast.info(`${hotel.name} removed from ${destination}`);
+    } else {
+      // Select the hotel
+      updateFormData({
+        selectedDestinations: {
+          ...formData.selectedDestinations,
+          [destination]: {
+            ...currentSelection,
+            hotel: hotel
+          }
+        }
+      });
+      toast.success(`${hotel.name} selected for ${destination}`);
+    }
 
-    toast.success(`${hotel.name} selected for ${destination}`);
     onClose();
   };
 
@@ -178,12 +191,11 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
         <button
           onClick={handleSelectHotel}
           className={`px-8 py-3 rounded-xl font-bold text-white transition-all ${isSelected
-            ? "bg-green-500 hover:bg-green-600 cursor-default"
+            ? "bg-orange-500 hover:bg-orange-600"
             : "bg-[#B749DB] hover:bg-[#8B2BB9]"
             }`}
-          disabled={isSelected}
         >
-          {isSelected ? "Selected" : "Select Hotel"}
+          {isSelected ? "Unselect Hotel" : "Select Hotel"}
         </button>
       </div>
     </motion.div>

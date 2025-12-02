@@ -87,14 +87,23 @@ function SetMapBounds() {
   return null;
 }
 
+interface Destination {
+  id: string;
+  name: string;
+  latitude?: number;
+  longitude?: number;
+}
+
 interface SriLankaMapProps {
   selectedCities: string[];
   onCityClick: (cityName: string) => void;
+  destinations?: Destination[];
 }
 
 export default function SriLankaMap({
   selectedCities,
   onCityClick,
+  destinations = [],
 }: SriLankaMapProps) {
   const [mapKey, setMapKey] = useState(0);
 
@@ -103,6 +112,16 @@ export default function SriLankaMap({
     const timer = setTimeout(() => setMapKey((prev) => prev + 1), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Use database destinations if available, otherwise fall back to hardcoded cities
+  // Filter out destinations without valid coordinates
+  const citiesToDisplay = destinations.length > 0
+    ? destinations.filter(d => d.latitude && d.longitude).map(d => ({
+        name: d.name,
+        lat: d.latitude!,
+        lng: d.longitude!
+      }))
+    : sriLankaCities;
 
   return (
     <div className="w-full h-[500px] rounded-xl overflow-hidden border-2 border-[#E5D4EF] shadow-lg">
@@ -120,7 +139,7 @@ export default function SriLankaMap({
         />
         <SetMapBounds />
 
-        {sriLankaCities.map((city) => {
+        {citiesToDisplay.map((city) => {
           const isSelected = selectedCities.includes(city.name);
           return (
             <Marker
