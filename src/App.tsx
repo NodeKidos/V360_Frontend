@@ -44,6 +44,8 @@ import DriverInfo from "./components/dashboard/Driver/DriverInfo";
 import StaffManagement from "./components/dashboard/Staff/StaffView";
 import EditStaff from "./components/dashboard/Staff/EditStaff";
 import AddStaff from "./components/dashboard/Staff/AddStaff";
+import ItinerarySummary from "./pages/main/ItinerarySummary";
+import UserDashboard from "./pages/dashboard/UserDashboard";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -94,6 +96,17 @@ export default function App() {
         <Route path="/excursion-points" element={<ExcursionPoints />} />
         <Route path="/hotel-list" element={<HotelList />} />
         <Route path="/excursion-details" element={<ExcursionDetails />} />
+
+        {/* User Dashboard Routes */}
+        <Route
+          path="/user-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/itinerary-summary" element={<ItinerarySummary />} />
 
         {/* Protected Admin Dashboard Routes */}
         <Route
