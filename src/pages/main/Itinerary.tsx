@@ -118,7 +118,7 @@ export default function Itinerary() {
         const itinerary = await createItinerary(dto);
 
         if (itinerary) {
-            toast.success("Itinerary created successfully!");
+            // Toast is already shown in the store, no need to show again
             navigate("/my-itineraries");
         }
     };
@@ -244,7 +244,7 @@ export default function Itinerary() {
                                         { label: "First Name", type: "text", placeholder: "Enter first name", fieldName: "firstName" },
                                         { label: "Last Name", type: "text", placeholder: "Enter last name", fieldName: "lastName" },
                                         { label: "Date of Birth", type: "date", fieldName: "dateOfBirth" },
-                                        { label: "Gender", type: "select", options: ["Choose gender", "Male", "Female"], fieldName: "gender" },
+                                        { label: "Gender", type: "select", options: ["Choose gender", "male", "female", "other"], fieldName: "gender" },
                                         { label: "Email Address", type: "email", placeholder: "Enter email", fieldName: "email" },
                                         { label: "Group Composition", type: "select", options: ["Select group type", "Solo", "Couple", "Family"], fieldName: "groupComposition" },
                                         { label: "Contact Number", type: "text", placeholder: "Enter contact number", fieldName: "contactNumber" },
@@ -282,7 +282,13 @@ export default function Itinerary() {
                                     <div className="flex gap-6 sm:gap-6 flex-wrap">
                                         {["1 week", "2 weeks", "3 weeks", "Custom"].map((label) => (
                                             <label key={label} className="flex items-center gap-4 md:gap-5 lg:gap-5 text-[18px] md:text-[20px] lg:text-[20px]">
-                                                <input type="checkbox" className="w-6 h-6 accent-[#B749DB]" />
+                                                <input
+                                                    type="radio"
+                                                    name="duration"
+                                                    className="w-6 h-6 accent-[#B749DB]"
+                                                    checked={formData.duration === label}
+                                                    onChange={() => updateFormData({ duration: label })}
+                                                />
                                                 {label}
                                             </label>
                                         ))}
@@ -430,7 +436,6 @@ export default function Itinerary() {
                                             const destinationData = formData.selectedDestinations?.[d.name];
                                             const hasHotel = !!destinationData?.hotel;
                                             const excursionCount = destinationData?.excursions?.length || 0;
-                                            const needsAttention = isSelected && (!hasHotel || excursionCount === 0);
 
                                             return (
                                                 <div
@@ -531,6 +536,8 @@ export default function Itinerary() {
                                     <label className="text-[20px] font-medium">Any Special Requirement</label>
                                     <textarea
                                         placeholder="Enter any special requests here (e.g., wheelchair access, birthday name, date and cake, Anniversary, Mobility Needs)"
+                                        value={formData.specialRequirements || ""}
+                                        onChange={(e) => updateFormData({ specialRequirements: e.target.value })}
                                         className="w-full max-w-full sm:max-w-[400px] md:max-w-[570px] lg:max-w-[820px] h-[200px] border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition resize-none placeholder:text-gray-400"
                                     ></textarea>
                                 </div>

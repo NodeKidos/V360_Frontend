@@ -46,6 +46,7 @@ import EditStaff from "./components/dashboard/Staff/EditStaff";
 import AddStaff from "./components/dashboard/Staff/AddStaff";
 import ItinerarySummary from "./pages/main/ItinerarySummary";
 import UserDashboard from "./pages/dashboard/UserDashboard";
+import ItineraryManagement from "./components/dashboard/Itinerary/ItineraryView";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -303,6 +304,24 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
               <EditStaff />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Itinerary Management Routes */}
+        <Route
+          path="/itineraries"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <ItineraryManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/itinerary/:itineraryId"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <ItinerarySummary />
             </ProtectedRoute>
           }
         />

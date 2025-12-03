@@ -51,6 +51,13 @@ export type Itinerary = {
   negotiations?: any[];
   issues?: any[];
   booking?: any;
+  metadata?: {
+    groupComposition?: string;
+    hotelCategory?: number;
+    roomCategory?: string[];
+    vehicleType?: string[];
+    duration?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -72,6 +79,13 @@ export type CreateItineraryDto = {
   endDate: string;
   numberOfParticipants: number;
   specialRequests?: string;
+  metadata?: {
+    groupComposition?: string;
+    hotelCategory?: number;
+    roomCategory?: string[];
+    vehicleType?: string[];
+    duration?: string;
+  };
   packageId?: string;
   days?: CreateItineraryDayDto[];
   // Guest user fields (for unauthenticated itinerary creation)
@@ -79,6 +93,11 @@ export type CreateItineraryDto = {
   guestFirstName?: string;
   guestLastName?: string;
   guestPhone?: string;
+  guestCountry?: string;
+  guestDateOfBirth?: string;
+  guestGender?: string;
+  guestMedicalConditions?: string;
+  guestDietaryPreferences?: string;
 }
 
 export type UpdateItineraryDto = Partial<CreateItineraryDto>;

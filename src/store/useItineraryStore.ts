@@ -147,12 +147,24 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       endDate: formData.departureDate,
       numberOfParticipants: parseInt(formData.groupComposition || "1") || 1,
       specialRequests: formData.specialRequirements,
+      metadata: {
+        groupComposition: formData.groupComposition,
+        hotelCategory: formData.hotelCategory,
+        roomCategory: formData.roomCategory,
+        vehicleType: formData.vehicleType,
+        duration: formData.duration,
+      },
       days,
       // Add guest fields if provided (for unauthenticated users)
       guestEmail: formData.email,
       guestFirstName: formData.firstName,
       guestLastName: formData.lastName,
       guestPhone: formData.contactNumber,
+      guestCountry: formData.country,
+      guestDateOfBirth: formData.dateOfBirth,
+      guestGender: formData.gender,
+      guestMedicalConditions: formData.medicalConditions,
+      guestDietaryPreferences: formData.dietaryPreferences,
     };
 
     return dto;

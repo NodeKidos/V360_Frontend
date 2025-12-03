@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import { TiThLargeOutline } from 'react-icons/ti';
-import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift } from 'react-icons/fa';
+import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -13,6 +13,7 @@ import { IoMdClose, IoMdSettings } from 'react-icons/io';
 const sidebarMenuConfig = {
   admin: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/admin-dashboard' },
+    { label: 'Itineraries', icon: <FaRoute />, link: '/itineraries' },
     { label: 'User', icon: <FaUser />, link: '/user' },
     { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
     { label: 'Hotel & Destination', icon: <FaHotel />, link: '/destination-hotel' },
@@ -25,6 +26,7 @@ const sidebarMenuConfig = {
   ],
   staff: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
+    { label: 'Itineraries', icon: <FaRoute />, link: '/itineraries' },
     { label: 'Trip', icon: <BiTrip />, link: '/trip' },
     { label: 'Driver', icon: <FaTruck />, link: '/driver' }
   ],

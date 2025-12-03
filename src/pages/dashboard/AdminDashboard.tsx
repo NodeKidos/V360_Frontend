@@ -8,12 +8,19 @@ import { BiTime } from "react-icons/bi";
 import { Card, CardContent } from "../../components/ui/card";
 import { Calendar } from "../../components/ui/calendar";
 import TopBar from "../../components/Topbar";
+import { useNavigate } from "react-router-dom";
+import { itineraryService } from "../../services/itinerary.service";
+import type { Itinerary } from "../../types/itinerary.types";
+import { ItineraryStatus } from "../../types/itinerary.types";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+  const [loadingItineraries, setLoadingItineraries] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,6 +31,76 @@ const AdminDashboard = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Fetch recent itineraries
+  useEffect(() => {
+    const fetchItineraries = async () => {
+      setLoadingItineraries(true);
+      try {
+        const data = await itineraryService.getAll();
+        // Get only the 5 most recent itineraries
+        setItineraries(data.slice(0, 5));
+      } catch (error) {
+        console.error("Failed to fetch itineraries:", error);
+      } finally {
+        setLoadingItineraries(false);
+      }
+    };
+
+    fetchItineraries();
+  }, []);
+
+  // Format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // Format time
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+
+  // Get status display
+  const getStatusDisplay = (status: ItineraryStatus) => {
+    switch (status) {
+      case ItineraryStatus.DRAFT:
+        return "Draft";
+      case ItineraryStatus.PENDING_QUOTE:
+        return "Pending";
+      case ItineraryStatus.QUOTED:
+        return "Quoted";
+      case ItineraryStatus.NEGOTIATING:
+        return "Negotiating";
+      case ItineraryStatus.ACCEPTED:
+        return "Accepted";
+      case ItineraryStatus.REJECTED:
+        return "Rejected";
+      case ItineraryStatus.CANCELLED:
+        return "Cancelled";
+      case ItineraryStatus.CONVERTED:
+        return "Converted";
+      default:
+        return status;
+    }
+  };
+
+  const handleViewAllItineraries = () => {
+    navigate("/itineraries");
+  };
+
+  const handleViewItinerary = (itineraryId: string) => {
+    navigate(`/itinerary/${itineraryId}`);
+  };
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -176,39 +253,67 @@ const AdminDashboard = () => {
               {/* Header */}
               <div className="flex justify-between items-center mb-4">
                 <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">
-                  Itinerary Details
+                  Recent Itineraries
                 </p>
-                <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                <FiArrowUpRight
+                  className="text-gray-400 cursor-pointer hover:text-gray-600"
+                  onClick={handleViewAllItineraries}
+                  title="View All Itineraries"
+                />
               </div>
 
+              {/* Loading State */}
+              {loadingItineraries && (
+                <div className="flex justify-center items-center py-10">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#B749DB]"></div>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!loadingItineraries && itineraries.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <p className="text-gray-500 text-sm font-poppins">No itineraries found</p>
+                </div>
+              )}
+
               {/* Table Container */}
-              <div className="overflow-x-auto rounded-xl border border-gray-100" style={{scrollbarWidth: "thin"}}>
-                <table className="w-full text-center font-inter font-medium">
-                  <thead>
-                    <tr className="text-[#382A59] border-b text-sm md:text-base">
-                      <th className="p-3">Itinerary</th>
-                      <th className="p-3">Name</th>
-                      <th className="p-3">Phone</th>
-                      <th className="p-3">Date</th>
-                      <th className="p-3">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[...Array(5)].map((_, i) => (
-                      <tr key={i} className="border-b hover:bg-gray-50 text-xs md:text-sm">
-                        <td className="p-3">ID00{i + 1}</td>
-                        <td className="p-3">Alice</td>
-                        <td className="p-3 whitespace-nowrap">+94 74 455 2676</td>
-                        <td className="p-3 whitespace-nowrap">
-                          <div>07-Sep-2025</div>
-                          <div className="text-xs text-gray-500">14:30</div>
-                        </td>
-                        <td className="p-3">Started</td>
+              {!loadingItineraries && itineraries.length > 0 && (
+                <div className="overflow-x-auto rounded-xl border border-gray-100" style={{scrollbarWidth: "thin"}}>
+                  <table className="w-full text-center font-inter font-medium">
+                    <thead>
+                      <tr className="text-[#382A59] border-b text-sm md:text-base">
+                        <th className="p-3">Itinerary No</th>
+                        <th className="p-3">Name</th>
+                        <th className="p-3">Phone</th>
+                        <th className="p-3">Created At</th>
+                        <th className="p-3">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {itineraries.map((itinerary) => (
+                        <tr
+                          key={itinerary.id}
+                          className="border-b hover:bg-gray-50 text-xs md:text-sm cursor-pointer transition-colors"
+                          onClick={() => handleViewItinerary(itinerary.id)}
+                        >
+                          <td className="p-3 font-medium text-[#B749DB]">{itinerary.itineraryNumber}</td>
+                          <td className="p-3">
+                            {itinerary.lead?.firstName} {itinerary.lead?.lastName}
+                          </td>
+                          <td className="p-3 whitespace-nowrap">
+                            {itinerary.lead?.phone || "N/A"}
+                          </td>
+                          <td className="p-3 whitespace-nowrap">
+                            <div>{formatDate(itinerary.createdAt)}</div>
+                            <div className="text-xs text-gray-500">{formatTime(itinerary.createdAt)}</div>
+                          </td>
+                          <td className="p-3">{getStatusDisplay(itinerary.status)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
 

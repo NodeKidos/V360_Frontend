@@ -4,26 +4,36 @@ import TopBar from "../../components/Topbar"; // Import TopBar
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { MdOutlineModeEdit } from "react-icons/md";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
 import hotelImg from "../../assets/hotels/cityof dream.jpg";
 import Img1 from "../../assets/PortCity.jpg";
-import Img2 from "../../assets/galleface.jpg";
-import Img3 from "../../assets/lotus.jpg";
-import Img4 from "../../assets/independance memorial hall.jpg";
-import Img5 from "../../assets/gangaramaya temple.jpg";
 import { motion } from "framer-motion";
 import { CiSearch } from "react-icons/ci";
+import { itineraryService } from "../../services/itinerary.service";
+import type { Itinerary } from "../../types/itinerary.types";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ItinerarySummary = () => {
+  const { itineraryId } = useParams<{ itineraryId: string }>(); // Get itinerary ID from URL
+  const navigate = useNavigate(); // Initialize navigate function
+
   const [step, setStep] = useState(1);
   const [showDetails, setShowDetails] = useState(false);
-  const [expandedDestinations, setExpandedDestinations] = useState([]);
+  const [expandedDestinations, setExpandedDestinations] = useState<string[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const navigate = useNavigate(); // Initialize navigate function
+  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editData, setEditData] = useState({
+    specialRequests: "",
+    notes: "",
+    numberOfParticipants: 0,
+  });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,14 +45,52 @@ const ItinerarySummary = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Fetch itinerary data
+  useEffect(() => {
+    const fetchItinerary = async () => {
+      if (!itineraryId) {
+        toast.error("No itinerary ID provided");
+        navigate("/itineraries");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const data = await itineraryService.getById(itineraryId);
+        setItinerary(data);
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "Failed to fetch itinerary");
+        navigate("/itineraries");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItinerary();
+  }, [itineraryId, navigate]);
+
+  // Format date
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const handleNextClick = () => {
     if (step === 1) {
       setStep(2);
       setShowDetails(true);
-      window.scrollTo({
-        top: document.getElementById("destination-section").offsetTop,
-        behavior: "smooth"
-      });
+      const element = document.getElementById("destination-section");
+      if (element) {
+        window.scrollTo({
+          top: element.offsetTop,
+          behavior: "smooth"
+        });
+      }
     }
   };
 
@@ -53,7 +101,7 @@ const ItinerarySummary = () => {
     }
   };
 
-  const toggleDestination = (destination) => {
+  const toggleDestination = (destination: string) => {
     setExpandedDestinations((prevState) =>
       prevState.includes(destination)
         ? prevState.filter((item) => item !== destination)
@@ -61,8 +109,41 @@ const ItinerarySummary = () => {
     );
   };
 
-  const handleEditClick = (itineraryId: string) => {
-    navigate(`/itinerary-edit/${itineraryId}`); // Navigate to the Itinerary Edit page with the itineraryId
+  const handleEditClick = () => {
+    if (!itinerary) return;
+
+    // Initialize edit data with current values
+    setEditData({
+      specialRequests: itinerary.specialRequests || "",
+      notes: itinerary.notes || "",
+      numberOfParticipants: itinerary.numberOfParticipants || 0,
+    });
+    setIsEditMode(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setEditData({
+      specialRequests: "",
+      notes: "",
+      numberOfParticipants: 0,
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!itinerary) return;
+
+    setSaving(true);
+    try {
+      const updated = await itineraryService.update(itinerary.id, editData);
+      setItinerary(updated);
+      setIsEditMode(false);
+      toast.success("Itinerary updated successfully!");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to update itinerary");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -96,182 +177,360 @@ const ItinerarySummary = () => {
         </div>
         {/* Main Content */}
         <div className="bg-white border border-purple-200 rounded-2xl shadow-sm p-4 min-h-[80vh]">
-          <motion.div className="space-y-6">
-            {/* Main Heading for the Itinerary Summary */}
-            <h1 className="text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-6">Itinerary Summary</h1>
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B749DB]"></div>
+            </div>
+          )}
 
-            {/* Step 1 – Personal Details */}
-            {step === 1 && (
-              <>
-                <div className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
-                  <h2 className="text-[20px] font-semibold mb-4">Personal Details</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px]">
-                    <div className="mb-2"><span className="font-semibold">First Name:</span> Alice</div>
-                    <div className="mb-2"><span className="font-semibold">Last Name:</span> Kirstoper</div>
-                    <div className="mb-2"><span className="font-semibold">Date of Birth:</span> 05.10.1994</div>
-                    <div className="mb-2"><span className="font-semibold">Contact No:</span> +1 (555) 123-4567</div>
-                    <div className="mb-2"><span className="font-semibold">Email Address:</span> alice@gmail.com</div>
-                    <div className="mb-2"><span className="font-semibold">Country of Residence:</span> USA</div>
-                    <div className="mb-2"><span className="font-semibold">Arrival Date:</span> 03.10.2025</div>
-                    <div className="mb-2"><span className="font-semibold">Departure Date:</span> 03.11.2025</div>
-                    <div className="mb-2"><span className="font-semibold">Preferred Duration of Stay:</span> 1 month</div>
-                    <div className="mb-2"><span className="font-semibold">Group Composition:</span> 2 Adults, 2 Children</div>
-                  </div>
-                </div>
+          {/* Content */}
+          {!loading && itinerary && (
+            <motion.div className="space-y-6">
+              {/* Main Heading for the Itinerary Summary */}
+              <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-6">
+                  Itinerary Summary - {itinerary.itineraryNumber}
+                </h1>
+                <button
+                  onClick={() => navigate("/itineraries")}
+                  className="text-[#B749DB] hover:text-[#9f37c9] font-poppins flex items-center gap-2"
+                >
+                  <FaArrowLeft /> Back to List
+                </button>
+              </div>
 
-                <div className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
-                  <h2 className="text-[20px] font-semibold mb-4">Preference & Requirements</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px]">
-                    <div className="mb-2"><span className="font-semibold">Dietary Preferences:</span> Non-Veg</div>
-                    <div className="mb-2"><span className="font-semibold">Hotel Category:</span> 5 Star</div>
-                    <div className="mb-2"><span className="font-semibold">Room Category:</span> Single</div>
-                    <div className="mb-2"><span className="font-semibold">Vehicle Type:</span> Semi-Luxury</div>
-                    <div className="mb-2"><span className="font-semibold">Special Needs:</span> None</div>
+              {/* Step 1 – Personal Details */}
+              {step === 1 && (
+                <>
+                  <div className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
+                    <h2 className="text-[20px] font-semibold mb-4">Customer Information</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 text-[16px]">
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Name:</span>{" "}
+                        <span className="text-gray-900">
+                          {itinerary.lead?.firstName} {itinerary.lead?.lastName}
+                        </span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Email:</span>{" "}
+                        <span className="text-gray-900">{itinerary.lead?.email || "N/A"}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Phone:</span>{" "}
+                        <span className="text-gray-900">{itinerary.lead?.phone || "N/A"}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Country:</span>{" "}
+                        <span className="text-gray-900">{itinerary.lead?.country || "N/A"}</span>
+                      </div>
+                      {itinerary.lead?.dateOfBirth && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Date of Birth:</span>{" "}
+                          <span className="text-gray-900">{formatDate(itinerary.lead.dateOfBirth)}</span>
+                        </div>
+                      )}
+                      {itinerary.lead?.gender && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Gender:</span>{" "}
+                          <span className="text-gray-900">{itinerary.lead.gender.charAt(0).toUpperCase() + itinerary.lead.gender.slice(1)}</span>
+                        </div>
+                      )}
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Status:</span>{" "}
+                        <span className="text-gray-900">{itinerary.lead?.status || "N/A"}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Lead Source:</span>{" "}
+                        <span className="text-gray-900">{itinerary.lead?.source || "N/A"}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
+
+                  <div className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
+                    <h2 className="text-[20px] font-semibold mb-4">Trip Details</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 text-[16px]">
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Itinerary Number:</span>{" "}
+                        <span className="text-gray-900">{itinerary.itineraryNumber}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Type:</span>{" "}
+                        <span className="text-gray-900">{itinerary.type.toUpperCase()}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Status:</span>{" "}
+                        <span className="text-gray-900 uppercase">{itinerary.status.replace(/_/g, " ")}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Participants:</span>{" "}
+                        <span className="text-gray-900">{itinerary.numberOfParticipants}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">Start Date:</span>{" "}
+                        <span className="text-gray-900">{formatDate(itinerary.startDate)}</span>
+                      </div>
+                      <div className="mb-2">
+                        <span className="font-semibold text-gray-700">End Date:</span>{" "}
+                        <span className="text-gray-900">{formatDate(itinerary.endDate)}</span>
+                      </div>
+                      {itinerary.metadata?.duration && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Duration:</span>{" "}
+                          <span className="text-gray-900">{itinerary.metadata.duration}</span>
+                        </div>
+                      )}
+                      {itinerary.metadata?.groupComposition && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Group:</span>{" "}
+                          <span className="text-gray-900">{itinerary.metadata.groupComposition}</span>
+                        </div>
+                      )}
+                      {itinerary.submittedAt && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Submitted:</span>{" "}
+                          <span className="text-gray-900">{formatDate(itinerary.submittedAt)}</span>
+                        </div>
+                      )}
+                      {itinerary.quotedAt && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Quoted:</span>{" "}
+                          <span className="text-gray-900">{formatDate(itinerary.quotedAt)}</span>
+                        </div>
+                      )}
+                      {itinerary.acceptedAt && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Accepted:</span>{" "}
+                          <span className="text-gray-900">{formatDate(itinerary.acceptedAt)}</span>
+                        </div>
+                      )}
+                      {itinerary.rejectedAt && (
+                        <div className="mb-2 col-span-2">
+                          <span className="font-semibold text-gray-700">Rejected:</span>{" "}
+                          <span className="text-gray-900">{formatDate(itinerary.rejectedAt)}</span>
+                          {itinerary.rejectionReason && (
+                            <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                              <span className="font-semibold text-red-700">Reason:</span>{" "}
+                              <span className="text-red-900">{itinerary.rejectionReason}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Trip Preferences */}
+                  {itinerary.metadata && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-indigo-50 border border-indigo-300 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-4 text-indigo-900">Trip Preferences</h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 text-[16px]">
+                        {itinerary.metadata.hotelCategory && (
+                          <div className="mb-2">
+                            <span className="font-semibold text-gray-700">Hotel Category:</span>{" "}
+                            <span className="text-gray-900">{itinerary.metadata.hotelCategory} Star</span>
+                          </div>
+                        )}
+                        {itinerary.metadata.roomCategory && itinerary.metadata.roomCategory.length > 0 && (
+                          <div className="mb-2">
+                            <span className="font-semibold text-gray-700">Room Category:</span>{" "}
+                            <span className="text-gray-900">{itinerary.metadata.roomCategory.join(", ")}</span>
+                          </div>
+                        )}
+                        {itinerary.metadata.vehicleType && itinerary.metadata.vehicleType.length > 0 && (
+                          <div className="mb-2 col-span-2">
+                            <span className="font-semibold text-gray-700">Vehicle Type:</span>{" "}
+                            <span className="text-gray-900">{itinerary.metadata.vehicleType.join(", ")}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {itinerary.specialRequests && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-yellow-50 border border-yellow-300 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-3 text-yellow-900">Special Requests</h2>
+                      <div className="text-[16px] text-gray-800 whitespace-pre-wrap">
+                        {itinerary.specialRequests}
+                      </div>
+                    </div>
+                  )}
+
+                  {itinerary.notes && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-blue-50 border border-blue-300 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-3 text-blue-900">Admin Notes</h2>
+                      <div className="text-[16px] text-gray-800 whitespace-pre-wrap">
+                        {itinerary.notes}
+                      </div>
+                    </div>
+                  )}
+
+                  {itinerary.lead?.notes && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-purple-50 border border-purple-300 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-3 text-purple-900">Lead Notes</h2>
+                      <div className="text-[16px] text-gray-800 whitespace-pre-wrap">
+                        {itinerary.lead.notes}
+                      </div>
+                    </div>
+                  )}
+
+                  {itinerary.lead?.interests && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-green-50 border border-green-300 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-3 text-green-900">Customer Interests</h2>
+                      <div className="text-[16px] text-gray-800 whitespace-pre-wrap">
+                        {itinerary.lead.interests}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Medical & Dietary Information */}
+                  {(itinerary.lead?.medicalConditions || itinerary.lead?.dietaryPreferences) && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-rose-50 border border-rose-300 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-3 text-rose-900">Medical & Dietary Information</h2>
+                      <div className="grid grid-cols-1 gap-3 text-[16px]">
+                        {itinerary.lead.dietaryPreferences && (
+                          <div>
+                            <span className="font-semibold text-gray-700">Dietary Preferences:</span>{" "}
+                            <span className="text-gray-800">{itinerary.lead.dietaryPreferences}</span>
+                          </div>
+                        )}
+                        {itinerary.lead.medicalConditions && (
+                          <div>
+                            <span className="font-semibold text-gray-700">Medical Conditions:</span>{" "}
+                            <span className="text-gray-800">{itinerary.lead.medicalConditions}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
 
             {/* Step 2 – Destinations */}
             {step === 2 && showDetails && (
               <section id="destination-section" className="container mx-auto">
                 <div className="p-5 font-poppins">
-                  <h2 className="text-xl font-semibold mb-2">Destinations</h2>
-                  <div className="space-y-4">
-                    {["Colombo", "Kandy", "Galle"].map((location) => (
-                      <div key={location}>
+                  <h2 className="text-xl font-semibold mb-2">Itinerary Days</h2>
+                  {itinerary.days && itinerary.days.length > 0 ? (
+                    <div className="space-y-4">
+                      {itinerary.days.map((day) => (
+                      <div key={day.id}>
                         <div className="flex items-center justify-between bg-[#B723F2]/5 border border-[#B723F2] rounded-[25px] p-2 mb-2">
                           <button
                             className="w-full text-left font-semibold ml-4 text-[18px]"
-                            onClick={() => toggleDestination(location)}
+                            onClick={() => toggleDestination(day.id!)}
                           >
-                            {location}
+                            Day {day.dayNumber}: {day.destination?.name || "No destination"} - {formatDate(day.date)}
                           </button>
-                          {expandedDestinations.includes(location) ? (
+                          {expandedDestinations.includes(day.id!) ? (
                             <IoIosArrowDropupCircle className="text-[#B749DB] w-10 h-6" />
                           ) : (
                             <IoIosArrowDropdownCircle className="text-[#B749DB] w-10 h-6" />
                           )}
                         </div>
 
-                        {expandedDestinations.includes(location) && (
+                        {expandedDestinations.includes(day.id!) && (
                           <div className="bg-[#F8EDFC] border border-[#D9B7F2] p-5 rounded-[25px] shadow-sm">
+                            {/* Day Details */}
+                            {day.title && (
+                              <h3 className="text-[20px] font-semibold text-[#7A1CAC] mb-2">{day.title}</h3>
+                            )}
+                            {day.description && (
+                              <p className="text-gray-700 mb-4">{day.description}</p>
+                            )}
 
-                            {/* TOP SECTION */}
-                            <div className="flex flex-col lg:flex-row gap-6">
+                            {/* Hotel Information */}
+                            {day.hotel && (
+                              <div className="flex flex-col lg:flex-row gap-6 mb-6">
+                                {day.hotel.images && day.hotel.images.length > 0 ? (
+                                  <img
+                                    src={day.hotel.images[0]}
+                                    className="w-full sm:w-56 lg:w-60 h-40 object-cover rounded-xl"
+                                    alt={day.hotel.name}
+                                    onError={(e) => {
+                                      e.currentTarget.src = hotelImg;
+                                    }}
+                                  />
+                                ) : (
+                                  <img
+                                    src={hotelImg}
+                                    className="w-full sm:w-56 lg:w-60 h-40 object-cover rounded-xl"
+                                    alt="Hotel"
+                                  />
+                                )}
 
-                              {/* HOTEL IMAGE */}
-                              <img
-                                src={hotelImg}
-                                className="w-full sm:w-56 lg:w-60 h-40 object-cover rounded-xl"
-                                alt="Hotel"
-                              />
-
-                              {/* DETAILS SECTION */}
-                              <div className="flex-1">
-
-                                {/* TITLE + RATING */}
-                                <div className="flex items-start justify-between gap-3">
-                                  <h3 className="text-[20px] font-semibold text-[#7A1CAC]">
-                                    The Grand Ward Place – Colombo 7
-                                  </h3>
-
-                                  {/* Stars */}
-                                  <div className="flex text-yellow-400 text-xl">
-                                    ★★★★☆
-                                  </div>
-                                </div>
-
-                                {/* TAGS */}
-                                <div className="flex flex-wrap gap-3 mt-3">
-                                  <span className="px-4 py-1 bg-white border border-[#CBA5EF] rounded-full text-sm flex items-center gap-2">
-                                    🛏 Single Room
-                                  </span>
-
-                                  <span className="px-4 py-1 bg-white border border-[#CBA5EF] rounded-full text-sm flex items-center gap-2">
-                                    👑 1 King Bed
-                                  </span>
-
-                                  <span className="px-4 py-1 bg-white border border-[#CBA5EF] rounded-full text-sm flex items-center gap-2">
-                                    🏨 Double Room
-                                  </span>
-                                </div>
-
-                                {/* FEATURES */}
-                                <h4 className="font-semibold mt-4 mb-2 text-[16px]">Room Features</h4>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[15px] leading-relaxed">
-                                  <ul className="list-disc ml-6 space-y-1">
-                                    <li>Outdoor swimming pool</li>
-                                    <li>Airport shuttle</li>
-                                    <li>Free Wifi</li>
-                                    <li>Family rooms</li>
-                                    <li>Spa</li>
-                                  </ul>
-
-                                  <ul className="list-disc ml-6 space-y-1">
-                                    <li>Fitness center</li>
-                                    <li>3 restaurants</li>
-                                    <li>Tea/Coffee Maker in All Rooms</li>
-                                    <li>Bar</li>
-                                    <li>Wonderful Breakfast</li>
-                                  </ul>
+                                <div className="flex-1">
+                                  <h4 className="text-[18px] font-semibold text-[#7A1CAC]">{day.hotel.name}</h4>
+                                  {day.hotel.description && (
+                                    <p className="text-gray-600 text-sm mt-2">{day.hotel.description}</p>
+                                  )}
+                                  {day.hotel.address && (
+                                    <p className="text-gray-600 text-sm mt-1">📍 {day.hotel.address}</p>
+                                  )}
+                                  {day.hotel.contactInfo && (
+                                    <p className="text-gray-600 text-sm mt-1">📞 {day.hotel.contactInfo}</p>
+                                  )}
                                 </div>
                               </div>
-                            </div>
+                            )}
 
-                            {/* IMAGE CAROUSEL */}
-                            <div className="mt-5 ml-6 mr-6 flex overflow-x-auto space-x-6">
-
-                              {[
-                                { img: Img3, name: "Lotus Tower" },
-                                { img: Img1, name: "Port City" },
-                                { img: Img2, name: "Galle Face Beach" },
-                                { img: Img5, name: "Gangaramaya Temple" },
-                                { img: Img4, name: "Independence Memorial Hall" }
-                              ].map((item, index) => (
-                                <div key={index} className="relative shrink-0">
-
-                                  {/* IMAGE */}
-                                  <img
-                                    src={item.img}
-                                    className="w-full h-36 object-cover rounded-xl"
-                                    alt={item.name}
-                                  />
-
-                                  {/* TEXT OVERLAY */}
-                                  <div
-                                    className="absolute bottom-0 left-0 w-full bg-black/60 text-white rounded-b-xl py-1 px-2"
-                                  >
-                                    <p className="text-[16px] font-normal font-poppins truncate">{item.name}</p>
-                                  </div>
-
+                            {/* Excursions */}
+                            {day.excursions && day.excursions.length > 0 && (
+                              <div className="mt-5">
+                                <h4 className="font-semibold mb-3 text-[16px]">Excursions</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  {day.excursions.map((excursion: any, index: number) => (
+                                    <div key={index} className="relative">
+                                      {excursion.images && excursion.images.length > 0 ? (
+                                        <img
+                                          src={excursion.images[0]}
+                                          className="w-full h-36 object-cover rounded-xl"
+                                          alt={excursion.name}
+                                          onError={(e) => {
+                                            e.currentTarget.src = Img1;
+                                          }}
+                                        />
+                                      ) : (
+                                        <img
+                                          src={Img1}
+                                          className="w-full h-36 object-cover rounded-xl"
+                                          alt={excursion.name}
+                                        />
+                                      )}
+                                      <div className="absolute bottom-0 left-0 w-full bg-black/60 text-white rounded-b-xl py-1 px-2">
+                                        <p className="text-[16px] font-normal font-poppins truncate">
+                                          {excursion.name}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                              </div>
+                            )}
 
-                            </div>
-
-
-                            {/* DOT INDICATORS */}
-                            <div className="flex justify-center mt-3 gap-2">
-                              <span className="w-3 h-3 bg-[#D19CF8] rounded-full"></span>
-                              <span className="w-3 h-3 bg-[#C38AF2] rounded-full"></span>
-                              <span className="w-3 h-3 bg-[#B777EE] rounded-full"></span>
-                              <span className="w-3 h-3 bg-[#C38AF2] rounded-full"></span>
-                              <span className="w-3 h-3 bg-[#D19CF8] rounded-full"></span>
-                            </div>
+                            {/* Day Notes */}
+                            {day.notes && (
+                              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-sm text-gray-700">
+                                  <span className="font-semibold">Notes:</span> {day.notes}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
-
                       </div>
                     ))}
                   </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-10">No itinerary days available</p>
+                  )}
                 </div>
 
-                <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 mx-5 rounded-[25px] mt-5 font-poppins">
-                  <h2 className="text-xl font-semibold mb-4">Notes</h2>
-                  <p>Special Request for birthday</p>
-                </div>
+                {itinerary.specialRequests && (
+                  <div className="bg-[#B723F2]/5 border border-[#B723F2] p-4 mx-5 rounded-[25px] mt-5 font-poppins">
+                    <h2 className="text-xl font-semibold mb-4">Special Requests</h2>
+                    <p>{itinerary.specialRequests}</p>
+                  </div>
+                )}
               </section>
             )}
 
@@ -303,8 +562,91 @@ const ItinerarySummary = () => {
               )}
             </div>
           </motion.div>
+          )}
         </div>
+
+        {/* Edit Modal */}
+        {isEditMode && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <h2 className="text-2xl font-semibold text-[#5B247A] mb-6">Edit Itinerary</h2>
+
+                {/* Number of Participants */}
+                <div className="mb-6">
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Number of Participants
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editData.numberOfParticipants}
+                    onChange={(e) => setEditData({ ...editData, numberOfParticipants: parseInt(e.target.value) || 0 })}
+                    className="w-full border border-[#E5D4EF] rounded-lg px-4 py-2 focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition outline-none"
+                  />
+                </div>
+
+                {/* Special Requests */}
+                <div className="mb-6">
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Special Requests
+                  </label>
+                  <textarea
+                    value={editData.specialRequests}
+                    onChange={(e) => setEditData({ ...editData, specialRequests: e.target.value })}
+                    rows={4}
+                    className="w-full border border-[#E5D4EF] rounded-lg px-4 py-2 focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition outline-none resize-none"
+                    placeholder="Enter special requests..."
+                  />
+                </div>
+
+                {/* Admin Notes */}
+                <div className="mb-6">
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Admin Notes (Internal)
+                  </label>
+                  <textarea
+                    value={editData.notes}
+                    onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
+                    rows={4}
+                    className="w-full border border-[#E5D4EF] rounded-lg px-4 py-2 focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition outline-none resize-none"
+                    placeholder="Enter internal notes..."
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={handleCancelEdit}
+                    disabled={saving}
+                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={saving}
+                    className="px-6 py-2 bg-[#B749DB] text-white rounded-lg hover:bg-[#9f37c9] disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+                  >
+                    {saving ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Changes"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+      <ToastContainer />
     </div>
   );
 };
