@@ -119,13 +119,20 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
             // hotelId = selectedDestData.hotel.id; 
           }
 
-          if (selectedDestData?.excursions) {
-            // Add excursions only if they haven't been added to previous days for the same destination?
-            // For now, let's add them to the first day of the destination stay
-            const isFirstDayOfCity = i % daysPerCity === 0 || i === 0;
-            if (isFirstDayOfCity) {
-              excursionIds = selectedDestData.excursions.map((ex: any) => ex.id).filter(Boolean);
-            }
+          if (selectedDestData?.excursions && selectedDestData.excursions.length > 0) {
+            // Distribute excursions across days for this destination
+            // Calculate which day within this city's stay (0-indexed)
+            const dayWithinCity = i - (cityIndex * daysPerCity);
+            const excursionsPerDay = Math.ceil(selectedDestData.excursions.length / daysPerCity);
+
+            // Get excursions for this specific day
+            const startIdx = dayWithinCity * excursionsPerDay;
+            const endIdx = Math.min(startIdx + excursionsPerDay, selectedDestData.excursions.length);
+
+            excursionIds = selectedDestData.excursions
+              .slice(startIdx, endIdx)
+              .map((ex: any) => ex.id)
+              .filter(Boolean);
           }
         }
       }
@@ -134,7 +141,7 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
         dayNumber: i + 1,
         date: currentDate.toISOString().split('T')[0],
         title: `Day ${i + 1}`,
-        description: "Day description placeholder",
+        description: "",
         destinationId,
         hotelId,
         excursionIds
