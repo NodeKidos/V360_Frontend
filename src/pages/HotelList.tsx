@@ -205,7 +205,7 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
 const HotelList = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { destination, destinationId, step } = location.state || { destination: "Colombo", destinationId: null, step: 3 };
+  const { destination, destinationId, step, fromEdit, itineraryId, returnTab } = location.state || { destination: "Colombo", destinationId: null, step: 3, fromEdit: false, itineraryId: null, returnTab: "destinations" };
 
   const { formData } = useItineraryStore();
   const [selectedHotel, setSelectedHotel] = useState<any>(null);
@@ -270,7 +270,11 @@ const HotelList = () => {
   ];
 
   const handleStepClick = (stepId: number) => {
-    navigate("/itinerary", { state: { step: stepId } });
+    if (fromEdit && itineraryId) {
+      navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
+    } else {
+      navigate("/itinerary", { state: { step: stepId } });
+    }
   };
 
   const renderStars = (rating: number) => {
@@ -375,20 +379,28 @@ const HotelList = () => {
 
         <div id="hotel-list-start" className="md:w-6/6 lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-6 md:p-10 min-h-[70vh]">
           <p className="text-[#B749DB] font-semibold mb-8">
+            {!fromEdit && (
+              <>
+                <span
+                  onClick={() => navigate("/destination")}
+                  className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
+                >
+                  Destination
+                </span>{" "}
+                &gt;{" "}
+              </>
+            )}
             <span
-              onClick={() => navigate("/destination")}
+              onClick={() => {
+                if (fromEdit && itineraryId) {
+                  navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
+                } else {
+                  navigate("/itinerary", { state: { destination, step: 3 } });
+                }
+              }}
               className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
             >
-              Destination
-            </span>{" "}
-            &gt;{" "}
-            <span
-              onClick={() =>
-                navigate("/itinerary", { state: { destination, step: 3 } })
-              }
-              className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
-            >
-              {destination}
+              {fromEdit ? "Back to Edit" : destination}
             </span>{" "}
             &gt; Hotels
           </p>
@@ -483,22 +495,28 @@ const HotelList = () => {
 
           <div className="flex justify-between mt-12">
             <button
-              onClick={() =>
-                navigate("/itinerary", { state: { destination, step: 3 } })
-              }
+              onClick={() => {
+                if (fromEdit && itineraryId) {
+                  navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
+                } else {
+                  navigate("/itinerary", { state: { destination, step: 3 } });
+                }
+              }}
               className="flex items-center gap-2 border border-[#B749DB] text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
             >
-              <FaArrowLeft className="text-[#B749DB]" /> Previous
+              <FaArrowLeft className="text-[#B749DB]" /> {fromEdit ? "Back to Edit" : "Previous"}
             </button>
 
-            <button
-              onClick={() =>
-                navigate("/itinerary", { state: { destination, step: 4 } })
-              }
+            {!fromEdit && (
+              <button
+                onClick={() =>
+                  navigate("/itinerary", { state: { destination, step: 4 } })
+                }
               className="flex items-center gap-2 bg-[#B749DB] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-[#8B2BB9] transition-all"
             >
               Next <FaArrowRight className="text-white" />
             </button>
+            )}
           </div>
         </div>
       </div>

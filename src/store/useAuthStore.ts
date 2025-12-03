@@ -8,6 +8,7 @@ interface AuthState {
   user: User | null;
   isLoggedIn: boolean;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   otpMode: OtpType | null;
   otpTarget: string | null;
@@ -26,6 +27,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isLoggedIn: false,
   isLoading: false,
+  isInitialized: false,
   error: null,
   otpMode: null,
   otpTarget: null,
@@ -38,12 +40,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (userJson && accessToken) {
       try {
         const user = JSON.parse(userJson);
-        set({ user, isLoggedIn: true });
+        set({ user, isLoggedIn: true, isInitialized: true });
       } catch (error) {
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        set({ isInitialized: true });
       }
+    } else {
+      set({ isInitialized: true });
     }
   },
 

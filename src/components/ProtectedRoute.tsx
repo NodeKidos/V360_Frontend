@@ -8,7 +8,16 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { isLoggedIn, user } = useAuthStore();
+  const { isLoggedIn, user, isInitialized } = useAuthStore();
+
+  // Show loading while checking authentication
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B749DB]"></div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn || !user) {
     // Not logged in, redirect to login

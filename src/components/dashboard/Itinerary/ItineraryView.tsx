@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import Pagination from "../../ui/Pagination";
+import DeleteConfirmModal from "../../ui/DeleteConfirmModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
-import { FiEye } from "react-icons/fi";
+import { FiEye, FiTrash2, FiEdit } from "react-icons/fi";
 import { itineraryService } from "../../../services/itinerary.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
@@ -24,6 +25,12 @@ const ItineraryManagement = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; itineraryId: string; itineraryNumber: string }>({
+    isOpen: false,
+    itineraryId: "",
+    itineraryNumber: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch itineraries from API
   useEffect(() => {
@@ -78,6 +85,26 @@ const ItineraryManagement = () => {
   // Navigate to Itinerary Detail page
   const handleViewClick = (itineraryId: string) => {
     navigate(`/itinerary/${itineraryId}`);
+  };
+
+  // Delete itinerary
+  const handleDeleteClick = (itineraryId: string, itineraryNumber: string) => {
+    setDeleteModal({ isOpen: true, itineraryId, itineraryNumber });
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await itineraryService.delete(deleteModal.itineraryId);
+      toast.success("Itinerary deleted successfully!");
+      // Refresh the list
+      setItineraries(itineraries.filter(it => it.id !== deleteModal.itineraryId));
+      setDeleteModal({ isOpen: false, itineraryId: "", itineraryNumber: "" });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete itinerary");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Format date
@@ -348,6 +375,18 @@ const ItineraryManagement = () => {
                             onClick={() => handleViewClick(itinerary.id)}
                             title="View Details"
                           />
+                          <FiEdit
+                            className="text-blue-600 cursor-pointer text-[20px] hover:text-blue-800"
+                            onClick={() => navigate(`/itinerary/${itinerary.id}/edit`)}
+                            title="Edit Itinerary"
+                          />
+                          {(itinerary.status === ItineraryStatus.DRAFT || itinerary.status === ItineraryStatus.REJECTED) && (
+                            <FiTrash2
+                              className="text-red-500 cursor-pointer text-[20px] hover:text-red-700"
+                              onClick={() => handleDeleteClick(itinerary.id, itinerary.itineraryNumber)}
+                              title="Delete Itinerary"
+                            />
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -373,6 +412,18 @@ const ItineraryManagement = () => {
           <ToastContainer />
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, itineraryId: "", itineraryNumber: "" })}
+        onConfirm={handleConfirmDelete}
+        title="Delete Itinerary"
+        description={`Are you sure you want to delete itinerary ${deleteModal.itineraryNumber}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

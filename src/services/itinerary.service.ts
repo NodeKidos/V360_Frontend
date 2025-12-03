@@ -64,6 +64,12 @@ export const itineraryService = {
     return response.data;
   },
 
+  // Create quote (admin)
+  createQuote: async (id: string, quoteData: any): Promise<Itinerary> => {
+    const response = await api.post<Itinerary>(`/itineraries/${id}/quote`, quoteData);
+    return response.data;
+  },
+
   // Add negotiation message
   addNegotiation: async (id: string, message: string, proposedPrice?: number): Promise<any> => {
     const response = await api.post(`/itineraries/${id}/negotiations`, {

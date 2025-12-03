@@ -276,6 +276,21 @@ export default function Itinerary() {
                                     ))}
                                 </div>
 
+                                {/* Number of Participants */}
+                                {(formData.groupComposition && formData.groupComposition !== "Select group type" && formData.groupComposition !== "Solo") && (
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[16px] sm:text-[18px] font-medium">Number of Participants</label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            placeholder="Enter number of participants"
+                                            value={formData.numberOfParticipants || ""}
+                                            onChange={(e) => updateFormData({ numberOfParticipants: parseInt(e.target.value) || 0 })}
+                                            className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                        />
+                                    </div>
+                                )}
+
                                 {/* Preferred Duration of Stay */}
                                 <div>
                                     <p className="font-semibold mb-3 text-[16px] sm:text-[20px]">Preferred Duration of Stay</p>
@@ -293,6 +308,19 @@ export default function Itinerary() {
                                             </label>
                                         ))}
                                     </div>
+
+                                    {/* Custom Duration Input */}
+                                    {formData.duration === "Custom" && (
+                                        <div className="mt-4">
+                                            <input
+                                                type="text"
+                                                placeholder="Enter custom duration (e.g., 10 days, 5 weeks)"
+                                                value={formData.customDuration || ""}
+                                                onChange={(e) => updateFormData({ customDuration: e.target.value })}
+                                                className="w-full max-w-full sm:max-w-[400px] md:max-w-[570px] lg:max-w-[620px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </motion.div>
                         )}

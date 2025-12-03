@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../../components/AdminSidebar";
 import TopBar from "../../components/Topbar"; // Import TopBar
+import DeleteConfirmModal from "../../components/ui/DeleteConfirmModal";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { MdOutlineModeEdit } from "react-icons/md";
+import { FiTrash2 } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
 import hotelImg from "../../assets/hotels/cityof dream.jpg";
 import Img1 from "../../assets/PortCity.jpg";
@@ -11,6 +13,7 @@ import { motion } from "framer-motion";
 import { CiSearch } from "react-icons/ci";
 import { itineraryService } from "../../services/itinerary.service";
 import type { Itinerary } from "../../types/itinerary.types";
+import { ItineraryStatus } from "../../types/itinerary.types";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -34,6 +37,8 @@ const ItinerarySummary = () => {
     numberOfParticipants: 0,
   });
   const [saving, setSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -146,6 +151,26 @@ const ItinerarySummary = () => {
     }
   };
 
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!itinerary) return;
+
+    setIsDeleting(true);
+    try {
+      await itineraryService.delete(itinerary.id);
+      toast.success("Itinerary deleted successfully!");
+      setShowDeleteModal(false);
+      setTimeout(() => navigate("/itineraries"), 1500);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete itinerary");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="flex w-full min-h-screen bg-white">
       {/* Sidebar */}
@@ -192,12 +217,30 @@ const ItinerarySummary = () => {
                 <h1 className="text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-6">
                   Itinerary Summary - {itinerary.itineraryNumber}
                 </h1>
-                <button
-                  onClick={() => navigate("/itineraries")}
-                  className="text-[#B749DB] hover:text-[#9f37c9] font-poppins flex items-center gap-2"
-                >
-                  <FaArrowLeft /> Back to List
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => navigate(`/itinerary/${itineraryId}/edit`)}
+                    className="text-[#B749DB] hover:text-[#9f37c9] font-poppins flex items-center gap-2"
+                    title="Edit Itinerary"
+                  >
+                    <MdOutlineModeEdit /> Edit
+                  </button>
+                  {(itinerary.status === ItineraryStatus.DRAFT || itinerary.status === ItineraryStatus.REJECTED) && (
+                    <button
+                      onClick={handleDelete}
+                      className="text-red-500 hover:text-red-700 font-poppins flex items-center gap-2"
+                      title="Delete Itinerary"
+                    >
+                      <FiTrash2 /> Delete
+                    </button>
+                  )}
+                  <button
+                    onClick={() => navigate("/itineraries")}
+                    className="text-[#B749DB] hover:text-[#9f37c9] font-poppins flex items-center gap-2"
+                  >
+                    <FaArrowLeft /> Back to List
+                  </button>
+                </div>
               </div>
 
               {/* Step 1 – Personal Details */}
@@ -646,6 +689,19 @@ const ItinerarySummary = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Itinerary"
+        description={itinerary ? `Are you sure you want to delete itinerary ${itinerary.itineraryNumber}? This action cannot be undone.` : ""}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDeleting={isDeleting}
+      />
+
       <ToastContainer />
     </div>
   );

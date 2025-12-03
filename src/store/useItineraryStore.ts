@@ -148,18 +148,32 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       });
     }
 
+    // Determine number of participants
+    let participants = formData.numberOfParticipants || 1;
+    if (!formData.numberOfParticipants && formData.groupComposition) {
+      // Default values based on group type
+      if (formData.groupComposition === "Solo") participants = 1;
+      else if (formData.groupComposition === "Couple") participants = 2;
+      else if (formData.groupComposition === "Family") participants = 4;
+    }
+
+    // Determine duration
+    const actualDuration = formData.duration === "Custom"
+      ? formData.customDuration || formData.duration
+      : formData.duration;
+
     const dto: CreateItineraryDto = {
       type: ItineraryType.CUSTOM,
       startDate: formData.arrivalDate,
       endDate: formData.departureDate,
-      numberOfParticipants: parseInt(formData.groupComposition || "1") || 1,
+      numberOfParticipants: participants,
       specialRequests: formData.specialRequirements,
       metadata: {
         groupComposition: formData.groupComposition,
         hotelCategory: formData.hotelCategory,
         roomCategory: formData.roomCategory,
         vehicleType: formData.vehicleType,
-        duration: formData.duration,
+        duration: actualDuration,
       },
       days,
       // Add guest fields if provided (for unauthenticated users)

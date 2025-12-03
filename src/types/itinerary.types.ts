@@ -109,11 +109,13 @@ export interface ItineraryFormData {
   gender: string;
   email: string;
   groupComposition: string;
+  numberOfParticipants?: number;
   contactNumber: string;
   country: string;
   arrivalDate: string;
   departureDate: string;
   duration: string;
+  customDuration?: string;
   dietaryPreferences: string;
   hotelCategory: number;
   roomCategory: string[];

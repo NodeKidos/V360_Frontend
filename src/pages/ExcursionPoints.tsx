@@ -15,6 +15,9 @@ export default function ExcursionPoints() {
   const navigate = useNavigate();
   const destination = location.state?.destination || "Colombo";
   const destinationId = location.state?.destinationId;
+  const fromEdit = location.state?.fromEdit || false;
+  const itineraryId = location.state?.itineraryId;
+  const returnTab = location.state?.returnTab || "destinations";
 
   const { formData, updateFormData } = useItineraryStore();
 
@@ -57,8 +60,12 @@ export default function ExcursionPoints() {
   const handleStepClick = (clickedStep: number) => {
     setStep(clickedStep);
 
-    // Navigate to Itinerary page with correct step
-    navigate("/itinerary", { state: { destination, step: clickedStep } });
+    // Navigate to Itinerary page with correct step or back to edit
+    if (fromEdit && itineraryId) {
+      navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
+    } else {
+      navigate("/itinerary", { state: { destination, step: clickedStep } });
+    }
   };
 
   const isExcursionSelected = (excursionId: string) => {
@@ -202,20 +209,28 @@ export default function ExcursionPoints() {
         <div className="lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-12 min-h-[85vh]">
           {/* ===== Breadcrumb ===== */}
           <p className="text-[#B749DB] font-semibold mb-8">
+            {!fromEdit && (
+              <>
+                <span
+                  onClick={() => navigate("/destination")}
+                  className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
+                >
+                  Destination
+                </span>{" "}
+                &gt;{" "}
+              </>
+            )}
             <span
-              onClick={() => navigate("/destination")}
+              onClick={() => {
+                if (fromEdit && itineraryId) {
+                  navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
+                } else {
+                  navigate("/itinerary", { state: { destination, step: 3 } });
+                }
+              }}
               className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
             >
-              Destination
-            </span>{" "}
-            &gt;{" "}
-            <span
-              onClick={() =>
-                navigate("/itinerary", { state: { destination, step: 3 } })
-              }
-              className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
-            >
-              {destination}
+              {fromEdit ? "Back to Edit" : destination}
             </span>{" "}
             &gt; Excursion Points
           </p>
@@ -288,24 +303,30 @@ export default function ExcursionPoints() {
           {/* ===== Buttons ===== */}
           <div className="flex justify-between mt-12">
             <button
-              onClick={() =>
-                navigate("/itinerary", { state: { destination, step: 3 } })
-              }
-              className="flex items-center gap-2 border border-[#B749DB] 
+              onClick={() => {
+                if (fromEdit && itineraryId) {
+                  navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
+                } else {
+                  navigate("/itinerary", { state: { destination, step: 3 } });
+                }
+              }}
+              className="flex items-center gap-2 border border-[#B749DB]
               text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
             >
-              <FaArrowLeft className="text-[#B749DB]" /> Previous
+              <FaArrowLeft className="text-[#B749DB]" /> {fromEdit ? "Back to Edit" : "Previous"}
             </button>
 
-            <button
-              onClick={() =>
-                navigate("/itinerary", { state: { destination, step: 4 } })
-              }
-              className="flex items-center gap-2 border border-[#B749DB] 
+            {!fromEdit && (
+              <button
+                onClick={() =>
+                  navigate("/itinerary", { state: { destination, step: 4 } })
+                }
+              className="flex items-center gap-2 border border-[#B749DB]
               text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
             >
               Next <FaArrowRight className="text-[#B749DB]" />
             </button>
+            )}
           </div>
         </div>
       </div>
