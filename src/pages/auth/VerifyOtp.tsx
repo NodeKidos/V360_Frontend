@@ -23,7 +23,7 @@ const getDashboardRoute = (role: UserRole): string => {
     case UserRole.DRIVER:
       return "/driver-dashboard"; // You'll need to create this
     case UserRole.CUSTOMER:
-      return "/home"; // Customers go to home page
+      return "/user-dashboard"; // Customers go to user dashboard
     default:
       return "/home";
   }

@@ -1,11 +1,12 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAuthStore } from "../../store/useAuthStore"; 
+import { useAuthStore } from "../../store/useAuthStore";
 import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import hero from "../../assets/travel.jpg"; // ✅ background image
+import { UserRole } from "../../types/auth.types";
 
 type FormData = {
   username: string;
@@ -15,7 +16,24 @@ type FormData = {
   country: string;
 };
 
+// Helper function to get dashboard route based on user role
+const getDashboardRoute = (role: UserRole): string => {
+  switch (role) {
+    case UserRole.ADMIN:
+      return "/admin-dashboard";
+    case UserRole.STAFF:
+      return "/admin-dashboard";
+    case UserRole.DRIVER:
+      return "/driver-dashboard";
+    case UserRole.CUSTOMER:
+      return "/user-dashboard";
+    default:
+      return "/home";
+  }
+};
+
 export default function Register() {
+  const navigate = useNavigate();
   const registerUser = useAuthStore((s) => s.register);
 
   const {
@@ -24,9 +42,19 @@ export default function Register() {
     formState: { errors },
   } = useForm<FormData>();
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    registerUser(data);
-    alert("✅ Registered successfully!");
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const success = await registerUser(data);
+
+    if (success) {
+      const currentUser = useAuthStore.getState().user;
+
+      if (currentUser) {
+        const dashboardRoute = getDashboardRoute(currentUser.role);
+        navigate(dashboardRoute);
+      } else {
+        navigate("/home");
+      }
+    }
   };
 
   return (
