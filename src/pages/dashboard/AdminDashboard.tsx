@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { itineraryService } from "../../services/itinerary.service";
 import type { Itinerary } from "../../types/itinerary.types";
 import { ItineraryStatus } from "../../types/itinerary.types";
+import { adminService, type DashboardStats } from "../../services/admin.service";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ const AdminDashboard = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [loadingItineraries, setLoadingItineraries] = useState(false);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,6 +33,23 @@ const AdminDashboard = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Fetch dashboard stats
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      setLoadingStats(true);
+      try {
+        const data = await adminService.getDashboardStats();
+        setDashboardStats(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchDashboardStats();
   }, []);
 
   // Fetch recent itineraries
@@ -333,32 +353,49 @@ const AdminDashboard = () => {
                 </Button>
               </div>
 
-              {/* Destination List */}
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:shadow-md transition-all bg-white"
-                  >
-                    {/* Image */}
-                    <img
-                      src="https://i.ibb.co/7R1D2zH/waterfall.jpg"
-                      alt="Lotus Tower"
-                      className="w-12 h-12 rounded-md object-cover shrink-0"
-                    />
+              {/* Loading State */}
+              {loadingStats && (
+                <div className="flex justify-center items-center py-10">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#B749DB]"></div>
+                </div>
+              )}
 
-                    {/* Info */}
-                    <div>
-                      <p className="font-medium text-sm md:text-base leading-tight">
-                        Lotus Tower
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        📍 Colombo · ⭐ 4.8
-                      </p>
+              {/* Empty State */}
+              {!loadingStats && (!dashboardStats?.destinations || dashboardStats.destinations.length === 0) && (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <p className="text-gray-500 text-sm font-poppins">No destinations found</p>
+                </div>
+              )}
+
+              {/* Destination List */}
+              {!loadingStats && dashboardStats?.destinations && dashboardStats.destinations.length > 0 && (
+                <div className="space-y-3">
+                  {dashboardStats.destinations.slice(0, 5).map((destination: any) => (
+                    <div
+                      key={destination.id}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:shadow-md transition-all bg-white cursor-pointer"
+                    >
+                      {/* Image */}
+                      <img
+                        src={destination.imageUrl || "https://i.ibb.co/7R1D2zH/waterfall.jpg"}
+                        alt={destination.name}
+                        className="w-12 h-12 rounded-md object-cover shrink-0"
+                      />
+
+                      {/* Info */}
+                      <div>
+                        <p className="font-medium text-sm md:text-base leading-tight">
+                          {destination.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          📍 {destination.city || destination.location || 'N/A'}
+                          {destination.rating && ` · ⭐ ${destination.rating}`}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
