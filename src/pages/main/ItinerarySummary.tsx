@@ -455,7 +455,9 @@ const ItinerarySummary = () => {
                   <h2 className="text-xl font-semibold mb-2">Itinerary Days</h2>
                   {itinerary.days && itinerary.days.length > 0 ? (
                     <div className="space-y-4">
-                      {itinerary.days.map((day) => (
+                      {itinerary.days
+                        .sort((a, b) => (a.dayNumber || 0) - (b.dayNumber || 0))
+                        .map((day) => (
                       <div key={day.id}>
                         <div className="flex items-center justify-between bg-[#B723F2]/5 border border-[#B723F2] rounded-[25px] p-2 mb-2">
                           <button
@@ -483,6 +485,8 @@ const ItinerarySummary = () => {
 
                             {/* Hotel Information */}
                             {day.hotel && (
+                              <>
+                                {console.log('🏨 Hotel data for day', day.dayNumber, ':', day.hotel)}
                               <div className="flex flex-col lg:flex-row gap-6 mb-6">
                                 {day.hotel.images && day.hotel.images.length > 0 ? (
                                   <img
@@ -512,8 +516,47 @@ const ItinerarySummary = () => {
                                   {day.hotel.contactInfo && (
                                     <p className="text-gray-600 text-sm mt-1">📞 {day.hotel.contactInfo}</p>
                                   )}
+
+                                  {/* Room Details */}
+                                  {(day.roomType || day.hotel.roomDetails) && (
+                                    <div className="mt-3 space-y-1">
+                                      {(day.roomType || day.hotel.roomDetails?.roomType) && (
+                                        <p className="text-sm text-gray-700">
+                                          <span className="font-medium">Room Type:</span> {(day.roomType || day.hotel.roomDetails?.roomType) === 'single' ? 'Single Room' : 'Double Room'}
+                                        </p>
+                                      )}
+                                      {(day.bedTypes || day.hotel.roomDetails?.bedTypes)?.length > 0 && (
+                                        <p className="text-sm text-gray-700">
+                                          <span className="font-medium">Bed Types:</span> {(day.bedTypes || day.hotel.roomDetails?.bedTypes).join(', ')}
+                                        </p>
+                                      )}
+                                      {(day.dietPlans || day.hotel.roomDetails?.dietPlans)?.length > 0 && (
+                                        <p className="text-sm text-gray-700">
+                                          <span className="font-medium">Diet Plan:</span> {(day.dietPlans || day.hotel.roomDetails?.dietPlans).join(', ')}
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Room Features */}
+                                  {day.hotel.features && day.hotel.features.length > 0 && (
+                                    <div className="mt-3">
+                                      <span className="font-medium text-sm">Room Features:</span>
+                                      <div className="flex flex-wrap gap-2 mt-2">
+                                        {day.hotel.features.map((feature: string, i: number) => (
+                                          <span
+                                            key={i}
+                                            className="px-3 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs font-medium"
+                                          >
+                                            {feature}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
+                              </>
                             )}
 
                             {/* Excursions */}

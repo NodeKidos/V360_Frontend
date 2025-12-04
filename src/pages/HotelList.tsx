@@ -11,17 +11,52 @@ import { hotelService, type Hotel } from "../services/hotel.service";
 import defaultImage from "../assets/packages/family.png";
 
 const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void }) => {
-  const [roomType, setRoomType] = useState('single');
   const { formData, updateFormData } = useItineraryStore();
   const { destination } = useLocation().state || { destination: "Colombo" };
 
   const isSelected = formData.selectedDestinations?.[destination]?.hotel?.name === hotel.name;
+  const existingRoomDetails = formData.selectedDestinations?.[destination]?.hotel?.roomDetails;
+
+  // Initialize state with existing room details if available, otherwise use defaults
+  const [roomType, setRoomType] = useState(existingRoomDetails?.roomType || 'single');
+  const [selectedBedTypes, setSelectedBedTypes] = useState<string[]>(
+    existingRoomDetails?.bedTypes || ["1 King Bed"]
+  );
+  const [selectedDietPlans, setSelectedDietPlans] = useState<string[]>(
+    existingRoomDetails?.dietPlans || ["Half Board"]
+  );
+
+  // Update state when modal opens with saved room details
+  useEffect(() => {
+    if (existingRoomDetails) {
+      setRoomType(existingRoomDetails.roomType || 'single');
+      setSelectedBedTypes(existingRoomDetails.bedTypes || ["1 King Bed"]);
+      setSelectedDietPlans(existingRoomDetails.dietPlans || ["Half Board"]);
+    }
+  }, [hotel.id, existingRoomDetails]);
+
   const galleryImages = hotel.gallery.slice(0, 6);
 
   const getToggleClass = (type: 'single' | 'double') => {
     return roomType === type
       ? { container: 'bg-[#B749DB]', circle: 'right-1' }
       : { container: 'bg-gray-300', circle: 'left-1' };
+  };
+
+  const handleBedTypeChange = (bedType: string) => {
+    setSelectedBedTypes(prev =>
+      prev.includes(bedType)
+        ? prev.filter(b => b !== bedType)
+        : [...prev, bedType]
+    );
+  };
+
+  const handleDietPlanChange = (dietPlan: string) => {
+    setSelectedDietPlans(prev =>
+      prev.includes(dietPlan)
+        ? prev.filter(d => d !== dietPlan)
+        : [...prev, dietPlan]
+    );
   };
 
   const handleSelectHotel = () => {
@@ -38,13 +73,20 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
       });
       toast.info(`${hotel.name} removed from ${destination}`);
     } else {
-      // Select the hotel
+      // Select the hotel with room details
       updateFormData({
         selectedDestinations: {
           ...formData.selectedDestinations,
           [destination]: {
             ...currentSelection,
-            hotel: hotel
+            hotel: {
+              ...hotel,
+              roomDetails: {
+                roomType,
+                bedTypes: selectedBedTypes,
+                dietPlans: selectedDietPlans,
+              }
+            }
           }
         }
       });
@@ -68,22 +110,23 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
               {hotel.name}
             </h1>
             <p className="text-gray-600 font-inter sm:text-[16px] md:text-[18px] lg:text-[20px] mt-1">
-              No 64 Ward Place Building No 64, Floor No 18,<br /> Cinnamon Gardens, <br />
-              00700 Colombo, Sri Lanka
+              {hotel.address || hotel.location || "Address not available"}
             </p>
           </div>
           <div className="flex flex-col items-center sm:mt-4 lg:mt-0 sm:items-start">
             <div className="flex gap-2 mb-2">
               {Array.from({ length: 5 }, (_, i) => (
-                <span key={i} className={i < hotel.rating ? "text-yellow-400" : "text-gray-300"}>
+                <span key={i} className={i < (hotel.rating || hotel.starRating || 0) ? "text-yellow-400" : "text-gray-300"}>
                   ★
                 </span>
               ))}
             </div>
-            <p className="text-sm text-blue-700 mt-2">
-              <span className="text-gray-600 mr-1">Excellent location -</span>
-              <a href="#" className="font-medium hover:underline">show map</a>
-            </p>
+            {(hotel.address || hotel.location) && (
+              <p className="text-sm text-blue-700 mt-2">
+                <span className="text-gray-600 mr-1">Location -</span>
+                <a href="#" className="font-medium hover:underline">show map</a>
+              </p>
+            )}
             <IoCloseSharp
               className="text-xl text-gray-500 cursor-pointer absolute top-4 right-4 md:right-10"
               onClick={onClose}
@@ -150,7 +193,8 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
                   <input
                     type="checkbox"
                     className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
-                    defaultChecked={i === 0}
+                    checked={selectedBedTypes.includes(bed)}
+                    onChange={() => handleBedTypeChange(bed)}
                   />
                   <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{bed}</span>
                 </label>
@@ -167,7 +211,8 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
                 <input
                   type="checkbox"
                   className="w-5 h-5 form-checkbox text-[#5B247A] rounded-sm cursor-pointer"
-                  defaultChecked={i === 1}
+                  checked={selectedDietPlans.includes(plan)}
+                  onChange={() => handleDietPlanChange(plan)}
                 />
                 <span className="text-gray-600 cursor-pointer sm:md:text-[18px] md:text-[18px] lg:text-[20px]">{plan}</span>
               </label>
@@ -178,9 +223,12 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
 
       <div className="px-6 md:px-10 py-9 space-y-4 border-t border-gray-200 font-roboto">
         <h3 className="text-[24px] font-bold text-gray-800">Room Features</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-gray-600  ">
+        <div className="flex flex-wrap gap-3">
           {hotel.features.map((feature: string, index: number) => (
-            <span key={index} className="sm:md:text-[18px] md:text-[18px] lg:text-[20px]">
+            <span
+              key={index}
+              className="px-4 py-2 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-sm md:text-base font-medium"
+            >
               {feature}
             </span>
           ))}
@@ -235,6 +283,9 @@ const HotelList = () => {
           img: hotel.images && hotel.images.length > 0 ? hotel.images[0] : defaultImage,
           gallery: hotel.images && hotel.images.length > 0 ? hotel.images : [defaultImage],
           features: hotel.amenities || [],
+          address: hotel.address,
+          location: hotel.location,
+          contactInfo: hotel.contactInfo,
           roomTypes: hotel.roomTypes || [],
           bedTypes: hotel.bedTypes || [],
           dietPlans: hotel.dietPlans || [],

@@ -101,27 +101,60 @@ const EditItinerary = () => {
         const data = await itineraryService.getById(itineraryId);
         setItinerary(data);
 
+        console.log("📥 Loaded itinerary from backend:", data);
+        console.log("📅 Days from backend:", data.days);
+
         // Extract selected cities and destinations from days
         const cities: string[] = [];
         const destData: any = {};
 
-        data.days?.forEach((day: any) => {
+        console.log("🔍 Extracting destinations and hotels from days...");
+
+        data.days?.forEach((day: any, index: number) => {
           const destName = day.destination?.name;
+          console.log(`  Day ${day.dayNumber} (${destName}):`, {
+            hotel: day.hotel,
+            hotelId: day.hotelId,
+            excursions: day.excursions?.length || 0
+          });
+
           if (destName && !cities.includes(destName)) {
             cities.push(destName);
           }
           if (destName) {
             if (!destData[destName]) {
+              // Include room details from the day
+              const hotelWithRoomDetails = day.hotel ? {
+                ...day.hotel,
+                roomDetails: {
+                  roomType: day.roomType,
+                  bedTypes: day.bedTypes,
+                  dietPlans: day.dietPlans,
+                }
+              } : null;
+
               destData[destName] = {
-                hotel: day.hotel,
+                hotel: hotelWithRoomDetails,
                 excursions: [],
               };
+              console.log(`    Created destData for ${destName}:`, destData[destName]);
             }
+            // Add excursions, avoiding duplicates
             if (day.excursions) {
-              destData[destName].excursions.push(...day.excursions);
+              day.excursions.forEach((excursion: any) => {
+                const exists = destData[destName].excursions.some(
+                  (ex: any) => ex.id === excursion.id
+                );
+                if (!exists) {
+                  destData[destName].excursions.push(excursion);
+                }
+              });
             }
           }
         });
+
+        console.log("✅ Extracted destData:", destData);
+        console.log("✅ Extracted cities:", cities);
 
         // Check if coming back from hotel/excursion selection (returnTab is set)
         const isReturningFromSelection = (location.state as any)?.returnTab;
@@ -192,6 +225,17 @@ const EditItinerary = () => {
           status: data.status,
         });
 
+        console.log("🎯 Final selectedDestinations to be used:", finalSelectedDestinations);
+        console.log("🏨 Hotels status:");
+        Object.keys(finalSelectedDestinations).forEach(city => {
+          const hotel = finalSelectedDestinations[city]?.hotel;
+          console.log(`  ${city}:`, {
+            hotelName: hotel ? hotel.name : 'NOT SELECTED',
+            address: hotel?.address || hotel?.location,
+            roomDetails: hotel?.roomDetails
+          });
+        });
+
         // Sync with itinerary store so hotels/excursions show as selected
         // Use finalSelectedCities and finalSelectedDestinations to preserve selections
         updateStoreFormData({
@@ -258,6 +302,105 @@ const EditItinerary = () => {
     quoteData.discount,
   ]);
 
+  // Regenerate days when returning from hotel/excursion selection
+  useEffect(() => {
+    // Only regenerate if we have the necessary data and are returning from selection
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      formData.selectedCities?.length > 0 &&
+      destinations.length > 0 &&
+      (location.state as any)?.returnTab === "destinations"
+    ) {
+      const regeneratedDays = regenerateDays(
+        formData.startDate,
+        formData.endDate,
+        formData.selectedCities,
+        formData.selectedDestinations
+      );
+
+      // Only update if days actually changed
+      if (JSON.stringify(regeneratedDays) !== JSON.stringify(formData.days)) {
+        setFormData(prev => ({
+          ...prev,
+          days: regeneratedDays
+        }));
+      }
+    }
+  }, [formData.selectedDestinations, destinations]);
+
+  // Helper function to regenerate days based on selected destinations
+  const regenerateDays = (
+    startDate: string,
+    endDate: string,
+    selectedCities: string[],
+    selectedDestinations: any
+  ) => {
+    if (!startDate || !endDate) return [];
+
+    console.log("🔄 Regenerating days with:", {
+      startDate,
+      endDate,
+      selectedCities,
+      selectedDestinations,
+    });
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const totalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+    const newDays: any[] = [];
+
+    // Calculate days per destination
+    const citiesCount = selectedCities.length || 1;
+    const daysPerDestination = Math.floor(totalDays / citiesCount);
+    let remainingDays = totalDays % citiesCount;
+
+    let currentDayNumber = 1;
+    let currentDate = new Date(start);
+
+    selectedCities.forEach((cityName, cityIndex) => {
+      const destination = destinations.find(d => d.name === cityName);
+      const destData = selectedDestinations?.[cityName];
+
+      console.log(`📍 Processing ${cityName}:`, {
+        destination,
+        destData,
+        hotel: destData?.hotel,
+        excursions: destData?.excursions,
+      });
+
+      // Days for this destination (add 1 extra day if there are remaining days)
+      const daysForThisCity = daysPerDestination + (remainingDays > 0 ? 1 : 0);
+      if (remainingDays > 0) remainingDays--;
+
+      for (let i = 0; i < daysForThisCity; i++) {
+        const dayObj = {
+          id: `day-${currentDayNumber}`,
+          dayNumber: currentDayNumber,
+          date: currentDate.toISOString().split('T')[0],
+          title: `${cityName} - Day ${i + 1}`,
+          description: `Explore ${cityName}`,
+          destination: destination,
+          destinationId: destination?.id,
+          hotel: destData?.hotel || null,
+          hotelId: destData?.hotel?.id || null,
+          excursions: destData?.excursions || [],
+          excursionIds: destData?.excursions?.map((e: any) => e.id) || [],
+        };
+
+        console.log(`  📅 Day ${currentDayNumber}:`, dayObj);
+        newDays.push(dayObj);
+
+        currentDayNumber++;
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    console.log("✅ Generated days:", newDays);
+    return newDays;
+  };
+
   const handleCityClick = (cityName: string) => {
     const currentCities = formData.selectedCities || [];
     const isRemoving = currentCities.includes(cityName);
@@ -271,10 +414,19 @@ const EditItinerary = () => {
       delete updatedSelectedDestinations[cityName];
     }
 
+    // Regenerate days based on new city selection
+    const regeneratedDays = regenerateDays(
+      formData.startDate,
+      formData.endDate,
+      newCities,
+      updatedSelectedDestinations
+    );
+
     setFormData({
       ...formData,
       selectedCities: newCities,
-      selectedDestinations: updatedSelectedDestinations
+      selectedDestinations: updatedSelectedDestinations,
+      days: regeneratedDays
     });
 
     // Also update the store so the selection persists when navigating
@@ -287,6 +439,21 @@ const EditItinerary = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Format days for backend
+      const formattedDays = formData.days.map(day => ({
+        dayNumber: day.dayNumber,
+        date: day.date,
+        title: day.title,
+        description: day.description,
+        notes: day.notes,
+        destinationId: day.destinationId || day.destination?.id,
+        hotelId: day.hotelId || day.hotel?.id,
+        roomType: day.hotel?.roomDetails?.roomType,
+        bedTypes: day.hotel?.roomDetails?.bedTypes,
+        dietPlans: day.hotel?.roomDetails?.dietPlans,
+        excursionIds: day.excursionIds || day.excursions?.map((e: any) => e.id) || [],
+      }));
+
       const updateData = {
         numberOfParticipants: formData.numberOfParticipants,
         specialRequests: formData.specialRequests,
@@ -298,8 +465,7 @@ const EditItinerary = () => {
           vehicleType: formData.vehicleType,
           duration: formData.duration,
         },
-        // Include days if modified
-        days: formData.days,
+        days: formattedDays,
       };
 
       await itineraryService.update(itineraryId!, updateData);
@@ -809,11 +975,33 @@ const EditItinerary = () => {
 
                     {/* Day-by-Day Itinerary */}
                     <div>
-                      <h2 className="text-xl font-semibold text-[#5B247A] mb-4">
-                        Day-by-Day Itinerary
-                      </h2>
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-[#5B247A]">
+                          Day-by-Day Itinerary
+                        </h2>
+                        <button
+                          onClick={() => {
+                            const regeneratedDays = regenerateDays(
+                              formData.startDate,
+                              formData.endDate,
+                              formData.selectedCities,
+                              formData.selectedDestinations
+                            );
+                            setFormData(prev => ({
+                              ...prev,
+                              days: regeneratedDays
+                            }));
+                            toast.success("Days regenerated based on current selections");
+                          }}
+                          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                        >
+                          Regenerate Days
+                        </button>
+                      </div>
                       <div className="space-y-4">
-                        {formData.days.map((day, index) => (
+                        {formData.days
+                          .sort((a, b) => (a.dayNumber || 0) - (b.dayNumber || 0))
+                          .map((day, index) => (
                           <div key={day.id} className="border border-gray-300 rounded-lg p-4">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
@@ -831,9 +1019,46 @@ const EditItinerary = () => {
                                     {new Date(day.date).toLocaleDateString()}
                                   </p>
                                   {day.hotel && (
-                                    <p>
-                                      <span className="font-medium">Hotel:</span> {day.hotel.name}
-                                    </p>
+                                    <div className="space-y-2">
+                                      <p>
+                                        <span className="font-medium">Hotel:</span> {day.hotel.name}
+                                      </p>
+                                      {/* Room details from day object (or from hotel.roomDetails for backward compatibility) */}
+                                      {(day.roomType || day.hotel.roomDetails) && (
+                                        <div className="ml-4 space-y-1 text-xs text-gray-600">
+                                          {(day.roomType || day.hotel.roomDetails?.roomType) && (
+                                            <p>
+                                              <span className="font-medium">Room Type:</span> {(day.roomType || day.hotel.roomDetails?.roomType) === 'single' ? 'Single Room' : 'Double Room'}
+                                            </p>
+                                          )}
+                                          {(day.bedTypes || day.hotel.roomDetails?.bedTypes)?.length > 0 && (
+                                            <p>
+                                              <span className="font-medium">Bed Types:</span> {(day.bedTypes || day.hotel.roomDetails?.bedTypes).join(', ')}
+                                            </p>
+                                          )}
+                                          {(day.dietPlans || day.hotel.roomDetails?.dietPlans)?.length > 0 && (
+                                            <p>
+                                              <span className="font-medium">Diet Plan:</span> {(day.dietPlans || day.hotel.roomDetails?.dietPlans).join(', ')}
+                                            </p>
+                                          )}
+                                        </div>
+                                      )}
+                                      {day.hotel.features && day.hotel.features.length > 0 && (
+                                        <div className="ml-4">
+                                          <span className="font-medium text-xs">Room Features:</span>
+                                          <div className="flex flex-wrap gap-1 mt-1">
+                                            {day.hotel.features.map((feature: string, i: number) => (
+                                              <span
+                                                key={i}
+                                                className="px-2 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs"
+                                              >
+                                                {feature}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                   )}
                                   {day.excursions && day.excursions.length > 0 && (
                                     <div>
