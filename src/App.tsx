@@ -37,8 +37,9 @@ import DriverInfo from "./components/dashboard/Driver/DriverInfo";
 import StaffManagement from "./components/dashboard/Staff/StaffView";
 import EditStaff from "./components/dashboard/Staff/EditStaff";
 import AddStaff from "./components/dashboard/Staff/AddStaff";
-import ItinerarySummary from "./pages/main/ItinerarySummary";
+import ItinerarySummary from "./components/user-dashboard/ItinerarySummary";
 import UserDashboard from "./pages/dashboard/UserDashboard";
+import PackagePrice from "./components/user-dashboard/PackagePrice";
 
 
 export default function App() {
@@ -95,6 +96,7 @@ export default function App() {
 
       <Route path="/user-dashboard" element={<UserDashboard />} />
       <Route path="/itinerary-summary" element={<ItinerarySummary />} />
+      <Route path="/package-price" element={<PackagePrice />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />

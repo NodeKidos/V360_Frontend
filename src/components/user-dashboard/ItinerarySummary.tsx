@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../components/AdminSidebar";
-import TopBar from "../../components/Topbar"; // Import TopBar
+import Sidebar from "../AdminSidebar";
+import TopBar from "../Topbar"; // Import TopBar
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { MdOutlineModeEdit } from "react-icons/md";
