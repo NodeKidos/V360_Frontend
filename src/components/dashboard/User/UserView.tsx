@@ -11,21 +11,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci"; // Import search icon
 import { IoMdAdd } from "react-icons/io"; // Import add icon
+import userService from "../../../services/user.service";
+import type { User } from "../../../services/user.service";
 
 const CustomerManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function
 
-  const [customers, setCustomers] = useState([
-    { id: "CI001", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", country: "Australia", passport: "P4366918", age: 35, status: "Unblock" },
-    { id: "CI002", name: "Jessy", email: "jes@gmail.com", gender: "Female", contact: "+94 762347830", country: "Singapore", passport: "E5787905H", age: 23, status: "Unblock" },
-    { id: "CI003", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", country: "Canada", passport: "LA123456", age: 35, status: "Block" },
-    { id: "CI004", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", country: "Australia", passport: "P4366918", age: 35, status: "Unblock" },
-    { id: "CI005", name: "Jessy", email: "jes@gmail.com", gender: "Female", contact: "+94 762347830", country: "Singapore", passport: "E5787905H", age: 23, status: "Block" },
-    { id: "CI006", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", country: "Canada", passport: "LA123456", age: 35, status: "Block" }
-  ]);
+  const [customers, setCustomers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -36,24 +32,44 @@ const CustomerManagement = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
 
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await userService.getAllUsers();
+      // Ensure data is an array
+      const userList = Array.isArray(data) ? data : (data as any).data || [];
+      setCustomers(userList);
+    } catch (error) {
+      console.error("Failed to fetch users", error);
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   // Filter customers based on search query, gender, and status
   const filteredCustomers = customers.filter((customer) => {
     const searchLower = searchQuery.toLowerCase();
+    const fullName = `${customer.firstName || ""} ${customer.lastName || ""}`.trim().toLowerCase();
+
     const matchesSearch = (
-      customer.id.toLowerCase().includes(searchLower) ||
-      customer.name.toLowerCase().includes(searchLower) ||
-      customer.email.toLowerCase().includes(searchLower) ||
-      customer.gender.toLowerCase().includes(searchLower) ||
-      customer.contact.toLowerCase().includes(searchLower) ||
-      customer.country.toLowerCase().includes(searchLower) ||
-      customer.passport.toLowerCase().includes(searchLower) ||
-      customer.age.toString().includes(searchLower) ||
-      customer.status.toLowerCase().includes(searchLower)
+      (customer.id && customer.id.toLowerCase().includes(searchLower)) ||
+      fullName.includes(searchLower) ||
+      (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
+      (customer.passportNumber && customer.passportNumber.toLowerCase().includes(searchLower)) ||
+      (customer.contact && customer.contact.toLowerCase().includes(searchLower)) ||
+      (customer.country && customer.country.toLowerCase().includes(searchLower))
     );
 
-    const matchesCountry = countryFilter === "" || customer.country === countryFilter;
-    const matchesGender = genderFilter === "" || customer.gender === genderFilter;
-    const matchesStatus = statusFilter === "" || customer.status === statusFilter;
+    const matchesCountry = countryFilter === "" || (customer.country && customer.country === countryFilter);
+    const matchesGender = genderFilter === "" || (customer.gender && customer.gender === genderFilter);
+    // Be careful with status mapping logic if needed
+    const isActive = customer.isActive ? "Unblock" : "Block";
+    const matchesStatus = statusFilter === "" || isActive === statusFilter;
 
     return matchesSearch && matchesGender && matchesStatus && matchesCountry;
   });
@@ -89,14 +105,23 @@ const CustomerManagement = () => {
   };
 
   // Confirm the delete action
-  const confirmDelete = () => {
-    setCustomers(customers.filter((customer) => customer.id !== selectedCustomerId));
-    setDeleteConfirmationVisible(false);
+  const confirmDelete = async () => {
+    if (!selectedCustomerId) return;
 
-    toast.success("Customer deleted successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
+    try {
+      await userService.deleteUser(selectedCustomerId);
+      setCustomers(customers.filter((customer) => customer.id !== selectedCustomerId));
+      toast.success("Customer deleted successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error) {
+      console.error("Failed to delete user", error);
+      toast.error("Failed to delete user");
+    } finally {
+      setDeleteConfirmationVisible(false);
+      setSelectedCustomerId(null);
+    }
   };
 
   // Cancel delete action
@@ -169,7 +194,7 @@ const CustomerManagement = () => {
             <div className="flex justify-between items-center p-2">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                View & manage vehicle Details
+                View & manage Customer Details
               </h4>
 
               {/* RIGHT: Filters */}
@@ -181,8 +206,8 @@ const CustomerManagement = () => {
                 >
                   <option value="">Country</option>
                   <option value="Singapore">Singapore</option>
-                <option value="Australia">Australia</option>
-                <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Canada">Canada</option>
                 </select>
 
                 <select
@@ -225,7 +250,7 @@ const CustomerManagement = () => {
             <div className="flex justify-between items-center mb-4">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px]">
-                View & manage Tour Details
+                View & manage Customer Details
               </h4>
 
               {/* RIGHT: Add button */}
@@ -308,20 +333,20 @@ const CustomerManagement = () => {
 
                     <td className="py-4 px-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.name} />
-                        <span className="font-medium text-gray-800">{c.name}</span>
+                        <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
+                        <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
                       </div>
                     </td>
 
                     <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.gender}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.contact}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.country}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.passport}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.age}</td>
+                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.gender || "N/A"}</td>
+                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.contact || "N/A"}</td>
+                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.country || "N/A"}</td>
+                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.passportNumber || "N/A"}</td>
+                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.age || "N/A"}</td>
 
-                    <td className={`px-4 py-4 font-medium whitespace-nowrap ${c.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
-                      {c.status}
+                    <td className={`px-4 py-4 font-medium whitespace-nowrap ${c.isActive ? "text-green-600" : "text-red-600"}`}>
+                      {c.isActive ? "Unblock" : "Block"}
                     </td>
 
                     <td className="px-4 py-4 whitespace-nowrap">
