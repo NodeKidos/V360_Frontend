@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
+import SriLankaMap from "../../home/SriLankaMap";
 
 export default function EditDestination() {
     const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function EditDestination() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
-    const { id } = useParams();
+    const { destinationId } = useParams<{ destinationId: string }>();
     const [destinationData, setDestinationData] = useState({
         name: "",
         location: "",
@@ -43,7 +44,7 @@ export default function EditDestination() {
             "https://example.com/images/sigiriya.jpg",
             "https://example.com/images/sigiriya2.jpg"
         ]);
-    }, [id]);
+    }, [destinationId]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -65,7 +66,7 @@ export default function EditDestination() {
         });
 
         setTimeout(() => {
-          navigate("/destination-hotel"); // Redirect to the destination list page
+            navigate("/destination-hotel"); // Redirect to the destination list page
         }, 2000);
     };
 
@@ -111,21 +112,21 @@ export default function EditDestination() {
                                 <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Name</label>
                                 <input
                                     type="text"
-                                    value={destinationData.name}
-                                    onChange={(e) => setDestinationData({ ...destinationData, name: e.target.value })}
                                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
-                            {/* Location */}
+                            {/* Map Selection */}
                             <div>
-                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
-                                <input
-                                    type="text"
-                                    value={destinationData.location}
-                                    onChange={(e) => setDestinationData({ ...destinationData, location: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                />
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins mb-2 block">
+                                    Select Location on Map
+                                </label>
+                                <div className="mb-4">
+                                    <SriLankaMap
+                                        selectedCities={destinationData.location ? [destinationData.location] : []}
+                                        onCityClick={(city) => setDestinationData({ ...destinationData, location: city })}
+                                    />
+                                </div>
                             </div>
 
                             {/* Category */}

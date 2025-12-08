@@ -9,7 +9,9 @@ export interface Vehicle {
 }
 
 export interface Driver {
-  _id: string;
+  id: string; // Add id for frontend compatibility
+  firstName: string;
+  lastName: string;
   name: string;
   email: string;
   contact: string;
@@ -39,7 +41,7 @@ export interface CreateDriverDto {
   licenseInfo?: File | string;
 }
 
-export interface UpdateDriverDto extends Partial<CreateDriverDto> {}
+export interface UpdateDriverDto extends Partial<CreateDriverDto> { }
 
 export interface DriverListResponse {
   drivers: Driver[];

@@ -219,7 +219,7 @@ export default function App() {
           }
         />
         <Route
-          path="/destination/edit/:destinationrId"
+          path="/destination/edit/:destinationId"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <EditDestination />

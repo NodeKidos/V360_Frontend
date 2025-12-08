@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../AdminSidebar"; // Assuming Sidebar component is reusable
 import TopBar from "../../Topbar"; // Assuming TopBar component is reusable
+import SriLankaMap from "../../home/SriLankaMap";
 
 export default function AddDestination() {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ export default function AddDestination() {
     });
 
     // Navigate back to destination list page
-    navigate("/destination-hotel"); 
+    navigate("/destination-hotel");
   };
 
   return (
@@ -116,6 +117,19 @@ export default function AddDestination() {
                 />
               </div>
 
+              {/* Map Selection */}
+              <div>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins mb-2 block">
+                  Select Location on Map
+                </label>
+                <div className="mb-4">
+                  <SriLankaMap
+                    selectedCities={location ? [location] : []}
+                    onCityClick={(city) => setLocation(city)}
+                  />
+                </div>
+              </div>
+
               {/* Location */}
               <div>
                 <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
@@ -124,7 +138,7 @@ export default function AddDestination() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter location"
+                  placeholder="Enter location or select from map"
                 />
               </div>
 

@@ -10,22 +10,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
+import vehicleService from "../../../services/vehicle.service";
 
 const VehicleManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
 
-    const [vehicles, setVehicles] = useState([
-        { id: "V001", name: "Car #201", type: "Car", plate: "NP QL-9504", model: "Toyota", seats: 3, driver: "John", status: "Active" },
-        { id: "V002", name: "Car #202", type: "Car", plate: "NP QL-9505", model: "Toyota", seats: 3, driver: "Jane", status: "In Service" },
-        { id: "V003", name: "Van #301", type: "Van", plate: "NP QL-9506", model: "Toyota", seats: 9, driver: "John", status: "Active" },
-        { id: "V004", name: "Car #401", type: "Car", plate: "NP QL-9804", model: "Toyota", seats: 3, driver: "John", status: "Need Rapir" },
-        { id: "V005", name: "Car #302", type: "Car", plate: "NP QL-9705", model: "Toyota", seats: 5, driver: "Jane", status: "In Service" },
-        { id: "V006", name: "Van #402", type: "SUV", plate: "NP QL-9308", model: "Toyota", seats: 9, driver: "John", status: "Active" },
-        // Add other vehicles similarly...
-    ]);
+    const [vehicles, setVehicles] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const [page, setPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(3);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,24 +30,61 @@ const VehicleManagement = () => {
     const [V_TypeFilter, setV_TypeFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
 
+    const fetchVehicles = async () => {
+        try {
+            setLoading(true);
+            const response = await vehicleService.getAllVehicles({ limit: 1000 }); // Fetch all for now to keep client-side filtering working easily
+            const mappedVehicles = response.vehicles.map(v => {
+                let displayStatus = "Active";
+                if (v.status === "available") displayStatus = "Active";
+                else if (v.status === "in_use") displayStatus = "In Service";
+                else if (v.status === "maintenance" || v.status === "out_of_service") displayStatus = "Need Repair";
+
+                return {
+                    id: v.id,
+                    name: v.make || "Unknown",
+                    type: v.type,
+                    plate: v.registrationNumber,
+                    model: v.model,
+                    seats: v.seatingCapacity || 0,
+                    driver: (v as any).drivers && (v as any).drivers.length > 0 ? (v as any).drivers[0].firstName : "Unassigned",
+                    status: displayStatus
+                };
+            });
+            const normalizedVehicles = mappedVehicles; // No further normalization needed
+            console.log("Vehicles", normalizedVehicles);
+
+            setVehicles(normalizedVehicles);
+        } catch (error) {
+            console.error("Failed to fetch vehicles", error);
+            toast.error("Failed to load vehicles");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+
     // Filter vehicle based on search query, V_Type,SeatCount, and status
     const filteredVehicles = vehicles.filter((vehicle) => {
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = (
-      vehicle.id.toLowerCase().includes(searchLower) ||
-      vehicle.name.toLowerCase().includes(searchLower) ||
-      vehicle.type.toLowerCase().includes(searchLower) ||
-      vehicle.plate.toLowerCase().includes(searchLower) ||
-      vehicle.model.toLowerCase().includes(searchLower) ||
-      String(vehicle.seats).toLowerCase().includes(searchLower) ||
-      vehicle.driver.toLowerCase().includes(searchLower) ||
-      vehicle.status.toLowerCase().includes(searchLower)
-    );
-     const matchesSeatCount = SeatCountFilter === "" || String(vehicle.seats) === SeatCountFilter;    const matchesV_Type = V_TypeFilter === "" || vehicle.type === V_TypeFilter;
-    const matchesStatus = statusFilter === "" || vehicle.status === statusFilter;
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = (
+            (vehicle.id && vehicle.id.toLowerCase().includes(searchLower)) ||
+            (vehicle.name && vehicle.name.toLowerCase().includes(searchLower)) ||
+            (vehicle.type && vehicle.type.toLowerCase().includes(searchLower)) ||
+            (vehicle.plate && vehicle.plate.toLowerCase().includes(searchLower)) ||
+            (vehicle.model && vehicle.model.toLowerCase().includes(searchLower)) ||
+            String(vehicle.seats).toLowerCase().includes(searchLower) ||
+            (vehicle.driver && vehicle.driver.toLowerCase().includes(searchLower)) ||
+            (vehicle.status && vehicle.status.toLowerCase().includes(searchLower))
+        );
+        const matchesSeatCount = SeatCountFilter === "" || String(vehicle.seats) === SeatCountFilter;
+        const matchesV_Type = V_TypeFilter === "" || vehicle.type === V_TypeFilter;
+        // Check exact match for status or mapped status
+        const matchesStatus = statusFilter === "" || vehicle.status === statusFilter || vehicle.status.toLowerCase() === statusFilter.toLowerCase();
 
-    return matchesSearch && matchesV_Type && matchesStatus && matchesSeatCount ;
-  });
+        return matchesSearch && matchesV_Type && matchesStatus && matchesSeatCount;
+    });
 
     const indexOfLastVehicle = page * itemsPerPage;
     const indexOfFirstVehicle = indexOfLastVehicle - itemsPerPage;
@@ -66,6 +97,10 @@ const VehicleManagement = () => {
 
         handleResize();
         window.addEventListener("resize", handleResize);
+
+        // Initial Fetch
+        fetchVehicles();
+
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
@@ -78,14 +113,23 @@ const VehicleManagement = () => {
         setDeleteConfirmationVisible(true);
     };
 
-    const confirmDelete = () => {
-        setVehicles(vehicles.filter((vehicle) => vehicle.id !== selectedVehicleId));
-        setDeleteConfirmationVisible(false);
+    const confirmDelete = async () => {
+        if (!selectedVehicleId) return;
 
-        toast.success("Vehicle deleted successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
+        try {
+            await vehicleService.deleteVehicle(selectedVehicleId);
+            setVehicles(vehicles.filter((vehicle) => vehicle.id !== selectedVehicleId));
+            toast.success("Vehicle deleted successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+        } catch (error) {
+            console.error("Delete failed", error);
+            toast.error("Failed to delete vehicle");
+        } finally {
+            setDeleteConfirmationVisible(false);
+            setSelectedVehicleId(null);
+        }
     };
 
     const cancelDelete = () => {
@@ -276,7 +320,7 @@ const VehicleManagement = () => {
                         <table className="min-w-full bg-white">
                             <thead>
                                 <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                                    <th className="px-3 py-3 whitespace-nowrap">Vehicle Id</th>
+                                    {/* <th className="px-3 py-3 whitespace-nowrap">Vehicle Id</th> */}
                                     <th className="px-3 py-3 whitespace-nowrap">V_Name</th>
                                     <th className="px-3 py-3 whitespace-nowrap">V_Type</th>
                                     <th className="px-3 py-3 whitespace-nowrap">V_No_Plate</th>
@@ -290,7 +334,7 @@ const VehicleManagement = () => {
                             <tbody className="font-poppins">
                                 {currentVehicles.map((v) => (
                                     <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                        <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td>
+                                        {/* <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td> */}
                                         <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
                                         <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.type}</td>
                                         <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>
@@ -315,7 +359,7 @@ const VehicleManagement = () => {
                             </tbody>
                         </table>
                     </div>
-                    
+
                     {/* PAGINATION */}
                     <div className="mt-4">
                         <Pagination

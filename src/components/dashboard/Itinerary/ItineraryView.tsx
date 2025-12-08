@@ -12,6 +12,7 @@ import { FiEye, FiTrash2, FiEdit } from "react-icons/fi";
 import { itineraryService } from "../../../services/itinerary.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
+import { Loader } from "../../ui/Loader";
 
 const ItineraryManagement = () => {
   const navigate = useNavigate();
@@ -293,7 +294,7 @@ const ItineraryManagement = () => {
           {/* Loading State */}
           {loading && (
             <div className="flex justify-center items-center py-10">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B749DB]"></div>
+              <Loader src="/loaders/Traveler.lottie" className="w-[300px] h-[300px]" />
             </div>
           )}
 

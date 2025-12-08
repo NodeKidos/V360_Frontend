@@ -42,7 +42,7 @@ export default function EditVehicle() {
   // Handle responsive
   useEffect(() => {
     const handleResize = () => {
-        setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 768);
     };
 
     handleResize();
@@ -86,16 +86,21 @@ export default function EditVehicle() {
       try {
         setFetchLoading(true);
         const vehicle = await vehicleService.getVehicleById(vehicleId);
+        let displayStatus = "Active";
+        if (vehicle.status === "available") displayStatus = "Active";
+        else if (vehicle.status === "in_use") displayStatus = "In Service";
+        else if (vehicle.status === "maintenance" || vehicle.status === "out_of_service") displayStatus = "Need Repair";
+
         setVehicleData({
           vehicleName: vehicle.make || "",
           vehicleType: vehicle.type || "",
           vehicleNoPlate: vehicle.registrationNumber || "",
           vehicleModel: vehicle.model || "",
-          seatCount: vehicle.capacity?.toString() || "",
+          seatCount: vehicle.seatingCapacity?.toString() || vehicle.capacity?.toString() || "",
           assignDriver: typeof vehicle.assignedDriver === 'object' && vehicle.assignedDriver
             ? vehicle.assignedDriver._id || vehicle.assignedDriver.id || ""
             : vehicle.assignedDriver || "",
-          status: vehicle.status || "Active",
+          status: displayStatus,
           vehicleImage: null,
         });
       } catch (error: any) {
@@ -130,7 +135,7 @@ export default function EditVehicle() {
 
     // Validation
     if (!vehicleData.vehicleName || !vehicleData.vehicleType || !vehicleData.vehicleNoPlate ||
-        !vehicleData.vehicleModel || !vehicleData.seatCount || !vehicleData.status) {
+      !vehicleData.vehicleModel || !vehicleData.seatCount || !vehicleData.status) {
       toast.error("Please fill in all required fields", {
         position: "top-right",
         autoClose: 3000,
@@ -140,15 +145,32 @@ export default function EditVehicle() {
 
     try {
       setLoading(true);
+
+      // Map Status
+      let mappedStatus = "available";
+      if (vehicleData.status === "Active") mappedStatus = "available";
+      else if (vehicleData.status === "In Service") mappedStatus = "in_use";
+      else if (vehicleData.status === "Need Repair") mappedStatus = "maintenance";
+
+      // Map Type (Simple mapping, default to lowercase)
+      let mappedType = vehicleData.vehicleType.toLowerCase();
+      if (mappedType === "car") mappedType = "sedan";
+
+      // Update Vehicle Details
       await vehicleService.updateVehicle(vehicleId, {
         registrationNumber: vehicleData.vehicleNoPlate,
-        type: vehicleData.vehicleType,
+        type: mappedType,
         make: vehicleData.vehicleName,
         model: vehicleData.vehicleModel,
-        capacity: parseInt(vehicleData.seatCount),
-        status: vehicleData.status as "Active" | "In Service" | "Need Repair",
-        assignedDriver: vehicleData.assignDriver || undefined,
+        seatingCapacity: parseInt(vehicleData.seatCount), // Correct field name
+        status: mappedStatus,
+        // assignedDriver: vehicleData.assignDriver || undefined, // Removed, handled separately
       });
+
+      // Handle Driver Assignment separately if selected
+      if (vehicleData.assignDriver) {
+        await vehicleService.assignDriver(vehicleId, vehicleData.assignDriver);
+      }
 
       toast.success("Vehicle updated successfully!", {
         position: "top-right",
@@ -159,10 +181,13 @@ export default function EditVehicle() {
         navigate("/vehicle");
       }, 2000);
     } catch (error: any) {
+      console.error("Update failed", error);
       const errorMessage = error?.response?.data?.message || "Failed to update vehicle";
-      toast.error(errorMessage, {
+      // Check if error is array (validation errors)
+      const displayMsg = Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage;
+      toast.error(displayMsg, {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 5000,
       });
     } finally {
       setLoading(false);

@@ -9,7 +9,9 @@ export interface Vehicle {
   model: string;
   year?: number;
   capacity?: number;
-  status?: 'active' | 'inactive';
+  seatingCapacity?: number;
+  assignedDriver?: any;
+  status?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -85,6 +87,37 @@ class VehicleService {
       console.error('Failed to fetch vehicles for dropdown:', error);
       return [];
     }
+  }
+
+  /**
+   * Create a new vehicle
+   */
+  async createVehicle(data: any): Promise<Vehicle> {
+    const response = await api.post('/vehicles', data);
+    return response.data;
+  }
+
+  /**
+   * Update an existing vehicle
+   */
+  async updateVehicle(id: string, data: any): Promise<Vehicle> {
+    const response = await api.put(`/vehicles/${id}`, data);
+    return response.data;
+  }
+
+  /**
+   * Delete a vehicle
+   */
+  async deleteVehicle(id: string): Promise<void> {
+    await api.delete(`/vehicles/${id}`);
+  }
+
+  /**
+   * Assign a driver to a vehicle
+   */
+  async assignDriver(vehicleId: string, driverId: string): Promise<Vehicle> {
+    const response = await api.put(`/vehicles/${vehicleId}/assign-driver`, { driverId });
+    return response.data;
   }
 }
 

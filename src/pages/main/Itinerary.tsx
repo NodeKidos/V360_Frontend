@@ -15,6 +15,7 @@ import colombo from "../../assets/packages/family.png";
 import { IoSearch } from "react-icons/io5";
 
 import CustomPagination from "../../components/CustomPagination";
+import { Loader } from "../../components/ui/Loader";
 
 export default function Itinerary() {
     const [step, setStep] = useState(1);
@@ -502,9 +503,8 @@ export default function Itinerary() {
                                                                     state: { destination: d.name, destinationId: d.id, step },
                                                                 });
                                                             }}
-                                                            className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${
-                                                                isSelected && excursionCount === 0 ? 'animate-pulse ring-2 ring-yellow-400' : ''
-                                                            }`}
+                                                            className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${isSelected && excursionCount === 0 ? 'animate-pulse ring-2 ring-yellow-400' : ''
+                                                                }`}
                                                             title={excursionCount > 0 ? `${excursionCount} excursion${excursionCount > 1 ? 's' : ''} selected` : 'Select excursions'}
                                                         >
                                                             <MdOutlineTravelExplore
@@ -524,9 +524,8 @@ export default function Itinerary() {
                                                                     state: { destination: d.name, destinationId: d.id, step },
                                                                 });
                                                             }}
-                                                            className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${
-                                                                isSelected && !hasHotel ? 'animate-pulse ring-2 ring-yellow-400' : ''
-                                                            }`}
+                                                            className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${isSelected && !hasHotel ? 'animate-pulse ring-2 ring-yellow-400' : ''
+                                                                }`}
                                                             title={hasHotel ? 'Hotel selected' : 'Select a hotel'}
                                                         >
                                                             <FaHotel
@@ -593,13 +592,10 @@ export default function Itinerary() {
                                     className="flex items-center gap-2 bg-[#B749DB] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#8B2BB9] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? (
-                                        <>
-                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                            </svg>
-                                            Creating...
-                                        </>
+                                        <div className="flex items-center gap-2">
+                                            <Loader src="/loaders/Traveler.lottie" className="w-[30px] h-[30px]" />
+                                            Reading...
+                                        </div>
                                     ) : (
                                         "Submit"
                                     )}
@@ -608,7 +604,7 @@ export default function Itinerary() {
                         </div>
                     </motion.div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

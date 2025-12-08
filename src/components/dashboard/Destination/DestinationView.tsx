@@ -83,7 +83,7 @@ const DestinationHotelManagement = () => {
                     excursionService.getAll()
                 ]);
                 console.log(destinationsData, hotelsData, excursionsData);
-                
+
                 setDestination(destinationsData);
                 setHotels(hotelsData);
                 setExcursions(excursionsData);
@@ -343,11 +343,12 @@ const DestinationHotelManagement = () => {
                                 <table className="min-w-full bg-white">
                                     <thead>
                                         <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                                            <th className="px-3 py-4 whitespace-nowrap">ID</th>
+                                            {/* <th className="px-3 py-4 whitespace-nowrap">ID</th> */}
                                             <th className="px-3 py-3 whitespace-nowrap">Destination Name</th>
                                             <th className="px-3 py-3 whitespace-nowrap">Image</th>
                                             <th className="px-3 py-3 whitespace-nowrap">Location</th>
                                             <th className="px-3 py-3 whitespace-nowrap">Category</th>
+                                            <th className="px-3 py-3 whitespace-nowrap">Best Time to Visit</th>
                                             <th className="px-3 py-3 whitespace-nowrap">Review</th>
                                             <th className="px-3 py-3 whitespace-nowrap"></th>
                                         </tr>
@@ -356,13 +357,14 @@ const DestinationHotelManagement = () => {
                                     <tbody className="font-poppins">
                                         {currentDestinations.map((d) => (
                                             <tr key={d.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                                <td className="py-1 px-3">{d.id}</td>
+                                                {/* <td className="py-1 px-3">{d.id}</td> */}
                                                 <td className="py-1 px-3">{d.name}</td>
                                                 <td className="px-5 py-1 text-center">
                                                     <img src={d.image} alt={d.name} className="w-16 h-16 object-cover rounded-md" />
                                                 </td>
                                                 <td className="px-3 py-1 text-center">{d.location}</td>
                                                 <td className="px-3 py-1 text-center">{d.category}</td>
+                                                <td className="px-3 py-1 text-center">{d.bestTimeToVisit || "N/A"}</td>
                                                 <td className="px-5 py-1 whitespace-nowrap">
                                                     <div className="flex gap-2 justify-center">
                                                         <CiEdit
