@@ -46,6 +46,14 @@ export default function Login() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <Loader className="w-1/2 h-1/2" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col lg:flex-row min-h-screen font-inter relative">
       {/* Background Image - Visible on all screen sizes */}
@@ -134,17 +142,10 @@ export default function Login() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full bg-black text-white rounded-xl py-3 text-base font-medium hover:bg-purple-600 active:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black"
+              className="w-full bg-black text-white rounded-xl py-3 text-base font-medium hover:bg-purple-600 active:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black cursor-pointer"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader className="w-10 h-10" />
-                  Logging in...
-                </span>
-              ) : (
-                "Login"
-              )}
+              Login
             </button>
 
             {/* Divider */}
