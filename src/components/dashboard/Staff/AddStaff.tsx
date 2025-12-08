@@ -5,23 +5,25 @@ import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import staffService from "../../../services/staff.service";
 
 export default function AddStaff() {
     const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [staffData, setStaffData] = useState({
-        staffId: "",
         name: "",
         email: "",
+        countryCode: "🇱🇰 +94",
         contact: "",
         nic: "",
-        gender: "",
+        gender: "" as "Male" | "Female" | "",
         age: "",
-        accessLevel: "",
-        status: "",
+        accessLevel: "" as "Staff" | "Admin" | "Manager" | "",
+        status: "" as "Block" | "Unblock" | "",
     });
 
     useEffect(() => {
@@ -39,15 +41,90 @@ export default function AddStaff() {
         setStaffData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Staff added successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
-        setTimeout(() => {
-            navigate("/staff"); // Navigate to the staff list page
-        }, 2000);
+
+        // Validation
+        if (!staffData.name || !staffData.email || !staffData.contact || !staffData.nic ||
+            !staffData.gender || !staffData.age || !staffData.accessLevel || !staffData.status) {
+            toast.error("Please fill in all required fields", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await staffService.createStaff({
+                name: staffData.name,
+                email: staffData.email,
+                contact: staffData.contact,
+                nic: staffData.nic,
+                gender: staffData.gender as "Male" | "Female",
+                age: parseInt(staffData.age),
+                accessLevel: staffData.accessLevel as "Staff" | "Admin" | "Manager",
+                status: staffData.status as "Block" | "Unblock",
+            });
+
+            toast.success("Staff added successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+
+            setTimeout(() => {
+                navigate("/staff");
+            }, 2000);
+        } catch (error: any) {
+            // Handle specific error messages
+            let errorMessage = "Failed to add staff";
+
+            // Check error response status
+            if (error.response?.status === 500) {
+                // Internal server error - likely a duplicate email since validation passed
+                // Check multiple possible locations for error details
+                const errorData = error.response?.data || {};
+                const errorString = JSON.stringify(errorData).toLowerCase();
+                const errorDetail = errorData.detail || errorData.message || errorData.error || '';
+
+                // Check if it's a duplicate/unique constraint error
+                if (errorString.includes('duplicate') ||
+                    errorString.includes('already exists') ||
+                    errorString.includes('unique constraint') ||
+                    errorString.includes('uq_') ||
+                    errorString.includes('23505')) {
+                    errorMessage = "This email address is already registered. Please use a different email.";
+                } else if (errorString.includes('internal server error')) {
+                    // Backend returns generic 500 error for duplicate emails
+                    errorMessage = "This email address is already registered. Please use a different email.";
+                } else {
+                    errorMessage = "An error occurred on the server. Please try again or contact support.";
+                }
+            } else if (error.response?.status === 409) {
+                errorMessage = "This email address is already registered. Please use a different email.";
+            } else if (error.response?.data?.message) {
+                const message = error.response.data.message;
+                if (Array.isArray(message)) {
+                    errorMessage = message.join(", ");
+                } else if (typeof message === 'string') {
+                    // Check for common error patterns
+                    if (message.toLowerCase().includes('duplicate') ||
+                        message.toLowerCase().includes('already exists') ||
+                        message.toLowerCase().includes('unique constraint')) {
+                        errorMessage = "This email address is already registered. Please use a different email.";
+                    } else {
+                        errorMessage = message;
+                    }
+                }
+            }
+
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 5000,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -125,8 +202,8 @@ export default function AddStaff() {
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No</label>
                                     <div className="flex items-center border border-purple-300 rounded-xl px-2 md:px-3 py-2 mt-1">
                                         <select
-                                            name="contact"
-                                            value={staffData.contact}
+                                            name="countryCode"
+                                            value={staffData.countryCode}
                                             onChange={handleInputChange}
                                             className="text-gray-700 border-r pr-2 md:pr-3 mr-2 md:mr-3 outline-none text-[12px] md:text-[14px] font-poppins"
                                         >
@@ -139,6 +216,7 @@ export default function AddStaff() {
                                             name="contact"
                                             value={staffData.contact}
                                             onChange={handleInputChange}
+                                            placeholder="769052508"
                                             className="flex-1 outline-none px-2 text-[14px] md:text-[16px] font-poppins"
                                         />
                                     </div>
@@ -152,10 +230,10 @@ export default function AddStaff() {
                                         onChange={handleInputChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
-                                        <option>Select</option>
-                                        <option>Admin</option>
-                                        <option>Staff</option>
-                                        <option>Manager</option>
+                                        <option value="">Select</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="Staff">Staff</option>
+                                        <option value="Manager">Manager</option>
                                     </select>
                                 </div>
                             </div>
@@ -181,9 +259,9 @@ export default function AddStaff() {
                                         onChange={handleInputChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
-                                        <option>Select</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
                                     </select>
                                 </div>
                             </div>
@@ -197,9 +275,9 @@ export default function AddStaff() {
                                         onChange={handleInputChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
-                                        <option>Select</option>
-                                        <option>Block</option>
-                                        <option>Unblock</option>
+                                        <option value="">Select</option>
+                                        <option value="Block">Block</option>
+                                        <option value="Unblock">Unblock</option>
                                     </select>
                                 </div>
                                 {/* NIC */}
@@ -226,9 +304,10 @@ export default function AddStaff() {
 
                                 <button
                                     type="submit"
-                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
+                                    disabled={loading}
+                                    className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Submit
+                                    {loading ? "Adding..." : "Submit"}
                                 </button>
                             </div>
                         </form>

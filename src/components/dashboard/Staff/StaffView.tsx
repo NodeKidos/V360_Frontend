@@ -11,25 +11,19 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu"; // Filter icon
 import { CiSearch } from "react-icons/ci"; // Search icon
 import { IoMdAdd } from "react-icons/io"; // Add icon
+import staffService, { type Staff } from "../../../services/staff.service";
+import authService from "../../../services/auth.service";
 
 const StaffManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function
 
-  const [staff, setStaff] = useState([
-    { id: "SI001", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", age: 25, accessLevel: "Staff", status: "Unblock", nic: "200080803520" },
-    { id: "SI002", name: "Jessy", email: "jes@gmail.com", gender: "Female", contact: "+94 762347830", age: 30, accessLevel: "Admin", status: "Block", nic: "200080803521" },
-    { id: "SI003", name: "Charlie", email: "charlie@gmail.com", gender: "Male", contact: "+94 773456789", age: 35, accessLevel: "Manager", status: "Unblock", nic: "200080803522" },
-    { id: "SI004", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", age: 25, accessLevel: "Staff", status: "Unblock", nic: "200080803520" },
-    { id: "SI005", name: "Jessy", email: "jes@gmail.com", gender: "Female", contact: "+94 762347830", age: 30, accessLevel: "Admin", status: "Block", nic: "200080803521" },
-    { id: "SI006", name: "Charlie", email: "charlie@gmail.com", gender: "Male", contact: "+94 773456789", age: 35, accessLevel: "Manager", status: "Unblock", nic: "200080803522" },
-    { id: "SI007", name: "Alice", email: "alice@gmail.com", gender: "Male", contact: "+94 762347830", age: 25, accessLevel: "Staff", status: "Unblock", nic: "200080803520" },
-    { id: "SI008", name: "Jessy", email: "jes@gmail.com", gender: "Female", contact: "+94 762347830", age: 30, accessLevel: "Admin", status: "Block", nic: "200080803521" },
-    { id: "SI009", name: "Charlie", email: "charlie@gmail.com", gender: "Male", contact: "+94 773456789", age: 35, accessLevel: "Manager", status: "Unblock", nic: "200080803522" },
-    // Add more staff records as required...
-  ]);
+  const [staff, setStaff] = useState<Staff[]>([]);
+  const [totalStaff, setTotalStaff] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -40,31 +34,63 @@ const StaffManagement = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [accessLevelFilter, setAccessLevelFilter] = useState("");
 
-  // Filter staff based on search query, gender, and status
-  const filteredStaff = staff.filter((staff) => {
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = (
-      staff.id.toLowerCase().includes(searchLower) ||
-      staff.name.toLowerCase().includes(searchLower) ||
-      staff.email.toLowerCase().includes(searchLower) ||
-      staff.contact.toLowerCase().includes(searchLower) ||
-      staff.gender.toLowerCase().includes(searchLower) ||
-      staff.age.toString().includes(searchLower) ||
-      staff.accessLevel.toLowerCase().includes(searchLower) ||
-      staff.status.toLowerCase().includes(searchLower) ||
-      staff.nic.toLowerCase().includes(searchLower)
-    );
+  // Check if current user is admin
+  useEffect(() => {
+    const isAdmin = authService.isAdmin();
+    setIsCurrentUserAdmin(isAdmin);
+    console.log('Current user is admin:', isAdmin);
+  }, []);
 
-    const matchesGender = genderFilter === "" || staff.gender === genderFilter;
-    const matchesStatus = statusFilter === "" || staff.status === statusFilter;
-    const matchesAccessLevel = accessLevelFilter === "" || staff.accessLevel === accessLevelFilter;
+  // Fetch staff data from API
+  const fetchStaff = async () => {
+    setLoading(true);
+    try {
+      // Fetch staff members
+      const response = await staffService.getAllStaff({
+        page,
+        limit: itemsPerPage,
+        search: searchQuery,
+        gender: genderFilter,
+        status: statusFilter,
+        accessLevel: accessLevelFilter,
+      });
 
-    return matchesSearch && matchesGender && matchesStatus && matchesAccessLevel;
-  });
+      let allStaff = response.staffs;
 
-  const indexOfLastStaff = page * itemsPerPage;
-  const indexOfFirstStaff = indexOfLastStaff - itemsPerPage;
-  const currentStaff = filteredStaff.slice(indexOfFirstStaff, indexOfLastStaff);
+      // If current user is admin, try to fetch admin users too
+      if (isCurrentUserAdmin) {
+        try {
+          const adminUsers = await staffService.getAdminUsers();
+          console.log('Admin users fetched:', adminUsers);
+
+          // Merge admin users with staff, avoiding duplicates
+          const staffIds = new Set(allStaff.map(s => s._id));
+          const newAdminUsers = adminUsers.filter(admin => !staffIds.has(admin._id));
+          allStaff = [...allStaff, ...newAdminUsers];
+
+          console.log('Total staff after merging admins:', allStaff.length);
+        } catch (adminError) {
+          console.log('Could not fetch admin users:', adminError);
+          // Continue with just staff users
+        }
+      } else {
+        // Filter out admin users if current user is not admin
+        allStaff = response.staffs.filter(s => s.accessLevel !== 'Admin');
+        console.log('Filtered out admin users. Before:', response.staffs.length, 'After:', allStaff.length);
+      }
+
+      setStaff(allStaff);
+      setTotalStaff(allStaff.length);
+    } catch (error) {
+      console.error("Failed to fetch staff:", error);
+      toast.error("Failed to load staff data", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -75,6 +101,11 @@ const StaffManagement = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Fetch staff when page, filters, or search query changes
+  useEffect(() => {
+    fetchStaff();
+  }, [page, itemsPerPage, searchQuery, genderFilter, statusFilter, accessLevelFilter]);
 
   // Reset to page 1 when search query or filters change
   useEffect(() => {
@@ -93,14 +124,26 @@ const StaffManagement = () => {
   };
 
   // Confirm the delete action
-  const confirmDelete = () => {
-    setStaff(staff.filter((staff) => staff.id !== selectedStaffId));
-    setDeleteConfirmationVisible(false);
+  const confirmDelete = async () => {
+    if (!selectedStaffId) return;
 
-    toast.success("Staff deleted successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
+    try {
+      await staffService.deleteStaff(selectedStaffId);
+      setDeleteConfirmationVisible(false);
+      toast.success("Staff deleted successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      // Refresh the staff list
+      fetchStaff();
+    } catch (error) {
+      console.error("Failed to delete staff:", error);
+      toast.error("Failed to delete staff", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setDeleteConfirmationVisible(false);
+    }
   };
 
   // Cancel delete action
@@ -204,7 +247,7 @@ const StaffManagement = () => {
                 >
                   <option value="">Access Level</option>
                   <option value="Staff">Staff</option>
-                  <option value="Admin">Admin</option>
+                  {isCurrentUserAdmin && <option value="Admin">Admin</option>}
                   <option value="Manager">Manager</option>
                 </select>
 
@@ -242,40 +285,54 @@ const StaffManagement = () => {
                 </tr>
               </thead>
               <tbody className="font-poppins">
-                {currentStaff.map((s) => (
-                  <tr key={s.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s.id}</td>
-                    <td className="py-4 px-4 whitespace-nowrap">{s.name}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.email}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.gender}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.nic}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.contact}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.age}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.accessLevel}</td>
-                    <td className={`px-4 py-4 font-medium whitespace-nowrap ${s.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
-                      {s.status}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="flex gap-3 justify-center">
-                        <CiEdit
-                          className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                          onClick={() =>handleEditClick(s.id)}
-                        />
-                        <MdDeleteOutline
-                          className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                          onClick={() => handleDeleteClick(s.id)}
-                        />
-                      </div>
+                {loading ? (
+                  <tr>
+                    <td colSpan={10} className="py-8 text-center text-gray-500">
+                      Loading staff data...
                     </td>
                   </tr>
-                ))}
+                ) : staff.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="py-8 text-center text-gray-500">
+                      No staff found
+                    </td>
+                  </tr>
+                ) : (
+                  staff.map((s) => (
+                    <tr key={s._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                      <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s._id}</td>
+                      <td className="py-4 px-4 whitespace-nowrap">{s.name}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.email}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.gender}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.nic}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.contact}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.age}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.accessLevel}</td>
+                      <td className={`px-4 py-4 font-medium whitespace-nowrap ${s.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
+                        {s.status}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="flex gap-3 justify-center">
+                          <CiEdit
+                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                            onClick={() => handleEditClick(s._id)}
+                          />
+                          <MdDeleteOutline
+                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                            onClick={() => handleDeleteClick(s._id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
 
           {/* PAGINATION */}
           <div className="mt-4">
-            <Pagination currentPage={page} totalItems={filteredStaff.length} itemsPerPage={itemsPerPage} onPageChange={setPage} onItemsPerPageChange={setItemsPerPage} />
+            <Pagination currentPage={page} totalItems={totalStaff} itemsPerPage={itemsPerPage} onPageChange={setPage} onItemsPerPageChange={setItemsPerPage} />
           </div>
 
           {/* Delete Confirmation Overlay */}

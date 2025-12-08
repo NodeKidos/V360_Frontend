@@ -5,6 +5,7 @@ import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import staffService from "../../../services/staff.service";
 
 export default function EditStaff() {
   const navigate = useNavigate();
@@ -12,14 +13,17 @@ export default function EditStaff() {
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
 
   const [staffData, setStaffData] = useState({
     name: "",
     email: "",
+    countryCode: "🇱🇰 +94",
     contact: "",
-    accesslevel: "",
-    gender: "",
-    status: "",
+    accessLevel: "" as "Staff" | "Admin" | "Manager" | "",
+    gender: "" as "Male" | "Female" | "",
+    status: "" as "Block" | "Unblock" | "",
     nic: "",
     age: "",
   });
@@ -35,21 +39,34 @@ export default function EditStaff() {
   }, []);
 
   useEffect(() => {
-    // Simulate fetching staff data based on the ID from the URL
-    // Replace this with actual API call to fetch staff data
-    const fetchedStaff = {
-      id,
-      name: "Alice",
-      email: "alice@gmail.com",
-      contact: "+94 762347830",
-      accesslevel: "staff",
-      gender: "Female",
-      status: "Unblock",
-      nic: "200080803520",
-      age: "30",
+    const fetchStaffData = async () => {
+      if (!id) return;
+
+      setFetchLoading(true);
+      try {
+        const staff = await staffService.getStaffById(id);
+        setStaffData({
+          name: staff.name,
+          email: staff.email,
+          contact: staff.contact,
+          accessLevel: staff.accessLevel,
+          gender: staff.gender,
+          status: staff.status,
+          nic: staff.nic,
+          age: staff.age.toString(),
+        });
+      } catch (error) {
+        console.error("Failed to fetch staff data:", error);
+        toast.error("Failed to load staff data", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } finally {
+        setFetchLoading(false);
+      }
     };
 
-    setStaffData(fetchedStaff); // Set the fetched data in state
+    fetchStaffData();
   }, [id]);
 
   // Handle form input changes
@@ -58,15 +75,91 @@ export default function EditStaff() {
     setStaffData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Staff details updated successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-    setTimeout(() => {
-      navigate("/staff"); // Navigate back to the staff list page
-    }, 2000);
+
+    if (!id) return;
+
+    // Validation
+    if (!staffData.name || !staffData.email || !staffData.contact || !staffData.nic ||
+        !staffData.gender || !staffData.age || !staffData.accessLevel || !staffData.status) {
+      toast.error("Please fill in all required fields", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await staffService.updateStaff(id, {
+        name: staffData.name,
+        email: staffData.email,
+        contact: staffData.contact,
+        nic: staffData.nic,
+        gender: staffData.gender as "Male" | "Female",
+        age: parseInt(staffData.age),
+        accessLevel: staffData.accessLevel as "Staff" | "Admin" | "Manager",
+        status: staffData.status as "Block" | "Unblock",
+      });
+
+      toast.success("Staff details updated successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      setTimeout(() => {
+        navigate("/staff");
+      }, 2000);
+    } catch (error: any) {
+      // Handle specific error messages
+      let errorMessage = "Failed to update staff";
+
+      // Check error response status
+      if (error.response?.status === 500) {
+        // Internal server error - likely a duplicate email since validation passed
+        const errorData = error.response?.data || {};
+        const errorString = JSON.stringify(errorData).toLowerCase();
+        const errorDetail = errorData.detail || errorData.message || errorData.error || '';
+
+        // Check if it's a duplicate/unique constraint error
+        if (errorString.includes('duplicate') ||
+            errorString.includes('already exists') ||
+            errorString.includes('unique constraint') ||
+            errorString.includes('uq_') ||
+            errorString.includes('23505')) {
+          errorMessage = "This email address is already registered. Please use a different email.";
+        } else if (errorString.includes('internal server error')) {
+          // Backend returns generic 500 error for duplicate emails
+          errorMessage = "This email address is already registered. Please use a different email.";
+        } else {
+          errorMessage = "An error occurred on the server. Please try again or contact support.";
+        }
+      } else if (error.response?.status === 409) {
+        errorMessage = "This email address is already registered. Please use a different email.";
+      } else if (error.response?.data?.message) {
+        const message = error.response.data.message;
+        if (Array.isArray(message)) {
+          errorMessage = message.join(", ");
+        } else if (typeof message === 'string') {
+          // Check for common error patterns
+          if (message.toLowerCase().includes('duplicate') ||
+              message.toLowerCase().includes('already exists') ||
+              message.toLowerCase().includes('unique constraint')) {
+            errorMessage = "This email address is already registered. Please use a different email.";
+          } else {
+            errorMessage = message;
+          }
+        }
+      }
+
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -145,8 +238,9 @@ export default function EditStaff() {
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No</label>
                   <div className="flex items-center border border-purple-300 rounded-xl px-2 md:px-3 py-2 mt-1">
                     <select
+                      name="countryCode"
                       className="text-gray-700 border-r pr-2 md:pr-3 mr-2 md:mr-3 outline-none text-[12px] md:text-[14px] font-poppins"
-                      value={staffData.contact}
+                      value={staffData.countryCode}
                       onChange={handleInputChange}
                     >
                       <option>🇱🇰 +94</option>
@@ -158,6 +252,7 @@ export default function EditStaff() {
                       name="contact"
                       value={staffData.contact}
                       onChange={handleInputChange}
+                      placeholder="769052508"
                       className="flex-1 outline-none px-2 text-[14px] md:text-[16px] font-poppins"
                     />
                   </div>
@@ -167,14 +262,15 @@ export default function EditStaff() {
                 <div>
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Access Level</label>
                   <select
-                    name="accesslevel"
-                    value={staffData.accesslevel}
+                    name="accessLevel"
+                    value={staffData.accessLevel}
                     onChange={handleInputChange}
                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   >
-                    <option>Staff</option>
-                    <option >Admin</option>
-                    <option >Manager</option>
+                    <option value="">Select</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Manager">Manager</option>
                   </select>
                 </div>
               </div>
@@ -200,8 +296,8 @@ export default function EditStaff() {
                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   >
                     <option value="">Select</option>
-                    <option>Male</option>
-                    <option>Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                   </select>
                 </div>
               </div>
@@ -216,9 +312,9 @@ export default function EditStaff() {
                     onChange={handleInputChange}
                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   >
-                    <option>Select</option>
-                    <option>Block</option>
-                    <option>Unblock</option>
+                    <option value="">Select</option>
+                    <option value="Block">Block</option>
+                    <option value="Unblock">Unblock</option>
                   </select>
                 </div>
                 <div>
@@ -244,9 +340,10 @@ export default function EditStaff() {
 
                 <button
                   type="submit"
-                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
+                  disabled={loading || fetchLoading}
+                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save
+                  {loading ? "Saving..." : "Save"}
                 </button>
               </div>
             </form>

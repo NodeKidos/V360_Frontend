@@ -276,7 +276,7 @@ export default function App() {
           }
         />
         <Route
-          path="//driver/:driverId"
+          path="/driver/:driverId"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <DriverInfo />

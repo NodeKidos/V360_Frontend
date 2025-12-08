@@ -110,7 +110,7 @@ const EditItinerary = () => {
 
         console.log("🔍 Extracting destinations and hotels from days...");
 
-        data.days?.forEach((day: any, index: number) => {
+        data.days?.forEach((day: any) => {
           const destName = day.destination?.name;
           console.log(`  Day ${day.dayNumber} (${destName}):`, {
             hotel: day.hotel,
@@ -189,7 +189,7 @@ const EditItinerary = () => {
                 // Merge: prefer store's hotel and excursions if they exist
                 finalSelectedDestinations[destName] = {
                   hotel: storeSelection.hotel || fetchedSelection.hotel,
-                  excursions: storeSelection.excursions?.length > 0
+                  excursions: (storeSelection.excursions?.length ?? 0) > 0
                     ? storeSelection.excursions
                     : fetchedSelection.excursions
                 };
@@ -359,7 +359,7 @@ const EditItinerary = () => {
     let currentDayNumber = 1;
     let currentDate = new Date(start);
 
-    selectedCities.forEach((cityName, cityIndex) => {
+    selectedCities.forEach((cityName) => {
       const destination = destinations.find(d => d.name === cityName);
       const destData = selectedDestinations?.[cityName];
 
@@ -514,11 +514,8 @@ const EditItinerary = () => {
     }
   };
 
-  const handleStatusChange = async (newStatus: ItineraryStatus) => {
-    // Status changes should be done through specific actions
-    // This is just for informational purposes
-    toast.info("Use quote/accept/reject actions to change status properly");
-  };
+  // Note: Status changes should be done through specific quote/accept/reject actions
+  // not through a general status change handler
 
   const fadeAnim = {
     hidden: { opacity: 0, y: 20 },
@@ -1001,7 +998,7 @@ const EditItinerary = () => {
                       <div className="space-y-4">
                         {formData.days
                           .sort((a, b) => (a.dayNumber || 0) - (b.dayNumber || 0))
-                          .map((day, index) => (
+                          .map((day) => (
                           <div key={day.id} className="border border-gray-300 rounded-lg p-4">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">

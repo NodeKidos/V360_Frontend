@@ -518,21 +518,21 @@ const ItinerarySummary = () => {
                                   )}
 
                                   {/* Room Details */}
-                                  {(day.roomType || day.hotel.roomDetails) && (
+                                  {day.hotel.roomDetails && (
                                     <div className="mt-3 space-y-1">
-                                      {(day.roomType || day.hotel.roomDetails?.roomType) && (
+                                      {day.hotel.roomDetails?.roomType && (
                                         <p className="text-sm text-gray-700">
-                                          <span className="font-medium">Room Type:</span> {(day.roomType || day.hotel.roomDetails?.roomType) === 'single' ? 'Single Room' : 'Double Room'}
+                                          <span className="font-medium">Room Type:</span> {day.hotel.roomDetails.roomType === 'single' ? 'Single Room' : 'Double Room'}
                                         </p>
                                       )}
-                                      {(day.bedTypes || day.hotel.roomDetails?.bedTypes)?.length > 0 && (
+                                      {day.hotel.roomDetails?.bedTypes?.length > 0 && (
                                         <p className="text-sm text-gray-700">
-                                          <span className="font-medium">Bed Types:</span> {(day.bedTypes || day.hotel.roomDetails?.bedTypes).join(', ')}
+                                          <span className="font-medium">Bed Types:</span> {day.hotel.roomDetails.bedTypes.join(', ')}
                                         </p>
                                       )}
-                                      {(day.dietPlans || day.hotel.roomDetails?.dietPlans)?.length > 0 && (
+                                      {day.hotel.roomDetails?.dietPlans?.length > 0 && (
                                         <p className="text-sm text-gray-700">
-                                          <span className="font-medium">Diet Plan:</span> {(day.dietPlans || day.hotel.roomDetails?.dietPlans).join(', ')}
+                                          <span className="font-medium">Diet Plan:</span> {day.hotel.roomDetails.dietPlans.join(', ')}
                                         </p>
                                       )}
                                     </div>

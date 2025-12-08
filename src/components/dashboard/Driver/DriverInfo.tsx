@@ -4,44 +4,45 @@ import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import { MdArrowBack } from "react-icons/md";  // Back icon
 import { CiEdit } from "react-icons/ci"; // Edit icon
-
-interface Driver {
-    id: string | undefined;
-    name: string;
-    contact: string;
-    email: string;
-    bod: string;
-    bloodGroup: string;
-    nic: string;
-    assignedVehicle: string;
-    status: string;
-    joinDate: string;
-    licenseInfo: string;
-}
+import driverService, { type Driver } from "../../../services/driver.service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function DriverInfo() {
-    const { id } = useParams();  // Get driver ID from URL
+    const { id } = useParams<{ id: string }>();  // Get driver ID from URL
     const navigate = useNavigate();  // Initialize navigate function
     const [driver, setDriver] = useState<Driver | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Dummy data fetch simulation (replace this with your actual data fetching logic)
-        const fetchedDriver = {
-            id,
-            name: "Alice",
-            contact: "+94 768435606",
-            email: "alice@gmail.com",
-            bod: "03.04.1995",
-            bloodGroup: "A+",
-            nic: "200080803520",
-            assignedVehicle: "Van #201",
-            status: "Active",
-            joinDate: "15.03.2024",
-            licenseInfo: "License Image",
+        const fetchDriver = async () => {
+            if (!id) {
+                toast.error("Driver ID not found", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                navigate("/driver");
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const fetchedDriver = await driverService.getDriverById(id);
+                setDriver(fetchedDriver);
+            } catch (err: any) {
+                const errorMessage = err?.response?.data?.message || "Failed to fetch driver data";
+                toast.error(errorMessage, {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                navigate("/driver");
+            } finally {
+                setLoading(false);
+            }
         };
 
-        setDriver(fetchedDriver);  // Set the fetched driver data
-    }, [id]);
+        fetchDriver();
+    }, [id, navigate]);
 
     return (
         <div className="h-screen bg-white flex overflow-hidden">
@@ -63,7 +64,9 @@ export default function DriverInfo() {
                     </div>
 
                     {/* Driver Information Section */}
-                    {driver && (
+                    {loading ? (
+                        <div className="mt-6 text-center text-gray-500">Loading driver information...</div>
+                    ) : driver ? (
                         <div className="mt-4 md:mt-6 bg-white rounded-2xl p-6 border border-purple-100 shadow-sm">
                             {/* Title Section with Edit Icon */}
                             <div className="flex justify-between items-center">
@@ -83,7 +86,7 @@ export default function DriverInfo() {
                             {/* Profile Section */}
                             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="col-span-1 sm:col-span-2 flex items-left justify-left">
-                                    <img src="https://i.pravatar.cc/200" alt="Profile" className="w-30 h-30 rounded-[15px] border-2 " />
+                                    <img src={driver.profileImage || "https://i.pravatar.cc/200"} alt="Profile" className="w-30 h-30 rounded-[15px] border-2 " />
                                 </div>
 
                                 {/* Driver Info */}
@@ -93,7 +96,11 @@ export default function DriverInfo() {
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Date of Birth</p>
-                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{driver.bod}</p>
+                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{new Date(driver.dateOfBirth).toLocaleDateString()}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Blood Group</p>
+                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{driver.bloodGroup}</p>
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">NIC</p>
@@ -109,7 +116,12 @@ export default function DriverInfo() {
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Assigned Vehicle</p>
-                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{driver.assignedVehicle}</p>
+                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">
+                                        {typeof driver.assignedVehicle === 'object' && driver.assignedVehicle
+                                            ? `${driver.assignedVehicle.registrationNumber} (${driver.assignedVehicle.make} ${driver.assignedVehicle.model})`
+                                            : driver.assignedVehicle || 'Not Assigned'
+                                        }
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Status</p>
@@ -117,18 +129,27 @@ export default function DriverInfo() {
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Join Date</p>
-                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{driver.joinDate}</p>
+                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{new Date(driver.joinDate).toLocaleDateString()}</p>
                                 </div>
                                 <div className="sm:col-span-2">
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">License Info</p>
-                                    <div className="mt-2 h-24 w-full bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-500 font-poppins">
-                                        {driver.licenseInfo}
-                                    </div>
+                                    {driver.licenseInfo ? (
+                                        <div className="mt-2">
+                                            <a href={driver.licenseInfo} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                                View License Document
+                                            </a>
+                                        </div>
+                                    ) : (
+                                        <div className="mt-2 h-24 w-full bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-500 font-poppins">
+                                            No license info available
+                                        </div>
+                                    )}
                                 </div>
 
                             </div>
                         </div>
-                    )}
+                    ) : null}
+                    <ToastContainer />
                 </div>
             </div>
         </div>

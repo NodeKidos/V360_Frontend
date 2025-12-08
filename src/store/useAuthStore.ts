@@ -40,11 +40,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (userJson && accessToken) {
       try {
         const user = JSON.parse(userJson);
+        // Also store userRole separately for sidebar
+        localStorage.setItem("userRole", user.role);
         set({ user, isLoggedIn: true, isInitialized: true });
       } catch (error) {
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userRole");
         set({ isInitialized: true });
       }
     } else {
@@ -62,6 +65,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       localStorage.setItem("user", JSON.stringify(response.user));
+      localStorage.setItem("userRole", response.user.role);
 
       set({
         user: response.user,
@@ -135,6 +139,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         localStorage.setItem("accessToken", response.accessToken);
         localStorage.setItem("refreshToken", response.refreshToken);
         localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("userRole", response.user.role);
 
         set({
           user: response.user,
@@ -206,6 +211,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       localStorage.setItem("user", JSON.stringify(response.user));
+      localStorage.setItem("userRole", response.user.role);
 
       set({
         user: response.user,
@@ -226,6 +232,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // Logout
   logout: () => {
     authService.logout();
+    localStorage.removeItem("userRole");
     set({
       user: null,
       isLoggedIn: false,

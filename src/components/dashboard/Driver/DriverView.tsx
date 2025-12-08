@@ -11,19 +11,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci"; // Search icon
 import { IoMdAdd } from "react-icons/io"; // Add icon
+import driverService, { type Driver } from "../../../services/driver.service";
 
 const DriverManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
 
-    const [drivers, setDrivers] = useState([
-        { id: "D001", name: "Alice", contact: "+94 768435606", email: "alice@gmail.com", bod: "03.04.1995", bloodGroup: "A+", nic: "200080803520", assignedVehicle: "Van #201", status: "Active" },
-        { id: "D002", name: "Bob", contact: "+94 762347830", email: "bob@gmail.com", bod: "12.06.1992", bloodGroup: "B-", nic: "200080803521", assignedVehicle: "Van #202", status: "Inactive" },
-        { id: "D003", name: "Charlie", contact: "+94 773456789", email: "charlie@gmail.com", bod: "10.11.1987", bloodGroup: "O+", nic: "200080803522", assignedVehicle: "Van #203", status: "Active" },
-        { id: "D004", name: "Alice", contact: "+94 768435606", email: "alice@gmail.com", bod: "03.04.1995", bloodGroup: "A+", nic: "200080803520", assignedVehicle: "Van #204", status: "Active" },
-        { id: "D005", name: "Bob", contact: "+94 762347830", email: "bob@gmail.com", bod: "12.06.1992", bloodGroup: "B-", nic: "200080803521", assignedVehicle: "Van #205", status: "Inactive" },
-        { id: "D006", name: "Charlie", contact: "+94 773456789", email: "charlie@gmail.com", bod: "10.11.1987", bloodGroup: "O+", nic: "200080803522", assignedVehicle: "Van #206", status: "Active" },
-
-    ]);
+    const [drivers, setDrivers] = useState<Driver[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [totalDrivers, setTotalDrivers] = useState(0);
 
     const [page, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(3);
@@ -37,31 +32,30 @@ const DriverManagement = () => {
     const [statusFilter, setStatusFilter] = useState("");
     const [assignedVehicleFilter, setAssignedVehicleFilter] = useState("");
 
-    // Filter drivers based on search query, gender, and status
-    const filteredDrivers = drivers.filter((driver) => {
-        const searchLower = searchQuery.toLowerCase();
-        const matchesSearch = (
-            driver.id.toLowerCase().includes(searchLower) ||
-            driver.name.toLowerCase().includes(searchLower) ||
-            driver.contact.toLowerCase().includes(searchLower) ||
-            driver.email.toLowerCase().includes(searchLower) ||
-            driver.bod.toLowerCase().includes(searchLower) ||
-            driver.bloodGroup.toLowerCase().includes(searchLower) ||
-            driver.nic.toLowerCase().includes(searchLower) ||
-            driver.assignedVehicle.toLowerCase().includes(searchLower) ||
-            driver.status.toLowerCase().includes(searchLower)
-        );
-
-        const matchesBloodGroup = bloodGroupFilter === "" || driver.bloodGroup === bloodGroupFilter;
-        const matchesAssignedVehicle = assignedVehicleFilter === "" || driver.assignedVehicle === assignedVehicleFilter;
-        const matchesStatus = statusFilter === "" || driver.status === statusFilter;
-
-        return matchesSearch && matchesAssignedVehicle && matchesStatus && matchesBloodGroup;
-    });
-
-    const indexOfLastDriver = page * itemsPerPage;
-    const indexOfFirstDriver = indexOfLastDriver - itemsPerPage;
-    const currentDrivers = filteredDrivers.slice(indexOfFirstDriver, indexOfLastDriver);
+    // Fetch drivers from API
+    const fetchDrivers = async () => {
+        try {
+            setLoading(true);
+            const response = await driverService.getAllDrivers({
+                page,
+                limit: itemsPerPage,
+                search: searchQuery || undefined,
+                bloodGroup: bloodGroupFilter || undefined,
+                status: statusFilter || undefined,
+                assignedVehicle: assignedVehicleFilter || undefined,
+            });
+            setDrivers(response.drivers);
+            setTotalDrivers(response.total);
+        } catch (err: any) {
+            const errorMessage = err?.response?.data?.message || "Failed to fetch drivers";
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -72,6 +66,11 @@ const DriverManagement = () => {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    // Fetch drivers when filters or pagination change
+    useEffect(() => {
+        fetchDrivers();
+    }, [page, itemsPerPage, searchQuery, bloodGroupFilter, statusFilter, assignedVehicleFilter]);
 
     // Reset to page 1 when search query or filters change
     useEffect(() => {
@@ -90,14 +89,26 @@ const DriverManagement = () => {
     };
 
     // Confirm the delete action
-    const confirmDelete = () => {
-        setDrivers(drivers.filter((driver) => driver.id !== selectedDriverId));
-        setDeleteConfirmationVisible(false);
+    const confirmDelete = async () => {
+        if (!selectedDriverId) return;
 
-        toast.success("Driver deleted successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
+        try {
+            await driverService.deleteDriver(selectedDriverId);
+            setDeleteConfirmationVisible(false);
+            toast.success("Driver deleted successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+            // Refresh the driver list
+            fetchDrivers();
+        } catch (err: any) {
+            const errorMessage = err?.response?.data?.message || "Failed to delete driver";
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            setDeleteConfirmationVisible(false);
+        }
     };
 
     // Cancel delete action
@@ -316,41 +327,60 @@ const DriverManagement = () => {
                             </thead>
 
                             <tbody className="font-poppins">
-                                {currentDrivers.map((d) => (
-                                    <tr key={d.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                        <td className="py-3 px-2" onClick={() => handleViewClick(d.id)}>
-                                            <span className="text-blue-500 cursor-pointer">{d.id}</span> {/* Make ID clickable */}
-                                        </td>                                       
-                                         <td className="py-4 px-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
-                                                <span className="font-medium text-gray-800">{d.name}</span>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-4 text-gray-600">{d.contact}</td>
-                                        <td className="py-4 px-4 text-gray-600">{d.email}</td>
-                                        <td className="py-4 px-4 text-gray-600">{d.bod}</td>
-                                        <td className="py-4 px-4 text-gray-600">{d.bloodGroup}</td>
-                                        <td className="py-4 px-4 text-gray-600">{d.nic}</td>
-                                        <td className="py-4 px-4 text-gray-600">{d.assignedVehicle}</td>
-                                        <td className={`py-4 px-4 ${d.status === "Active" ? "text-green-600" : "text-red-600"}`}>
-                                            {d.status}
-                                        </td>
-                                        <td className="px-4 py-4 whitespace-nowrap">
-                                            <div className="flex gap-3 justify-center">
-                                                <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d.id)} />
-                                                <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d.id)} />
-                                            </div>
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={10} className="py-8 text-center text-gray-500">
+                                            Loading drivers...
                                         </td>
                                     </tr>
-                                ))}
+                                ) : drivers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={10} className="py-8 text-center text-gray-500">
+                                            No drivers found
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    drivers.map((d) => (
+                                        <tr key={d._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                                            <td className="py-3 px-2" onClick={() => handleViewClick(d._id)}>
+                                                <span className="text-blue-500 cursor-pointer">{d._id}</span> {/* Make ID clickable */}
+                                            </td>
+                                             <td className="py-4 px-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
+                                                    <span className="font-medium text-gray-800">{d.name}</span>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-4 text-gray-600">{d.contact}</td>
+                                            <td className="py-4 px-4 text-gray-600">{d.email}</td>
+                                            <td className="py-4 px-4 text-gray-600">{new Date(d.dateOfBirth).toLocaleDateString()}</td>
+                                            <td className="py-4 px-4 text-gray-600">{d.bloodGroup}</td>
+                                            <td className="py-4 px-4 text-gray-600">{d.nic}</td>
+                                            <td className="py-4 px-4 text-gray-600">
+                                                {typeof d.assignedVehicle === 'object' && d.assignedVehicle
+                                                    ? d.assignedVehicle.registrationNumber || d.assignedVehicle.model || 'N/A'
+                                                    : d.assignedVehicle || 'Not Assigned'
+                                                }
+                                            </td>
+                                            <td className={`py-4 px-4 ${d.status === "Active" ? "text-green-600" : "text-red-600"}`}>
+                                                {d.status}
+                                            </td>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                <div className="flex gap-3 justify-center">
+                                                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d._id)} />
+                                                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d._id)} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
 
                     {/* PAGINATION */}
                     <div className="mt-4">
-                        <Pagination currentPage={page} totalItems={filteredDrivers.length} itemsPerPage={itemsPerPage} onPageChange={setPage} onItemsPerPageChange={setItemsPerPage} />
+                        <Pagination currentPage={page} totalItems={totalDrivers} itemsPerPage={itemsPerPage} onPageChange={setPage} onItemsPerPageChange={setItemsPerPage} />
                     </div>
 
                     {/* Delete Confirmation Overlay */}

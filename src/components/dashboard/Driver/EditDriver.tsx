@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Navigate hook
+import { useNavigate, useParams } from "react-router-dom"; // Navigate hook
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import driverService from "../../../services/driver.service";
 
 interface DriverData {
     name: string;
     email: string;
     contact: string;
-    licenseNo: string;
+    nic: string;
     assignedVehicle: string;
     status: string;
     profileImage: File | null;
@@ -22,16 +23,19 @@ interface DriverData {
 
 export default function EditDriver() {
     const navigate = useNavigate(); // Initialize the navigation function
+    const { id } = useParams<{ id: string }>(); // Get driver ID from URL
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [fetchLoading, setFetchLoading] = useState(true);
 
     // Initialize driver data
     const [driverData, setDriverData] = useState<DriverData>({
         name: "",
         email: "",
         contact: "",
-        licenseNo: "",
+        nic: "",
         assignedVehicle: "",
         status: "",
         profileImage: null,
@@ -51,33 +55,101 @@ export default function EditDriver() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Dummy data fetch simulation (replace with actual data fetching logic)
+    // Fetch driver data
     useEffect(() => {
-        setDriverData({
-            name: "John Doe",
-            email: "johndoe@gmail.com",
-            contact: "+94 762347830",
-            licenseNo: "L1234567890",
-            assignedVehicle: "Van #201",
-            status: "Active",
-            profileImage: null,
-            licenseInfo: null,
-            joinDate: "2023-03-15",
-            dob: "1990-01-01",
-            bloodGroup: "O+",
-        });
-    }, []);
+        const fetchDriver = async () => {
+            if (!id) {
+                toast.error("Driver ID not found", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                navigate("/driver");
+                return;
+            }
+
+            try {
+                setFetchLoading(true);
+                const driver = await driverService.getDriverById(id);
+                setDriverData({
+                    name: driver.name,
+                    email: driver.email,
+                    contact: driver.contact,
+                    nic: driver.nic,
+                    assignedVehicle: typeof driver.assignedVehicle === 'object' && driver.assignedVehicle
+                        ? driver.assignedVehicle.registrationNumber
+                        : driver.assignedVehicle || '',
+                    status: driver.status,
+                    profileImage: null,
+                    licenseInfo: null,
+                    joinDate: driver.joinDate.split('T')[0],
+                    dob: driver.dateOfBirth.split('T')[0],
+                    bloodGroup: driver.bloodGroup,
+                });
+            } catch (err: any) {
+                const errorMessage = err?.response?.data?.message || "Failed to fetch driver data";
+                toast.error(errorMessage, {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                navigate("/driver");
+            } finally {
+                setFetchLoading(false);
+            }
+        };
+
+        fetchDriver();
+    }, [id, navigate]);
 
     // Form submit handler
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Driver updated successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
-        setTimeout(() => {
-            navigate("/driver");
-        }, 2000);
+
+        if (!id) return;
+
+        // Validation
+        if (!driverData.name || !driverData.email || !driverData.contact || !driverData.dob ||
+            !driverData.bloodGroup || !driverData.nic || !driverData.assignedVehicle ||
+            !driverData.status || !driverData.joinDate) {
+            toast.error("Please fill in all required fields", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await driverService.updateDriver(id, {
+                name: driverData.name,
+                email: driverData.email,
+                contact: driverData.contact,
+                dateOfBirth: driverData.dob,
+                bloodGroup: driverData.bloodGroup as 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-',
+                nic: driverData.nic,
+                assignedVehicle: driverData.assignedVehicle,
+                status: driverData.status as 'Active' | 'Inactive',
+                joinDate: driverData.joinDate,
+                profileImage: driverData.profileImage || undefined,
+                licenseInfo: driverData.licenseInfo || undefined,
+            });
+
+            toast.success("Driver updated successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+
+            setTimeout(() => {
+                navigate("/driver");
+            }, 2000);
+        } catch (err: any) {
+            const errorMessage = err?.response?.data?.message || "Failed to update driver";
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof DriverData) => {
@@ -126,7 +198,10 @@ export default function EditDriver() {
                             </p>
                         </div>
 
-                        {/* FORM START */}
+                        {fetchLoading ? (
+                            <div className="mt-6 text-center text-gray-500">Loading driver data...</div>
+                        ) : (
+                        /* FORM START */
                         <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 {/* Driver Name */}
@@ -188,8 +263,8 @@ export default function EditDriver() {
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">NIC</label>
                                     <input
                                         type="text"
-                                        value={driverData.licenseNo}
-                                        onChange={(e) => setDriverData({ ...driverData, licenseNo: e.target.value })}
+                                        value={driverData.nic}
+                                        onChange={(e) => setDriverData({ ...driverData, nic: e.target.value })}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
@@ -256,12 +331,14 @@ export default function EditDriver() {
 
                                 <button
                                     type="submit"
-                                    className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
+                                    disabled={loading}
+                                    className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:bg-purple-400 disabled:cursor-not-allowed"
                                 >
-                                    Save
+                                    {loading ? "Saving..." : "Save"}
                                 </button>
                             </div>
                         </form>
+                        )}
                         {/* FORM END */}
                     </div>
                     <ToastContainer />

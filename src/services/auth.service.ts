@@ -50,6 +50,34 @@ export const authService = {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+  },
+
+  // Get current user info from JWT token
+  getCurrentUser: () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return null;
+
+    try {
+      // Decode JWT token (simple base64 decode of payload)
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      return {
+        id: decoded.sub,
+        email: decoded.email,
+        role: decoded.role,
+        accessLevel: decoded.accessLevel,
+      };
+    } catch (error) {
+      console.error('Failed to decode token:', error);
+      return null;
+    }
+  },
+
+  // Check if current user is admin
+  isAdmin: () => {
+    const user = authService.getCurrentUser();
+    return user?.role === 'admin' || user?.accessLevel === 'Admin';
   },
 };
 
