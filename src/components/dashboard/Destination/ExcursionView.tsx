@@ -1,6 +1,6 @@
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "../../ui/Pagination";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
@@ -11,9 +11,14 @@ import { useNavigate } from "react-router-dom";
 // Function to render stars based on rating
 const renderStars = (rating: number) => {
     let stars = [];
+    const fullStars = Math.floor(rating); // Get full stars (e.g., 4 from 4.6)
+    const hasHalfStar = rating % 1 >= 0.5; // Check if there's a half star
+
     for (let i = 0; i < 5; i++) {
-        if (i < rating) {
+        if (i < fullStars) {
             stars.push('⭐');
+        } else if (i === fullStars && hasHalfStar) {
+            stars.push('⭐'); // You can use a half-star emoji if available
         } else {
             stars.push('☆');
         }
@@ -21,13 +26,13 @@ const renderStars = (rating: number) => {
     return stars.join(" ");
 };
 
-const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onAdd, onEdit }: any) => {
-     const navigate = useNavigate(); // Use navigate from react-router-dom
+const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, setExcursions, onAdd, onEdit }: any) => {
+    const navigate = useNavigate(); // Use navigate from react-router-dom
 
-  // Function to navigate to Excursion Details page
-  const handleViewDetailsClick = (id: string) => {
-    navigate(`/excursion/details/${id}`); // Redirect to Excursion Details page
-  };
+    // Function to navigate to Excursion Details page
+    const handleViewDetailsClick = (id: string) => {
+        navigate(`/excursion/details/${id}`); // Redirect to Excursion Details page
+    };
     const [excursionFilter, setExcursionFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
@@ -35,27 +40,35 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
     const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
     const [selectedExcursionId, setSelectedExcursionId] = useState<string | null>(null);
 
+    // Ensure excursions is always an array
+    const excursionsArray = Array.isArray(excursions) ? excursions : [];
+
     // Filter excursions based on search query and selected filter
-    const filteredExcursions = excursions.filter((excursion: any) => {
+    const filteredExcursions = excursionsArray.filter((excursion: any) => {
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch = (
-            excursion.id.toLowerCase().includes(searchLower) ||
-            excursion.name.toLowerCase().includes(searchLower) ||
-            excursion.location.toLowerCase().includes(searchLower) ||
-            excursion.catogory.toLowerCase().includes(searchLower) ||
-            excursion.images.toLowerCase().includes(searchLower) ||
-            excursion.reviews.toLowerCase().includes(searchLower)
+            (excursion.id || '').toLowerCase().includes(searchLower) ||
+            (excursion.name || '').toLowerCase().includes(searchLower) ||
+            (excursion.description || '').toLowerCase().includes(searchLower) ||
+            (excursion.difficulty || '').toLowerCase().includes(searchLower) ||
+            (excursion.meetingPoint || '').toLowerCase().includes(searchLower) ||
+            String(excursion.duration || '').toLowerCase().includes(searchLower)
         );
 
         const matchesExcursionFilter = excursionFilter === "" || excursion.name === excursionFilter;
-        const matchesCategoryFilter = categoryFilter === "" || excursion.category === categoryFilter;
+        const matchesCategoryFilter = categoryFilter === "" || (excursion.difficulty || '').includes(categoryFilter);
 
         return matchesSearch && matchesExcursionFilter && matchesCategoryFilter;
     });
 
     const indexOfLastExcursion = page * itemsPerPage;
     const indexOfFirstExcursion = indexOfLastExcursion - itemsPerPage;
-    const currentExcursions = filteredExcursions.slice(indexOfFirstExcursion, indexOfLastExcursion);
+    let currentExcursions = filteredExcursions.slice(indexOfFirstExcursion, indexOfLastExcursion);
+
+    // If current page has no items but there are items available, show first page
+    if (currentExcursions.length === 0 && filteredExcursions.length > 0 && page > 1) {
+        currentExcursions = filteredExcursions.slice(0, itemsPerPage);
+    }
 
     // Handle delete action
     const handleDeleteClick = (excursionId: string) => {
@@ -65,7 +78,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
 
     // Confirm the delete action
     const confirmDelete = () => {
-        setExcursions(excursions.filter(() => excursions.id !== selectedExcursionId));
+        setExcursions(excursionsArray.filter((e: any) => e.id !== selectedExcursionId));
         setDeleteConfirmationVisible(false);
 
         toast.success("Excursion deleted successfully!", {
@@ -195,35 +208,35 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                 <table className="min-w-full bg-white">
                     <thead>
                         <tr className="bg-gray-50 text-[#382A59] text-center font-semibold text-[14px] sm:text-[15px] md:text-[16px] font-poppins">
-                            <th className="px-3 py-4 whitespace-nowrap">Excursion Id</th>
-                            <th className="px-3 py-3 whitespace-nowrap ">Excursion Points</th>
+                            {/* <th className="px-3 py-4 whitespace-nowrap">Excursion Id</th> */}
+                            <th className="px-3 py-3 whitespace-nowrap ">Excursion Point</th>
                             <th className="px-3 py-3">Image</th>
                             <th className="px-3 py-3">Location</th>
                             <th className="px-3 py-3">Category</th>
                             <th className="px-3 py-3 whitespace-nowrap">Best Time</th>
                             <th className="px-3 py-3 ">Duration</th>
                             <th className="px-3 py-3 ">Rating</th>
-                            <th className="px-3 py-3 text-center whitespace-nowrap">Destination ID</th>
+                            <th className="px-3 py-3 text-center whitespace-nowrap">Destination</th>
                             <th className="px-3 py-3 text-center whitespace-nowrap"></th>
                         </tr>
                     </thead>
                     <tbody className="font-poppins">
                         {currentExcursions.map((e: any) => (
                             <tr key={e.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                 <td className="py-3 px-2" onClick={() => handleViewDetailsClick(e.id)}>
-                                    <span className="text-blue-500 cursor-pointer">{e.id}</span> {/* Make ID clickable */}
-                                </td>
-                                <td className="py-3 px-2 ">{e.name}</td>
+                                {/* <td className="py-3 px-2" onClick={() => handleViewDetailsClick(e.id)}>
+                                    <span className="text-blue-500 cursor-pointer">{e.id}</span>
+                                </td> */}
+                                <td key={e.id} className="py-3 px-2 cursor-pointer text-blue-500" onClick={() => handleViewDetailsClick(e.id)}>{e.name || 'N/A'}</td>
                                 <td className="px-2 py-3">
-                                    <img src={e.images} alt={e.name} className="w-16 h-16 object-cover"
+                                    <img src={e.images?.[0] || e.images} alt={e.name} className="w-16 h-16 object-cover"
                                     />
                                 </td>
-                                <td className="px-2 py-3 whitespace-nowrap">{e.location}</td>
-                                <td className="px-2 py-3 whitespace-nowrap">{e.category}</td>
-                                <td className="px-2 py-3">{e.bestTime}</td>
-                                <td className="px-2 py-3">{e.duration}</td>
-                                <td className="px-2 py-3 whitespace-nowrap">{renderStars(e.rating)}</td>
-                                <td className="px-2 py-3 r">{e.destinationId}</td>
+                                <td className="px-2 py-3 whitespace-nowrap">{e.meetingPoint || 'N/A'}</td>
+                                <td className="px-2 py-3 whitespace-nowrap">{e.difficulty || e.category || 'N/A'}</td>
+                                <td className="px-2 py-3">{e.bestTime || 'N/A'}</td>
+                                <td className="px-2 py-3">{e.duration ? `${e.duration} hours` : 'N/A'}</td>
+                                <td className="px-2 py-3 whitespace-nowrap">{e.rating ? renderStars(Number(e.rating)) : 'N/A'}</td>
+                                <td className="px-2 py-3">{e.destination?.name || 'N/A'}</td>
                                 <td className="px-2 py-1">
                                     <div className="flex gap-2 justify-center">
                                         <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(e.id)} />
@@ -243,7 +256,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setExcursions, onA
                     totalItems={filteredExcursions.length}
                     itemsPerPage={itemsPerPage}
                     onPageChange={setPage}
-                    onItemsPerPageChange={setExcursions}
+                    onItemsPerPageChange={setItemsPerPage}
                 />
             </div>
             {/* Delete Confirmation Overlay */}

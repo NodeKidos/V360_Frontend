@@ -6,6 +6,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import driverService from "../../../services/driver.service";
+import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 
 interface DriverData {
     name: string;
@@ -27,6 +28,8 @@ export default function AddDriver() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const [vehiclesLoading, setVehiclesLoading] = useState(true);
     const [driverData, setDriverData] = useState<DriverData>({
         name: "",
         email: "",
@@ -49,6 +52,27 @@ export default function AddDriver() {
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Fetch vehicles for dropdown
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                setVehiclesLoading(true);
+                const fetchedVehicles = await vehicleService.getVehiclesForDropdown();
+                setVehicles(fetchedVehicles);
+            } catch (error) {
+                console.error("Failed to fetch vehicles:", error);
+                toast.error("Failed to load vehicles. Please try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            } finally {
+                setVehiclesLoading(false);
+            }
+        };
+
+        fetchVehicles();
     }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -234,12 +258,16 @@ export default function AddDriver() {
                                         value={driverData.assignedVehicle}
                                         onChange={handleInputChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        disabled={vehiclesLoading}
                                     >
-                                        <option>Select Vehicle</option>
-                                        <option>Van #201</option>
-                                        <option>Van #202</option>
-                                        <option>Van #203</option>
-                                        <option>Van #204</option>
+                                        <option value="">
+                                            {vehiclesLoading ? "Loading vehicles..." : "Select Vehicle"}
+                                        </option>
+                                        {vehicles.map((vehicle) => (
+                                            <option key={vehicle.id} value={vehicle.id}>
+                                                {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>

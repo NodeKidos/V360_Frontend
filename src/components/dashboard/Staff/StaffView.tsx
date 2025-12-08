@@ -105,12 +105,12 @@ const StaffManagement = () => {
   // Fetch staff when page, filters, or search query changes
   useEffect(() => {
     fetchStaff();
-  }, [page, itemsPerPage, searchQuery, genderFilter, statusFilter, accessLevelFilter]);
+  }, [page, itemsPerPage, searchQuery, genderFilter, statusFilter, accessLevelFilter, isCurrentUserAdmin]);
 
-  // Reset to page 1 when search query or filters change
+  // Reset to page 1 when search query, filters, or items per page change
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, genderFilter, statusFilter, accessLevelFilter]);
+  }, [searchQuery, genderFilter, statusFilter, accessLevelFilter, itemsPerPage]);
 
   // Navigate to EditStaff page
   const handleEditClick = (staffId: string) => {

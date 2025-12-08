@@ -4,10 +4,22 @@ export interface Destination {
     id: string;
     name: string;
     description?: string;
-    images?: string[];
+    location?: string;
     category?: string;
+    images?: string[];
+    rating?: number;
+    reviewCount?: number;
+    coordinates?: {
+        lat: number;
+        lng: number;
+    };
     latitude?: number;
     longitude?: number;
+    highlights?: string;
+    bestTimeToVisit?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export const destinationService = {

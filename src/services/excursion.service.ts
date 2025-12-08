@@ -5,11 +5,30 @@ export interface Excursion {
   name: string;
   description?: string;
   price?: number;
-  duration?: string;
+  duration?: number;
+  bestTime?: string;
+  category?: string;
   images?: string[];
   rating?: number;
+  reviewCount?: number;
   difficulty?: string;
-  destinationId?: string;
+  minParticipants?: number;
+  maxParticipants?: number;
+  included?: string[];
+  excluded?: string[];
+  meetingPoint?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  isActive?: boolean;
+  destination?: {
+    id: string;
+    name: string;
+    location?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const excursionService = {
@@ -28,3 +47,5 @@ export const excursionService = {
     return response.data;
   },
 };
+
+export default excursionService;

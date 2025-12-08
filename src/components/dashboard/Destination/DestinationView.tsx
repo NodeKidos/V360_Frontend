@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { CiEdit } from "react-icons/ci"; // Import the Edit icon
 import { MdDeleteOutline } from "react-icons/md"; // Import the Delete icon
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate, useSearchParams } from "react-router-dom"; // Import useNavigate and useSearchParams
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import Pagination from "../../ui/Pagination";
@@ -14,174 +14,20 @@ import { IoMdAdd } from "react-icons/io"; // Import add icon
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import Hotel from "./HotelView";
 import Excursion from "./ExcursionView";
+import destinationService from "../../../services/destination.service";
+import hotelService from "../../../services/hotel.service";
+import excursionService from "../../../services/excursion.service";
 
 const DestinationHotelManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
+    const [searchParams] = useSearchParams();
 
-    const [destinations, setDestination] = useState([
-        {
-            id: "D001",
-            name: "Sigiriya Rock Fortress",
-            location: "Matale",
-            category: "Historical / Cultural",
-            image: "https://example.com/images/sigiriya.jpg",
-            reviews: "One of Sri Lanka’s most iconic landmarks. Stunning views after the climb!"
+    const [destinations, setDestination] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
 
-        },
-        {
-            id: "D002",
-            name: "Mirissa Beach",
-            location: "Matara",
-            category: "Beach / Nature",
-            image: "https://example.com/images/mirissa.jpg",
-            reviews: "High chance of spotting whales! A top experience in southern Sri Lanka."
+    const [hotels, setHotels] = useState<any[]>([]);
 
-        },
-        {
-            id: "D003",
-            name: "Adam's Peak",
-            location: "Central Province",
-            category: "Hiking / Spiritual",
-            image: "https://example.com/images/adams_peak.jpg",
-            reviews: "A sacred mountain with breathtaking sunrise views. A challenging but rewarding hike."
-
-        },
-        {
-            id: "D004",
-            name: "Polonnaruwa Ancient City",
-            location: "North Central Province",
-            category: "Historical / Heritage",
-            image: "https://example.com/images/polonnaruwa.jpg",
-            reviews: "Well-preserved ruins of an ancient kingdom. Great for history lovers and photography."
-
-        },
-        {
-            id: "D005",
-            name: "Horton Plains & World's End",
-            location: "Nuwara Eliya",
-            category: "Nature / Hiking",
-            image: "https://example.com/images/horton_plains.jpg",
-            reviews: "Amazing plateau with panoramic views. Don’t miss the dramatic drop at World's End."
-        },
-        {
-            id: "DI006",
-            name: "Galle Dutch Fort Walk",
-            image: "https://example.com/images/galle_fort.jpg",
-            location: "Galle",
-            category: "Heritage / City Tour",
-            reviews: "Beautiful colonial fort with relaxing seaside views. Great for photography."
-        },
-    ]);
-
-    const [hotels, setHotels] = useState([
-        {
-            id: "HI001",
-            name: "Cinnamon Life Colombo",
-            hotelType: "Luxury",
-            images: "https://example.com/images/hotel_a.jpg",
-            starRating: 5,
-            contactNo: "011 5678530",
-            location: "Colombo",
-            reviews: "Excellent"
-        },
-        {
-            id: "HI002",
-            name: "Galle Face Hotel",
-            hotelType: "Heritage",
-            images: "https://example.com/images/hotel_b.jpg",
-            starRating: 4,
-            contactNo: "011 5678531",
-            location: "Colombo",
-            reviews: "Good"
-        },
-        {
-            id: "HI003",
-            name: "Shangri-La Colombo",
-            hotelType: "Luxury",
-            images: "https://example.com/images/hotel_c.jpg",
-            starRating: 5,
-            contactNo: "011 5678532",
-            location: "Colombo",
-            reviews: "Fair"
-        },
-        {
-            id: "HI004",
-            name: "Cinnamon Red Colombo",
-            hotelType: "Mid-Range",
-            images: "https://example.com/images/hotel_a.jpg",
-            starRating: 4,
-            contactNo: "011 5678533",
-            location: "Colombo",
-            reviews: "Excellent"
-        },
-        {
-            id: "HI005",
-            name: "The Kingsbury Colombo",
-            hotelType: "Luxury",
-            images: "https://example.com/images/hotel_b.jpg",
-            starRating: 5,
-            contactNo: "011 5678534",
-            location: "Colombo",
-            reviews: "Good"
-        },
-        {
-            id: "HI006",
-            name: "Mövenpick Hotel Colombo",
-            hotelType: "Luxury",
-            images: "https://example.com/images/hotel_c.jpg",
-            starRating: 4,
-            contactNo: "011 5678535",
-            location: "Colombo",
-            reviews: "Fair"
-        }
-    ]);
-
-    const [excursions, setExcursions] = useState([
-        {
-            id: "E001",
-            destinationId: "D001", // links to Sigiriya
-            name: "Sigiriya Guided Climb",
-            bestTime: "Jan – Apr",
-            duration: "4 hrs",
-            rating: 4.8,
-            location: "Sigiriya, Central Province",
-            category: "Adventure & Cultural",
-            images: "https://example.com/images/sigiriya.jpg"
-        },
-        {
-            id: "E002",
-            destinationId: "D002", // links to Mirissa Beach
-            name: "Mirissa Whale Watching Tour",
-            bestTime: "Nov – Apr (Morning)",
-            duration: "6 hrs",
-            rating: 4.7,
-            location: "Mirissa, Southern Province",
-            category: "Wildlife & Nature",
-            images: "https://example.com/images/mirissa.jpg"
-        },
-        {
-            id: "E003",
-            destinationId: "D003", // links to Adam's Peak
-            name: "Adam's Peak Sunrise Hike",
-            bestTime: "Dec – Apr (Night Climb)",
-            duration: "8 hrs",
-            rating: 4.9,
-            location: "Nallathanniya, Sabaragamuwa",
-            category: "Adventure & Pilgrimage",
-            images: "https://example.com/images/adamspeak.jpg"
-        },
-        {
-            id: "E004",
-            destinationId: "D005", // links to Horton Plains
-            name: "Horton Plains & World's End Trek",
-            bestTime: "Dec – Mar (Morning)",
-            duration: "5 hrs",
-            rating: 4.9,
-            location: "Horton Plains National Park, Nuwara Eliya",
-            category: "Nature & Adventure",
-            images: "https://example.com/images/hortonplains.jpg"
-        },
-    ]);
+    const [excursions, setExcursions] = useState<any[]>([]);
 
     const [page, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(3);
@@ -197,29 +43,63 @@ const DestinationHotelManagement = () => {
     const [locationFilter, setLocationFilter] = useState("");
     const [destinationFilter, setDestinationFilter] = useState("");
 
-    const [activeTab, setActiveTab] = useState("destination");
+    // Get initial tab from URL query parameter, default to "destination"
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "destination");
 
-    // Filter customers based on search query, gender, and status
+    // Filter destinations based on search query and filters
     const filteredDestinations = destinations.filter((destination) => {
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch = (
-            destination.id.toLowerCase().includes(searchLower) ||
-            destination.name.toLowerCase().includes(searchLower) ||
-            destination.location.toLowerCase().includes(searchLower) ||
-            destination.category.toLowerCase().includes(searchLower) ||
-            destination.image.toLowerCase().includes(searchLower) ||
-            destination.reviews.toLowerCase().includes(searchLower)
+            (destination.id || '').toLowerCase().includes(searchLower) ||
+            (destination.name || '').toLowerCase().includes(searchLower) ||
+            (destination.description || '').toLowerCase().includes(searchLower) ||
+            (destination.category || '').toLowerCase().includes(searchLower)
         );
 
-        const matchesLocation = locationFilter === "" || destination.location === locationFilter;
         const matchesDestination = destinationFilter === "" || destination.name === destinationFilter;
 
-        return matchesSearch && matchesDestination && matchesLocation;
+        return matchesSearch && matchesDestination;
     });
 
     const indexOfLastDesination = page * itemsPerPage;
     const indexOfFirstDesination = indexOfLastDesination - itemsPerPage;
-    const currentDestinations = filteredDestinations.slice(indexOfFirstDesination, indexOfLastDesination);
+    let currentDestinations = filteredDestinations.slice(indexOfFirstDesination, indexOfLastDesination);
+
+    // If current page has no items but there are items available, reset to page 1
+    if (currentDestinations.length === 0 && filteredDestinations.length > 0 && page > 1) {
+        const firstPageStart = 0;
+        const firstPageEnd = itemsPerPage;
+        currentDestinations = filteredDestinations.slice(firstPageStart, firstPageEnd);
+    }
+
+    // Fetch all data on component mount
+    useEffect(() => {
+        const fetchAllData = async () => {
+            try {
+                setLoading(true);
+                const [destinationsData, hotelsData, excursionsData] = await Promise.all([
+                    destinationService.getAll(),
+                    hotelService.getAll(),
+                    excursionService.getAll()
+                ]);
+                console.log(destinationsData, hotelsData, excursionsData);
+                
+                setDestination(destinationsData);
+                setHotels(hotelsData);
+                setExcursions(excursionsData);
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+                toast.error("Failed to load data from database", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAllData();
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -231,10 +111,10 @@ const DestinationHotelManagement = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Reset to page 1 when search query or filters change
+    // Reset to page 1 when search query, filters, or items per page change
     useEffect(() => {
         setPage(1);
-    }, [searchQuery, locationFilter]);
+    }, [searchQuery, locationFilter, itemsPerPage]);
 
     // Navigate to EditCustomer page
     // const handleEditClick = (destinationId: string) => {
@@ -513,11 +393,11 @@ const DestinationHotelManagement = () => {
                         </TabsContent>
                         {/* Hotel Tab Panel */}
                         <TabsContent value="hotel">
-                            <Hotel hotels={hotels} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setHotel={setHotels} onAdd={handleAddHotelClick} onEdit={handleEditHotelClick} />
+                            <Hotel hotels={hotels} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setHotels={setHotels} onAdd={handleAddHotelClick} onEdit={handleEditHotelClick} />
                         </TabsContent>
                         {/* Excursion Tab Panel */}
                         <TabsContent value="excursion">
-                            <Excursion excursions={excursions} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setExcursions={setExcursions} onAdd={handleAddExcursionClick} onEdit={handleEditExcursionClick} />
+                            <Excursion excursions={excursions} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setExcursions={setExcursions} onAdd={handleAddExcursionClick} onEdit={handleEditExcursionClick} />
                         </TabsContent>
                     </Tabs>
 

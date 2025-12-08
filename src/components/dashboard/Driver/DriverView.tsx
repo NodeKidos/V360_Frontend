@@ -12,6 +12,7 @@ import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci"; // Search icon
 import { IoMdAdd } from "react-icons/io"; // Add icon
 import driverService, { type Driver } from "../../../services/driver.service";
+import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 
 const DriverManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
@@ -19,6 +20,7 @@ const DriverManagement = () => {
     const [drivers, setDrivers] = useState<Driver[]>([]);
     const [loading, setLoading] = useState(false);
     const [totalDrivers, setTotalDrivers] = useState(0);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
     const [page, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(3);
@@ -67,15 +69,29 @@ const DriverManagement = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    // Fetch vehicles for filter dropdown
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                const fetchedVehicles = await vehicleService.getVehiclesForDropdown();
+                setVehicles(fetchedVehicles);
+            } catch (error) {
+                console.error("Failed to fetch vehicles:", error);
+            }
+        };
+
+        fetchVehicles();
+    }, []);
+
     // Fetch drivers when filters or pagination change
     useEffect(() => {
         fetchDrivers();
     }, [page, itemsPerPage, searchQuery, bloodGroupFilter, statusFilter, assignedVehicleFilter]);
 
-    // Reset to page 1 when search query or filters change
+    // Reset to page 1 when search query, filters, or items per page change
     useEffect(() => {
         setPage(1);
-    }, [searchQuery, assignedVehicleFilter, statusFilter, bloodGroupFilter]);
+    }, [searchQuery, assignedVehicleFilter, statusFilter, bloodGroupFilter, itemsPerPage]);
 
     // Navigate to Edit Driver page
     const handleEditClick = (driverId: string) => {
@@ -214,12 +230,12 @@ const DriverManagement = () => {
                                     value={assignedVehicleFilter}
                                     onChange={(e) => setAssignedVehicleFilter(e.target.value)}
                                 >
-                                    <option value="">AssignedVehicle</option>
-                                    <option value="Van #201">Van #201</option>
-                                    <option value="Van #202">Van #202</option>
-                                    <option value="Van #203">Van #203</option>
-                                    <option value="Van #204">Van #204</option>
-                                    <option value="Van #205">Van #205</option>
+                                    <option value="">Assigned Vehicle</option>
+                                    {vehicles.map((vehicle) => (
+                                        <option key={vehicle.id} value={vehicle.id}>
+                                            {vehicle.registrationNumber}
+                                        </option>
+                                    ))}
                                 </select>
 
                                 <button
@@ -276,12 +292,12 @@ const DriverManagement = () => {
                                 value={assignedVehicleFilter}
                                 onChange={(e) => setAssignedVehicleFilter(e.target.value)}
                             >
-                                <option value="">AssignedVehicle</option>
-                                <option value="Van #201">Van #201</option>
-                                <option value="Van #202">Van #202</option>
-                                <option value="Van #203">Van #203</option>
-                                <option value="Van #204">Van #204</option>
-                                <option value="Van #205">Van #205</option>
+                                <option value="">Assigned Vehicle</option>
+                                {vehicles.map((vehicle) => (
+                                    <option key={vehicle.id} value={vehicle.id}>
+                                        {vehicle.registrationNumber}
+                                    </option>
+                                ))}
                             </select>
 
                             <select

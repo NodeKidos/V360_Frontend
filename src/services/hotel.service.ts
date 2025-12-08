@@ -4,12 +4,33 @@ export interface Hotel {
   id: string;
   name: string;
   description?: string;
-  starRating?: number;
   address?: string;
+  type?: string;
+  pricePerNight?: number;
   images?: string[];
+  rating?: number;
+  starRating?: number;
+  reviewCount?: number;
   amenities?: string[];
-  priceRange?: string;
-  destinationId?: string;
+  roomTypes?: string[];
+  bedTypes?: string[];
+  dietPlans?: string[];
+  totalRooms?: number;
+  contactNumber?: string;
+  email?: string;
+  website?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  isActive?: boolean;
+  destination?: {
+    id: string;
+    name: string;
+    location?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const hotelService = {
@@ -28,3 +49,5 @@ export const hotelService = {
     return response.data;
   },
 };
+
+export default hotelService;

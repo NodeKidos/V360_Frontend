@@ -6,6 +6,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import driverService from "../../../services/driver.service";
+import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 
 interface DriverData {
     name: string;
@@ -29,6 +30,8 @@ export default function EditDriver() {
     const [isMobile, setIsMobile] = useState(false);
     const [loading, setLoading] = useState(false);
     const [fetchLoading, setFetchLoading] = useState(true);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const [vehiclesLoading, setVehiclesLoading] = useState(true);
 
     // Initialize driver data
     const [driverData, setDriverData] = useState<DriverData>({
@@ -53,6 +56,27 @@ export default function EditDriver() {
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Fetch vehicles for dropdown
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                setVehiclesLoading(true);
+                const fetchedVehicles = await vehicleService.getVehiclesForDropdown();
+                setVehicles(fetchedVehicles);
+            } catch (error) {
+                console.error("Failed to fetch vehicles:", error);
+                toast.error("Failed to load vehicles. Please try again.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            } finally {
+                setVehiclesLoading(false);
+            }
+        };
+
+        fetchVehicles();
     }, []);
 
     // Fetch driver data
@@ -276,11 +300,16 @@ export default function EditDriver() {
                                         value={driverData.assignedVehicle}
                                         onChange={(e) => setDriverData({ ...driverData, assignedVehicle: e.target.value })}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        disabled={vehiclesLoading}
                                     >
-                                        <option>Van #201</option>
-                                        <option>Van #202</option>
-                                        <option>Van #203</option>
-                                        <option>Van #204</option>
+                                        <option value="">
+                                            {vehiclesLoading ? "Loading vehicles..." : "Select Vehicle"}
+                                        </option>
+                                        {vehicles.map((vehicle) => (
+                                            <option key={vehicle.id} value={vehicle.id}>
+                                                {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>

@@ -1,6 +1,6 @@
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "../../ui/Pagination";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
@@ -10,9 +10,14 @@ import deleteicon from "../../../assets/delete.png"; // Import delete icon image
 // Function to render star ratings
 const renderStars = (rating: number) => {
   let stars = [];
+  const fullStars = Math.floor(rating); // Get full stars (e.g., 4 from 4.6)
+  const hasHalfStar = rating % 1 >= 0.5; // Check if there's a half star
+
   for (let i = 0; i < 5; i++) {
-    if (i < rating) {
+    if (i < fullStars) {
       stars.push('⭐');
+    } else if (i === fullStars && hasHalfStar) {
+      stars.push('⭐'); // You can use a half-star emoji if available
     } else {
       stars.push('☆');
     }
@@ -20,7 +25,7 @@ const renderStars = (rating: number) => {
   return stars.join(" ");
 };
 
-const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }: any) => {
+const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels, onAdd, onEdit }: any) => {
   const [hotelFilter, setHotelFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [hotelTypeFilter, setHotelTypeFilter] = useState("");
@@ -28,29 +33,36 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedHotelId, setSelectedHotelId] = useState<string | null>(null);
 
+  // Ensure hotels is always an array
+  const hotelsArray = Array.isArray(hotels) ? hotels : [];
+
   // Filter hotels based on search query and selected filter
-  const filteredHotels = hotels.filter((hotel: any) => {
+  const filteredHotels = hotelsArray.filter((hotel: any) => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = (
-      hotel.id.toLowerCase().includes(searchLower) ||
-      hotel.name.toLowerCase().includes(searchLower) ||
-      hotel.images.toLowerCase().includes(searchLower) ||
-      hotel.location.toLowerCase().includes(searchLower) ||
-      hotel.hotelType.toLowerCase().includes(searchLower) ||
-      hotel.contactNo.toLowerCase().includes(searchLower) ||
-      hotel.starRating.toLowerCase().includes(searchLower) ||
-      hotel.reviews.toLowerCase().includes(searchLower)
+      (hotel.id || '').toLowerCase().includes(searchLower) ||
+      (hotel.name || '').toLowerCase().includes(searchLower) ||
+      (hotel.description || '').toLowerCase().includes(searchLower) ||
+      (hotel.address || '').toLowerCase().includes(searchLower) ||
+      (hotel.type || '').toLowerCase().includes(searchLower) ||
+      (hotel.contactNumber || '').toLowerCase().includes(searchLower) ||
+      String(hotel.starRating || '').toLowerCase().includes(searchLower)
     );
 
     const matchesHotelFilter = hotelFilter === "" || hotel.name === hotelFilter;
-    const matchesHotelTypeFilter = hotelTypeFilter === "" || hotel.hotelType === hotelTypeFilter;
+    const matchesHotelTypeFilter = hotelTypeFilter === "" || (hotel.type || '').includes(hotelTypeFilter);
 
     return matchesSearch && matchesHotelFilter && matchesHotelTypeFilter;
   });
 
   const indexOfLastHotel = page * itemsPerPage;
   const indexOfFirstHotel = indexOfLastHotel - itemsPerPage;
-  const currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
+  let currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
+
+  // If current page has no items but there are items available, show first page
+  if (currentHotels.length === 0 && filteredHotels.length > 0 && page > 1) {
+    currentHotels = filteredHotels.slice(0, itemsPerPage);
+  }
 
   // Navigate to EditHotel page
   // const handleEditHotelClick = (hotelId: string) => {
@@ -65,7 +77,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
 
   // Confirm the delete action
   const confirmDelete = () => {
-    setHotels(hotels.filter(() => hotels.id !== selectedHotelId));
+    setHotels(hotelsArray.filter((h: any) => h.id !== selectedHotelId));
     setDeleteConfirmationVisible(false);
 
     toast.success("Hotel deleted successfully!", {
@@ -198,7 +210,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
         <table className="min-w-full bg-white">
           <thead>
             <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-              <th className="px-3 py-4 whitespace-nowrap">Hotel Id</th>
+              {/* <th className="px-3 py-4 whitespace-nowrap">Hotel Id</th> */}
               <th className="px-3 py-3 whitespace-nowrap">Hotel Name</th>
               <th className="px-3 py-3 whitespace-nowrap">Hotel Type</th>
               <th className="px-3 py-3 whitespace-nowrap">Image</th>
@@ -212,16 +224,16 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
           <tbody className="font-poppins">
             {currentHotels.map((h: any) => (
               <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                <td className="py-1 px-3">{h.id}</td>
+                {/* <td className="py-1 px-3">{h.id}</td> */}
                 <td className="py-1 px-3 ">{h.name}</td>
-                <td className="px-3 py-1 ">{h.hotelType}</td>
+                <td className="px-3 py-1 ">{h.type || 'N/A'}</td>
                 <td className="px-5 py-1 text-center">
-                  <img src={h.images} alt={h.name} className="w-16 h-16 object-cover " />
+                  <img src={h.images?.[0] || h.images} alt={h.name} className="w-16 h-16 object-cover " />
                 </td>
-                <td className="px-3 py-1 text-center">{renderStars(Number(h.starRating))}</td>
-                <td className="px-3 py-1 text-center">{h.contactNo}</td>
-                <td className="px-3 py-1 text-center">{h.location}</td>
-                <td className="px-3 py-1 text-center">{h.reviews}</td>
+                <td className="px-3 py-1 text-center">{renderStars(Number(h.starRating || 0))}</td>
+                <td className="px-3 py-1 text-center">{h.contactNumber || 'N/A'}</td>
+                <td className="px-3 py-1 text-center">{h.address || h.destination?.location || 'N/A'}</td>
+                <td className="px-3 py-1 text-center">{h.reviewCount ? `${h.reviewCount} reviews` : 'No reviews'}</td>
                 <td className="px-3 py-1 whitespace-nowrap">
                   <div className="flex gap-2 justify-center">
                     <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} />
@@ -241,7 +253,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setHotels, onAdd,onEdit }:
           totalItems={filteredHotels.length}
           itemsPerPage={itemsPerPage}
           onPageChange={setPage}
-          onItemsPerPageChange={setHotels}
+          onItemsPerPageChange={setItemsPerPage}
         />
       </div>
       {/* Delete Confirmation Overlay */}
