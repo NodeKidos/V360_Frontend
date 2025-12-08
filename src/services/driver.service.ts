@@ -28,17 +28,23 @@ export interface Driver {
 }
 
 export interface CreateDriverDto {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  contact: string;
-  dateOfBirth: string;
-  bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
-  nic: string;
-  assignedVehicle: string;
-  status: 'Active' | 'Inactive';
-  joinDate: string;
+  password: string;
+  phone: string;
+  licenseNumber: string;
+  licenseExpiry: string;
+  dateOfBirth?: string;
+  bloodGroup?: string;
+  nationalId?: string;
+  languages?: string[];
+  experienceYears?: number;
+  assignedVehicleId?: string;
+  status?: string;
+  joinDate?: string;
   profileImage?: File | string;
-  licenseInfo?: File | string;
+  licenseImage?: File | string;
 }
 
 export interface UpdateDriverDto extends Partial<CreateDriverDto> { }
@@ -78,38 +84,33 @@ class DriverService {
    * Create a new driver
    */
   async createDriver(data: CreateDriverDto): Promise<Driver> {
-    // Split name into firstName and lastName
-    const nameParts = data.name.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ');
-
     const formData = new FormData();
 
-    // Map frontend fields to backend fields
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName || firstName); // Use firstName if lastName is empty
+    // Required fields
+    formData.append('firstName', data.firstName);
+    formData.append('lastName', data.lastName);
     formData.append('email', data.email);
-    formData.append('phone', data.contact);
-    formData.append('nationalId', data.nic);
-    formData.append('dateOfBirth', data.dateOfBirth);
-    formData.append('bloodGroup', data.bloodGroup);
-    formData.append('status', data.status === 'Active' ? 'active' : 'inactive');
-    formData.append('password', 'Driver@123'); // Default password
+    formData.append('password', data.password);
+    formData.append('phone', data.phone);
+    formData.append('licenseNumber', data.licenseNumber);
+    formData.append('licenseExpiry', data.licenseExpiry);
 
-    if (data.assignedVehicle) {
-      formData.append('assignedVehicleId', data.assignedVehicle);
-    }
-
-    if (data.joinDate) {
-      formData.append('joinDate', data.joinDate);
-    }
+    // Optional fields
+    if (data.dateOfBirth) formData.append('dateOfBirth', data.dateOfBirth);
+    if (data.bloodGroup) formData.append('bloodGroup', data.bloodGroup);
+    if (data.nationalId) formData.append('nationalId', data.nationalId);
+    if (data.languages) formData.append('languages', JSON.stringify(data.languages));
+    if (data.experienceYears !== undefined) formData.append('experienceYears', data.experienceYears.toString());
+    if (data.assignedVehicleId) formData.append('assignedVehicleId', data.assignedVehicleId);
+    if (data.status) formData.append('status', data.status);
+    if (data.joinDate) formData.append('joinDate', data.joinDate);
 
     if (data.profileImage instanceof File) {
       formData.append('profileImage', data.profileImage);
     }
 
-    if (data.licenseInfo instanceof File) {
-      formData.append('licenseImage', data.licenseInfo);
+    if (data.licenseImage instanceof File) {
+      formData.append('licenseImage', data.licenseImage);
     }
 
     const response = await api.post('/drivers', formData, {

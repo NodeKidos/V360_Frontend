@@ -357,11 +357,11 @@ const DriverManagement = () => {
                                     </tr>
                                 ) : (
                                     drivers.map((d) => (
-                                        <tr key={d._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                            {/* <td className="py-3 px-2" onClick={() => handleViewClick(d._id)}>
-                                                <span className="text-blue-500 cursor-pointer">{d._id}</span> 
+                                        <tr key={d.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                                            {/* <td className="py-3 px-2" onClick={() => handleViewClick(d.id)}>
+                                                <span className="text-blue-500 cursor-pointer">{d.id}</span>
                                             </td> */}
-                                             <td className="py-4 px-4 whitespace-nowrap cursor-pointer" onClick={() => handleViewClick(d._id)}>
+                                             <td className="py-4 px-4 whitespace-nowrap cursor-pointer" onClick={() => handleViewClick(d.id)}>
                                                 <div className="flex items-center gap-3">
                                                     <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
                                                     <span className="font-medium text-gray-800">{d.name}</span>
@@ -383,8 +383,8 @@ const DriverManagement = () => {
                                             </td>
                                             <td className="px-4 py-4 whitespace-nowrap">
                                                 <div className="flex gap-3 justify-center">
-                                                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d._id)} />
-                                                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d._id)} />
+                                                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d.id)} />
+                                                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d.id)} />
                                                 </div>
                                             </td>
                                         </tr>

@@ -9,14 +9,14 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function DriverInfo() {
-    const { id } = useParams<{ id: string }>();  // Get driver ID from URL
+    const { driverId } = useParams<{ driverId: string }>();  // Get driver ID from URL
     const navigate = useNavigate();  // Initialize navigate function
     const [driver, setDriver] = useState<Driver | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchDriver = async () => {
-            if (!id) {
+            if (!driverId) {
                 toast.error("Driver ID not found", {
                     position: "top-right",
                     autoClose: 3000,
@@ -27,7 +27,7 @@ export default function DriverInfo() {
 
             try {
                 setLoading(true);
-                const fetchedDriver = await driverService.getDriverById(id);
+                const fetchedDriver = await driverService.getDriverById(driverId);
                 setDriver(fetchedDriver);
             } catch (err: any) {
                 const errorMessage = err?.response?.data?.message || "Failed to fetch driver data";
@@ -42,7 +42,7 @@ export default function DriverInfo() {
         };
 
         fetchDriver();
-    }, [id, navigate]);
+    }, [driverId, navigate]);
 
     return (
         <div className="h-screen bg-white flex overflow-hidden">
@@ -75,7 +75,7 @@ export default function DriverInfo() {
                                 </h2>
                                 <CiEdit
                                     className="text-[#B749DB] cursor-pointer text-[24px] hover:text-[#9f37c9]"
-                                    onClick={() => navigate(`/driver/edit/${id}`)}  // Navigate to Edit Driver page
+                                    onClick={() => navigate(`/driver/edit/${driverId}`)}  // Navigate to Edit Driver page
                                 />
                             </div>
 

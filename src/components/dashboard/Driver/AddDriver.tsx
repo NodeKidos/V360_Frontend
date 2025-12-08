@@ -9,12 +9,18 @@ import driverService from "../../../services/driver.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 
 interface DriverData {
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
+    password: string;
     contact: string;
     dob: string;
     bloodGroup: string;
     nic: string;
+    licenseNumber: string;
+    licenseExpiry: string;
+    languages: string;
+    experienceYears: string;
     assignedVehicle: string;
     status: string;
     profileImage: File | null;
@@ -31,12 +37,18 @@ export default function AddDriver() {
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [vehiclesLoading, setVehiclesLoading] = useState(true);
     const [driverData, setDriverData] = useState<DriverData>({
-        name: "",
+        firstName: "",
+        lastName: "",
         email: "",
+        password: "",
         contact: "",
         dob: "",
         bloodGroup: "",
         nic: "",
+        licenseNumber: "",
+        licenseExpiry: "",
+        languages: "",
+        experienceYears: "",
         assignedVehicle: "",
         status: "",
         profileImage: null,
@@ -90,9 +102,8 @@ export default function AddDriver() {
         e.preventDefault();
 
         // Validation
-        if (!driverData.name || !driverData.email || !driverData.contact || !driverData.dob ||
-            !driverData.bloodGroup || !driverData.nic || !driverData.assignedVehicle ||
-            !driverData.status || !driverData.joinDate) {
+        if (!driverData.firstName || !driverData.lastName || !driverData.email || !driverData.password ||
+            !driverData.contact || !driverData.licenseNumber || !driverData.licenseExpiry) {
             toast.error("Please fill in all required fields", {
                 position: "top-right",
                 autoClose: 3000,
@@ -103,17 +114,23 @@ export default function AddDriver() {
         try {
             setLoading(true);
             await driverService.createDriver({
-                name: driverData.name,
+                firstName: driverData.firstName,
+                lastName: driverData.lastName,
                 email: driverData.email,
-                contact: driverData.contact,
-                dateOfBirth: driverData.dob,
-                bloodGroup: driverData.bloodGroup as 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-',
-                nic: driverData.nic,
-                assignedVehicle: driverData.assignedVehicle,
-                status: driverData.status as 'Active' | 'Inactive',
-                joinDate: driverData.joinDate,
+                password: driverData.password,
+                phone: driverData.contact,
+                licenseNumber: driverData.licenseNumber,
+                licenseExpiry: driverData.licenseExpiry,
+                dateOfBirth: driverData.dob ? driverData.dob : undefined,
+                bloodGroup: driverData.bloodGroup ? driverData.bloodGroup as any : undefined,
+                nationalId: driverData.nic ? driverData.nic : undefined,
+                languages: driverData.languages ? driverData.languages.split(',').map(l => l.trim()) : undefined,
+                experienceYears: driverData.experienceYears ? parseInt(driverData.experienceYears) : undefined,
+                assignedVehicleId: driverData.assignedVehicle ? driverData.assignedVehicle : undefined,
+                status: driverData.status ? driverData.status as any : undefined,
+                joinDate: driverData.joinDate ? driverData.joinDate : undefined,
                 profileImage: driverData.profileImage || undefined,
-                licenseInfo: driverData.licenseInfo || undefined,
+                licenseImage: driverData.licenseInfo || undefined,
             });
 
             toast.success("Driver added successfully!", {
@@ -178,32 +195,114 @@ export default function AddDriver() {
                             className="mt-4 md:mt-6 space-y-4 md:space-y-6"
                             onSubmit={handleSubmit}
                         >
-                            {/* Driver Name */}
+                            {/* First Name & Last Name */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <div>
-                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Driver Name<span className="text-red-500">*</span></label>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">First Name<span className="text-red-500">*</span></label>
                                     <input
                                         type="text"
-                                        name="name"
-                                        value={driverData.name}
+                                        name="firstName"
+                                        value={driverData.firstName}
                                         onChange={handleInputChange}
                                         required
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
-                                {/* Profile Image */}
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Last Name<span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="lastName"
+                                        value={driverData.lastName}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Email & Contact */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Email<span className="text-red-500">*</span></label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={driverData.email}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No<span className="text-red-500">*</span></label>
+                                    <input
+                                        type="tel"
+                                        name="contact"
+                                        value={driverData.contact}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Password & Profile Image */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Password<span className="text-red-500">*</span></label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={driverData.password}
+                                        onChange={handleInputChange}
+                                        required
+                                        minLength={6}
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Profile Image</label>
                                     <input
                                         type="file"
+                                        accept="image/*"
                                         onChange={(e) => handleFileChange(e, "profileImage")}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
 
-                            {/* Date of Birth */}
+                            {/* License Number & License Expiry */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Number<span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="licenseNumber"
+                                        value={driverData.licenseNumber}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Expiry<span className="text-red-500">*</span></label>
+                                    <input
+                                        type="date"
+                                        name="licenseExpiry"
+                                        value={driverData.licenseExpiry}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Date of Birth & Blood Group */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Date of Birth</label>
@@ -216,7 +315,6 @@ export default function AddDriver() {
                                     />
                                 </div>
 
-                                {/* Blood Group */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Blood Group</label>
                                     <select
@@ -225,7 +323,7 @@ export default function AddDriver() {
                                         onChange={handleInputChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
-                                        <option>Select BloodGroup</option>
+                                        <option value="">Select Blood Group</option>
                                         <option>A+</option>
                                         <option>B+</option>
                                         <option>O+</option>
@@ -271,7 +369,35 @@ export default function AddDriver() {
                                     </select>
                                 </div>
                             </div>
-                            {/* Status */}
+                            {/* Languages & Experience Years */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Languages (comma separated)</label>
+                                    <input
+                                        type="text"
+                                        name="languages"
+                                        value={driverData.languages}
+                                        onChange={handleInputChange}
+                                        placeholder="e.g., English, Sinhala, Tamil"
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Experience Years</label>
+                                    <input
+                                        type="number"
+                                        name="experienceYears"
+                                        value={driverData.experienceYears}
+                                        onChange={handleInputChange}
+                                        min="0"
+                                        placeholder="Years of driving experience"
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Status & Join Date */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
@@ -281,13 +407,12 @@ export default function AddDriver() {
                                         onChange={handleInputChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
-                                        <option>Select Status</option>
-                                        <option>Active</option>
-                                        <option>Inactive</option>
+                                        <option value="">Select Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
                                     </select>
                                 </div>
 
-                                {/* Join Date */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Join Date</label>
                                     <input
