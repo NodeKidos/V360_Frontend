@@ -35,9 +35,11 @@ const CustomerManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await userService.getAllUsers();
+      const data = await userService.getAllUsers('customer');
       // Ensure data is an array
       const userList = Array.isArray(data) ? data : (data as any).data || [];
+      console.log(userList);
+
       setCustomers(userList);
     } catch (error) {
       console.error("Failed to fetch users", error);

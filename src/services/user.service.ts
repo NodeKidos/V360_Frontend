@@ -25,8 +25,9 @@ class UserService {
     /**
      * Get all users
      */
-    async getAllUsers(): Promise<User[]> {
-        const response = await api.get('/users');
+    async getAllUsers(role?: string): Promise<User[]> {
+        const params = role ? { role } : {};
+        const response = await api.get('/users', { params });
         return response.data;
     }
 
