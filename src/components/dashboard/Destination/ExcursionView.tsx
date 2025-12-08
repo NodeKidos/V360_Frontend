@@ -226,7 +226,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 {/* <td className="py-3 px-2" onClick={() => handleViewDetailsClick(e.id)}>
                                     <span className="text-blue-500 cursor-pointer">{e.id}</span>
                                 </td> */}
-                                <td key={e.id} className="py-3 px-2 cursor-pointer text-blue-500" onClick={() => handleViewDetailsClick(e.id)}>{e.name || 'N/A'}</td>
+                                <td className="py-3 px-2 cursor-pointer text-blue-500" onClick={() => handleViewDetailsClick(e.id)}>{e.name || 'N/A'}</td>
                                 <td className="px-2 py-3">
                                     <img src={e.images?.[0] || e.images} alt={e.name} className="w-16 h-16 object-cover"
                                     />

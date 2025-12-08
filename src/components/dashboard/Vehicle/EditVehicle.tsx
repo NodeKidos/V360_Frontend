@@ -5,6 +5,8 @@ import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import vehicleService from "../../../services/vehicle.service";
+import driverService, { type Driver } from "../../../services/driver.service";
 
 export default function EditVehicle() {
   const navigate = useNavigate();
@@ -12,6 +14,11 @@ export default function EditVehicle() {
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [driversLoading, setDriversLoading] = useState(true);
+
   const [vehicleData, setVehicleData] = useState<{
     vehicleName: string;
     vehicleType: string;
@@ -32,7 +39,7 @@ export default function EditVehicle() {
     vehicleImage: null,
   });
 
-  // Fetch vehicle data on page load
+  // Handle responsive
   useEffect(() => {
     const handleResize = () => {
         setIsMobile(window.innerWidth < 768);
@@ -40,24 +47,71 @@ export default function EditVehicle() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
-    // ✅ Simulated fetch (now valid)
-    setTimeout(() => {
-      setVehicleData({
-        vehicleName: "Car #201",
-        vehicleType: "Car",
-        vehicleNoPlate: "NP QL-9505",
-        vehicleModel: "Toyota",
-        seatCount: "3",
-        assignDriver: "John",
-        status: "Active",
-        vehicleImage: null,
-      });
-    }, 1000);
-
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-}, [vehicleId]);
+  // Fetch drivers for dropdown
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        setDriversLoading(true);
+        const response = await driverService.getAllDrivers({ limit: 1000 });
+        setDrivers(response.drivers);
+      } catch (error) {
+        console.error("Failed to fetch drivers:", error);
+        toast.error("Failed to load drivers", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } finally {
+        setDriversLoading(false);
+      }
+    };
+
+    fetchDrivers();
+  }, []);
+
+  // Fetch vehicle data on page load
+  useEffect(() => {
+    const fetchVehicle = async () => {
+      if (!vehicleId) {
+        toast.error("Vehicle ID not found", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/vehicle");
+        return;
+      }
+
+      try {
+        setFetchLoading(true);
+        const vehicle = await vehicleService.getVehicleById(vehicleId);
+        setVehicleData({
+          vehicleName: vehicle.make || "",
+          vehicleType: vehicle.type || "",
+          vehicleNoPlate: vehicle.registrationNumber || "",
+          vehicleModel: vehicle.model || "",
+          seatCount: vehicle.capacity?.toString() || "",
+          assignDriver: typeof vehicle.assignedDriver === 'object' && vehicle.assignedDriver
+            ? vehicle.assignedDriver._id || vehicle.assignedDriver.id || ""
+            : vehicle.assignedDriver || "",
+          status: vehicle.status || "Active",
+          vehicleImage: null,
+        });
+      } catch (error: any) {
+        const errorMessage = error?.response?.data?.message || "Failed to fetch vehicle data";
+        toast.error(errorMessage, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        navigate("/vehicle");
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+
+    fetchVehicle();
+  }, [vehicleId, navigate]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -69,14 +123,50 @@ export default function EditVehicle() {
     setVehicleData({ ...vehicleData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate submitting form data
-    toast.success("Vehicle updated successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-    navigate("/vehicle"); // Redirect to the vehicle list page after saving
+
+    if (!vehicleId) return;
+
+    // Validation
+    if (!vehicleData.vehicleName || !vehicleData.vehicleType || !vehicleData.vehicleNoPlate ||
+        !vehicleData.vehicleModel || !vehicleData.seatCount || !vehicleData.status) {
+      toast.error("Please fill in all required fields", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await vehicleService.updateVehicle(vehicleId, {
+        registrationNumber: vehicleData.vehicleNoPlate,
+        type: vehicleData.vehicleType,
+        make: vehicleData.vehicleName,
+        model: vehicleData.vehicleModel,
+        capacity: parseInt(vehicleData.seatCount),
+        status: vehicleData.status as "Active" | "In Service" | "Need Repair",
+        assignedDriver: vehicleData.assignDriver || undefined,
+      });
+
+      toast.success("Vehicle updated successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      setTimeout(() => {
+        navigate("/vehicle");
+      }, 2000);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || "Failed to update vehicle";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

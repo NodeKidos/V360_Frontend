@@ -329,7 +329,7 @@ const DriverManagement = () => {
                         <table className="min-w-full bg-white">
                             <thead>
                                 <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                                    <th className="px-4 py-4 whitespace-nowrap">Driver Id</th>
+                                    {/* <th className="px-4 py-4 whitespace-nowrap">Driver Id</th> */}
                                     <th className="px-4 py-4 whitespace-nowrap">Driver Name</th>
                                     <th className="px-4 py-4 whitespace-nowrap">Contact No</th>
                                     <th className="px-4 py-4 whitespace-nowrap">Email</th>
@@ -358,10 +358,10 @@ const DriverManagement = () => {
                                 ) : (
                                     drivers.map((d) => (
                                         <tr key={d._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                            <td className="py-3 px-2" onClick={() => handleViewClick(d._id)}>
-                                                <span className="text-blue-500 cursor-pointer">{d._id}</span> {/* Make ID clickable */}
-                                            </td>
-                                             <td className="py-4 px-4 whitespace-nowrap">
+                                            {/* <td className="py-3 px-2" onClick={() => handleViewClick(d._id)}>
+                                                <span className="text-blue-500 cursor-pointer">{d._id}</span> 
+                                            </td> */}
+                                             <td className="py-4 px-4 whitespace-nowrap cursor-pointer" onClick={() => handleViewClick(d._id)}>
                                                 <div className="flex items-center gap-3">
                                                     <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
                                                     <span className="font-medium text-gray-800">{d.name}</span>
