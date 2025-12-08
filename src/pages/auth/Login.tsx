@@ -49,7 +49,7 @@ export default function Login() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
-        <Loader className="w-1/2 h-1/2" />
+        <Loader className="w-1/4 h-1/4" />
       </div>
     );
   }
