@@ -13,6 +13,7 @@ import { CiSearch } from "react-icons/ci"; // Search icon
 import { IoMdAdd } from "react-icons/io"; // Add icon
 import staffService, { type Staff } from "../../../services/staff.service";
 import authService from "../../../services/auth.service";
+import { Loader } from "../../ui/Loader";
 
 const StaffManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function
@@ -268,30 +269,27 @@ const StaffManagement = () => {
           </div>
 
           {/* TABLE */}
-          <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                  {/* <th className="px-4 py-4 whitespace-nowrap">Staff Id</th> */}
-                  <th className="px-4 py-4 whitespace-nowrap">Staff Name</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Email</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Gender</th>
-                  <th className="px-4 py-4 whitespace-nowrap">NIC</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Contact No</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Age</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Access Level</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Status</th>
-                  <th className="px-4 py-4 text-center whitespace-nowrap"></th>
-                </tr>
-              </thead>
-              <tbody className="font-poppins">
-                {loading ? (
-                  <tr>
-                    <td colSpan={10} className="py-8 text-center text-gray-500">
-                      Loading staff data...
-                    </td>
+          {loading ? (
+            <Loader src="/loaders/travelloading.lottie" message="Loading staff data..." size={250} />
+          ) : (
+            <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
+                    {/* <th className="px-4 py-4 whitespace-nowrap">Staff Id</th> */}
+                    <th className="px-4 py-4 whitespace-nowrap">Staff Name</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Email</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Gender</th>
+                    <th className="px-4 py-4 whitespace-nowrap">NIC</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Contact No</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Age</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Access Level</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Status</th>
+                    <th className="px-4 py-4 text-center whitespace-nowrap"></th>
                   </tr>
-                ) : staff.length === 0 ? (
+                </thead>
+                <tbody className="font-poppins">
+                  {staff.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="py-8 text-center text-gray-500">
                       No staff found
@@ -324,11 +322,12 @@ const StaffManagement = () => {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* PAGINATION */}
           <div className="mt-4">

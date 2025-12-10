@@ -413,6 +413,26 @@ export default function Itinerary() {
                                     />
                                 </div>
 
+                                <div className="flex flex-col gap-3">
+                                    <label className="text-[20px] font-medium">Allergies</label>
+                                    <input
+                                        placeholder="Enter any allergies (e.g., peanuts, seafood, lactose)"
+                                        value={formData.allergies || ""}
+                                        onChange={(e) => updateFormData({ allergies: e.target.value })}
+                                        className="w-full max-w-full sm:max-w-[400px] md:max-w-[570px] lg:max-w-[820px] h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition placeholder-gray-500"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-3">
+                                    <label className="text-[20px] font-medium">Special Conditions</label>
+                                    <input
+                                        placeholder="Enter any special conditions (e.g., mobility issues, dietary restrictions)"
+                                        value={formData.specialConditions || ""}
+                                        onChange={(e) => updateFormData({ specialConditions: e.target.value })}
+                                        className="w-full max-w-full sm:max-w-[400px] md:max-w-[570px] lg:max-w-[820px] h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition placeholder-gray-500"
+                                    />
+                                </div>
+
                             </motion.div>
                         )}
                         {step === 3 && (

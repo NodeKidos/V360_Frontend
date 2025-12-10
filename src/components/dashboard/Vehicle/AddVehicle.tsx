@@ -46,14 +46,21 @@ export default function AddVehicle() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Fetch drivers for suggestion (optional, if we want to add dropdown later)
+    // Fetch drivers for dropdown
     useEffect(() => {
         const fetchDrivers = async () => {
             try {
                 const response = await driverService.getAllDrivers({ limit: 1000 });
-                setDrivers(response.drivers);
+                console.log("Fetched drivers response:", response);
+                console.log("Drivers array:", response.drivers);
+                setDrivers(response.drivers || []);
             } catch (error) {
-                console.error("Failed to fetch drivers for suggestion", error);
+                console.error("Failed to fetch drivers", error);
+                toast.error("Failed to load drivers list", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                setDrivers([]);
             }
         };
         fetchDrivers();
@@ -65,7 +72,7 @@ export default function AddVehicle() {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setVehicleData(prev => ({ ...prev, [name]: value }));
     };
@@ -109,21 +116,8 @@ export default function AddVehicle() {
             });
 
             // Assign Driver if provided
-            if (vehicleData.assignDriver && newVehicle.id) {
-                // Determine if input is ID or Name. For now, assuming user types ID or we need to find driver by name?
-                // Given the input is text, let's assume they might type a driver ID.
-                // Or better, matching logic:
-                const driver = drivers.find(d =>
-                    d.firstName.toLowerCase().includes(vehicleData.assignDriver.toLowerCase()) ||
-                    d.id === vehicleData.assignDriver
-                );
-
-                if (driver) {
-                    await vehicleService.assignDriver(newVehicle.id, driver.id);
-                } else if (drivers.length > 0) {
-                    // If purely text input, maybe warn? Or skip
-                    console.warn("Driver not found by name/id for assignment");
-                }
+            if (vehicleData.assignDriver && vehicleData.assignDriver !== "" && newVehicle.id) {
+                await vehicleService.assignDriver(newVehicle.id, vehicleData.assignDriver);
             }
 
             toast.success("Vehicle added successfully!", {
@@ -261,14 +255,26 @@ export default function AddVehicle() {
                                 </div>
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Assign Driver</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="assignDriver"
                                         value={vehicleData.assignDriver}
                                         onChange={handleChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        placeholder="Enter Driver Name or ID"
-                                    />
+                                    >
+                                        <option value="">
+                                            {drivers.length === 0 ? "No drivers available" : "Select a driver (optional)"}
+                                        </option>
+                                        {drivers.map((driver) => (
+                                            <option key={driver.id} value={driver.id}>
+                                                {driver.name || `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Unknown Driver'}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {drivers.length === 0 && (
+                                        <p className="text-gray-500 text-[12px] mt-1">
+                                            No drivers found. Please add drivers first.
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 

@@ -186,6 +186,8 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       guestGender: formData.gender,
       guestMedicalConditions: formData.medicalConditions,
       guestDietaryPreferences: formData.dietaryPreferences,
+      guestAllergies: formData.allergies,
+      guestSpecialConditions: formData.specialConditions,
     };
 
     return dto;

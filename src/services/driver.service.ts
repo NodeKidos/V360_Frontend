@@ -10,23 +10,32 @@ export interface Vehicle {
 
 export interface Driver {
   id: string; // Add id for frontend compatibility
-  firstName: string;
-  lastName: string;
-  name: string;
+  _id?: string; // MongoDB ID
+  firstName?: string; // Optional - may not be returned by API
+  lastName?: string; // Optional - may not be returned by API
+  name: string; // Full name - primary field returned by API
   email: string;
   contact: string;
+  phone?: string; // Alternative to contact
   dateOfBirth: string;
   bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   nic: string;
   licenseNumber?: string;
   licenseExpiry?: string;
+  licenseInfo?: string;
+  licenseImage?: string;
   languages?: string[] | string;
   experienceYears?: number;
   assignedVehicle: string | Vehicle;
+  assignedVehicleDetails?: Vehicle;
   status: 'Active' | 'Inactive';
-  joinDate: string;
+  driverStatus?: string;
+  rating?: number;
+  totalTrips?: number;
+  currentLocation?: any;
+  joinDate: string | null;
   profileImage?: string;
-  licenseInfo?: string;
+  emailVerified?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

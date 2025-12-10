@@ -1,19 +1,39 @@
 import api from './api';
 
+export interface Customer {
+    id: string;
+    country?: string;
+    passportNumber?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    city?: string;
+    nationality?: string;
+    medicalNotes?: string;
+    allergies?: string;
+    specialConditions?: string;
+    dietaryRequirements?: string;
+}
+
 export interface User {
     id: string;
     firstName: string;
     lastName: string;
     email: string;
+    phone?: string;
     role: string;
+    status: string;
     isActive: boolean;
-    contact?: string; // Optional as it might not be in all responses or entities yet
+    profileImage?: string;
+    createdAt?: string;
+    // Legacy fields for backwards compatibility (to be deprecated)
+    contact?: string;
     country?: string;
     passportNumber?: string;
     gender?: string;
     age?: number;
-    profileImage?: string;
-    createdAt?: string;
+    // Customer relation when role is 'customer'
+    customer?: Customer;
 }
 
 export interface UserListResponse {

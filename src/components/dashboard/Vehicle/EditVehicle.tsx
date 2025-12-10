@@ -56,13 +56,16 @@ export default function EditVehicle() {
       try {
         setDriversLoading(true);
         const response = await driverService.getAllDrivers({ limit: 1000 });
-        setDrivers(response.drivers);
+        console.log("Fetched drivers response:", response);
+        console.log("Drivers array:", response.drivers);
+        setDrivers(response.drivers || []);
       } catch (error) {
         console.error("Failed to fetch drivers:", error);
-        toast.error("Failed to load drivers", {
+        toast.error("Failed to load drivers list", {
           position: "top-right",
           autoClose: 3000,
         });
+        setDrivers([]);
       } finally {
         setDriversLoading(false);
       }
@@ -86,10 +89,29 @@ export default function EditVehicle() {
       try {
         setFetchLoading(true);
         const vehicle = await vehicleService.getVehicleById(vehicleId);
+        console.log("Fetched vehicle data:", vehicle);
+
         let displayStatus = "Active";
         if (vehicle.status === "available") displayStatus = "Active";
         else if (vehicle.status === "in_use") displayStatus = "In Service";
         else if (vehicle.status === "maintenance" || vehicle.status === "out_of_service") displayStatus = "Need Repair";
+
+        // Extract assigned driver - backend uses 'drivers' array (OneToMany relation)
+        let assignedDriverId = "";
+        if (vehicle.assignedDriver) {
+          // If assignedDriver field exists
+          assignedDriverId = typeof vehicle.assignedDriver === 'object'
+            ? vehicle.assignedDriver._id || vehicle.assignedDriver.id || ""
+            : vehicle.assignedDriver;
+        } else if ((vehicle as any).drivers && Array.isArray((vehicle as any).drivers) && (vehicle as any).drivers.length > 0) {
+          // If drivers array exists (OneToMany relation), get the first one
+          // Driver object has userId which links to User, but we need the Driver's ID
+          const firstDriver = (vehicle as any).drivers[0];
+          assignedDriverId = firstDriver.id || firstDriver._id || "";
+          console.log("First driver object:", firstDriver);
+        }
+
+        console.log("Extracted assigned driver ID:", assignedDriverId);
 
         setVehicleData({
           vehicleName: vehicle.make || "",
@@ -97,9 +119,7 @@ export default function EditVehicle() {
           vehicleNoPlate: vehicle.registrationNumber || "",
           vehicleModel: vehicle.model || "",
           seatCount: vehicle.seatingCapacity?.toString() || vehicle.capacity?.toString() || "",
-          assignDriver: typeof vehicle.assignedDriver === 'object' && vehicle.assignedDriver
-            ? vehicle.assignedDriver._id || vehicle.assignedDriver.id || ""
-            : vehicle.assignedDriver || "",
+          assignDriver: assignedDriverId,
           status: displayStatus,
           vehicleImage: null,
         });
@@ -124,7 +144,7 @@ export default function EditVehicle() {
     }
   };
 
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setVehicleData({ ...vehicleData, [e.target.name]: e.target.value });
   };
 
@@ -157,6 +177,15 @@ export default function EditVehicle() {
       if (mappedType === "car") mappedType = "sedan";
 
       // Update Vehicle Details
+      console.log("Updating vehicle with data:", {
+        registrationNumber: vehicleData.vehicleNoPlate,
+        type: mappedType,
+        make: vehicleData.vehicleName,
+        model: vehicleData.vehicleModel,
+        seatingCapacity: parseInt(vehicleData.seatCount),
+        status: mappedStatus,
+      });
+
       await vehicleService.updateVehicle(vehicleId, {
         registrationNumber: vehicleData.vehicleNoPlate,
         type: mappedType,
@@ -168,8 +197,16 @@ export default function EditVehicle() {
       });
 
       // Handle Driver Assignment separately if selected
-      if (vehicleData.assignDriver) {
-        await vehicleService.assignDriver(vehicleId, vehicleData.assignDriver);
+      console.log("Driver assignment value:", vehicleData.assignDriver);
+      if (vehicleData.assignDriver && vehicleData.assignDriver !== "") {
+        console.log("Assigning driver:", vehicleData.assignDriver, "to vehicle:", vehicleId);
+        try {
+          const result = await vehicleService.assignDriver(vehicleId, vehicleData.assignDriver);
+          console.log("Driver assignment result:", result);
+        } catch (driverError: any) {
+          console.error("Failed to assign driver:", driverError);
+          throw new Error(`Failed to assign driver: ${driverError?.response?.data?.message || driverError.message}`);
+        }
       }
 
       toast.success("Vehicle updated successfully!", {
@@ -308,14 +345,27 @@ export default function EditVehicle() {
 
                 <div>
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Assign Driver</label>
-                  <input
-                    type="text"
+                  <select
                     name="assignDriver"
                     value={vehicleData.assignDriver}
                     onChange={handleChange}
+                    disabled={driversLoading}
                     className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                    placeholder="Enter Driver Name"
-                  />
+                  >
+                    <option value="">
+                      {driversLoading ? "Loading drivers..." : drivers.length === 0 ? "No drivers available" : "Select a driver (optional)"}
+                    </option>
+                    {drivers.map((driver) => (
+                      <option key={driver.id} value={driver.id}>
+                        {driver.name || `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Unknown Driver'}
+                      </option>
+                    ))}
+                  </select>
+                  {!driversLoading && drivers.length === 0 && (
+                    <p className="text-gray-500 text-[12px] mt-1">
+                      No drivers found. Please add drivers first.
+                    </p>
+                  )}
                 </div>
               </div>
 

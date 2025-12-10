@@ -13,6 +13,7 @@ import { CiSearch } from "react-icons/ci"; // Import search icon
 import { IoMdAdd } from "react-icons/io"; // Import add icon
 import userService from "../../../services/user.service";
 import type { User } from "../../../services/user.service";
+import { Loader } from "../../ui/Loader";
 
 const CustomerManagement = () => {
   const navigate = useNavigate(); // Initialize the navigation function
@@ -53,22 +54,39 @@ const CustomerManagement = () => {
     fetchUsers();
   }, []);
 
+  // Helper function to calculate age from date of birth
+  const calculateAge = (dateOfBirth: string | undefined): number | null => {
+    if (!dateOfBirth) return null;
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   // Filter customers based on search query, gender, and status
   const filteredCustomers = customers.filter((customer) => {
     const searchLower = searchQuery.toLowerCase();
     const fullName = `${customer.firstName || ""} ${customer.lastName || ""}`.trim().toLowerCase();
+    const customerCountry = customer.customer?.country || customer.country;
+    const customerGender = customer.customer?.gender || customer.gender;
+    const customerPassport = customer.customer?.passportNumber || customer.passportNumber;
+    const customerContact = customer.phone || customer.contact;
 
     const matchesSearch = (
       (customer.id && customer.id.toLowerCase().includes(searchLower)) ||
       fullName.includes(searchLower) ||
       (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
-      (customer.passportNumber && customer.passportNumber.toLowerCase().includes(searchLower)) ||
-      (customer.contact && customer.contact.toLowerCase().includes(searchLower)) ||
-      (customer.country && customer.country.toLowerCase().includes(searchLower))
+      (customerPassport && customerPassport.toLowerCase().includes(searchLower)) ||
+      (customerContact && customerContact.toLowerCase().includes(searchLower)) ||
+      (customerCountry && customerCountry.toLowerCase().includes(searchLower))
     );
 
-    const matchesCountry = countryFilter === "" || (customer.country && customer.country === countryFilter);
-    const matchesGender = genderFilter === "" || (customer.gender && customer.gender === genderFilter);
+    const matchesCountry = countryFilter === "" || (customerCountry && customerCountry === countryFilter);
+    const matchesGender = genderFilter === "" || (customerGender && customerGender === genderFilter);
     // Be careful with status mapping logic if needed
     const isActive = customer.isActive ? "Unblock" : "Block";
     const matchesStatus = statusFilter === "" || isActive === statusFilter;
@@ -311,63 +329,76 @@ const CustomerManagement = () => {
           </div>
 
           {/* TABLE - Both Desktop and Mobile (Horizontally Scrollable) */}
-          <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
-                  <th className="px-4 py-4 whitespace-nowrap">Customer Id</th>
-                  <th className="px-4 py-4 whitespace-nowrap">C_Name</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Email</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Gender</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Contact_No</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Country</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Passport_No</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Age</th>
-                  <th className="px-4 py-4 whitespace-nowrap">Active</th>
-                  <th className="px-4 py-4 text-center whitespace-nowrap"></th>
-                </tr>
-              </thead>
-
-              <tbody className="font-poppins">
-                {currentCustomers.map((c) => (
-                  <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td>
-
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
-                        <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.gender || "N/A"}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.contact || "N/A"}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.country || "N/A"}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.passportNumber || "N/A"}</td>
-                    <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.age || "N/A"}</td>
-
-                    <td className={`px-4 py-4 font-medium whitespace-nowrap ${c.isActive ? "text-green-600" : "text-red-600"}`}>
-                      {c.isActive ? "Unblock" : "Block"}
-                    </td>
-
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="flex gap-3 justify-center">
-                        <CiEdit
-                          className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                          onClick={() => handleEditClick(c.id)}
-                        />
-                        <MdDeleteOutline
-                          className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                          onClick={() => handleDeleteClick(c.id)}
-                        />
-                      </div>
-                    </td>
+          {loading ? (
+            <Loader src="/loaders/travelloading.lottie" message="Loading customers..." size={250} />
+          ) : (
+            <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
+                    {/* <th className="px-4 py-4 whitespace-nowrap">Customer Id</th> */}
+                    <th className="px-4 py-4 whitespace-nowrap">Customer Name</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Email</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Gender</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Contact No</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Country</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Passport No</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Age</th>
+                    <th className="px-4 py-4 whitespace-nowrap">Status</th>
+                    <th className="px-4 py-4 text-center whitespace-nowrap"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tbody className="font-poppins">
+                  {currentCustomers.map((c) => {
+                  // Get customer data from customer relation or fallback to legacy fields
+                  const customerGender = c.customer?.gender || c.gender;
+                  const customerContact = c.phone || c.contact;
+                  const customerCountry = c.customer?.country || c.country;
+                  const customerPassport = c.customer?.passportNumber || c.passportNumber;
+                  const customerAge = c.customer?.dateOfBirth ? calculateAge(c.customer.dateOfBirth) : c.age;
+
+                  return (
+                    <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                      {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td> */}
+
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
+                          <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
+                        </div>
+                      </td>
+
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender || "N/A"}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || "N/A"}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || "N/A"}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || "N/A"}</td>
+                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || "N/A"}</td>
+
+                      <td className={`px-4 py-4 font-medium whitespace-nowrap ${c.isActive ? "text-green-600" : "text-red-600"}`}>
+                        {c.isActive ? "Unblock" : "Block"}
+                      </td>
+
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="flex gap-3 justify-center">
+                          <CiEdit
+                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                            onClick={() => handleEditClick(c.id)}
+                          />
+                          <MdDeleteOutline
+                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                            onClick={() => handleDeleteClick(c.id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* PAGINATION */}
           <div className="mt-4">

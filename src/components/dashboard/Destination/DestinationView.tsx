@@ -17,6 +17,7 @@ import Excursion from "./ExcursionView";
 import destinationService from "../../../services/destination.service";
 import hotelService from "../../../services/hotel.service";
 import excursionService from "../../../services/excursion.service";
+import { Loader } from "../../ui/Loader";
 
 const DestinationHotelManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
@@ -213,14 +214,17 @@ const DestinationHotelManagement = () => {
                     </div>
 
                     {/* Tabs Component */}
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-                        <div className="flex justify-center">
-                            <TabsList>
-                                <TabsTrigger value="destination">Destination</TabsTrigger>
-                                <TabsTrigger value="hotel">Hotel</TabsTrigger>
-                                <TabsTrigger value="excursion">Excursion</TabsTrigger>
-                            </TabsList>
-                        </div>
+                    {loading ? (
+                        <Loader src="/loaders/travelloading.lottie" message="Loading data..." size={250} />
+                    ) : (
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+                            <div className="flex justify-center">
+                                <TabsList>
+                                    <TabsTrigger value="destination">Destination</TabsTrigger>
+                                    <TabsTrigger value="hotel">Hotel</TabsTrigger>
+                                    <TabsTrigger value="excursion">Excursion</TabsTrigger>
+                                </TabsList>
+                            </div>
 
                         {/* VIEW & MANAGE SECTION - Desktop */}
                         <TabsContent value="destination">
@@ -398,10 +402,11 @@ const DestinationHotelManagement = () => {
                             <Hotel hotels={hotels} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setHotels={setHotels} onAdd={handleAddHotelClick} onEdit={handleEditHotelClick} />
                         </TabsContent>
                         {/* Excursion Tab Panel */}
-                        <TabsContent value="excursion">
-                            <Excursion excursions={excursions} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setExcursions={setExcursions} onAdd={handleAddExcursionClick} onEdit={handleEditExcursionClick} />
-                        </TabsContent>
-                    </Tabs>
+                            <TabsContent value="excursion">
+                                <Excursion excursions={excursions} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setExcursions={setExcursions} onAdd={handleAddExcursionClick} onEdit={handleEditExcursionClick} />
+                            </TabsContent>
+                        </Tabs>
+                    )}
 
                     {/* Delete Confirmation Overlay */}
                     {deleteConfirmationVisible && (

@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import vehicleService from "../../../services/vehicle.service";
+import { Loader } from "../../ui/Loader";
 
 const VehicleManagement = () => {
     const navigate = useNavigate(); // Initialize the navigation function
@@ -34,11 +35,36 @@ const VehicleManagement = () => {
         try {
             setLoading(true);
             const response = await vehicleService.getAllVehicles({ limit: 1000 }); // Fetch all for now to keep client-side filtering working easily
+            console.log("Raw vehicles response:", response.vehicles); // Debug: See raw data
+
             const mappedVehicles = response.vehicles.map(v => {
                 let displayStatus = "Active";
                 if (v.status === "available") displayStatus = "Active";
                 else if (v.status === "in_use") displayStatus = "In Service";
                 else if (v.status === "maintenance" || v.status === "out_of_service") displayStatus = "Need Repair";
+
+                // Extract driver name - driver info is in driver.user relation
+                let driverName = "Unassigned";
+                if ((v as any).drivers && Array.isArray((v as any).drivers) && (v as any).drivers.length > 0) {
+                    const driver = (v as any).drivers[0];
+                    console.log(`Driver object for vehicle ${v.registrationNumber}:`, driver); // Debug driver object
+
+                    // Driver entity has a 'user' relation where firstName/lastName are stored
+                    if (driver.user) {
+                        const firstName = driver.user.firstName || '';
+                        const lastName = driver.user.lastName || '';
+                        driverName = `${firstName} ${lastName}`.trim() || "Unknown Driver";
+                    } else if (driver.name) {
+                        // Fallback to name field if user relation not loaded
+                        driverName = driver.name;
+                    } else {
+                        // Last fallback
+                        const fullName = `${driver.firstName || ''} ${driver.lastName || ''}`.trim();
+                        driverName = fullName || "Unknown Driver";
+                    }
+                }
+
+                console.log(`Vehicle ${v.registrationNumber} - Final Driver Name:`, driverName); // Debug final name
 
                 return {
                     id: v.id,
@@ -47,12 +73,12 @@ const VehicleManagement = () => {
                     plate: v.registrationNumber,
                     model: v.model,
                     seats: v.seatingCapacity || 0,
-                    driver: (v as any).drivers && (v as any).drivers.length > 0 ? (v as any).drivers[0].firstName : "Unassigned",
+                    driver: driverName,
                     status: displayStatus
                 };
             });
             const normalizedVehicles = mappedVehicles; // No further normalization needed
-            console.log("Vehicles", normalizedVehicles);
+            console.log("Mapped vehicles:", normalizedVehicles);
 
             setVehicles(normalizedVehicles);
         } catch (error) {
@@ -316,23 +342,26 @@ const VehicleManagement = () => {
                     </div>
 
                     {/* TABLE */}
-                    <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
-                        <table className="min-w-full bg-white">
-                            <thead>
-                                <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                                    {/* <th className="px-3 py-3 whitespace-nowrap">Vehicle Id</th> */}
-                                    <th className="px-3 py-3 whitespace-nowrap">V_Name</th>
-                                    <th className="px-3 py-3 whitespace-nowrap">V_Type</th>
-                                    <th className="px-3 py-3 whitespace-nowrap">V_No_Plate</th>
-                                    <th className="px-3 py-3 whitespace-nowrap">V_Model</th>
-                                    <th className="px-3 py-3 whitespace-nowrap">Seat_Count</th>
-                                    <th className="px-3 py-3 whitespace-nowrap">Assign Driver</th>
-                                    <th className="px-3 py-3 whitespace-nowrap">Active</th>
-                                </tr>
-                            </thead>
+                    {loading ? (
+                        <Loader src="/loaders/travelloading.lottie" message="Loading vehicles..." size={250} />
+                    ) : (
+                        <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
+                            <table className="min-w-full bg-white">
+                                <thead>
+                                    <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
+                                        {/* <th className="px-3 py-3 whitespace-nowrap">Vehicle Id</th> */}
+                                        <th className="px-3 py-3 whitespace-nowrap">V_Name</th>
+                                        <th className="px-3 py-3 whitespace-nowrap">V_Type</th>
+                                        <th className="px-3 py-3 whitespace-nowrap">V_No_Plate</th>
+                                        <th className="px-3 py-3 whitespace-nowrap">V_Model</th>
+                                        <th className="px-3 py-3 whitespace-nowrap">Seat_Count</th>
+                                        <th className="px-3 py-3 whitespace-nowrap">Assign Driver</th>
+                                        <th className="px-3 py-3 whitespace-nowrap">Active</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody className="font-poppins">
-                                {currentVehicles.map((v) => (
+                                <tbody className="font-poppins">
+                                    {currentVehicles.map((v) => (
                                     <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
                                         {/* <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td> */}
                                         <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
@@ -355,10 +384,11 @@ const VehicleManagement = () => {
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
 
                     {/* PAGINATION */}
                     <div className="mt-4">
