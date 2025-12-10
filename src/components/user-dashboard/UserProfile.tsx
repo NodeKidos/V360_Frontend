@@ -53,11 +53,11 @@ const UserProfile = () => {
       {/* Profile Content */}
       <div className="bg-white p-8 rounded-lg shadow-md">
         {/* Profile Heading Section with Title on Left and Edit Icon on Right */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 flex-col sm:flex-row">
           <h1 className="text-4xl font-bold text-left text-purple-700 font-poppins">User Profile</h1>
           <button
             onClick={handleEditClick}
-            className="py-3 px-8 rounded-lg hover:bg-purple-100 transition duration-300 flex items-center gap-2 font-poppins"
+            className="py-3 px-8 mt-4 sm:mt-0 rounded-lg hover:bg-purple-100 transition duration-300 flex items-center gap-2 font-poppins"
           >
             <FaEdit className="text-purple-500 text-lg" /> {/* Edit Icon */}
             {editMode ? 'Save' : 'Edit Profile'}
@@ -65,9 +65,9 @@ const UserProfile = () => {
         </div>
 
         {/* Profile and Button Section (Two columns layout) */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           {/* Profile Section */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-8 mb-4 sm:mb-0">
             <img
               src={user.profileImage}
               alt={user.name}
@@ -81,7 +81,7 @@ const UserProfile = () => {
                     name="name"
                     value={user.name}
                     onChange={handleInputChange}
-                    className="bg-gray-100 p-2 rounded-lg"
+                    className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                   />
                 ) : (
                   user.name
@@ -94,7 +94,7 @@ const UserProfile = () => {
                     name="email"
                     value={user.email}
                     onChange={handleInputChange}
-                    className="bg-gray-100 p-2 rounded-lg"
+                    className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                   />
                 ) : (
                   user.email
@@ -107,7 +107,7 @@ const UserProfile = () => {
                     name="phone"
                     value={user.phone}
                     onChange={handleInputChange}
-                    className="bg-gray-100 p-2 rounded-lg"
+                    className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                   />
                 ) : (
                   user.phone
@@ -128,7 +128,7 @@ const UserProfile = () => {
                   name="gender"
                   value={user.gender}
                   onChange={handleInputChange}
-                  className="bg-gray-100 p-2 rounded-lg"
+                  className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                 />
               ) : (
                 user.gender
@@ -141,7 +141,7 @@ const UserProfile = () => {
                   name="passportNo"
                   value={user.passportNo}
                   onChange={handleInputChange}
-                  className="bg-gray-100 p-2 rounded-lg"
+                  className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                 />
               ) : (
                 user.passportNo
@@ -154,7 +154,7 @@ const UserProfile = () => {
                   name="country"
                   value={user.country}
                   onChange={handleInputChange}
-                  className="bg-gray-100 p-2 rounded-lg"
+                  className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                 />
               ) : (
                 user.country
@@ -167,7 +167,7 @@ const UserProfile = () => {
                   name="age"
                   value={user.age}
                   onChange={handleInputChange}
-                  className="bg-gray-100 p-2 rounded-lg"
+                  className="bg-gray-100 p-2 rounded-lg w-full sm:w-auto"
                 />
               ) : (
                 user.age
