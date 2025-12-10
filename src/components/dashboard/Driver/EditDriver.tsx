@@ -120,9 +120,7 @@ export default function EditDriver() {
                     licenseExpiry: driver.licenseExpiry ? driver.licenseExpiry.split('T')[0] : '',
                     languages: driver.languages ? (Array.isArray(driver.languages) ? driver.languages.join(', ') : driver.languages) : '',
                     experienceYears: driver.experienceYears ? driver.experienceYears.toString() : '',
-                    assignedVehicle: driver.assignedVehicle && typeof driver.assignedVehicle === 'object'
-                        ? (driver.assignedVehicle as any).id || ''
-                        : typeof driver.assignedVehicle === 'string' ? driver.assignedVehicle : '',
+                    assignedVehicle: driver.assignedVehicleDetails?.id || '',
                     status: driver.status || 'Active',
                     profileImage: null,
                     licenseInfo: null,
