@@ -18,6 +18,10 @@ export interface Driver {
   dateOfBirth: string;
   bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   nic: string;
+  licenseNumber?: string;
+  licenseExpiry?: string;
+  languages?: string[] | string;
+  experienceYears?: number;
   assignedVehicle: string | Vehicle;
   status: 'Active' | 'Inactive';
   joinDate: string;
@@ -47,7 +51,14 @@ export interface CreateDriverDto {
   licenseImage?: File | string;
 }
 
-export interface UpdateDriverDto extends Partial<CreateDriverDto> { }
+export interface UpdateDriverDto extends Partial<CreateDriverDto> {
+  // Frontend convenience fields
+  name?: string;
+  contact?: string;
+  nic?: string;
+  assignedVehicle?: string;
+  licenseInfo?: File | string;
+}
 
 export interface DriverListResponse {
   drivers: Driver[];
@@ -99,7 +110,14 @@ class DriverService {
     if (data.dateOfBirth) formData.append('dateOfBirth', data.dateOfBirth);
     if (data.bloodGroup) formData.append('bloodGroup', data.bloodGroup);
     if (data.nationalId) formData.append('nationalId', data.nationalId);
-    if (data.languages) formData.append('languages', JSON.stringify(data.languages));
+
+    // Append array items individually
+    if (data.languages && data.languages.length > 0) {
+      data.languages.forEach((language) => {
+        formData.append('languages[]', language);
+      });
+    }
+
     if (data.experienceYears !== undefined) formData.append('experienceYears', data.experienceYears.toString());
     if (data.assignedVehicleId) formData.append('assignedVehicleId', data.assignedVehicleId);
     if (data.status) formData.append('status', data.status);
@@ -113,11 +131,13 @@ class DriverService {
       formData.append('licenseImage', data.licenseImage);
     }
 
-    const response = await api.post('/drivers', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // Debug: Log all form data entries
+    console.log('=== Creating Driver - Form Data ===');
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    const response = await api.post('/drivers', formData);
     return response.data;
   }
 
@@ -139,8 +159,19 @@ class DriverService {
     if (data.email) formData.append('email', data.email);
     if (data.contact) formData.append('phone', data.contact);
     if (data.nic) formData.append('nationalId', data.nic);
+    if (data.licenseNumber) formData.append('licenseNumber', data.licenseNumber);
+    if (data.licenseExpiry) formData.append('licenseExpiry', data.licenseExpiry);
     if (data.dateOfBirth) formData.append('dateOfBirth', data.dateOfBirth);
     if (data.bloodGroup) formData.append('bloodGroup', data.bloodGroup);
+
+    // Append array items individually
+    if (data.languages && data.languages.length > 0) {
+      data.languages.forEach((language) => {
+        formData.append('languages[]', language);
+      });
+    }
+
+    if (data.experienceYears !== undefined) formData.append('experienceYears', data.experienceYears.toString());
     if (data.status) formData.append('status', data.status === 'Active' ? 'active' : 'inactive');
     if (data.assignedVehicle) formData.append('assignedVehicleId', data.assignedVehicle);
     if (data.joinDate) formData.append('joinDate', data.joinDate);
@@ -153,11 +184,7 @@ class DriverService {
       formData.append('licenseImage', data.licenseInfo);
     }
 
-    const response = await api.put(`/drivers/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.put(`/drivers/${id}`, formData);
     return response.data;
   }
 
@@ -183,11 +210,7 @@ class DriverService {
     const formData = new FormData();
     formData.append('profileImage', file);
 
-    const response = await api.post(`/drivers/${id}/profile-image`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post(`/drivers/${id}/profile-image`, formData);
     return response.data;
   }
 
@@ -198,11 +221,7 @@ class DriverService {
     const formData = new FormData();
     formData.append('licenseInfo', file);
 
-    const response = await api.post(`/drivers/${id}/license`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post(`/drivers/${id}/license`, formData);
     return response.data;
   }
 }

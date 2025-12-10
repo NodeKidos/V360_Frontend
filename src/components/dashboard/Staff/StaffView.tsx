@@ -272,7 +272,7 @@ const StaffManagement = () => {
             <table className="min-w-full bg-white">
               <thead>
                 <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                  <th className="px-4 py-4 whitespace-nowrap">Staff Id</th>
+                  {/* <th className="px-4 py-4 whitespace-nowrap">Staff Id</th> */}
                   <th className="px-4 py-4 whitespace-nowrap">Staff Name</th>
                   <th className="px-4 py-4 whitespace-nowrap">Email</th>
                   <th className="px-4 py-4 whitespace-nowrap">Gender</th>
@@ -300,7 +300,7 @@ const StaffManagement = () => {
                 ) : (
                   staff.map((s) => (
                     <tr key={s._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                      <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s._id}</td>
+                      {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s._id}</td> */}
                       <td className="py-4 px-4 whitespace-nowrap">{s.name}</td>
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.email}</td>
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.gender}</td>

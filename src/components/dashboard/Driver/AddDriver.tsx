@@ -142,6 +142,8 @@ export default function AddDriver() {
                 navigate("/driver");
             }, 2000);
         } catch (err: any) {
+            console.error('Error creating driver:', err);
+            console.error('Error response:', err?.response?.data);
             const errorMessage = err?.response?.data?.message || "Failed to add driver";
             toast.error(errorMessage, {
                 position: "top-right",
