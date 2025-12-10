@@ -164,21 +164,22 @@ const Sidebar: React.FC<SidebarProps> = ({
             </TooltipProvider>
 
             {/* Avatar */}
-            <div
-              className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
-            >
-              <Avatar>
-                <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
+<div
+  className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
+  onClick={() => navigate('/user-profile')}  // Navigate to user profile on click
+>
+  <Avatar>
+    <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
+    <AvatarFallback>AD</AvatarFallback>
+  </Avatar>
 
-              {(!collapsed || isMobile) && (
-                <div>
-                  <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
-                  <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
-                </div>
-              )}
-            </div>
+  {(!collapsed || isMobile) && (
+    <div>
+      <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
+      <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
+    </div>
+  )}
+</div>
           </div>
         </div>
       </aside>

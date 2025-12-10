@@ -41,6 +41,7 @@ import ItinerarySummary from "./components/user-dashboard/ItinerarySummary";
 import UserDashboard from "./pages/dashboard/UserDashboard";
 import PackagePrice from "./components/user-dashboard/PackagePrice";
 import Reward from "./components/user-dashboard/Reward";
+import UserProfile from "./components/user-dashboard/UserProfile";
 
 
 export default function App() {
@@ -99,6 +100,7 @@ export default function App() {
       <Route path="/itinerary-summary" element={<ItinerarySummary />} />
       <Route path="/package-price" element={<PackagePrice />} />
       <Route path="/reward" element={<Reward />} />
+      <Route path="/user-profile" element={<UserProfile />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
