@@ -8,6 +8,7 @@ import { BiTrip } from 'react-icons/bi';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { IoMdClose, IoMdSettings } from 'react-icons/io';
+import { IoPricetagOutline } from 'react-icons/io5';
 
 // Define the menu configuration for each role
 const sidebarMenuConfig = {
@@ -36,7 +37,8 @@ const sidebarMenuConfig = {
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
-    { label: 'Itineary', icon: <FaGift />, link: '/itinerary-summary' },
+    { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-summary' },
+    { label: 'Package Pricing', icon: <IoPricetagOutline />, link: '/package-price' },
     { label: 'My Plans', icon: <BiTrip />, link: '/user-plans' },
     { label: 'Rewards', icon: <FaGift />, link: '/reward' }
   ]
@@ -164,21 +166,22 @@ const Sidebar: React.FC<SidebarProps> = ({
             </TooltipProvider>
 
             {/* Avatar */}
-            <div
-              className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
-            >
-              <Avatar>
-                <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
+<div
+  className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
+  onClick={() => navigate('/user-profile')}  // Navigate to user profile on click
+>
+  <Avatar>
+    <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
+    <AvatarFallback>AD</AvatarFallback>
+  </Avatar>
 
-              {(!collapsed || isMobile) && (
-                <div>
-                  <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
-                  <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
-                </div>
-              )}
-            </div>
+  {(!collapsed || isMobile) && (
+    <div>
+      <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
+      <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
+    </div>
+  )}
+</div>
           </div>
         </div>
       </aside>

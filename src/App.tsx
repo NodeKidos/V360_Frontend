@@ -44,10 +44,13 @@ import DriverInfo from "./components/dashboard/Driver/DriverInfo";
 import StaffManagement from "./components/dashboard/Staff/StaffView";
 import EditStaff from "./components/dashboard/Staff/EditStaff";
 import AddStaff from "./components/dashboard/Staff/AddStaff";
-import ItinerarySummary from "./pages/main/ItinerarySummary";
+import ItinerarySummary from "./components/user-dashboard/ItinerarySummary";
 import UserDashboard from "./pages/dashboard/UserDashboard";
 import ItineraryManagement from "./components/dashboard/Itinerary/ItineraryView";
 import EditItinerary from "./pages/admin/EditItinerary";
+import PackagePrice from "./components/user-dashboard/PackagePrice";
+import Reward from "./components/user-dashboard/Reward";
+import UserProfile from "./components/user-dashboard/UserProfile";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -283,6 +286,10 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/package-price" element={<PackagePrice />} />
+        <Route path="/reward" element={<Reward />} />
+        <Route path="/user-profile" element={<UserProfile />} />
 
         <Route
           path="/staff"
