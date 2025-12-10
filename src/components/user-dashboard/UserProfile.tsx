@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { FaEdit } from 'react-icons/fa'; // Import the Edit icon from react-icons
+import { IoArrowBack } from 'react-icons/io5'; // Import the back arrow icon from react-icons
 
 const UserProfile = () => {
   const navigate = useNavigate(); // Initialize the navigate function
@@ -15,7 +16,9 @@ const UserProfile = () => {
     gender: "Female",
     passportNo: "X1234567",
     country: "Sri Lanka",
-    age: 30
+    age: 30,
+    rewardPoints: 1200, // Reward or loyalty points
+    trips: 25 // Number of trips
   });
 
   const [editMode, setEditMode] = useState(false); // Manage edit mode state
@@ -40,9 +43,10 @@ const UserProfile = () => {
       <div className="mb-6">
         <button
           onClick={() => navigate('/user-dashboard')} // Navigate to User Dashboard
-          className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
+          className="flex items-center gap-2 px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
         >
-          Back to Dashboard
+          <IoArrowBack className="text-[#B749DB] text-lg" /> {/* Back arrow icon */}
+          Back
         </button>
       </div>
 
@@ -50,10 +54,10 @@ const UserProfile = () => {
       <div className="bg-white p-8 rounded-lg shadow-md">
         {/* Profile Heading Section with Title on Left and Edit Icon on Right */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-left text-purple-700">User Profile</h1>
+          <h1 className="text-4xl font-bold text-left text-purple-700 font-poppins">User Profile</h1>
           <button
             onClick={handleEditClick}
-            className="py-3 px-8 rounded-lg hover:bg-purple-100 transition duration-300 flex items-center gap-2"
+            className="py-3 px-8 rounded-lg hover:bg-purple-100 transition duration-300 flex items-center gap-2 font-poppins"
           >
             <FaEdit className="text-purple-500 text-lg" /> {/* Edit Icon */}
             {editMode ? 'Save' : 'Edit Profile'}
@@ -70,7 +74,7 @@ const UserProfile = () => {
               className="w-32 h-32 rounded-full object-cover shadow-lg"
             />
             <div>
-              <h2 className="text-2xl font-semibold text-purple-800">
+              <h2 className="text-2xl font-semibold text-purple-800 font-poppins">
                 {editMode ? (
                   <input
                     type="text"
@@ -83,7 +87,7 @@ const UserProfile = () => {
                   user.name
                 )}
               </h2>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-gray-600 font-poppins">
                 {editMode ? (
                   <input
                     type="email"
@@ -96,7 +100,7 @@ const UserProfile = () => {
                   user.email
                 )}
               </p>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-gray-600 font-poppins">
                 {editMode ? (
                   <input
                     type="text"
@@ -115,8 +119,8 @@ const UserProfile = () => {
 
         {/* Additional Info Section */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h3 className="text-xl font-semibold text-purple-800 mb-4">Additional Information</h3>
-          <ul className="space-y-3 text-gray-700">
+          <h3 className="text-xl font-semibold text-purple-800 mb-4 font-poppins">Additional Information</h3>
+          <ul className="space-y-3 text-gray-700 font-poppins">
             <li>
               <strong>Gender:</strong> {editMode ? (
                 <input
@@ -172,9 +176,22 @@ const UserProfile = () => {
           </ul>
         </div>
 
+        {/* Reward Points and Number of Trips Section */}
+        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+          <h3 className="text-xl font-semibold text-purple-800 mb-4 font-poppins">Rewards & Trips</h3>
+          <ul className="space-y-3 text-gray-700 font-poppins">
+            <li>
+              <strong>Loyalty Points:</strong> {user.rewardPoints}
+            </li>
+            <li>
+              <strong>Number of Trips:</strong> {user.trips}
+            </li>
+          </ul>
+        </div>
+
         {/* Address Section */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h3 className="text-xl font-semibold text-purple-800 mb-4">Address</h3>
+          <h3 className="text-xl font-semibold text-purple-800 mb-4 font-poppins">Address</h3>
           {editMode ? (
             <textarea
               name="address"
@@ -183,7 +200,7 @@ const UserProfile = () => {
               className="bg-gray-100 p-2 rounded-lg w-full"
             />
           ) : (
-            <p className="text-gray-700">{user.address}</p>
+            <p className="text-gray-700 font-poppins">{user.address}</p>
           )}
         </div>
       </div>
