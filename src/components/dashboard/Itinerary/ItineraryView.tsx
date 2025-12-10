@@ -39,6 +39,8 @@ const ItineraryManagement = () => {
       setLoading(true);
       try {
         const data = await itineraryService.getAll(statusFilter as ItineraryStatus | undefined);
+        console.log("Itinery",data);
+        
         setItineraries(data);
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Failed to fetch itineraries");
@@ -293,9 +295,7 @@ const ItineraryManagement = () => {
 
           {/* Loading State */}
           {loading && (
-            <div className="flex justify-center items-center py-10">
-              <Loader src="/loaders/Traveler.lottie" className="w-[300px] h-[300px]" />
-            </div>
+            <Loader message="Loading itineraries..." size={250} />
           )}
 
           {/* Empty State */}
@@ -336,16 +336,16 @@ const ItineraryManagement = () => {
 
                       <td className="py-4 px-4 whitespace-nowrap">
                         <span className="font-medium text-gray-800">
-                          {itinerary.lead?.firstName} {itinerary.lead?.lastName}
+                          {itinerary.lead?.user?.firstName} {itinerary.lead?.user?.lastName}
                         </span>
                       </td>
 
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        {itinerary.lead?.phone || "N/A"}
+                        {itinerary.lead?.user?.phone || "N/A"}
                       </td>
 
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
-                        {itinerary.lead?.email || "N/A"}
+                        {itinerary.lead?.user?.email || "N/A"}
                       </td>
 
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">

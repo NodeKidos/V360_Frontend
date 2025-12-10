@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../AdminSidebar";
 import TopBar from "../Topbar"; // Import TopBar
 import DeleteConfirmModal from "../ui/DeleteConfirmModal";
+import { Loader } from "../ui/Loader";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { MdOutlineModeEdit } from "react-icons/md";
@@ -204,9 +205,7 @@ const ItinerarySummary = () => {
         <div className="bg-white border border-purple-200 rounded-2xl shadow-sm p-4 min-h-[80vh]">
           {/* Loading State */}
           {loading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B749DB]"></div>
-            </div>
+            <Loader message="Loading itinerary details..." size={250} />
           )}
 
           {/* Content */}
@@ -252,16 +251,16 @@ const ItinerarySummary = () => {
                       <div className="mb-2">
                         <span className="font-semibold text-gray-700">Name:</span>{" "}
                         <span className="text-gray-900">
-                          {itinerary.lead?.firstName} {itinerary.lead?.lastName}
+                          {itinerary.lead?.user?.firstName} {itinerary.lead?.user?.lastName}
                         </span>
                       </div>
                       <div className="mb-2">
                         <span className="font-semibold text-gray-700">Email:</span>{" "}
-                        <span className="text-gray-900">{itinerary.lead?.email || "N/A"}</span>
+                        <span className="text-gray-900">{itinerary.lead?.user?.email || "N/A"}</span>
                       </div>
                       <div className="mb-2">
                         <span className="font-semibold text-gray-700">Phone:</span>{" "}
-                        <span className="text-gray-900">{itinerary.lead?.phone || "N/A"}</span>
+                        <span className="text-gray-900">{itinerary.lead?.user?.phone || "N/A"}</span>
                       </div>
                       <div className="mb-2">
                         <span className="font-semibold text-gray-700">Country:</span>{" "}
@@ -279,14 +278,18 @@ const ItinerarySummary = () => {
                           <span className="text-gray-900">{itinerary.lead.gender.charAt(0).toUpperCase() + itinerary.lead.gender.slice(1)}</span>
                         </div>
                       )}
-                      <div className="mb-2">
-                        <span className="font-semibold text-gray-700">Status:</span>{" "}
-                        <span className="text-gray-900">{itinerary.lead?.status || "N/A"}</span>
-                      </div>
-                      <div className="mb-2">
-                        <span className="font-semibold text-gray-700">Lead Source:</span>{" "}
-                        <span className="text-gray-900">{itinerary.lead?.source || "N/A"}</span>
-                      </div>
+                      {itinerary.lead?.user?.status && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Status:</span>{" "}
+                          <span className="text-gray-900">{itinerary.lead.user.status.charAt(0).toUpperCase() + itinerary.lead.user.status.slice(1)}</span>
+                        </div>
+                      )}
+                      {itinerary.lead?.loyaltyPoints !== undefined && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Loyalty Points:</span>{" "}
+                          <span className="text-gray-900">{itinerary.lead.loyaltyPoints}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -407,39 +410,33 @@ const ItinerarySummary = () => {
                     </div>
                   )}
 
-                  {itinerary.lead?.notes && (
-                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-purple-50 border border-purple-300 p-4 rounded-[25px] font-poppins">
-                      <h2 className="text-[20px] font-semibold mb-3 text-purple-900">Lead Notes</h2>
-                      <div className="text-[16px] text-gray-800 whitespace-pre-wrap">
-                        {itinerary.lead.notes}
-                      </div>
-                    </div>
-                  )}
-
-                  {itinerary.lead?.interests && (
-                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-green-50 border border-green-300 p-4 rounded-[25px] font-poppins">
-                      <h2 className="text-[20px] font-semibold mb-3 text-green-900">Customer Interests</h2>
-                      <div className="text-[16px] text-gray-800 whitespace-pre-wrap">
-                        {itinerary.lead.interests}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Medical & Dietary Information */}
-                  {(itinerary.lead?.medicalConditions || itinerary.lead?.dietaryPreferences) && (
+                  {(itinerary.lead?.medicalNotes || itinerary.lead?.dietaryRequirements || itinerary.lead?.allergies || itinerary.lead?.specialConditions) && (
                     <div className="mt-6 lg:ml-5 lg:mr-5 bg-rose-50 border border-rose-300 p-4 rounded-[25px] font-poppins">
                       <h2 className="text-[20px] font-semibold mb-3 text-rose-900">Medical & Dietary Information</h2>
                       <div className="grid grid-cols-1 gap-3 text-[16px]">
-                        {itinerary.lead.dietaryPreferences && (
+                        {itinerary.lead.dietaryRequirements && (
                           <div>
-                            <span className="font-semibold text-gray-700">Dietary Preferences:</span>{" "}
-                            <span className="text-gray-800">{itinerary.lead.dietaryPreferences}</span>
+                            <span className="font-semibold text-gray-700">Dietary Requirements:</span>{" "}
+                            <span className="text-gray-800">{itinerary.lead.dietaryRequirements}</span>
                           </div>
                         )}
-                        {itinerary.lead.medicalConditions && (
+                        {itinerary.lead.allergies && (
                           <div>
-                            <span className="font-semibold text-gray-700">Medical Conditions:</span>{" "}
-                            <span className="text-gray-800">{itinerary.lead.medicalConditions}</span>
+                            <span className="font-semibold text-gray-700">Allergies:</span>{" "}
+                            <span className="text-gray-800">{itinerary.lead.allergies}</span>
+                          </div>
+                        )}
+                        {itinerary.lead.medicalNotes && (
+                          <div>
+                            <span className="font-semibold text-gray-700">Medical Notes:</span>{" "}
+                            <span className="text-gray-800">{itinerary.lead.medicalNotes}</span>
+                          </div>
+                        )}
+                        {itinerary.lead.specialConditions && (
+                          <div>
+                            <span className="font-semibold text-gray-700">Special Conditions:</span>{" "}
+                            <span className="text-gray-800">{itinerary.lead.specialConditions}</span>
                           </div>
                         )}
                       </div>

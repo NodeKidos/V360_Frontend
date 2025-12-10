@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Sidebar from "../../components/AdminSidebar";
 import TopBar from "../../components/Topbar";
+import { Loader } from "../../components/ui/Loader";
 import { FaArrowLeft, FaHotel, FaTrash } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import { toast } from "react-toastify";
@@ -201,16 +202,23 @@ const EditItinerary = () => {
           }
         }
 
+        // Helper function to format date for input[type="date"]
+        const formatDateForInput = (dateString: string) => {
+          if (!dateString) return "";
+          // Extract yyyy-MM-dd from ISO string
+          return dateString.split('T')[0];
+        };
+
         // Pre-populate form
         setFormData({
-          startDate: data.startDate || "",
-          endDate: data.endDate || "",
+          startDate: formatDateForInput(data.startDate) || "",
+          endDate: formatDateForInput(data.endDate) || "",
           numberOfParticipants: data.numberOfParticipants || 1,
           groupComposition: data.metadata?.groupComposition || "",
           duration: data.metadata?.duration || "",
 
-          dietaryPreferences: data.lead?.dietaryPreferences || "",
-          medicalConditions: data.lead?.medicalConditions || "",
+          dietaryPreferences: data.lead?.dietaryRequirements || "",
+          medicalConditions: data.lead?.medicalNotes || "",
           hotelCategory: data.metadata?.hotelCategory || 0,
           roomCategory: data.metadata?.roomCategory || [],
           vehicleType: data.metadata?.vehicleType || [],
@@ -605,9 +613,7 @@ const EditItinerary = () => {
           </div>
 
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#B749DB]"></div>
-            </div>
+            <Loader message="Loading itinerary details..." size={250} />
           ) : (
             <>
               {/* Tab Navigation */}
@@ -664,26 +670,26 @@ const EditItinerary = () => {
                             Name
                           </label>
                           <p className="text-gray-900">
-                            {itinerary?.lead?.firstName} {itinerary?.lead?.lastName}
+                            {itinerary?.lead?.user?.firstName} {itinerary?.lead?.user?.lastName}
                           </p>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Email
                           </label>
-                          <p className="text-gray-900">{itinerary?.lead?.email}</p>
+                          <p className="text-gray-900">{itinerary?.lead?.user?.email}</p>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Phone
                           </label>
-                          <p className="text-gray-900">{itinerary?.lead?.phone}</p>
+                          <p className="text-gray-900">{itinerary?.lead?.user?.phone}</p>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Country
                           </label>
-                          <p className="text-gray-900">{itinerary?.lead?.country}</p>
+                          <p className="text-gray-900">{itinerary?.lead?.country || "N/A"}</p>
                         </div>
                       </div>
                     </div>
