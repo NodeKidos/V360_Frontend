@@ -591,36 +591,84 @@ const ItinerarySummary = () => {
                                   />
                                 )}
 
-                                <div className="flex-1">
-                                  <h4 className="text-[16px] sm:text-[18px] font-semibold text-[#5B247A]">{day.hotel.name}</h4>
+                                <div className="flex-1 space-y-3">
+                                  {/* Hotel Name and Rating */}
+                                  <div>
+                                    <h4 className="text-[16px] sm:text-[18px] font-semibold text-[#5B247A] mb-1">{day.hotel.name}</h4>
+                                    {day.hotel.rating && (
+                                      <div className="flex items-center gap-1 text-sm">
+                                        <span className="text-yellow-500">⭐</span>
+                                        <span className="font-medium">{day.hotel.rating}</span>
+                                        <span className="text-gray-500">/ 5</span>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Full Description */}
                                   {day.hotel.description && (
-                                    <p className="text-gray-600 text-xs sm:text-sm mt-2 line-clamp-2">{day.hotel.description}</p>
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                      <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">
+                                        {day.hotel.description}
+                                      </p>
+                                    </div>
                                   )}
-                                  <div className="mt-2 space-y-1">
+
+                                  {/* Contact Information */}
+                                  <div className="space-y-1">
                                     {day.hotel.address && (
-                                      <p className="text-gray-600 text-xs sm:text-sm">📍 {day.hotel.address}</p>
+                                      <p className="text-gray-600 text-xs sm:text-sm flex items-start gap-2">
+                                        <span className="flex-shrink-0">📍</span>
+                                        <span>{day.hotel.address}</span>
+                                      </p>
                                     )}
                                     {day.hotel.contactInfo && (
-                                      <p className="text-gray-600 text-xs sm:text-sm">📞 {day.hotel.contactInfo}</p>
+                                      <p className="text-gray-600 text-xs sm:text-sm flex items-center gap-2">
+                                        <span>📞</span>
+                                        <span>{day.hotel.contactInfo}</span>
+                                      </p>
+                                    )}
+                                    {day.hotel.email && (
+                                      <p className="text-gray-600 text-xs sm:text-sm flex items-center gap-2">
+                                        <span>✉️</span>
+                                        <span>{day.hotel.email}</span>
+                                      </p>
+                                    )}
+                                    {day.hotel.website && (
+                                      <p className="text-gray-600 text-xs sm:text-sm flex items-center gap-2">
+                                        <span>🌐</span>
+                                        <a href={day.hotel.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                          {day.hotel.website}
+                                        </a>
+                                      </p>
                                     )}
                                   </div>
 
                                   {/* Room Details */}
                                   {day.hotel.roomDetails && (
-                                    <div className="mt-3 space-y-1">
+                                    <div className="bg-purple-50 p-3 rounded-lg space-y-2">
+                                      <p className="font-semibold text-sm text-[#5B247A] mb-2">Room Details</p>
                                       {day.hotel.roomDetails?.roomType && (
-                                        <p className="text-xs sm:text-sm text-gray-700">
-                                          <span className="font-medium">Room Type:</span> {day.hotel.roomDetails.roomType === 'single' ? 'Single Room' : 'Double Room'}
+                                        <p className="text-xs sm:text-sm text-gray-700 flex justify-between">
+                                          <span className="font-medium">Room Type:</span>
+                                          <span>{day.hotel.roomDetails.roomType === 'single' ? 'Single Room' : 'Double Room'}</span>
                                         </p>
                                       )}
                                       {day.hotel.roomDetails?.bedTypes?.length > 0 && (
-                                        <p className="text-xs sm:text-sm text-gray-700">
-                                          <span className="font-medium">Bed Types:</span> {day.hotel.roomDetails.bedTypes.join(', ')}
+                                        <p className="text-xs sm:text-sm text-gray-700 flex justify-between">
+                                          <span className="font-medium">Bed Types:</span>
+                                          <span>{day.hotel.roomDetails.bedTypes.join(', ')}</span>
                                         </p>
                                       )}
                                       {day.hotel.roomDetails?.dietPlans?.length > 0 && (
-                                        <p className="text-xs sm:text-sm text-gray-700">
-                                          <span className="font-medium">Diet Plan:</span> {day.hotel.roomDetails.dietPlans.join(', ')}
+                                        <p className="text-xs sm:text-sm text-gray-700 flex justify-between">
+                                          <span className="font-medium">Meal Plan:</span>
+                                          <span>{day.hotel.roomDetails.dietPlans.join(', ')}</span>
+                                        </p>
+                                      )}
+                                      {day.hotel.roomDetails?.numberOfRooms && (
+                                        <p className="text-xs sm:text-sm text-gray-700 flex justify-between">
+                                          <span className="font-medium">Number of Rooms:</span>
+                                          <span>{day.hotel.roomDetails.numberOfRooms}</span>
                                         </p>
                                       )}
                                     </div>
@@ -628,18 +676,34 @@ const ItinerarySummary = () => {
 
                                   {/* Room Features */}
                                   {day.hotel.features && day.hotel.features.length > 0 && (
-                                    <div className="mt-3">
-                                      <span className="font-medium text-xs sm:text-sm">Features:</span>
-                                      <div className="flex flex-wrap gap-2 mt-2">
+                                    <div>
+                                      <p className="font-medium text-xs sm:text-sm mb-2 text-[#5B247A]">Room Features & Amenities:</p>
+                                      <div className="flex flex-wrap gap-2">
                                         {day.hotel.features.map((feature: string, i: number) => (
                                           <span
                                             key={i}
-                                            className="px-2 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs font-medium"
+                                            className="px-3 py-1.5 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs font-medium"
                                           >
                                             {feature}
                                           </span>
                                         ))}
                                       </div>
+                                    </div>
+                                  )}
+
+                                  {/* Additional Hotel Info */}
+                                  {(day.hotel.checkInTime || day.hotel.checkOutTime) && (
+                                    <div className="flex gap-4 text-xs sm:text-sm text-gray-600">
+                                      {day.hotel.checkInTime && (
+                                        <p>
+                                          <span className="font-medium">Check-in:</span> {day.hotel.checkInTime}
+                                        </p>
+                                      )}
+                                      {day.hotel.checkOutTime && (
+                                        <p>
+                                          <span className="font-medium">Check-out:</span> {day.hotel.checkOutTime}
+                                        </p>
+                                      )}
                                     </div>
                                   )}
                                 </div>
@@ -655,34 +719,148 @@ const ItinerarySummary = () => {
                             <div className="mb-6">
                               <h4 className="font-semibold mb-3 text-[16px] sm:text-[18px] text-[#7A1CAC]">🎯 Activities & Excursions</h4>
                               {day.excursions && day.excursions.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                                <div className="space-y-4">
                                   {day.excursions.map((excursion: any, index: number) => (
-                                    <div key={index} className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                                      {excursion.images && excursion.images.length > 0 ? (
-                                        <img
-                                          src={excursion.images[0]}
-                                          className="w-full h-32 sm:h-36 object-cover"
-                                          alt={excursion.name}
-                                          onError={(e) => {
-                                            e.currentTarget.src = Img1;
-                                          }}
-                                        />
-                                      ) : (
-                                        <img
-                                          src={Img1}
-                                          className="w-full h-32 sm:h-36 object-cover"
-                                          alt={excursion.name}
-                                        />
-                                      )}
-                                      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent text-white py-2 px-3">
-                                        <p className="text-sm sm:text-[15px] font-medium font-poppins truncate">
-                                          {excursion.name}
-                                        </p>
-                                        {excursion.description && (
-                                          <p className="text-xs text-gray-200 mt-1 line-clamp-1">
-                                            {excursion.description}
-                                          </p>
-                                        )}
+                                    <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-200">
+                                      <div className="flex flex-col md:flex-row">
+                                        {/* Excursion Image */}
+                                        <div className="md:w-1/3 lg:w-1/4">
+                                          {excursion.images && excursion.images.length > 0 ? (
+                                            <img
+                                              src={excursion.images[0]}
+                                              className="w-full h-48 md:h-full object-cover"
+                                              alt={excursion.name}
+                                              onError={(e) => {
+                                                e.currentTarget.src = Img1;
+                                              }}
+                                            />
+                                          ) : (
+                                            <img
+                                              src={Img1}
+                                              className="w-full h-48 md:h-full object-cover"
+                                              alt={excursion.name}
+                                            />
+                                          )}
+                                        </div>
+
+                                        {/* Excursion Details */}
+                                        <div className="flex-1 p-4 space-y-3">
+                                          {/* Name and Rating */}
+                                          <div>
+                                            <h5 className="text-[15px] sm:text-[17px] font-semibold text-[#5B247A] mb-1">
+                                              {excursion.name}
+                                            </h5>
+                                            {excursion.rating && (
+                                              <div className="flex items-center gap-1 text-sm">
+                                                <span className="text-yellow-500">⭐</span>
+                                                <span className="font-medium">{excursion.rating}</span>
+                                                <span className="text-gray-500">/ 5</span>
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          {/* Full Description */}
+                                          {excursion.description && (
+                                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">
+                                              {excursion.description}
+                                            </p>
+                                          )}
+
+                                          {/* Additional Info Grid */}
+                                          <div className="grid grid-cols-2 gap-3 pt-2">
+                                            {excursion.duration && (
+                                              <div className="bg-blue-50 p-2 rounded-lg">
+                                                <p className="text-xs text-gray-500 mb-1">Duration</p>
+                                                <p className="text-sm font-medium text-gray-800">⏱️ {excursion.duration}</p>
+                                              </div>
+                                            )}
+                                            {excursion.bestTimeToVisit && (
+                                              <div className="bg-green-50 p-2 rounded-lg">
+                                                <p className="text-xs text-gray-500 mb-1">Best Time to Visit</p>
+                                                <p className="text-sm font-medium text-gray-800">🌤️ {excursion.bestTimeToVisit}</p>
+                                              </div>
+                                            )}
+                                            {excursion.difficulty && (
+                                              <div className="bg-orange-50 p-2 rounded-lg">
+                                                <p className="text-xs text-gray-500 mb-1">Difficulty</p>
+                                                <p className="text-sm font-medium text-gray-800">🎯 {excursion.difficulty}</p>
+                                              </div>
+                                            )}
+                                            {excursion.groupSize && (
+                                              <div className="bg-purple-50 p-2 rounded-lg">
+                                                <p className="text-xs text-gray-500 mb-1">Group Size</p>
+                                                <p className="text-sm font-medium text-gray-800">👥 {excursion.groupSize}</p>
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          {/* Contact/Location/Meeting Point */}
+                                          <div className="space-y-1 pt-2">
+                                            {excursion.location && (
+                                              <p className="text-gray-600 text-xs sm:text-sm flex items-start gap-2">
+                                                <span className="flex-shrink-0">📍</span>
+                                                <span className="font-medium">Location:</span>
+                                                <span>{excursion.location}</span>
+                                              </p>
+                                            )}
+                                            {excursion.meetingPoint && (
+                                              <p className="text-gray-600 text-xs sm:text-sm flex items-start gap-2">
+                                                <span className="flex-shrink-0">📌</span>
+                                                <span className="font-medium">Meeting Point:</span>
+                                                <span>{excursion.meetingPoint}</span>
+                                              </p>
+                                            )}
+                                            {excursion.contactInfo && (
+                                              <p className="text-gray-600 text-xs sm:text-sm flex items-center gap-2">
+                                                <span>📞</span>
+                                                <span className="font-medium">Contact:</span>
+                                                <span>{excursion.contactInfo}</span>
+                                              </p>
+                                            )}
+                                          </div>
+
+                                          {/* Features/Highlights */}
+                                          {excursion.highlights && excursion.highlights.length > 0 && (
+                                            <div>
+                                              <p className="font-medium text-xs sm:text-sm mb-2 text-[#5B247A]">Highlights:</p>
+                                              <ul className="list-disc list-inside space-y-1">
+                                                {excursion.highlights.map((highlight: string, i: number) => (
+                                                  <li key={i} className="text-xs sm:text-sm text-gray-700">
+                                                    {highlight}
+                                                  </li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+
+                                          {/* Inclusions */}
+                                          {excursion.inclusions && excursion.inclusions.length > 0 && (
+                                            <div>
+                                              <p className="font-medium text-xs sm:text-sm mb-2 text-green-700">✓ Included:</p>
+                                              <div className="flex flex-wrap gap-1.5">
+                                                {excursion.inclusions.map((item: string, i: number) => (
+                                                  <span key={i} className="px-2 py-1 bg-green-50 border border-green-200 text-green-800 rounded-md text-xs">
+                                                    {item}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Exclusions */}
+                                          {excursion.exclusions && excursion.exclusions.length > 0 && (
+                                            <div>
+                                              <p className="font-medium text-xs sm:text-sm mb-2 text-red-700">✗ Not Included:</p>
+                                              <div className="flex flex-wrap gap-1.5">
+                                                {excursion.exclusions.map((item: string, i: number) => (
+                                                  <span key={i} className="px-2 py-1 bg-red-50 border border-red-200 text-red-800 rounded-md text-xs">
+                                                    {item}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
                                   ))}
