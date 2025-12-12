@@ -252,7 +252,11 @@ const EditItinerary = () => {
         });
 
         // Pre-populate quote data if exists
+        console.log('📊 Loaded itinerary data:', data);
+        console.log('💰 Quote data:', data.quote);
+
         if (data.quote) {
+          console.log('✅ Quote exists, populating form...');
           setQuoteData({
             totalCost: data.quote.totalCost || 0,
             accommodationCost: data.quote.breakdown?.accommodationCost || 0,
@@ -269,6 +273,8 @@ const EditItinerary = () => {
             internalNotes: data.quote.internalNotes || "",
             validUntil: data.quote.validUntil || "",
           });
+        } else {
+          console.log('❌ No quote found in itinerary data');
         }
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Failed to fetch itinerary");
@@ -508,13 +514,38 @@ const EditItinerary = () => {
         validUntil: quoteData.validUntil || undefined,
       };
 
-      await itineraryService.createQuote(itineraryId!, quoteDto);
+      console.log('📤 Sending quote data:', quoteDto);
+      const savedQuote = await itineraryService.createQuote(itineraryId!, quoteDto);
+      console.log('✅ Quote saved, response:', savedQuote);
       toast.success("Quote created successfully!");
 
       // Refresh itinerary data
       const refreshedData = await itineraryService.getById(itineraryId!);
+      console.log('🔄 Refreshed itinerary data:', refreshedData);
+      console.log('🔄 Refreshed quote data:', refreshedData.quote);
       setItinerary(refreshedData);
       setFormData(prev => ({ ...prev, status: refreshedData.status }));
+
+      // Update quote data state with refreshed values
+      if (refreshedData.quote) {
+        console.log('✅ Updating quote form with refreshed data');
+        setQuoteData({
+          totalCost: refreshedData.quote.totalCost || 0,
+          accommodationCost: refreshedData.quote.breakdown?.accommodationCost || 0,
+          excursionsCost: refreshedData.quote.breakdown?.excursionsCost || 0,
+          transportCost: refreshedData.quote.breakdown?.transportCost || 0,
+          guideCost: refreshedData.quote.breakdown?.guideCost || 0,
+          otherCosts: refreshedData.quote.breakdown?.otherCosts || 0,
+          taxes: refreshedData.quote.breakdown?.taxes || 0,
+          serviceCharge: refreshedData.quote.breakdown?.serviceCharge || 0,
+          discount: refreshedData.quote.discount || 0,
+          discountReason: refreshedData.quote.discountReason || "",
+          finalPrice: refreshedData.quote.finalPrice || 0,
+          termsAndConditions: refreshedData.quote.termsAndConditions || "",
+          internalNotes: refreshedData.quote.internalNotes || "",
+          validUntil: refreshedData.quote.validUntil || "",
+        });
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to create quote");
     } finally {
@@ -596,11 +627,16 @@ const EditItinerary = () => {
                   formData.status === 'draft' ? 'bg-gray-100 text-gray-700' :
                   formData.status === 'pending_quote' ? 'bg-yellow-100 text-yellow-700' :
                   formData.status === 'quoted' ? 'bg-blue-100 text-blue-700' :
+                  formData.status === 'negotiating' ? 'bg-orange-100 text-orange-700' :
                   formData.status === 'accepted' ? 'bg-green-100 text-green-700' :
                   formData.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                  formData.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
+                  formData.status === 'on_hold' ? 'bg-amber-100 text-amber-700' :
+                  formData.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                  formData.status === 'cancelled' ? 'bg-rose-100 text-rose-700' :
                   'bg-gray-100 text-gray-700'
                 }`}>
-                  {formData.status?.toUpperCase().replace('_', ' ')}
+                  {formData.status?.toUpperCase().replace(/_/g, ' ')}
                 </span>
               </div>
             </div>
@@ -659,6 +695,122 @@ const EditItinerary = () => {
                 {/* TRIP DETAILS TAB */}
                 {activeTab === "details" && (
                   <div className="space-y-8">
+                    {/* Status Management Section (Admin Only) */}
+                    {(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-[#B749DB] rounded-lg p-6">
+                        <h2 className="text-xl font-semibold text-[#5B247A] mb-4">
+                          Itinerary Status Management
+                        </h2>
+                        <div className="flex flex-wrap gap-3">
+                          {formData.status === 'accepted' && (
+                            <button
+                              onClick={async () => {
+                                if (window.confirm('Start this itinerary? The trip will begin.')) {
+                                  try {
+                                    await itineraryService.startItinerary(itineraryId!);
+                                    toast.success('Itinerary started successfully!');
+                                    const refreshedData = await itineraryService.getById(itineraryId!);
+                                    setItinerary(refreshedData);
+                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                  } catch (error: any) {
+                                    toast.error(error.response?.data?.message || 'Failed to start itinerary');
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
+                            >
+                              🚀 Start Trip
+                            </button>
+                          )}
+
+                          {formData.status === 'in_progress' && (
+                            <>
+                              <button
+                                onClick={async () => {
+                                  const reason = window.prompt('Reason for putting on hold (optional):');
+                                  if (reason !== null) {
+                                    try {
+                                      await itineraryService.holdItinerary(itineraryId!, reason || undefined);
+                                      toast.success('Itinerary put on hold');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to hold itinerary');
+                                    }
+                                  }
+                                }}
+                                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 flex items-center gap-2"
+                              >
+                                ⏸️ Put On Hold
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  if (window.confirm('Mark this itinerary as completed?')) {
+                                    try {
+                                      await itineraryService.completeItinerary(itineraryId!);
+                                      toast.success('Itinerary completed successfully!');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to complete itinerary');
+                                    }
+                                  }
+                                }}
+                                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2"
+                              >
+                                ✅ Mark Completed
+                              </button>
+                            </>
+                          )}
+
+                          {formData.status === 'on_hold' && (
+                            <button
+                              onClick={async () => {
+                                if (window.confirm('Resume this itinerary?')) {
+                                  try {
+                                    await itineraryService.resumeItinerary(itineraryId!);
+                                    toast.success('Itinerary resumed');
+                                    const refreshedData = await itineraryService.getById(itineraryId!);
+                                    setItinerary(refreshedData);
+                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                  } catch (error: any) {
+                                    toast.error(error.response?.data?.message || 'Failed to resume itinerary');
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
+                            >
+                              ▶️ Resume Trip
+                            </button>
+                          )}
+
+                          {(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                            <button
+                              onClick={async () => {
+                                const reason = window.prompt('Reason for cancellation:');
+                                if (reason) {
+                                  try {
+                                    await itineraryService.cancelItinerary(itineraryId!, reason);
+                                    toast.success('Itinerary cancelled');
+                                    const refreshedData = await itineraryService.getById(itineraryId!);
+                                    setItinerary(refreshedData);
+                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                  } catch (error: any) {
+                                    toast.error(error.response?.data?.message || 'Failed to cancel itinerary');
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 flex items-center gap-2"
+                            >
+                              ❌ Cancel Trip
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Customer Information (Read-only) */}
                     <div>
                       <h2 className="text-xl font-semibold text-[#5B247A] mb-4">
@@ -1117,6 +1269,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.accommodationCost}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1137,6 +1290,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.excursionsCost}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1157,6 +1311,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.transportCost}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1177,6 +1332,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.guideCost}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1197,6 +1353,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.otherCosts}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1217,6 +1374,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.taxes}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1237,6 +1395,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.serviceCharge}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,
@@ -1275,6 +1434,7 @@ const EditItinerary = () => {
                             min="0"
                             step="0.01"
                             value={quoteData.discount}
+                            onFocus={(e) => e.target.select()}
                             onChange={(e) =>
                               setQuoteData({
                                 ...quoteData,

@@ -10,6 +10,9 @@ export enum ItineraryStatus {
   NEGOTIATING = 'negotiating',
   ACCEPTED = 'accepted',
   REJECTED = 'rejected',
+  IN_PROGRESS = 'in_progress',
+  ON_HOLD = 'on_hold',
+  COMPLETED = 'completed',
   CANCELLED = 'cancelled',
   CONVERTED = 'converted',
 }
@@ -44,6 +47,9 @@ export type Itinerary = {
   quotedAt?: string;
   acceptedAt?: string;
   rejectedAt?: string;
+  startedAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
   lead: any;
   package?: any;
   days?: ItineraryDay[];

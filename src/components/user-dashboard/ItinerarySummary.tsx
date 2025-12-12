@@ -410,6 +410,87 @@ const ItinerarySummary = () => {
                     </div>
                   )}
 
+                  {/* Pricing Summary */}
+                  {itinerary.quote && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-emerald-50 border-2 border-emerald-400 p-6 rounded-[25px] font-poppins">
+                      <h2 className="text-[22px] font-bold mb-4 text-emerald-900 flex items-center gap-2">
+                        <span>💰</span> Pricing Summary
+                      </h2>
+
+                      {/* Cost Breakdown */}
+                      <div className="bg-white p-4 rounded-lg mb-4">
+                        <h3 className="text-[18px] font-semibold mb-3 text-gray-800">Cost Breakdown</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-[15px]">
+                          <div className="flex justify-between py-1 border-b border-gray-200">
+                            <span className="text-gray-700">Accommodation</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.accommodationCost?.toFixed(2) || '0.00'}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-gray-200">
+                            <span className="text-gray-700">Excursions</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.excursionsCost?.toFixed(2) || '0.00'}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-gray-200">
+                            <span className="text-gray-700">Transport</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.transportCost?.toFixed(2) || '0.00'}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-gray-200">
+                            <span className="text-gray-700">Guide Services</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.guideCost?.toFixed(2) || '0.00'}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-gray-200">
+                            <span className="text-gray-700">Other Costs</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.otherCosts?.toFixed(2) || '0.00'}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-gray-200">
+                            <span className="text-gray-700">Taxes</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.taxes?.toFixed(2) || '0.00'}</span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-gray-200 md:col-span-2">
+                            <span className="text-gray-700">Service Charge</span>
+                            <span className="font-medium text-gray-900">${itinerary.quote.breakdown?.serviceCharge?.toFixed(2) || '0.00'}</span>
+                          </div>
+                        </div>
+
+                        {/* Subtotal */}
+                        <div className="flex justify-between py-2 mt-3 border-t-2 border-gray-300">
+                          <span className="font-semibold text-gray-800">Subtotal</span>
+                          <span className="font-semibold text-gray-900 text-[17px]">${itinerary.quote.totalCost?.toFixed(2) || '0.00'}</span>
+                        </div>
+
+                        {/* Discount (if applicable) */}
+                        {itinerary.quote.discount > 0 && (
+                          <div className="flex justify-between py-2 text-green-700 border-t border-gray-200">
+                            <span>Discount {itinerary.quote.discountReason && `(${itinerary.quote.discountReason})`}</span>
+                            <span className="font-medium">-${itinerary.quote.discount?.toFixed(2)}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Final Price */}
+                      <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white p-4 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[20px] font-bold">Total Price</span>
+                          <span className="text-[28px] font-bold">${itinerary.quote.finalPrice?.toFixed(2) || '0.00'}</span>
+                        </div>
+                        {itinerary.quote.validUntil && (
+                          <div className="text-sm mt-2 text-emerald-100">
+                            Valid until: {new Date(itinerary.quote.validUntil).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Terms and Conditions */}
+                      {itinerary.quote.termsAndConditions && (
+                        <div className="mt-4 bg-white p-4 rounded-lg">
+                          <h3 className="text-[16px] font-semibold mb-2 text-gray-800">Terms & Conditions</h3>
+                          <div className="text-[14px] text-gray-700 whitespace-pre-wrap">
+                            {itinerary.quote.termsAndConditions}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Medical & Dietary Information */}
                   {(itinerary.lead?.medicalNotes || itinerary.lead?.dietaryRequirements || itinerary.lead?.allergies || itinerary.lead?.specialConditions) && (
                     <div className="mt-6 lg:ml-5 lg:mr-5 bg-rose-50 border border-rose-300 p-4 rounded-[25px] font-poppins">

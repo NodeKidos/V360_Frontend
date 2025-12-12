@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
-import { FiEye, FiTrash2, FiEdit } from "react-icons/fi";
+import { FiEye, FiTrash2, FiEdit, FiChevronDown } from "react-icons/fi";
 import { itineraryService } from "../../../services/itinerary.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
@@ -32,6 +32,7 @@ const ItineraryManagement = () => {
     itineraryNumber: "",
   });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState<string | null>(null);
 
   // Fetch itineraries from API
   useEffect(() => {
@@ -84,6 +85,32 @@ const ItineraryManagement = () => {
   useEffect(() => {
     setPage(1);
   }, [searchQuery, statusFilter]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (statusDropdownOpen) {
+        setStatusDropdownOpen(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [statusDropdownOpen]);
+
+  // Handle status change
+  const handleStatusChange = async (itineraryId: string, newStatus: ItineraryStatus) => {
+    try {
+      await itineraryService.updateStatus(itineraryId, newStatus);
+      toast.success("Status updated successfully!");
+      // Update the itinerary in the list
+      setItineraries(itineraries.map(it =>
+        it.id === itineraryId ? { ...it, status: newStatus } : it
+      ));
+      setStatusDropdownOpen(null);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to update status");
+    }
+  };
 
   // Navigate to Itinerary Detail page
   const handleViewClick = (itineraryId: string) => {
@@ -360,8 +387,47 @@ const ItineraryManagement = () => {
                         {itinerary.numberOfParticipants}
                       </td>
 
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        {getStatusBadge(itinerary.status)}
+                      <td className="px-4 py-4 whitespace-nowrap relative">
+                        <div className="relative inline-block">
+                          <button
+                            id={`status-btn-${itinerary.id}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setStatusDropdownOpen(statusDropdownOpen === itinerary.id ? null : itinerary.id);
+                            }}
+                            className={`${getStatusColor(itinerary.status).replace("text-", "bg-").replace("-600", "-100").replace("-400", "-100")} ${getStatusColor(itinerary.status)} px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer`}
+                          >
+                            {itinerary.status.replace(/_/g, " ").toUpperCase()}
+                            <FiChevronDown size={12} />
+                          </button>
+                        </div>
+
+                        {/* Status Dropdown - Using fixed positioning to escape table overflow */}
+                        {statusDropdownOpen === itinerary.id && (
+                          <div
+                            className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] max-h-[300px] overflow-y-auto overflow-x-hidden z-[9999] flex flex-col"
+                            style={{
+                              top: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom + 4}px`,
+                              left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left}px`,
+                              scrollbarWidth: 'thin'
+                            }}
+                          >
+                            {Object.values(ItineraryStatus).map((status) => (
+                              <button
+                                key={status}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleStatusChange(itinerary.id, status);
+                                }}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors block ${
+                                  itinerary.status === status ? 'bg-purple-50 font-semibold' : ''
+                                }`}
+                              >
+                                {status.replace(/_/g, " ").toUpperCase()}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </td>
 
                       <td className="px-4 py-4 text-gray-600 whitespace-nowrap">

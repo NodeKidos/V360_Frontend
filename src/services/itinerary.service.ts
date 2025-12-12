@@ -90,6 +90,38 @@ export const itineraryService = {
     const response = await api.get(`/itineraries/${id}/issues`);
     return response.data;
   },
+
+  // Status transitions (admin)
+  startItinerary: async (id: string): Promise<any> => {
+    const response = await api.patch(`/itineraries/${id}/start`);
+    return response.data;
+  },
+
+  holdItinerary: async (id: string, reason?: string): Promise<any> => {
+    const response = await api.patch(`/itineraries/${id}/hold`, { reason });
+    return response.data;
+  },
+
+  resumeItinerary: async (id: string): Promise<any> => {
+    const response = await api.patch(`/itineraries/${id}/resume`);
+    return response.data;
+  },
+
+  completeItinerary: async (id: string): Promise<any> => {
+    const response = await api.patch(`/itineraries/${id}/complete`);
+    return response.data;
+  },
+
+  cancelItinerary: async (id: string, reason?: string): Promise<any> => {
+    const response = await api.patch(`/itineraries/${id}/cancel`, { reason });
+    return response.data;
+  },
+
+  // Update itinerary status (admin)
+  updateStatus: async (id: string, status: ItineraryStatus): Promise<Itinerary> => {
+    const response = await api.patch<Itinerary>(`/itineraries/${id}/status`, { status });
+    return response.data;
+  },
 };
 
 export default itineraryService;

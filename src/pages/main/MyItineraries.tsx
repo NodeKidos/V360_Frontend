@@ -1,10 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useItineraryStore } from "../../store/useItineraryStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { ItineraryStatus } from "../../types/itinerary.types";
 import Navbar from "../../components/home/Navbar";
-import { FaPlus, FaEye, FaEdit, FaTrash, FaPaperPlane, FaCheck, FaTimes } from "react-icons/fa";
+import { FaPlus, FaEye, FaEdit, FaTrash, FaPaperPlane, FaCheck, FaTimes, FaChevronDown } from "react-icons/fa";
+import { itineraryService } from "../../services/itinerary.service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const statusColors = {
   [ItineraryStatus.DRAFT]: "bg-gray-100 text-gray-800",
@@ -13,6 +16,9 @@ const statusColors = {
   [ItineraryStatus.NEGOTIATING]: "bg-purple-100 text-purple-800",
   [ItineraryStatus.ACCEPTED]: "bg-green-100 text-green-800",
   [ItineraryStatus.REJECTED]: "bg-red-100 text-red-800",
+  [ItineraryStatus.IN_PROGRESS]: "bg-indigo-100 text-indigo-800",
+  [ItineraryStatus.ON_HOLD]: "bg-orange-100 text-orange-800",
+  [ItineraryStatus.COMPLETED]: "bg-emerald-100 text-emerald-800",
   [ItineraryStatus.CANCELLED]: "bg-gray-100 text-gray-800",
   [ItineraryStatus.CONVERTED]: "bg-teal-100 text-teal-800",
 };
@@ -24,6 +30,9 @@ const statusLabels = {
   [ItineraryStatus.NEGOTIATING]: "Negotiating",
   [ItineraryStatus.ACCEPTED]: "Accepted",
   [ItineraryStatus.REJECTED]: "Rejected",
+  [ItineraryStatus.IN_PROGRESS]: "In Progress",
+  [ItineraryStatus.ON_HOLD]: "On Hold",
+  [ItineraryStatus.COMPLETED]: "Completed",
   [ItineraryStatus.CANCELLED]: "Cancelled",
   [ItineraryStatus.CONVERTED]: "Converted to Booking",
 };
@@ -32,6 +41,7 @@ export default function MyItineraries() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthStore();
   const { itineraries, getMyItineraries, deleteItinerary, submitForQuote, isLoading } = useItineraryStore();
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -40,6 +50,17 @@ export default function MyItineraries() {
     }
     getMyItineraries();
   }, [isLoggedIn, navigate]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (statusDropdownOpen) {
+        setStatusDropdownOpen(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [statusDropdownOpen]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this itinerary?")) {
@@ -53,6 +74,17 @@ export default function MyItineraries() {
       if (success) {
         getMyItineraries(); // Refresh list
       }
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: ItineraryStatus) => {
+    try {
+      await itineraryService.updateStatus(id, newStatus);
+      toast.success("Status updated successfully!");
+      getMyItineraries(); // Refresh list
+      setStatusDropdownOpen(null);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to update status");
     }
   };
 
@@ -124,9 +156,46 @@ export default function MyItineraries() {
                       <p className="text-sm opacity-90">Itinerary</p>
                       <h3 className="text-lg font-bold">{itinerary.itineraryNumber}</h3>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[itinerary.status]}`}>
-                      {statusLabels[itinerary.status]}
-                    </span>
+                    <div className="relative">
+                      <button
+                        id={`status-btn-${itinerary.id}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setStatusDropdownOpen(statusDropdownOpen === itinerary.id ? null : itinerary.id);
+                        }}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${statusColors[itinerary.status]} hover:opacity-80 transition-opacity`}
+                      >
+                        {statusLabels[itinerary.status]}
+                        <FaChevronDown size={10} />
+                      </button>
+                    </div>
+
+                    {/* Status Dropdown - Using fixed positioning */}
+                    {statusDropdownOpen === itinerary.id && (
+                      <div
+                        className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[180px] max-h-[300px] overflow-y-auto overflow-x-hidden z-[9999] flex flex-col"
+                        style={{
+                          top: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom + 4}px`,
+                          left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left}px`,
+                          scrollbarWidth: 'thin'
+                        }}
+                      >
+                        {Object.entries(statusLabels).map(([status, label]) => (
+                          <button
+                            key={status}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStatusChange(itinerary.id, status as ItineraryStatus);
+                            }}
+                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors block ${
+                              itinerary.status === status ? 'bg-purple-50 font-semibold' : ''
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -222,6 +291,7 @@ export default function MyItineraries() {
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }
