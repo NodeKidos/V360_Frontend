@@ -552,20 +552,28 @@ const ItinerarySummary = () => {
                         </div>
 
                         {expandedDestinations.includes(day.id!) && (
-                          <div className="bg-[#F8EDFC] border border-[#D9B7F2] p-5 rounded-[25px] shadow-sm">
-                            {/* Day Details */}
-                            {day.title && (
-                              <h3 className="text-[20px] font-semibold text-[#7A1CAC] mb-2">{day.title}</h3>
-                            )}
-                            {day.description && (
-                              <p className="text-gray-700 mb-4">{day.description}</p>
-                            )}
+                          <div className="bg-[#F8EDFC] border border-[#D9B7F2] p-4 sm:p-5 rounded-[25px] shadow-sm">
+                            {/* Check if day has any content */}
+                            {!day.hotel && (!day.excursions || day.excursions.length === 0) && !day.description && !day.notes && !day.title ? (
+                              <div className="bg-white p-6 rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                <p className="text-gray-500 text-sm mb-1">This day is not yet planned</p>
+                                <p className="text-gray-400 text-xs">No accommodation or activities have been added</p>
+                              </div>
+                            ) : (
+                              <>
+                                {/* Day Details */}
+                                {day.title && (
+                                  <h3 className="text-[18px] sm:text-[20px] font-semibold text-[#7A1CAC] mb-2">{day.title}</h3>
+                                )}
+                                {day.description && (
+                                  <p className="text-gray-700 mb-4 text-sm sm:text-base">{day.description}</p>
+                                )}
 
                             {/* Hotel Information */}
-                            {day.hotel && (
-                              <>
-                                {console.log('🏨 Hotel data for day', day.dayNumber, ':', day.hotel)}
-                              <div className="flex flex-col lg:flex-row gap-6 mb-6">
+                            <div className="mb-6">
+                              <h4 className="font-semibold mb-3 text-[16px] sm:text-[18px] text-[#7A1CAC]">🏨 Accommodation</h4>
+                              {day.hotel ? (
+                              <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 bg-white p-4 rounded-xl">
                                 {day.hotel.images && day.hotel.images.length > 0 ? (
                                   <img
                                     src={day.hotel.images[0]}
@@ -584,32 +592,34 @@ const ItinerarySummary = () => {
                                 )}
 
                                 <div className="flex-1">
-                                  <h4 className="text-[18px] font-semibold text-[#7A1CAC]">{day.hotel.name}</h4>
+                                  <h4 className="text-[16px] sm:text-[18px] font-semibold text-[#5B247A]">{day.hotel.name}</h4>
                                   {day.hotel.description && (
-                                    <p className="text-gray-600 text-sm mt-2">{day.hotel.description}</p>
+                                    <p className="text-gray-600 text-xs sm:text-sm mt-2 line-clamp-2">{day.hotel.description}</p>
                                   )}
-                                  {day.hotel.address && (
-                                    <p className="text-gray-600 text-sm mt-1">📍 {day.hotel.address}</p>
-                                  )}
-                                  {day.hotel.contactInfo && (
-                                    <p className="text-gray-600 text-sm mt-1">📞 {day.hotel.contactInfo}</p>
-                                  )}
+                                  <div className="mt-2 space-y-1">
+                                    {day.hotel.address && (
+                                      <p className="text-gray-600 text-xs sm:text-sm">📍 {day.hotel.address}</p>
+                                    )}
+                                    {day.hotel.contactInfo && (
+                                      <p className="text-gray-600 text-xs sm:text-sm">📞 {day.hotel.contactInfo}</p>
+                                    )}
+                                  </div>
 
                                   {/* Room Details */}
                                   {day.hotel.roomDetails && (
                                     <div className="mt-3 space-y-1">
                                       {day.hotel.roomDetails?.roomType && (
-                                        <p className="text-sm text-gray-700">
+                                        <p className="text-xs sm:text-sm text-gray-700">
                                           <span className="font-medium">Room Type:</span> {day.hotel.roomDetails.roomType === 'single' ? 'Single Room' : 'Double Room'}
                                         </p>
                                       )}
                                       {day.hotel.roomDetails?.bedTypes?.length > 0 && (
-                                        <p className="text-sm text-gray-700">
+                                        <p className="text-xs sm:text-sm text-gray-700">
                                           <span className="font-medium">Bed Types:</span> {day.hotel.roomDetails.bedTypes.join(', ')}
                                         </p>
                                       )}
                                       {day.hotel.roomDetails?.dietPlans?.length > 0 && (
-                                        <p className="text-sm text-gray-700">
+                                        <p className="text-xs sm:text-sm text-gray-700">
                                           <span className="font-medium">Diet Plan:</span> {day.hotel.roomDetails.dietPlans.join(', ')}
                                         </p>
                                       )}
@@ -619,12 +629,12 @@ const ItinerarySummary = () => {
                                   {/* Room Features */}
                                   {day.hotel.features && day.hotel.features.length > 0 && (
                                     <div className="mt-3">
-                                      <span className="font-medium text-sm">Room Features:</span>
+                                      <span className="font-medium text-xs sm:text-sm">Features:</span>
                                       <div className="flex flex-wrap gap-2 mt-2">
                                         {day.hotel.features.map((feature: string, i: number) => (
                                           <span
                                             key={i}
-                                            className="px-3 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs font-medium"
+                                            className="px-2 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs font-medium"
                                           >
                                             {feature}
                                           </span>
@@ -634,20 +644,24 @@ const ItinerarySummary = () => {
                                   )}
                                 </div>
                               </div>
-                              </>
-                            )}
+                              ) : (
+                                <div className="bg-white p-4 rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                  <p className="text-gray-500 text-sm">No hotel selected for this day</p>
+                                </div>
+                              )}
+                            </div>
 
                             {/* Excursions */}
-                            {day.excursions && day.excursions.length > 0 && (
-                              <div className="mt-5">
-                                <h4 className="font-semibold mb-3 text-[16px]">Excursions</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="mb-6">
+                              <h4 className="font-semibold mb-3 text-[16px] sm:text-[18px] text-[#7A1CAC]">🎯 Activities & Excursions</h4>
+                              {day.excursions && day.excursions.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                                   {day.excursions.map((excursion: any, index: number) => (
-                                    <div key={index} className="relative">
+                                    <div key={index} className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow">
                                       {excursion.images && excursion.images.length > 0 ? (
                                         <img
                                           src={excursion.images[0]}
-                                          className="w-full h-36 object-cover rounded-xl"
+                                          className="w-full h-32 sm:h-36 object-cover"
                                           alt={excursion.name}
                                           onError={(e) => {
                                             e.currentTarget.src = Img1;
@@ -656,28 +670,39 @@ const ItinerarySummary = () => {
                                       ) : (
                                         <img
                                           src={Img1}
-                                          className="w-full h-36 object-cover rounded-xl"
+                                          className="w-full h-32 sm:h-36 object-cover"
                                           alt={excursion.name}
                                         />
                                       )}
-                                      <div className="absolute bottom-0 left-0 w-full bg-black/60 text-white rounded-b-xl py-1 px-2">
-                                        <p className="text-[16px] font-normal font-poppins truncate">
+                                      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent text-white py-2 px-3">
+                                        <p className="text-sm sm:text-[15px] font-medium font-poppins truncate">
                                           {excursion.name}
                                         </p>
+                                        {excursion.description && (
+                                          <p className="text-xs text-gray-200 mt-1 line-clamp-1">
+                                            {excursion.description}
+                                          </p>
+                                        )}
                                       </div>
                                     </div>
                                   ))}
                                 </div>
-                              </div>
-                            )}
+                              ) : (
+                                <div className="bg-white p-4 rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                  <p className="text-gray-500 text-sm">No excursions planned for this day</p>
+                                </div>
+                              )}
+                            </div>
 
                             {/* Day Notes */}
                             {day.notes && (
                               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <p className="text-sm text-gray-700">
+                                <p className="text-xs sm:text-sm text-gray-700">
                                   <span className="font-semibold">Notes:</span> {day.notes}
                                 </p>
                               </div>
+                            )}
+                            </>
                             )}
                           </div>
                         )}
