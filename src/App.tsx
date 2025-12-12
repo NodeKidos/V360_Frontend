@@ -51,6 +51,8 @@ import EditItinerary from "./pages/admin/EditItinerary";
 import PackagePrice from "./components/user-dashboard/PackagePrice";
 import Reward from "./components/user-dashboard/Reward";
 import UserProfile from "./components/user-dashboard/UserProfile";
+import ActivityLogView from "./components/dashboard/ActivityLog/ActivityLogView";
+import EditUser from "./components/dashboard/User/EditUser";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -127,6 +129,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <CustomerManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/edit/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <EditCustomer />
             </ProtectedRoute>
           }
         />
@@ -312,6 +322,16 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
               <EditStaff />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Activity Log Route */}
+        <Route
+          path="/activity-log"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <ActivityLogView />
             </ProtectedRoute>
           }
         />

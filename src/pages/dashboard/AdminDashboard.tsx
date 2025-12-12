@@ -141,32 +141,58 @@ const AdminDashboard = () => {
           <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
           {/* Top Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {[
-              { label: "Total Customer", value: "50", icon: <HiUsers className="text-blue-500" />, color: "bg-blue-50" },
-              { label: "Total Vehicle", value: "28", icon: <IoCarSport className="text-purple-500" />, color: "bg-purple-50" },
-              { label: "Total Driver", value: "40", icon: <HiTruck className="text-green-500" />, color: "bg-green-50" },
-              { label: "Driving Hours", value: "16hr 12m", icon: <BiTime className="text-orange-500" />, color: "bg-orange-50" },
-            ].map((item) => (
-              <Card
-                key={item.label}
-                className="bg-white rounded-xl shadow-sm border-0 hover:shadow-md transition-shadow"
-              >
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`${item.color} p-2.5 md:p-3 rounded-lg`}>
-                      <div className="text-xl md:text-2xl">{item.icon}</div>
+          {loadingStats ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader className="w-20 h-20" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {[
+                {
+                  label: "Total Customer",
+                  value: dashboardStats?.totalCustomers?.toString() || "0",
+                  icon: <HiUsers className="text-blue-500" />,
+                  color: "bg-blue-50"
+                },
+                {
+                  label: "Total Vehicle",
+                  value: dashboardStats?.totalVehicles?.toString() || "0",
+                  icon: <IoCarSport className="text-purple-500" />,
+                  color: "bg-purple-50"
+                },
+                {
+                  label: "Total Driver",
+                  value: dashboardStats?.totalDrivers?.toString() || "0",
+                  icon: <HiTruck className="text-green-500" />,
+                  color: "bg-green-50"
+                },
+                {
+                  label: "Total Bookings",
+                  value: dashboardStats?.totalBookings?.toString() || "0",
+                  icon: <BiTime className="text-orange-500" />,
+                  color: "bg-orange-50"
+                },
+              ].map((item) => (
+                <Card
+                  key={item.label}
+                  className="bg-white rounded-xl shadow-sm border-0 hover:shadow-md transition-shadow"
+                >
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`${item.color} p-2.5 md:p-3 rounded-lg`}>
+                        <div className="text-xl md:text-2xl">{item.icon}</div>
+                      </div>
+                      <FiArrowUpRight className="text-gray-400 text-base md:text-lg" />
                     </div>
-                    <FiArrowUpRight className="text-gray-400 text-base md:text-lg" />
-                  </div>
-                  <p className="text-gray-500 text-xs md:text-sm font-poppins mb-1">{item.label}</p>
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-poppins">
-                    {item.value}
-                  </h3>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <p className="text-gray-500 text-xs md:text-sm font-poppins mb-1">{item.label}</p>
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-poppins">
+                      {item.value}
+                    </h3>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {/* Middle Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
@@ -192,10 +218,18 @@ const AdminDashboard = () => {
               <Card className="bg-white rounded-xl shadow-sm border-0">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Total Trip</p>
+                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Total Bookings</p>
                     <FiArrowUpRight className="text-gray-400" />
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-poppins">1200</h2>
+                  {loadingStats ? (
+                    <div className="flex justify-center items-center py-4">
+                      <Loader className="w-10 h-10" />
+                    </div>
+                  ) : (
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-poppins">
+                      {dashboardStats?.totalBookings || 0}
+                    </h2>
+                  )}
                 </CardContent>
               </Card>
             </div>

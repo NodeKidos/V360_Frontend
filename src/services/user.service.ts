@@ -60,6 +60,41 @@ class UserService {
     }
 
     /**
+     * Create a new user/customer
+     */
+    async createUser(userData: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone?: string;
+        passportNumber?: string;
+        country?: string;
+        gender?: string;
+        dateOfBirth?: string;
+        isActive?: boolean;
+    }): Promise<User> {
+        const response = await api.post('/admin/users', userData);
+        return response.data;
+    }
+
+    /**
+     * Update an existing user
+     */
+    async updateUser(id: string, userData: {
+        firstName?: string;
+        lastName?: string;
+        phone?: string;
+        passportNumber?: string;
+        country?: string;
+        gender?: string;
+        dateOfBirth?: string;
+        isActive?: boolean;
+    }): Promise<User> {
+        const response = await api.put(`/admin/users/${id}`, userData);
+        return response.data;
+    }
+
+    /**
      * Delete a user
      */
     async deleteUser(id: string): Promise<void> {

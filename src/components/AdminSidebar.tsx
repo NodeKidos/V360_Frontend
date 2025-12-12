@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import { TiThLargeOutline } from 'react-icons/ti';
-import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute } from 'react-icons/fa';
+import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -21,6 +21,7 @@ const sidebarMenuConfig = {
     { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle' },
     { label: 'Driver', icon: <FaTruck />, link: '/driver' },
     { label: 'Staff', icon: <FaUsers />, link: '/staff' },
+    { label: 'Activity Log', icon: <FaClipboardList />, link: '/activity-log' },
     { label: 'Trip', icon: <BiTrip />, link: '/trip' },
     { label: 'Reward', icon: <FaGift />, link: '/reward' },
     { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
@@ -166,22 +167,22 @@ const Sidebar: React.FC<SidebarProps> = ({
             </TooltipProvider>
 
             {/* Avatar */}
-<div
-  className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
-  onClick={() => navigate('/user-profile')}  // Navigate to user profile on click
->
-  <Avatar>
-    <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-    <AvatarFallback>AD</AvatarFallback>
-  </Avatar>
+            <div
+              className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
+              onClick={() => navigate('/user-profile')}  // Navigate to user profile on click
+            >
+              <Avatar>
+                <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
+                <AvatarFallback>AD</AvatarFallback>
+              </Avatar>
 
-  {(!collapsed || isMobile) && (
-    <div>
-      <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
-      <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
-    </div>
-  )}
-</div>
+              {(!collapsed || isMobile) && (
+                <div>
+                  <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
+                  <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </aside>

@@ -48,12 +48,13 @@ export default function EditStaff() {
         setStaffData({
           name: staff.name,
           email: staff.email,
+          countryCode: "🇱🇰 +94", // Default value
           contact: staff.contact,
           accessLevel: staff.accessLevel,
           gender: staff.gender,
           status: staff.status,
           nic: staff.nic,
-          age: staff.age.toString(),
+          age: typeof staff.age === 'number' ? staff.age.toString() : staff.age || '',
         });
       } catch (error) {
         console.error("Failed to fetch staff data:", error);
@@ -82,7 +83,7 @@ export default function EditStaff() {
 
     // Validation
     if (!staffData.name || !staffData.email || !staffData.contact || !staffData.nic ||
-        !staffData.gender || !staffData.age || !staffData.accessLevel || !staffData.status) {
+      !staffData.gender || !staffData.age || !staffData.accessLevel || !staffData.status) {
       toast.error("Please fill in all required fields", {
         position: "top-right",
         autoClose: 3000,
@@ -120,14 +121,13 @@ export default function EditStaff() {
         // Internal server error - likely a duplicate email since validation passed
         const errorData = error.response?.data || {};
         const errorString = JSON.stringify(errorData).toLowerCase();
-        const errorDetail = errorData.detail || errorData.message || errorData.error || '';
 
         // Check if it's a duplicate/unique constraint error
         if (errorString.includes('duplicate') ||
-            errorString.includes('already exists') ||
-            errorString.includes('unique constraint') ||
-            errorString.includes('uq_') ||
-            errorString.includes('23505')) {
+          errorString.includes('already exists') ||
+          errorString.includes('unique constraint') ||
+          errorString.includes('uq_') ||
+          errorString.includes('23505')) {
           errorMessage = "This email address is already registered. Please use a different email.";
         } else if (errorString.includes('internal server error')) {
           // Backend returns generic 500 error for duplicate emails
@@ -144,8 +144,8 @@ export default function EditStaff() {
         } else if (typeof message === 'string') {
           // Check for common error patterns
           if (message.toLowerCase().includes('duplicate') ||
-              message.toLowerCase().includes('already exists') ||
-              message.toLowerCase().includes('unique constraint')) {
+            message.toLowerCase().includes('already exists') ||
+            message.toLowerCase().includes('unique constraint')) {
             errorMessage = "This email address is already registered. Please use a different email.";
           } else {
             errorMessage = message;

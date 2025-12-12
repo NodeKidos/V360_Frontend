@@ -98,6 +98,8 @@ export type CreateItineraryDto = {
   guestGender?: string;
   guestMedicalConditions?: string;
   guestDietaryPreferences?: string;
+  guestAllergies?: string;
+  guestSpecialConditions?: string;
 }
 
 export type UpdateItineraryDto = Partial<CreateItineraryDto>;
@@ -121,6 +123,8 @@ export interface ItineraryFormData {
   roomCategory: string[];
   vehicleType: string[];
   medicalConditions: string;
+  allergies?: string;
+  specialConditions?: string;
   specialRequirements: string;
   selectedDestinations?: {
     [destinationName: string]: {
