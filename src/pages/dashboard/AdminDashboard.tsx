@@ -22,6 +22,7 @@ const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+  const [allItineraries, setAllItineraries] = useState<Itinerary[]>([]);
   const [loadingItineraries, setLoadingItineraries] = useState(false);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
@@ -59,7 +60,9 @@ const AdminDashboard = () => {
       setLoadingItineraries(true);
       try {
         const data = await itineraryService.getAll();
-        // Get only the 5 most recent itineraries
+        // Store all itineraries for calendar
+        setAllItineraries(data);
+        // Get only the 5 most recent itineraries for the table
         setItineraries(data.slice(0, 5));
       } catch (error) {
         console.error("Failed to fetch itineraries:", error);
@@ -122,6 +125,27 @@ const AdminDashboard = () => {
   const handleViewItinerary = (itineraryId: string) => {
     navigate(`/itinerary/${itineraryId}`);
   };
+
+  // Get itineraries for a specific date
+  const getItinerariesForDate = (selectedDate: Date) => {
+    const dateStr = selectedDate.toISOString().split('T')[0];
+    return allItineraries.filter(itinerary => {
+      const itineraryStartDate = new Date(itinerary.startDate).toISOString().split('T')[0];
+      return itineraryStartDate === dateStr;
+    });
+  };
+
+  // Check if a date has itineraries
+  const hasItinerariesOnDate = (checkDate: Date) => {
+    const dateStr = checkDate.toISOString().split('T')[0];
+    return allItineraries.some(itinerary => {
+      const itineraryStartDate = new Date(itinerary.startDate).toISOString().split('T')[0];
+      return itineraryStartDate === dateStr;
+    });
+  };
+
+  // Get itineraries for currently selected date
+  const selectedDateItineraries = date ? getItinerariesForDate(date) : [];
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -216,25 +240,72 @@ const AdminDashboard = () => {
                     selected={date}
                     onSelect={setDate}
                     className="rounded-md"
+                    modifiers={{
+                      hasItinerary: (day) => hasItinerariesOnDate(day)
+                    }}
+                    modifiersClassNames={{
+                      hasItinerary: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-[#B749DB] after:rounded-full"
+                    }}
                   />
+                  {date && selectedDateItineraries.length > 0 && (
+                    <div className="mt-4 p-3 bg-[#F8EDFC] rounded-lg border border-[#E5D4EF]">
+                      <p className="text-sm font-medium text-[#5B247A] mb-2">
+                        {selectedDateItineraries.length} itinerary/ies on {formatDate(date.toISOString())}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
-              {/* Total Itineraries */}
+              {/* Itineraries for Selected Date */}
               <Card className="bg-white rounded-xl shadow-sm border-0">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Total Itineraries</p>
+                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">
+                      {date ? `Trips on ${formatDate(date.toISOString())}` : "Select a Date"}
+                    </p>
                     <FiArrowUpRight className="text-gray-400" />
                   </div>
-                  {loadingStats ? (
+                  {loadingItineraries ? (
                     <div className="flex justify-center items-center py-4">
                       <Loader className="w-10 h-10" />
                     </div>
+                  ) : selectedDateItineraries.length > 0 ? (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {selectedDateItineraries.map((itinerary) => (
+                        <div
+                          key={itinerary.id}
+                          onClick={() => handleViewItinerary(itinerary.id)}
+                          className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium text-sm text-[#B749DB]">
+                                {itinerary.itineraryNumber}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {itinerary.lead?.user?.firstName} {itinerary.lead?.user?.lastName}
+                              </p>
+                            </div>
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              itinerary.status === 'draft' ? 'bg-gray-100 text-gray-700' :
+                              itinerary.status === 'pending_quote' ? 'bg-yellow-100 text-yellow-700' :
+                              itinerary.status === 'quoted' ? 'bg-blue-100 text-blue-700' :
+                              itinerary.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                              itinerary.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
+                              itinerary.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}>
+                              {getStatusDisplay(itinerary.status)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-poppins">
-                      {dashboardStats?.totalItineraries || 0}
-                    </h2>
+                    <p className="text-sm text-gray-500 py-4 text-center">
+                      No itineraries scheduled for this date
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -346,7 +417,7 @@ const AdminDashboard = () => {
                           <th className="p-3">Itinerary No</th>
                           <th className="p-3">Name</th>
                           <th className="p-3">Phone</th>
-                          <th className="p-3">Created At</th>
+                          <th className="p-3">Start Date</th>
                           <th className="p-3">Status</th>
                         </tr>
                       </thead>
@@ -367,8 +438,7 @@ const AdminDashboard = () => {
                               {itinerary.lead?.user?.phone || "N/A"}
                             </td>
                             <td className="p-3 whitespace-nowrap">
-                              <div>{formatDate(itinerary.createdAt)}</div>
-                              <div className="text-xs text-gray-500">{formatTime(itinerary.createdAt)}</div>
+                              <div>{formatDate(itinerary.startDate)}</div>
                             </td>
                             <td className="p-3">{getStatusDisplay(itinerary.status)}</td>
                           </tr>
