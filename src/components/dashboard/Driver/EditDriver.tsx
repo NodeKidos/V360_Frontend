@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import driverService from "../../../services/driver.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
+import { Loader } from "../../ui/Loader";
 
 interface DriverData {
     firstName: string;
@@ -25,6 +26,8 @@ interface DriverData {
     joinDate: string;
     dob: string;
     bloodGroup: string;
+    newPassword: string;
+    confirmPassword: string;
 }
 
 export default function EditDriver() {
@@ -56,6 +59,8 @@ export default function EditDriver() {
         joinDate: "",
         dob: "",
         bloodGroup: "",
+        newPassword: "",
+        confirmPassword: "",
     });
 
     useEffect(() => {
@@ -159,9 +164,27 @@ export default function EditDriver() {
             return;
         }
 
+        // Validate passwords if provided
+        if (driverData.newPassword || driverData.confirmPassword) {
+            if (driverData.newPassword !== driverData.confirmPassword) {
+                toast.error("Passwords do not match!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                return;
+            }
+            if (driverData.newPassword.length < 6) {
+                toast.error("Password must be at least 6 characters long!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                return;
+            }
+        }
+
         try {
             setLoading(true);
-            await driverService.updateDriver(driverId, {
+            const updateData: any = {
                 name: `${driverData.firstName} ${driverData.lastName}`,
                 email: driverData.email,
                 contact: driverData.contact,
@@ -177,7 +200,14 @@ export default function EditDriver() {
                 joinDate: driverData.joinDate ? driverData.joinDate : undefined,
                 profileImage: driverData.profileImage || undefined,
                 licenseInfo: driverData.licenseInfo || undefined,
-            });
+            };
+
+            // Add password only if provided
+            if (driverData.newPassword) {
+                updateData.password = driverData.newPassword;
+            }
+
+            await driverService.updateDriver(driverId, updateData);
 
             toast.success("Driver updated successfully!", {
                 position: "top-right",
@@ -220,6 +250,13 @@ export default function EditDriver() {
                 <div className="p-4 md:p-6 lg:p-8">
                     {/* Top Bar */}
                     <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
+
+                    {fetchLoading ? (
+                        <div className="flex items-center justify-center py-20">
+                            <Loader className="w-16 h-16" />
+                        </div>
+                    ) : (
+                        <>
 
                     {/* Breadcrumb */}
                     <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
@@ -455,6 +492,35 @@ export default function EditDriver() {
                                     </div>
                                 </div>
 
+                                {/* Password Section */}
+                                <div className="border-t border-purple-200 pt-4 md:pt-6">
+                                    <h3 className="text-[16px] md:text-[18px] font-semibold text-gray-800 mb-4 font-poppins">
+                                        Change Password (Optional)
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                        <div>
+                                            <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">New Password</label>
+                                            <input
+                                                type="password"
+                                                value={driverData.newPassword}
+                                                onChange={(e) => setDriverData({ ...driverData, newPassword: e.target.value })}
+                                                placeholder="Leave blank to keep current password"
+                                                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Confirm Password</label>
+                                            <input
+                                                type="password"
+                                                value={driverData.confirmPassword}
+                                                onChange={(e) => setDriverData({ ...driverData, confirmPassword: e.target.value })}
+                                                placeholder="Confirm new password"
+                                                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* ACTION BUTTONS */}
                                 <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                                     <button
@@ -468,15 +534,24 @@ export default function EditDriver() {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:bg-purple-400 disabled:cursor-not-allowed"
+                                        className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:bg-purple-400 disabled:cursor-not-allowed flex items-center gap-2 justify-center min-w-[100px]"
                                     >
-                                        {loading ? "Saving..." : "Save"}
+                                        {loading ? (
+                                            <>
+                                                <Loader className="w-4 h-4" />
+                                                <span>Saving...</span>
+                                            </>
+                                        ) : (
+                                            "Save"
+                                        )}
                                     </button>
                                 </div>
                             </form>
                         )}
                         {/* FORM END */}
                     </div>
+                    </>
+                    )}
                     <ToastContainer />
                 </div>
             </div>

@@ -5,6 +5,7 @@ import TopBar from "../../Topbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import userService from "../../../services/user.service";
+import { Loader } from "../../ui/Loader";
 
 export default function EditCustomer() {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ export default function EditCustomer() {
     gender: "",
     dateOfBirth: "",
     isActive: true,
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -89,10 +92,28 @@ export default function EditCustomer() {
 
     if (!id) return;
 
+    // Validate passwords if provided
+    if (customerData.newPassword || customerData.confirmPassword) {
+      if (customerData.newPassword !== customerData.confirmPassword) {
+        toast.error("Passwords do not match!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      if (customerData.newPassword.length < 6) {
+        toast.error("Password must be at least 6 characters long!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+    }
+
     setLoading(true);
     try {
-      // Update user via API
-      await userService.updateUser(id, {
+      // Prepare update data
+      const updateData: any = {
         firstName: customerData.firstName,
         lastName: customerData.lastName,
         phone: customerData.phone,
@@ -101,7 +122,15 @@ export default function EditCustomer() {
         gender: customerData.gender,
         dateOfBirth: customerData.dateOfBirth,
         isActive: customerData.isActive,
-      });
+      };
+
+      // Add password only if provided
+      if (customerData.newPassword) {
+        updateData.newPassword = customerData.newPassword;
+      }
+
+      // Update user via API
+      await userService.updateUser(id, updateData);
 
       toast.success("Customer updated successfully!", {
         position: "top-right",
@@ -122,14 +151,6 @@ export default function EditCustomer() {
     }
   };
 
-  if (fetchingData) {
-    return (
-      <div className="h-screen bg-white flex items-center justify-center">
-        <div className="text-purple-600 text-xl">Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen bg-white flex overflow-hidden">
       {/* Sidebar */}
@@ -145,6 +166,13 @@ export default function EditCustomer() {
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="p-4 md:p-6 lg:p-8">
           <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
+
+          {fetchingData ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader className="w-16 h-16" />
+            </div>
+          ) : (
+            <>
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
@@ -278,6 +306,35 @@ export default function EditCustomer() {
                 </select>
               </div>
 
+              {/* Password Section */}
+              <div className="border-t border-purple-200 pt-4 md:pt-6">
+                <h3 className="text-[16px] md:text-[18px] font-semibold text-gray-800 mb-4 font-poppins">
+                  Change Password (Optional)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  <div>
+                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">New Password</label>
+                    <input
+                      type="password"
+                      value={customerData.newPassword}
+                      onChange={(e) => setCustomerData({ ...customerData, newPassword: e.target.value })}
+                      placeholder="Leave blank to keep current password"
+                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Confirm Password</label>
+                    <input
+                      type="password"
+                      value={customerData.confirmPassword}
+                      onChange={(e) => setCustomerData({ ...customerData, confirmPassword: e.target.value })}
+                      placeholder="Confirm new password"
+                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* ACTION BUTTONS */}
               <div className="flex flex-row sm:flex-row justify-end gap-4 md:gap-4 mt-6">
                 <button
@@ -291,13 +348,22 @@ export default function EditCustomer() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:opacity-50"
+                  className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center min-w-[100px]"
                 >
-                  {loading ? "Saving..." : "Save"}
+                  {loading ? (
+                    <>
+                      <Loader className="w-4 h-4" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    "Save"
+                  )}
                 </button>
               </div>
             </form>
           </div>
+          </>
+          )}
           <ToastContainer />
         </div>
       </div>

@@ -6,10 +6,12 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import staffService from "../../../services/staff.service";
+import { Loader } from "../../ui/Loader";
 
 export default function EditStaff() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get staff id from the URL params
+  const { staffId } = useParams(); // Get staff id from the URL params
+  const id = staffId; // Use staffId from route params
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -26,6 +28,8 @@ export default function EditStaff() {
     status: "" as "Block" | "Unblock" | "",
     nic: "",
     age: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -40,11 +44,17 @@ export default function EditStaff() {
 
   useEffect(() => {
     const fetchStaffData = async () => {
-      if (!id) return;
+      if (!id) {
+        console.log("No staff ID provided");
+        setFetchLoading(false);
+        return;
+      }
 
+      console.log("Fetching staff data for ID:", id);
       setFetchLoading(true);
       try {
         const staff = await staffService.getStaffById(id);
+        console.log("Staff data received:", staff);
         setStaffData({
           name: staff.name,
           email: staff.email,
@@ -55,14 +65,18 @@ export default function EditStaff() {
           status: staff.status,
           nic: staff.nic,
           age: typeof staff.age === 'number' ? staff.age.toString() : staff.age || '',
+          newPassword: "",
+          confirmPassword: "",
         });
-      } catch (error) {
+        console.log("Staff data set successfully");
+      } catch (error: any) {
         console.error("Failed to fetch staff data:", error);
-        toast.error("Failed to load staff data", {
+        toast.error(error.response?.data?.message || "Failed to load staff data", {
           position: "top-right",
           autoClose: 3000,
         });
       } finally {
+        console.log("Setting fetchLoading to false");
         setFetchLoading(false);
       }
     };
@@ -91,9 +105,27 @@ export default function EditStaff() {
       return;
     }
 
+    // Validate passwords if provided
+    if (staffData.newPassword || staffData.confirmPassword) {
+      if (staffData.newPassword !== staffData.confirmPassword) {
+        toast.error("Passwords do not match!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      if (staffData.newPassword.length < 6) {
+        toast.error("Password must be at least 6 characters long!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+    }
+
     setLoading(true);
     try {
-      await staffService.updateStaff(id, {
+      const updateData: any = {
         name: staffData.name,
         email: staffData.email,
         contact: staffData.contact,
@@ -102,7 +134,14 @@ export default function EditStaff() {
         age: parseInt(staffData.age),
         accessLevel: staffData.accessLevel as "Staff" | "Admin" | "Manager",
         status: staffData.status as "Block" | "Unblock",
-      });
+      };
+
+      // Add password only if provided
+      if (staffData.newPassword) {
+        updateData.password = staffData.newPassword;
+      }
+
+      await staffService.updateStaff(id, updateData);
 
       toast.success("Staff details updated successfully!", {
         position: "top-right",
@@ -178,6 +217,13 @@ export default function EditStaff() {
         <div className="p-4 md:p-6 lg:p-8">
           {/* Top Bar */}
           <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
+
+          {fetchLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader className="w-16 h-16" />
+            </div>
+          ) : (
+            <>
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
@@ -328,6 +374,38 @@ export default function EditStaff() {
                   />
                 </div>
               </div>
+
+              {/* Password Section */}
+              <div className="border-t border-purple-200 pt-4 md:pt-6">
+                <h3 className="text-[16px] md:text-[18px] font-semibold text-gray-800 mb-4 font-poppins">
+                  Change Password (Optional)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  <div>
+                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">New Password</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={staffData.newPassword}
+                      onChange={handleInputChange}
+                      placeholder="Leave blank to keep current password"
+                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Confirm Password</label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={staffData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="Confirm new password"
+                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* ACTION BUTTONS */}
               <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                 <button
@@ -341,14 +419,23 @@ export default function EditStaff() {
                 <button
                   type="submit"
                   disabled={loading || fetchLoading}
-                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center min-w-[100px]"
                 >
-                  {loading ? "Saving..." : "Save"}
+                  {loading ? (
+                    <>
+                      <Loader className="w-4 h-4" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    "Save"
+                  )}
                 </button>
               </div>
             </form>
             {/* FORM END */}
           </div>
+          </>
+          )}
           <ToastContainer />
         </div>
       </div>

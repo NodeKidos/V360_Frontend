@@ -158,6 +158,7 @@ class StaffService {
     if (data.age) backendData.age = data.age;
     if (data.accessLevel) backendData.accessLevel = data.accessLevel; // Backend expects: Staff, Admin, Manager
     if (data.status) backendData.status = data.status === 'Unblock' ? 'active' : 'inactive';
+    if ((data as any).password) backendData.password = (data as any).password;
 
     const response = await api.put(`/staff/${id}`, backendData);
     return response.data;
