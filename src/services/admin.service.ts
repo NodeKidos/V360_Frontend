@@ -6,6 +6,8 @@ export interface DashboardStats {
   totalDrivers: number;
   totalAdmins: number;
   totalBookings: number;
+  totalItineraries: number;
+  totalHotels: number;
   totalTours: number;
   totalDestinations: number;
   totalVehicles: number;

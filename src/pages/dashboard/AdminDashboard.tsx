@@ -146,7 +146,7 @@ const AdminDashboard = () => {
               <Loader className="w-20 h-20" />
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
               {[
                 {
                   label: "Total Customer",
@@ -167,10 +167,16 @@ const AdminDashboard = () => {
                   color: "bg-green-50"
                 },
                 {
-                  label: "Total Bookings",
-                  value: dashboardStats?.totalBookings?.toString() || "0",
+                  label: "Total Itineraries",
+                  value: dashboardStats?.totalItineraries?.toString() || "0",
                   icon: <BiTime className="text-orange-500" />,
                   color: "bg-orange-50"
+                },
+                {
+                  label: "Total Hotels",
+                  value: dashboardStats?.totalHotels?.toString() || "0",
+                  icon: <BiTime className="text-pink-500" />,
+                  color: "bg-pink-50"
                 },
               ].map((item) => (
                 <Card
@@ -214,11 +220,11 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Total Trip */}
+              {/* Total Itineraries */}
               <Card className="bg-white rounded-xl shadow-sm border-0">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Total Bookings</p>
+                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Total Itineraries</p>
                     <FiArrowUpRight className="text-gray-400" />
                   </div>
                   {loadingStats ? (
@@ -227,7 +233,7 @@ const AdminDashboard = () => {
                     </div>
                   ) : (
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-poppins">
-                      {dashboardStats?.totalBookings || 0}
+                      {dashboardStats?.totalItineraries || 0}
                     </h2>
                   )}
                 </CardContent>
@@ -353,10 +359,12 @@ const AdminDashboard = () => {
                           >
                             <td className="p-3 font-medium text-[#B749DB]">{itinerary.itineraryNumber}</td>
                             <td className="p-3">
-                              {itinerary.lead?.firstName} {itinerary.lead?.lastName}
+                              {itinerary.lead?.user?.firstName && itinerary.lead?.user?.lastName
+                                ? `${itinerary.lead.user.firstName} ${itinerary.lead.user.lastName}`
+                                : itinerary.lead?.user?.firstName || itinerary.lead?.user?.lastName || "N/A"}
                             </td>
                             <td className="p-3 whitespace-nowrap">
-                              {itinerary.lead?.phone || "N/A"}
+                              {itinerary.lead?.user?.phone || "N/A"}
                             </td>
                             <td className="p-3 whitespace-nowrap">
                               <div>{formatDate(itinerary.createdAt)}</div>
