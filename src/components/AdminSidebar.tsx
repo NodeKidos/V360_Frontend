@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/Tooltip';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { TiThLargeOutline } from 'react-icons/ti';
 import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
@@ -16,13 +16,13 @@ const sidebarMenuConfig = {
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/admin-dashboard' },
     { label: 'Itineraries', icon: <FaRoute />, link: '/itineraries' },
     { label: 'User', icon: <FaUser />, link: '/user' },
-    { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
+    // { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' }, // Hidden
     { label: 'Hotel & Destination', icon: <FaHotel />, link: '/destination-hotel' },
     { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle' },
     { label: 'Driver', icon: <FaTruck />, link: '/driver' },
     { label: 'Staff', icon: <FaUsers />, link: '/staff' },
     { label: 'Activity Log', icon: <FaClipboardList />, link: '/activity-log' },
-    { label: 'Trip', icon: <BiTrip />, link: '/trip' },
+    // { label: 'Trip', icon: <BiTrip />, link: '/trip' }, // Hidden
     { label: 'Reward', icon: <FaGift />, link: '/reward' },
     { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
   ],
@@ -61,6 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   setSidebarOpen
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [role, setRole] = useState<keyof typeof sidebarMenuConfig>('user'); // Default to 'user'
 
   useEffect(() => {
@@ -78,6 +79,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems = sidebarMenuConfig[role] || [];
 
+  // Check if menu item is active
+  const isActive = (link: string) => {
+    return location.pathname === link || location.pathname.startsWith(link + '/');
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -91,19 +97,19 @@ const Sidebar: React.FC<SidebarProps> = ({
       <aside
         className={`bg-white shadow-lg flex flex-col justify-between border-r border-[#B749DB] transition-all duration-300 h-screen
           ${isMobile
-            ? `fixed top-0 left-0 w-[280px] z-50 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`
-            : `static ${collapsed ? "w-20" : "w-64"}`}
+            ? `fixed top-0 left-0 w-[240px] z-50 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`
+            : `static ${collapsed ? "w-16" : "w-52"}`}
         `}
       >
         <div className="flex flex-col justify-between h-full py-4">
           {/* Desktop Logo */}
           {!isMobile && (
-            <div className="flex items-center justify-center p-4 border-b border-gray-100">
+            <div className="flex items-center justify-center p-3 border-b border-gray-100">
               <img
                 src={logo}
                 alt="Logo"
                 onClick={() => setCollapsed(!collapsed)}
-                className="cursor-pointer w-16 h-16 object-contain"
+                className={`cursor-pointer object-contain transition-all ${collapsed ? "w-10 h-10" : "w-12 h-12"}`}
               />
             </div>
           )}
@@ -119,21 +125,27 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           {/* MENU */}
-          <div className="flex-1 overflow-y-auto px-4 pb-6">
+          <div className="flex-1 overflow-y-auto px-2 pb-6">
             <TooltipProvider>
-              <nav className="space-y-4">
-                {menuItems.map((item) => (
+              <nav className="space-y-2">
+                {menuItems.map((item) => {
+                  const active = isActive(item.link);
+                  return (
                   <Tooltip key={item.label}>
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
                         onClick={() => navigate(item.link)}
-                        className={`w-full flex items-center gap-3 text-gray-700 hover:bg-purple-100 hover:text-purple-700
-                          ${collapsed && !isMobile ? "justify-center" : "justify-start pl-4"}`}
+                        className={`w-full flex items-center gap-2 py-2 transition-all
+                          ${collapsed && !isMobile ? "justify-center px-2" : "justify-start pl-3"}
+                          ${active
+                            ? "bg-purple-100 text-purple-700 border-l-4 border-purple-600 font-semibold"
+                            : "text-gray-700 hover:bg-purple-50 hover:text-purple-600"
+                          }`}
                       >
-                        <span className="text-lg">{item.icon}</span>
+                        <span className="text-base">{item.icon}</span>
                         {(!collapsed || isMobile) && (
-                          <span className="text-base font-roboto font-medium">{item.label}</span>
+                          <span className="text-sm font-roboto font-medium">{item.label}</span>
                         )}
                       </Button>
                     </TooltipTrigger>
@@ -141,13 +153,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <TooltipContent side="right">{item.label}</TooltipContent>
                     )}
                   </Tooltip>
-                ))}
+                  );
+                })}
               </nav>
             </TooltipProvider>
           </div>
 
           {/* FOOTER */}
-          <div className="px-4 space-y-4">
+          <div className="px-2 space-y-3">
             {/* Logout */}
             <TooltipProvider>
               <Tooltip>
@@ -155,11 +168,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <Button
                     variant="outline"
                     onClick={() => navigate("/login")}
-                    className={`w-full flex items-center gap-3 text-gray-700 border-gray-300 hover:bg-purple-50
-                      ${collapsed && !isMobile ? "justify-center" : "justify-start pl-4"}`}
+                    className={`w-full flex items-center gap-2 text-gray-700 border-gray-300 hover:bg-purple-50 py-2
+                      ${collapsed && !isMobile ? "justify-center px-2" : "justify-start pl-3"}`}
                   >
-                    <FaUser className="text-lg" />
-                    {(!collapsed || isMobile) && <span>Log Out</span>}
+                    <FaUser className="text-base" />
+                    {(!collapsed || isMobile) && <span className="text-sm">Log Out</span>}
                   </Button>
                 </TooltipTrigger>
                 {collapsed && !isMobile && <TooltipContent>Log Out</TooltipContent>}
@@ -168,18 +181,18 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Avatar */}
             <div
-              className={`flex ${collapsed && !isMobile ? "justify-center" : "items-center gap-3"}`}
-              onClick={() => navigate('/user-profile')}  // Navigate to user profile on click
+              className={`flex cursor-pointer hover:bg-purple-50 rounded-lg p-2 transition-colors ${collapsed && !isMobile ? "justify-center" : "items-center gap-2"}`}
+              onClick={() => navigate('/user-profile')}
             >
-              <Avatar>
+              <Avatar className={collapsed && !isMobile ? "w-8 h-8" : "w-9 h-9"}>
                 <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
 
               {(!collapsed || isMobile) && (
-                <div>
-                  <p className="text-sm font-roboto font-medium">Jacqueline Fernando</p>
-                  <p className="text-xs font-roboto text-gray-500">jack@gmail.com</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-roboto font-medium truncate">Jacqueline Fernando</p>
+                  <p className="text-[10px] font-roboto text-gray-500 truncate">jack@gmail.com</p>
                 </div>
               )}
             </div>
