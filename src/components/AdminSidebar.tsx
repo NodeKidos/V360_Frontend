@@ -63,6 +63,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [role, setRole] = useState<keyof typeof sidebarMenuConfig>('user'); // Default to 'user'
+  const [userName, setUserName] = useState('User');
+  const [userEmail, setUserEmail] = useState('user@example.com');
+  const [userImage, setUserImage] = useState('');
 
   useEffect(() => {
     // Fetch the role from localStorage
@@ -73,6 +76,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       setRole(storedRole); // Set role if valid
     } else {
       setRole('user'); // Default role if invalid or not found
+    }
+
+    // Fetch user info from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || 'User';
+        setUserName(fullName);
+        setUserEmail(user.email || 'user@example.com');
+        setUserImage(user.profileImage || user.avatar || '');
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
     }
   }, []);
 
@@ -185,14 +202,14 @@ const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => navigate('/user-profile')}
             >
               <Avatar className={collapsed && !isMobile ? "w-8 h-8" : "w-9 h-9"}>
-                <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarImage src={userImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName)} alt={userName} />
+                <AvatarFallback>{userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</AvatarFallback>
               </Avatar>
 
               {(!collapsed || isMobile) && (
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-roboto font-medium truncate">Jacqueline Fernando</p>
-                  <p className="text-[10px] font-roboto text-gray-500 truncate">jack@gmail.com</p>
+                  <p className="text-xs font-roboto font-medium truncate">{userName}</p>
+                  <p className="text-[10px] font-roboto text-gray-500 truncate">{userEmail}</p>
                 </div>
               )}
             </div>

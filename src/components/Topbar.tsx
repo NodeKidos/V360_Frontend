@@ -1,4 +1,5 @@
 // TopBar.tsx
+import { useState, useEffect } from "react";
 import { FiBell, FiMenu } from "react-icons/fi";
 import { CiSearch } from "react-icons/ci";
 import logo from "../assets/favicon.png"; // Your logo
@@ -13,6 +14,24 @@ interface TopBarProps {
 }
 
 const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery = "", onSearchChange }) => {
+  const [userName, setUserName] = useState('User');
+  const [userImage, setUserImage] = useState('');
+
+  useEffect(() => {
+    // Fetch user info from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || 'User';
+        setUserName(fullName);
+        setUserImage(user.profileImage || user.avatar || '');
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
   return (
     <div className="flex justify-between items-center mb-6 gap-2">
       {/* Mobile Menu + Logo */}
@@ -51,8 +70,8 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
           <div className="flex items-center gap-4">
             <FiBell className="text-lg text-gray-500 cursor-pointer hover:text-purple-600" />
             <Avatar>
-              <AvatarImage src="https://i.pravatar.cc/50" alt="Admin" />
-              <AvatarFallback>ADMIN</AvatarFallback>
+              <AvatarImage src={userImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName)} alt={userName} />
+              <AvatarFallback>{userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</AvatarFallback>
             </Avatar>
           </div>
         </>
