@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "../../components/AdminSidebar";
 import { Button } from "../../components/ui/button";
 import { FiArrowUpRight, FiFilter } from "react-icons/fi";
@@ -14,6 +14,80 @@ import type { Itinerary } from "../../types/itinerary.types";
 import { ItineraryStatus } from "../../types/itinerary.types";
 import { adminService, type DashboardStats } from "../../services/admin.service";
 import { Loader } from "../../components/ui/Loader";
+
+// Custom hook for counting animation
+const useCountUp = (end: number, duration: number = 2000) => {
+  const [count, setCount] = useState(0);
+  const startTimeRef = useRef<number | null>(null);
+  const rafRef = useRef<number>();
+
+  useEffect(() => {
+    if (end === 0) {
+      setCount(0);
+      return;
+    }
+
+    startTimeRef.current = null;
+
+    const animate = (currentTime: number) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = currentTime;
+      }
+
+      const elapsed = currentTime - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const currentCount = Math.floor(easeOutQuart * end);
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, [end, duration]);
+
+  return count;
+};
+
+// StatCard component with counter animation
+interface StatCardProps {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+  color: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ label, value, icon, color }) => {
+  const animatedValue = useCountUp(value, 2000);
+
+  return (
+    <Card className="bg-white rounded-xl shadow-sm border-0 hover:shadow-md transition-shadow">
+      <CardContent className="p-4 md:p-6">
+        <div className="flex items-center justify-between mb-3">
+          <div className={`${color} p-2.5 md:p-3 rounded-lg`}>
+            <div className="text-xl md:text-2xl">{icon}</div>
+          </div>
+          <FiArrowUpRight className="text-gray-400 text-base md:text-lg" />
+        </div>
+        <p className="text-gray-500 text-xs md:text-sm font-poppins mb-1">{label}</p>
+        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-poppins">
+          {animatedValue}
+        </h3>
+      </CardContent>
+    </Card>
+  );
+};
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -171,56 +245,36 @@ const AdminDashboard = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-              {[
-                {
-                  label: "Total Customer",
-                  value: dashboardStats?.totalCustomers?.toString() || "0",
-                  icon: <HiUsers className="text-blue-500" />,
-                  color: "bg-blue-50"
-                },
-                {
-                  label: "Total Vehicle",
-                  value: dashboardStats?.totalVehicles?.toString() || "0",
-                  icon: <IoCarSport className="text-purple-500" />,
-                  color: "bg-purple-50"
-                },
-                {
-                  label: "Total Driver",
-                  value: dashboardStats?.totalDrivers?.toString() || "0",
-                  icon: <HiTruck className="text-green-500" />,
-                  color: "bg-green-50"
-                },
-                {
-                  label: "Total Itineraries",
-                  value: dashboardStats?.totalItineraries?.toString() || "0",
-                  icon: <BiTime className="text-orange-500" />,
-                  color: "bg-orange-50"
-                },
-                {
-                  label: "Total Hotels",
-                  value: dashboardStats?.totalHotels?.toString() || "0",
-                  icon: <BiTime className="text-pink-500" />,
-                  color: "bg-pink-50"
-                },
-              ].map((item) => (
-                <Card
-                  key={item.label}
-                  className="bg-white rounded-xl shadow-sm border-0 hover:shadow-md transition-shadow"
-                >
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className={`${item.color} p-2.5 md:p-3 rounded-lg`}>
-                        <div className="text-xl md:text-2xl">{item.icon}</div>
-                      </div>
-                      <FiArrowUpRight className="text-gray-400 text-base md:text-lg" />
-                    </div>
-                    <p className="text-gray-500 text-xs md:text-sm font-poppins mb-1">{item.label}</p>
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-poppins">
-                      {item.value}
-                    </h3>
-                  </CardContent>
-                </Card>
-              ))}
+              <StatCard
+                label="Total Customer"
+                value={dashboardStats?.totalCustomers || 0}
+                icon={<HiUsers className="text-blue-500" />}
+                color="bg-blue-50"
+              />
+              <StatCard
+                label="Total Vehicle"
+                value={dashboardStats?.totalVehicles || 0}
+                icon={<IoCarSport className="text-purple-500" />}
+                color="bg-purple-50"
+              />
+              <StatCard
+                label="Total Driver"
+                value={dashboardStats?.totalDrivers || 0}
+                icon={<HiTruck className="text-green-500" />}
+                color="bg-green-50"
+              />
+              <StatCard
+                label="Total Itineraries"
+                value={dashboardStats?.totalItineraries || 0}
+                icon={<BiTime className="text-orange-500" />}
+                color="bg-orange-50"
+              />
+              <StatCard
+                label="Total Hotels"
+                value={dashboardStats?.totalHotels || 0}
+                icon={<BiTime className="text-pink-500" />}
+                color="bg-pink-50"
+              />
             </div>
           )}
 
