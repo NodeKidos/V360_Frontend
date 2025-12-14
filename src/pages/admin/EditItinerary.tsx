@@ -387,7 +387,12 @@ const EditItinerary = () => {
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const totalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const dateDiffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+    // CRITICAL FIX: Use MAXIMUM of date range OR number of cities
+    const totalDays = Math.max(dateDiffDays, selectedCities.length);
+
+    console.log('🗓️ ADMIN - Date days:', dateDiffDays, '| Cities:', selectedCities.length, '| Using:', totalDays);
 
     const newDays: any[] = [];
 
