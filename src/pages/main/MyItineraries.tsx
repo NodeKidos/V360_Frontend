@@ -40,8 +40,12 @@ const statusLabels = {
 export default function MyItineraries() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthStore();
-  const { itineraries, getMyItineraries, deleteItinerary, submitForQuote, isLoading } = useItineraryStore();
+  const { itineraries, getMyItineraries, deleteItinerary, submitForQuote, acceptQuote, rejectQuote, isLoading } = useItineraryStore();
   const [statusDropdownOpen, setStatusDropdownOpen] = useState<string | null>(null);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [selectedItineraryId, setSelectedItineraryId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -85,6 +89,43 @@ export default function MyItineraries() {
       setStatusDropdownOpen(null);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update status");
+    }
+  };
+
+  const handleAcceptQuote = async (id: string) => {
+    if (window.confirm("Are you sure you want to accept this quote?")) {
+      setActionLoading(id);
+      try {
+        const success = await acceptQuote(id);
+        if (success) {
+          await getMyItineraries(); // Refresh list
+        }
+      } finally {
+        setActionLoading(null);
+      }
+    }
+  };
+
+  const handleRejectQuote = (id: string) => {
+    setSelectedItineraryId(id);
+    setRejectReason("");
+    setRejectModalOpen(true);
+  };
+
+  const confirmRejectQuote = async () => {
+    if (!selectedItineraryId) return;
+
+    setActionLoading(selectedItineraryId);
+    try {
+      const success = await rejectQuote(selectedItineraryId, rejectReason);
+      if (success) {
+        setRejectModalOpen(false);
+        setSelectedItineraryId(null);
+        setRejectReason("");
+        await getMyItineraries(); // Refresh list
+      }
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -175,8 +216,8 @@ export default function MyItineraries() {
                       <div
                         className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[180px] max-h-[300px] overflow-y-auto overflow-x-hidden z-[9999] flex flex-col"
                         style={{
-                          top: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom + 4}px`,
-                          left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left}px`,
+                          top: `${(document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom || 0) + 4}px`,
+                          left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left || 0}px`,
                           scrollbarWidth: 'thin'
                         }}
                       >
@@ -263,13 +304,37 @@ export default function MyItineraries() {
                   {itinerary.status === ItineraryStatus.QUOTED && (
                     <>
                       <button
-                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
-                        title="Accept Quote"
+                        onClick={() => navigate(`/itinerary-summary?id=${itinerary.id}`)}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={actionLoading === itinerary.id}
+                        title="View Quote Details"
                       >
-                        <FaCheck size={14} /> Accept
+                        <FaEye size={14} /> View
                       </button>
                       <button
-                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                        onClick={() => handleAcceptQuote(itinerary.id)}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={actionLoading === itinerary.id}
+                        title="Accept Quote"
+                      >
+                        {actionLoading === itinerary.id ? (
+                          <>
+                            <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <FaCheck size={14} /> Accept
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleRejectQuote(itinerary.id)}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={actionLoading === itinerary.id}
                         title="Reject Quote"
                       >
                         <FaTimes size={14} /> Reject
@@ -291,6 +356,60 @@ export default function MyItineraries() {
           </div>
         )}
       </div>
+
+      {/* Reject Quote Modal */}
+      {rejectModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Reject Quote</h2>
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to reject this quote? Please provide a reason (optional).
+              </p>
+
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Reason for rejection (optional)"
+                className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500"
+                rows={4}
+              />
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setRejectModalOpen(false);
+                    setSelectedItineraryId(null);
+                    setRejectReason("");
+                  }}
+                  disabled={actionLoading !== null}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmRejectQuote}
+                  disabled={actionLoading !== null}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {actionLoading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Rejecting...
+                    </>
+                  ) : (
+                    "Reject Quote"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </div>
   );

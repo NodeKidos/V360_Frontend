@@ -3,12 +3,11 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/Tooltip';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TiThLargeOutline } from 'react-icons/ti';
-import { FaUser, FaMapMarkedAlt, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList } from 'react-icons/fa';
+import { FaUser, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { IoMdClose, IoMdSettings } from 'react-icons/io';
-import { IoPricetagOutline } from 'react-icons/io5';
 
 // Define the menu configuration for each role
 const sidebarMenuConfig = {
@@ -38,10 +37,10 @@ const sidebarMenuConfig = {
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
-    { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-summary' },
-    { label: 'Package Pricing', icon: <IoPricetagOutline />, link: '/package-price' },
-    { label: 'My Plans', icon: <BiTrip />, link: '/user-plans' },
-    { label: 'Rewards', icon: <FaGift />, link: '/reward' }
+    { label: 'My Itineraries', icon: <FaRoute />, link: '/my-itineraries' },
+    { label: 'Create Itinerary', icon: <BiTrip />, link: '/itinerary' },
+    { label: 'Rewards', icon: <FaGift />, link: '/reward' },
+    { label: 'Profile', icon: <FaUser />, link: '/user-profile' }
   ]
 };
 

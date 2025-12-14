@@ -7,7 +7,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
-import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate and useParams
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"; // Import useNavigate, useParams, and useSearchParams
 import hotelImg from "../../assets/hotels/cityof dream.jpg";
 import Img1 from "../../assets/PortCity.jpg";
 import { motion } from "framer-motion";
@@ -19,7 +19,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const ItinerarySummary = () => {
-  const { itineraryId } = useParams<{ itineraryId: string }>(); // Get itinerary ID from URL
+  const { itineraryId: paramId } = useParams<{ itineraryId: string }>(); // Get itinerary ID from URL params
+  const [searchParams] = useSearchParams(); // Get query parameters
+  const queryId = searchParams.get('id'); // Get id from query string
+  const itineraryId = paramId || queryId; // Use either URL param or query param
   const navigate = useNavigate(); // Initialize navigate function
 
   const [step, setStep] = useState(1);

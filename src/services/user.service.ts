@@ -41,6 +41,18 @@ export interface UserListResponse {
     total: number;
 }
 
+export interface CustomerDashboardStats {
+    totalItineraries: number;
+    draftItineraries: number;
+    pendingQuotes: number;
+    quotedItineraries: number;
+    acceptedItineraries: number;
+    completedItineraries: number;
+    upcomingTrips: number;
+    loyaltyPoints: number;
+    recentItineraries: any[];
+}
+
 class UserService {
     /**
      * Get all users
@@ -99,6 +111,38 @@ class UserService {
      */
     async deleteUser(id: string): Promise<void> {
         await api.delete(`/users/${id}`);
+    }
+
+    /**
+     * Get current user's profile
+     */
+    async getCurrentUser(): Promise<User> {
+        const response = await api.get('/users/me');
+        return response.data;
+    }
+
+    /**
+     * Get customer dashboard statistics
+     */
+    async getCustomerDashboardStats(): Promise<CustomerDashboardStats> {
+        const response = await api.get('/users/dashboard-stats');
+        return response.data;
+    }
+
+    /**
+     * Update current user's profile
+     */
+    async updateCurrentUser(userData: {
+        firstName?: string;
+        lastName?: string;
+        phone?: string;
+        country?: string;
+        gender?: string;
+        dateOfBirth?: string;
+        address?: string;
+    }): Promise<User> {
+        const response = await api.put('/users/me', userData);
+        return response.data;
     }
 }
 
