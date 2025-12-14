@@ -376,7 +376,7 @@ export default function EditMyItinerary() {
                                 <div key={item.id} className="flex items-start">
                                     <div className="flex flex-col items-center cursor-pointer" onClick={() => setStep(item.id)}>
                                         <div
-                                            className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm transition-all duration-300 ${step === item.id
+                                            className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full border-2 font-semibold text-sm transition-all duration-300 ${step === item.id
                                                 ? "bg-[#B749DB] border-[#B749DB] text-white scale-110"
                                                 : "border-[#B749DB] text-[#B749DB] bg-white"
                                                 }`}
@@ -400,20 +400,20 @@ export default function EditMyItinerary() {
                     <div className="flex flex-col lg:flex-row gap-6">
                         {/* Sidebar (Desktop only) */}
                         <div className="hidden lg:block lg:w-1/4">
-                            <div className="bg-white border border-purple-200 rounded-2xl shadow-sm p-6">
+                            <div className="bg-white border border-purple-200 rounded-2xl shadow-sm p-6 sticky top-6">
                                 <h2 className="text-2xl font-bold mb-6 text-[#1E1E1E]">Steps</h2>
                                 <div className="relative ml-4">
-                                    <div className="absolute top-[18px] left-[15px] w-0.5 bg-[#B749DB] h-[calc(100%-40px)]"></div>
+                                    <div className="absolute top-5 left-4 w-0.5 bg-[#B749DB] h-[calc(100%-50px)]"></div>
                                     {[1, 2, 3, 4].map((i) => (
                                         <div
                                             key={i}
                                             onClick={() => setStep(i)}
-                                            className="relative flex items-start mb-12 cursor-pointer group"
+                                            className="relative flex items-center mb-10 last:mb-0 cursor-pointer group"
                                         >
                                             <div
-                                                className={`w-8 h-8 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${step === i
-                                                    ? "border-[#B749DB] bg-[#B749DB] text-white scale-110"
-                                                    : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105"
+                                                className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full border-2 font-semibold text-sm z-10 transition-all duration-200 ${step === i
+                                                    ? "border-[#B749DB] bg-[#B749DB] text-white scale-110 shadow-lg"
+                                                    : "border-[#B749DB] text-[#B749DB] bg-white group-hover:scale-105 group-hover:shadow-md"
                                                     }`}
                                             >
                                                 {i}
@@ -433,7 +433,7 @@ export default function EditMyItinerary() {
                         </div>
 
                         {/* Main Form */}
-                        <div className="lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-6 md:p-10 min-h-[70vh]">
+                        <div className="lg:w-3/4 bg-white border border-purple-200 rounded-2xl shadow-sm p-4 sm:p-6 md:p-10 min-h-[70vh]">
                             <motion.div
                                 variants={fadeAnim}
                                 initial="hidden"
