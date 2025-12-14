@@ -300,7 +300,7 @@ export default function MyItineraries() {
                     {itinerary.status === ItineraryStatus.DRAFT && (
                       <>
                         <button
-                          onClick={() => navigate(`/itinerary`)}
+                          onClick={() => navigate(`/edit-my-itinerary/${itinerary.id}`)}
                           className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                           title="Edit"
                         >
@@ -439,7 +439,7 @@ export default function MyItineraries() {
         )}
 
         <ToastContainer />
-  
+
       </main >
     </div >
   );

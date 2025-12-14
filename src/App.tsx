@@ -53,6 +53,7 @@ import Reward from "./components/user-dashboard/Reward";
 import UserProfile from "./components/user-dashboard/UserProfile";
 import ActivityLogView from "./components/dashboard/ActivityLog/ActivityLogView";
 import EditUser from "./components/dashboard/User/EditUser";
+import EditMyItinerary from "./pages/customer-itinerary-edit/EditMyItinerary";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -114,6 +115,14 @@ export default function App() {
           }
         />
         <Route path="/itinerary-summary" element={<ItinerarySummary />} />
+        <Route
+          path="/edit-my-itinerary/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <EditMyItinerary />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Admin Dashboard Routes */}
         <Route

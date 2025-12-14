@@ -16,6 +16,7 @@ export default function ExcursionPoints() {
   const destination = location.state?.destination || "Colombo";
   const destinationId = location.state?.destinationId;
   const fromEdit = location.state?.fromEdit || false;
+  const fromCustomerEdit = location.state?.fromCustomerEdit || false;
   const itineraryId = location.state?.itineraryId;
   const returnTab = location.state?.returnTab || "destinations";
 
@@ -61,7 +62,9 @@ export default function ExcursionPoints() {
     setStep(clickedStep);
 
     // Navigate to Itinerary page with correct step or back to edit
-    if (fromEdit && itineraryId) {
+    if (fromCustomerEdit && itineraryId) {
+      navigate(`/edit-my-itinerary/${itineraryId}`, { state: { step: 3 } });
+    } else if (fromEdit && itineraryId) {
       navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
     } else {
       navigate("/itinerary", { state: { destination, step: clickedStep } });
@@ -222,7 +225,9 @@ export default function ExcursionPoints() {
             )}
             <span
               onClick={() => {
-                if (fromEdit && itineraryId) {
+                if (fromCustomerEdit && itineraryId) {
+                  navigate(`/edit-my-itinerary/${itineraryId}`, { state: { step: 3 } });
+                } else if (fromEdit && itineraryId) {
                   navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
                 } else {
                   navigate("/itinerary", { state: { destination, step: 3 } });
@@ -230,7 +235,7 @@ export default function ExcursionPoints() {
               }}
               className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
             >
-              {fromEdit ? "Back to Edit" : destination}
+              {fromCustomerEdit || fromEdit ? "Back to Edit" : destination}
             </span>{" "}
             &gt; Excursion Points
           </p>
@@ -252,59 +257,61 @@ export default function ExcursionPoints() {
               <p className="text-gray-600 text-lg">No excursions found for this destination</p>
             </div>
           ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {excursions.map((place) => {
-              const isSelected = isExcursionSelected(place.id);
-              const imageUrl = place.images && place.images.length > 0 ? place.images[0] : defaultImage;
-              return (
-                <motion.div
-                  key={place.id}
-                  whileHover={{ scale: 1.02 }}
-                  className={`relative rounded-xl overflow-hidden shadow-md cursor-pointer group border-2 transition-all ${isSelected ? "border-green-500 ring-2 ring-green-500" : "border-transparent"}`}
-                >
-                  <div onClick={() => handleSelectExcursion(place)}>
-                    <img
-                      src={imageUrl}
-                      alt={place.name}
-                      className="w-full h-[220px] object-cover"
-                    />
-
-                    <div className="absolute bottom-0 w-full bg-black/60 py-3 px-4 flex items-center justify-between">
-                      <p className="text-white font-semibold text-[16px]">
-                        {place.name}
-                      </p>
-                      {isSelected && (
-                        <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                          Selected
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Details Button - Separate from selection click */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {excursions.map((place) => {
+                const isSelected = isExcursionSelected(place.id);
+                const imageUrl = place.images && place.images.length > 0 ? place.images[0] : defaultImage;
+                return (
                   <motion.div
-                    className="absolute bottom-3 right-4 p-2 bg-[#B749DB] rounded-full shadow-md cursor-pointer z-10"
-                    whileHover={{ rotate: -45 }}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent selection toggle
-                      navigate("/excursion-details", {
-                        state: { excursion: place, fromDestination: destination },
-                      });
-                    }}
+                    key={place.id}
+                    whileHover={{ scale: 1.02 }}
+                    className={`relative rounded-xl overflow-hidden shadow-md cursor-pointer group border-2 transition-all ${isSelected ? "border-green-500 ring-2 ring-green-500" : "border-transparent"}`}
                   >
-                    <FaArrowRight size={16} className="text-white" />
+                    <div onClick={() => handleSelectExcursion(place)}>
+                      <img
+                        src={imageUrl}
+                        alt={place.name}
+                        className="w-full h-[220px] object-cover"
+                      />
+
+                      <div className="absolute bottom-0 w-full bg-black/60 py-3 px-4 flex items-center justify-between">
+                        <p className="text-white font-semibold text-[16px]">
+                          {place.name}
+                        </p>
+                        {isSelected && (
+                          <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                            Selected
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Details Button - Separate from selection click */}
+                    <motion.div
+                      className="absolute bottom-3 right-4 p-2 bg-[#B749DB] rounded-full shadow-md cursor-pointer z-10"
+                      whileHover={{ rotate: -45 }}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent selection toggle
+                        navigate("/excursion-details", {
+                          state: { excursion: place, fromDestination: destination },
+                        });
+                      }}
+                    >
+                      <FaArrowRight size={16} className="text-white" />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
           )}
 
           {/* ===== Buttons ===== */}
           <div className="flex justify-between mt-12">
             <button
               onClick={() => {
-                if (fromEdit && itineraryId) {
+                if (fromCustomerEdit && itineraryId) {
+                  navigate(`/edit-my-itinerary/${itineraryId}`, { state: { step: 3 } });
+                } else if (fromEdit && itineraryId) {
                   navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
                 } else {
                   navigate("/itinerary", { state: { destination, step: 3 } });
@@ -313,19 +320,19 @@ export default function ExcursionPoints() {
               className="flex items-center gap-2 border border-[#B749DB]
               text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
             >
-              <FaArrowLeft className="text-[#B749DB]" /> {fromEdit ? "Back to Edit" : "Previous"}
+              <FaArrowLeft className="text-[#B749DB]" /> {fromCustomerEdit || fromEdit ? "Back to Edit" : "Previous"}
             </button>
 
-            {!fromEdit && (
+            {!fromEdit && !fromCustomerEdit && (
               <button
                 onClick={() =>
                   navigate("/itinerary", { state: { destination, step: 4 } })
                 }
-              className="flex items-center gap-2 border border-[#B749DB]
+                className="flex items-center gap-2 border border-[#B749DB]
               text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
-            >
-              Next <FaArrowRight className="text-[#B749DB]" />
-            </button>
+              >
+                Next <FaArrowRight className="text-[#B749DB]" />
+              </button>
             )}
           </div>
         </div>

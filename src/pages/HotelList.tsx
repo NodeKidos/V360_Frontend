@@ -253,7 +253,7 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
 const HotelList = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { destination, destinationId, step, fromEdit, itineraryId, returnTab } = location.state || { destination: "Colombo", destinationId: null, step: 3, fromEdit: false, itineraryId: null, returnTab: "destinations" };
+  const { destination, destinationId, step, fromEdit, fromCustomerEdit, itineraryId, returnTab } = location.state || { destination: "Colombo", destinationId: null, step: 3, fromEdit: false, fromCustomerEdit: false, itineraryId: null, returnTab: "destinations" };
 
   const { formData } = useItineraryStore();
   const [selectedHotel, setSelectedHotel] = useState<any>(null);
@@ -321,7 +321,9 @@ const HotelList = () => {
   ];
 
   const handleStepClick = (stepId: number) => {
-    if (fromEdit && itineraryId) {
+    if (fromCustomerEdit && itineraryId) {
+      navigate(`/edit-my-itinerary/${itineraryId}`, { state: { step: 3 } });
+    } else if (fromEdit && itineraryId) {
       navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
     } else {
       navigate("/itinerary", { state: { step: stepId } });
@@ -443,7 +445,9 @@ const HotelList = () => {
             )}
             <span
               onClick={() => {
-                if (fromEdit && itineraryId) {
+                if (fromCustomerEdit && itineraryId) {
+                  navigate(`/edit-my-itinerary/${itineraryId}`, { state: { step: 3 } });
+                } else if (fromEdit && itineraryId) {
                   navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
                 } else {
                   navigate("/itinerary", { state: { destination, step: 3 } });
@@ -451,7 +455,7 @@ const HotelList = () => {
               }}
               className="underline cursor-pointer hover:text-[#8B2BB9] transition-colors"
             >
-              {fromEdit ? "Back to Edit" : destination}
+              {fromCustomerEdit || fromEdit ? "Back to Edit" : destination}
             </span>{" "}
             &gt; Hotels
           </p>
@@ -473,81 +477,83 @@ const HotelList = () => {
             </div>
           ) : (
             <>
-          <div className="flex flex-col gap-8">
-            {currentHotels.map((hotel, index) => {
-              const isSelected = isHotelSelected(hotel.name);
-              return (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.005 }}
-                  onClick={() => setSelectedHotel(hotel)}
-                  className={`bg-[#F8ECFF] rounded-2xl shadow-lg border ${isSelected ? "border-green-500 ring-2 ring-green-500" : "border-[#E2C6F4]"} overflow-hidden cursor-pointer p-4`}
-                >
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative md:w-1/3 min-w-[200px] ">
-                      <img
-                        src={hotel.img}
-                        alt={hotel.name}
-                        className="w-full sm:h-48 md:h-48 lg:h-58 object-cover rounded-2xl"
-                      />
-                      <div className="absolute top-4 left-4 bg-white/70 p-2 rounded-full shadow-md">
-                        <svg
-                          className="w-5 h-5 text-gray-800"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                        </svg>
-                      </div>
-                      {isSelected && (
-                        <div className="absolute bottom-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
-                          Selected
+              <div className="flex flex-col gap-8">
+                {currentHotels.map((hotel, index) => {
+                  const isSelected = isHotelSelected(hotel.name);
+                  return (
+                    <motion.div
+                      key={index}
+                      whileHover={{ scale: 1.005 }}
+                      onClick={() => setSelectedHotel(hotel)}
+                      className={`bg-[#F8ECFF] rounded-2xl shadow-lg border ${isSelected ? "border-green-500 ring-2 ring-green-500" : "border-[#E2C6F4]"} overflow-hidden cursor-pointer p-4`}
+                    >
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <div className="relative md:w-1/3 min-w-[200px] ">
+                          <img
+                            src={hotel.img}
+                            alt={hotel.name}
+                            className="w-full sm:h-48 md:h-48 lg:h-58 object-cover rounded-2xl"
+                          />
+                          <div className="absolute top-4 left-4 bg-white/70 p-2 rounded-full shadow-md">
+                            <svg
+                              className="w-5 h-5 text-gray-800"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                          </div>
+                          {isSelected && (
+                            <div className="absolute bottom-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
+                              Selected
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    <div className="md:w-2/3 flex flex-col justify-start pt-2">
-                      <div>
-                        <h3 className="text-[24px] font-bold text-[#5F3396] mb-2">
-                          {hotel.name}
-                        </h3>
-                        <p className="md:text-[20px] lg:text-[24px] text-gray-700 mb-3 leading-snug">
-                          {hotel.desc}
-                        </p>
-                        <div className="flex gap-1 mb-2">
-                          {renderStars(hotel.rating)}
+                        <div className="md:w-2/3 flex flex-col justify-start pt-2">
+                          <div>
+                            <h3 className="text-[24px] font-bold text-[#5F3396] mb-2">
+                              {hotel.name}
+                            </h3>
+                            <p className="md:text-[20px] lg:text-[24px] text-gray-700 mb-3 leading-snug">
+                              {hotel.desc}
+                            </p>
+                            <div className="flex gap-1 mb-2">
+                              {renderStars(hotel.rating)}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-3 mt-4 overflow-x-scroll hide-scrollbar pb-2 justify-start px-1">
-                    {hotel.gallery.slice(0, 6).map((img: string, i: number) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt={`gallery-${i}`}
-                        className="min-w-[220px] h-[200px] object-cover rounded-lg shadow-sm"
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                      <div className="flex gap-3 mt-4 overflow-x-scroll hide-scrollbar pb-2 justify-start px-1">
+                        {hotel.gallery.slice(0, 6).map((img: string, i: number) => (
+                          <img
+                            key={i}
+                            src={img}
+                            alt={`gallery-${i}`}
+                            className="min-w-[220px] h-[200px] object-cover rounded-lg shadow-sm"
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
 
-          <CustomPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-          </>
+              <CustomPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </>
           )}
 
           <div className="flex justify-between mt-12">
             <button
               onClick={() => {
-                if (fromEdit && itineraryId) {
+                if (fromCustomerEdit && itineraryId) {
+                  navigate(`/edit-my-itinerary/${itineraryId}`, { state: { step: 3 } });
+                } else if (fromEdit && itineraryId) {
                   navigate(`/itinerary/${itineraryId}/edit`, { state: { returnTab } });
                 } else {
                   navigate("/itinerary", { state: { destination, step: 3 } });
@@ -555,18 +561,18 @@ const HotelList = () => {
               }}
               className="flex items-center gap-2 border border-[#B749DB] text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
             >
-              <FaArrowLeft className="text-[#B749DB]" /> {fromEdit ? "Back to Edit" : "Previous"}
+              <FaArrowLeft className="text-[#B749DB]" /> {fromCustomerEdit || fromEdit ? "Back to Edit" : "Previous"}
             </button>
 
-            {!fromEdit && (
+            {!fromEdit && !fromCustomerEdit && (
               <button
                 onClick={() =>
                   navigate("/itinerary", { state: { destination, step: 4 } })
                 }
-              className="flex items-center gap-2 bg-[#B749DB] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-[#8B2BB9] transition-all"
-            >
-              Next <FaArrowRight className="text-white" />
-            </button>
+                className="flex items-center gap-2 bg-[#B749DB] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-[#8B2BB9] transition-all"
+              >
+                Next <FaArrowRight className="text-white" />
+              </button>
             )}
           </div>
         </div>
