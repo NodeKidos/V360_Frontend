@@ -40,8 +40,8 @@ const ItineraryManagement = () => {
       setLoading(true);
       try {
         const data = await itineraryService.getAll(statusFilter as ItineraryStatus | undefined);
-        console.log("Itinery",data);
-        
+        console.log("Itinery", data);
+
         setItineraries(data);
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Failed to fetch itineraries");
@@ -155,6 +155,27 @@ const ItineraryManagement = () => {
       minute: "2-digit",
       hour12: false,
     });
+  };
+
+  // Check if itinerary has date-destination mismatch
+  const checkDateMismatch = (itinerary: Itinerary): boolean => {
+    if (!itinerary.startDate || !itinerary.endDate || !itinerary.days) {
+      return false;
+    }
+
+    const start = new Date(itinerary.startDate);
+    const end = new Date(itinerary.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const dateDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    // Count unique destinations
+    const uniqueDestinations = new Set(
+      itinerary.days
+        .map((day: any) => day.destination?.id)
+        .filter(Boolean)
+    );
+
+    return uniqueDestinations.size > dateDays;
   };
 
   // Get status color
@@ -388,18 +409,27 @@ const ItineraryManagement = () => {
                       </td>
 
                       <td className="px-4 py-4 whitespace-nowrap relative">
-                        <div className="relative inline-block">
-                          <button
-                            id={`status-btn-${itinerary.id}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setStatusDropdownOpen(statusDropdownOpen === itinerary.id ? null : itinerary.id);
-                            }}
-                            className={`${getStatusColor(itinerary.status).replace("text-", "bg-").replace("-600", "-100").replace("-400", "-100")} ${getStatusColor(itinerary.status)} px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer`}
-                          >
-                            {itinerary.status.replace(/_/g, " ").toUpperCase()}
-                            <FiChevronDown size={12} />
-                          </button>
+                        <div className="flex items-center gap-2">
+                          <div className="relative inline-block">
+                            <button
+                              id={`status-btn-${itinerary.id}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setStatusDropdownOpen(statusDropdownOpen === itinerary.id ? null : itinerary.id);
+                              }}
+                              className={`${getStatusColor(itinerary.status).replace("text-", "bg-").replace("-600", "-100").replace("-400", "-100")} ${getStatusColor(itinerary.status)} px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer`}
+                            >
+                              {itinerary.status.replace(/_/g, " ").toUpperCase()}
+                              <FiChevronDown size={12} />
+                            </button>
+                          </div>
+
+                          {/* Date-Destination Mismatch Warning Badge */}
+                          {checkDateMismatch(itinerary) && (
+                            <span className="px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-300" title="Date-destination mismatch - needs review">
+                              ⚠️
+                            </span>
+                          )}
                         </div>
 
                         {/* Status Dropdown - Using fixed positioning to escape table overflow */}
@@ -419,9 +449,8 @@ const ItineraryManagement = () => {
                                   e.stopPropagation();
                                   handleStatusChange(itinerary.id, status);
                                 }}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors block ${
-                                  itinerary.status === status ? 'bg-purple-50 font-semibold' : ''
-                                }`}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors block ${itinerary.status === status ? 'bg-purple-50 font-semibold' : ''
+                                  }`}
                               >
                                 {status.replace(/_/g, " ").toUpperCase()}
                               </button>

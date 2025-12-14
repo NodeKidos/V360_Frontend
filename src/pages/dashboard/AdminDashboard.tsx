@@ -168,6 +168,27 @@ const AdminDashboard = () => {
     });
   };
 
+  // Check if itinerary has date-destination mismatch
+  const checkDateMismatch = (itinerary: Itinerary): boolean => {
+    if (!itinerary.startDate || !itinerary.endDate || !itinerary.days) {
+      return false;
+    }
+
+    const start = new Date(itinerary.startDate);
+    const end = new Date(itinerary.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const dateDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    // Count unique destinations
+    const uniqueDestinations = new Set(
+      itinerary.days
+        .map((day: any) => day.destination?.id)
+        .filter(Boolean)
+    );
+
+    return uniqueDestinations.size > dateDays;
+  };
+
   // Get status display
   const getStatusDisplay = (status: ItineraryStatus) => {
     switch (status) {
@@ -341,15 +362,14 @@ const AdminDashboard = () => {
                                 {itinerary.lead?.user?.firstName} {itinerary.lead?.user?.lastName}
                               </p>
                             </div>
-                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              itinerary.status === 'draft' ? 'bg-gray-100 text-gray-700' :
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${itinerary.status === 'draft' ? 'bg-gray-100 text-gray-700' :
                               itinerary.status === 'pending_quote' ? 'bg-yellow-100 text-yellow-700' :
-                              itinerary.status === 'quoted' ? 'bg-blue-100 text-blue-700' :
-                              itinerary.status === 'accepted' ? 'bg-green-100 text-green-700' :
-                              itinerary.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
-                              itinerary.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                              'bg-gray-100 text-gray-700'
-                            }`}>
+                                itinerary.status === 'quoted' ? 'bg-blue-100 text-blue-700' :
+                                  itinerary.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                                    itinerary.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
+                                      itinerary.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                                        'bg-gray-100 text-gray-700'
+                              }`}>
                               {getStatusDisplay(itinerary.status)}
                             </span>
                           </div>
@@ -494,7 +514,16 @@ const AdminDashboard = () => {
                             <td className="p-3 whitespace-nowrap">
                               <div>{formatDate(itinerary.startDate)}</div>
                             </td>
-                            <td className="p-3">{getStatusDisplay(itinerary.status)}</td>
+                            <td className="p-3">
+                              <div className="flex items-center justify-center gap-2">
+                                {getStatusDisplay(itinerary.status)}
+                                {checkDateMismatch(itinerary) && (
+                                  <span className="px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-300 flex items-center gap-1" title="Date-destination mismatch - needs review">
+                                    ⚠️
+                                  </span>
+                                )}
+                              </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>

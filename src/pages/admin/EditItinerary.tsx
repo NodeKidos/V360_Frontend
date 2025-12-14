@@ -88,6 +88,32 @@ const EditItinerary = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Helper function to detect date-destination mismatch
+  const hasDateDestinationMismatch = (): { hasMismatch: boolean; days: number; destinations: number } => {
+    if (!itinerary?.startDate || !itinerary?.endDate || !itinerary?.days) {
+      return { hasMismatch: false, days: 0, destinations: 0 };
+    }
+
+    const start = new Date(itinerary.startDate);
+    const end = new Date(itinerary.endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const dateDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    // Count unique destinations
+    const uniqueDestinations = new Set(
+      itinerary.days
+        .map((day: any) => day.destination?.id)
+        .filter(Boolean)
+    );
+    const destinationCount = uniqueDestinations.size;
+
+    return {
+      hasMismatch: destinationCount > dateDays,
+      days: dateDays,
+      destinations: destinationCount
+    };
+  };
+
   // Load itinerary data
   useEffect(() => {
     const fetchItinerary = async () => {
@@ -623,21 +649,36 @@ const EditItinerary = () => {
                 {itinerary?.itineraryNumber}
               </p>
               <div className="flex items-center gap-2 mt-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  formData.status === 'draft' ? 'bg-gray-100 text-gray-700' :
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${formData.status === 'draft' ? 'bg-gray-100 text-gray-700' :
                   formData.status === 'pending_quote' ? 'bg-yellow-100 text-yellow-700' :
-                  formData.status === 'quoted' ? 'bg-blue-100 text-blue-700' :
-                  formData.status === 'negotiating' ? 'bg-orange-100 text-orange-700' :
-                  formData.status === 'accepted' ? 'bg-green-100 text-green-700' :
-                  formData.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                  formData.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
-                  formData.status === 'on_hold' ? 'bg-amber-100 text-amber-700' :
-                  formData.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                  formData.status === 'cancelled' ? 'bg-rose-100 text-rose-700' :
-                  'bg-gray-100 text-gray-700'
-                }`}>
+                    formData.status === 'quoted' ? 'bg-blue-100 text-blue-700' :
+                      formData.status === 'negotiating' ? 'bg-orange-100 text-orange-700' :
+                        formData.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                          formData.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                            formData.status === 'in_progress' ? 'bg-purple-100 text-purple-700' :
+                              formData.status === 'on_hold' ? 'bg-amber-100 text-amber-700' :
+                                formData.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                                  formData.status === 'cancelled' ? 'bg-rose-100 text-rose-700' :
+                                    'bg-gray-100 text-gray-700'
+                  }`}>
                   {formData.status?.toUpperCase().replace(/_/g, ' ')}
                 </span>
+
+                {/* Date-Destination Mismatch Warning */}
+                {(() => {
+                  const mismatch = hasDateDestinationMismatch();
+                  if (mismatch.hasMismatch) {
+                    return (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border-2 border-orange-300 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        DATE MISMATCH: {mismatch.destinations} destinations for {mismatch.days}-day trip
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             </div>
             <button
@@ -656,31 +697,28 @@ const EditItinerary = () => {
               <div className="flex gap-2 mb-6 border-b border-gray-200">
                 <button
                   onClick={() => setActiveTab("details")}
-                  className={`px-4 py-2 font-medium transition-colors ${
-                    activeTab === "details"
-                      ? "text-[#B749DB] border-b-2 border-[#B749DB]"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`px-4 py-2 font-medium transition-colors ${activeTab === "details"
+                    ? "text-[#B749DB] border-b-2 border-[#B749DB]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   Trip Details
                 </button>
                 <button
                   onClick={() => setActiveTab("destinations")}
-                  className={`px-4 py-2 font-medium transition-colors ${
-                    activeTab === "destinations"
-                      ? "text-[#B749DB] border-b-2 border-[#B749DB]"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`px-4 py-2 font-medium transition-colors ${activeTab === "destinations"
+                    ? "text-[#B749DB] border-b-2 border-[#B749DB]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   Destinations & Days
                 </button>
                 <button
                   onClick={() => setActiveTab("quote")}
-                  className={`px-4 py-2 font-medium transition-colors ${
-                    activeTab === "quote"
-                      ? "text-[#B749DB] border-b-2 border-[#B749DB]"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`px-4 py-2 font-medium transition-colors ${activeTab === "quote"
+                    ? "text-[#B749DB] border-b-2 border-[#B749DB]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   Quote & Pricing
                 </button>
@@ -947,11 +985,10 @@ const EditItinerary = () => {
                                 onClick={() =>
                                   setFormData({ ...formData, hotelCategory: i })
                                 }
-                                className={`cursor-pointer text-3xl transition ${
-                                  i <= formData.hotelCategory
-                                    ? "text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
+                                className={`cursor-pointer text-3xl transition ${i <= formData.hotelCategory
+                                  ? "text-yellow-400"
+                                  : "text-gray-300"
+                                  }`}
                               >
                                 ★
                               </span>
@@ -1157,91 +1194,91 @@ const EditItinerary = () => {
                         {formData.days
                           .sort((a, b) => (a.dayNumber || 0) - (b.dayNumber || 0))
                           .map((day) => (
-                          <div key={day.id} className="border border-gray-300 rounded-lg p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <h3 className="text-lg font-semibold text-[#5B247A]">
-                                    Day {day.dayNumber}
-                                  </h3>
-                                  <span className="text-sm text-gray-600">
-                                    {day.destination?.name}
-                                  </span>
-                                </div>
-                                <div className="space-y-2 text-sm">
-                                  <p>
-                                    <span className="font-medium">Date:</span>{" "}
-                                    {new Date(day.date).toLocaleDateString()}
-                                  </p>
-                                  {day.hotel && (
-                                    <div className="space-y-2">
-                                      <p>
-                                        <span className="font-medium">Hotel:</span> {day.hotel.name}
-                                      </p>
-                                      {/* Room details from day object (or from hotel.roomDetails for backward compatibility) */}
-                                      {(day.roomType || day.hotel.roomDetails) && (
-                                        <div className="ml-4 space-y-1 text-xs text-gray-600">
-                                          {(day.roomType || day.hotel.roomDetails?.roomType) && (
-                                            <p>
-                                              <span className="font-medium">Room Type:</span> {(day.roomType || day.hotel.roomDetails?.roomType) === 'single' ? 'Single Room' : 'Double Room'}
-                                            </p>
-                                          )}
-                                          {(day.bedTypes || day.hotel.roomDetails?.bedTypes)?.length > 0 && (
-                                            <p>
-                                              <span className="font-medium">Bed Types:</span> {(day.bedTypes || day.hotel.roomDetails?.bedTypes).join(', ')}
-                                            </p>
-                                          )}
-                                          {(day.dietPlans || day.hotel.roomDetails?.dietPlans)?.length > 0 && (
-                                            <p>
-                                              <span className="font-medium">Diet Plan:</span> {(day.dietPlans || day.hotel.roomDetails?.dietPlans).join(', ')}
-                                            </p>
-                                          )}
-                                        </div>
-                                      )}
-                                      {day.hotel.features && day.hotel.features.length > 0 && (
-                                        <div className="ml-4">
-                                          <span className="font-medium text-xs">Room Features:</span>
-                                          <div className="flex flex-wrap gap-1 mt-1">
-                                            {day.hotel.features.map((feature: string, i: number) => (
-                                              <span
-                                                key={i}
-                                                className="px-2 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs"
-                                              >
-                                                {feature}
-                                              </span>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                  {day.excursions && day.excursions.length > 0 && (
-                                    <div>
-                                      <span className="font-medium">Excursions:</span>
-                                      <ul className="ml-4 list-disc">
-                                        {day.excursions.map((exc: any, i: number) => (
-                                          <li key={i}>{exc.name}</li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  )}
-                                  {day.description && (
+                            <div key={day.id} className="border border-gray-300 rounded-lg p-4">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h3 className="text-lg font-semibold text-[#5B247A]">
+                                      Day {day.dayNumber}
+                                    </h3>
+                                    <span className="text-sm text-gray-600">
+                                      {day.destination?.name}
+                                    </span>
+                                  </div>
+                                  <div className="space-y-2 text-sm">
                                     <p>
-                                      <span className="font-medium">Description:</span> {day.description}
+                                      <span className="font-medium">Date:</span>{" "}
+                                      {new Date(day.date).toLocaleDateString()}
                                     </p>
-                                  )}
+                                    {day.hotel && (
+                                      <div className="space-y-2">
+                                        <p>
+                                          <span className="font-medium">Hotel:</span> {day.hotel.name}
+                                        </p>
+                                        {/* Room details from day object (or from hotel.roomDetails for backward compatibility) */}
+                                        {(day.roomType || day.hotel.roomDetails) && (
+                                          <div className="ml-4 space-y-1 text-xs text-gray-600">
+                                            {(day.roomType || day.hotel.roomDetails?.roomType) && (
+                                              <p>
+                                                <span className="font-medium">Room Type:</span> {(day.roomType || day.hotel.roomDetails?.roomType) === 'single' ? 'Single Room' : 'Double Room'}
+                                              </p>
+                                            )}
+                                            {(day.bedTypes || day.hotel.roomDetails?.bedTypes)?.length > 0 && (
+                                              <p>
+                                                <span className="font-medium">Bed Types:</span> {(day.bedTypes || day.hotel.roomDetails?.bedTypes).join(', ')}
+                                              </p>
+                                            )}
+                                            {(day.dietPlans || day.hotel.roomDetails?.dietPlans)?.length > 0 && (
+                                              <p>
+                                                <span className="font-medium">Diet Plan:</span> {(day.dietPlans || day.hotel.roomDetails?.dietPlans).join(', ')}
+                                              </p>
+                                            )}
+                                          </div>
+                                        )}
+                                        {day.hotel.features && day.hotel.features.length > 0 && (
+                                          <div className="ml-4">
+                                            <span className="font-medium text-xs">Room Features:</span>
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                              {day.hotel.features.map((feature: string, i: number) => (
+                                                <span
+                                                  key={i}
+                                                  className="px-2 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs"
+                                                >
+                                                  {feature}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                    {day.excursions && day.excursions.length > 0 && (
+                                      <div>
+                                        <span className="font-medium">Excursions:</span>
+                                        <ul className="ml-4 list-disc">
+                                          {day.excursions.map((exc: any, i: number) => (
+                                            <li key={i}>{exc.name}</li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    {day.description && (
+                                      <p>
+                                        <span className="font-medium">Description:</span> {day.description}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
+                                <button
+                                  onClick={() => handleRemoveDay(day.id)}
+                                  className="text-red-500 hover:text-red-700 p-2"
+                                  title="Remove day"
+                                >
+                                  <FaTrash />
+                                </button>
                               </div>
-                              <button
-                                onClick={() => handleRemoveDay(day.id)}
-                                className="text-red-500 hover:text-red-700 p-2"
-                                title="Remove day"
-                              >
-                                <FaTrash />
-                              </button>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                         {formData.days.length === 0 && (
                           <p className="text-gray-500 text-center py-8">
                             No days scheduled yet. Add destinations to create the itinerary.
