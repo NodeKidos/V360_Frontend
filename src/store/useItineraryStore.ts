@@ -259,9 +259,14 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
   getMyItineraries: async () => {
     set({ isLoading: true, error: null });
     try {
+      console.log('📡 Calling API: GET /itineraries/my-itineraries');
       const itineraries = await itineraryService.getMyItineraries();
+      console.log('📦 API Response:', itineraries);
+      console.log('📦 Number of itineraries:', itineraries.length);
       set({ itineraries, isLoading: false });
     } catch (error: any) {
+      console.error('❌ API Error:', error);
+      console.error('❌ Error response:', error.response?.data);
       const errorMessage = error.response?.data?.message || "Failed to fetch itineraries";
       set({ error: errorMessage, isLoading: false });
       toast.error(errorMessage);
