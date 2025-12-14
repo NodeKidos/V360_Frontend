@@ -50,6 +50,10 @@ export default function MyItineraries() {
   const [selectedItineraryId, setSelectedItineraryId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [dialogItineraryId, setDialogItineraryId] = useState<string | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -84,17 +88,31 @@ export default function MyItineraries() {
   }, [statusDropdownOpen]);
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this itinerary?")) {
-      await deleteItinerary(id);
+    setDialogItineraryId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (dialogItineraryId) {
+      await deleteItinerary(dialogItineraryId);
+      setDeleteDialogOpen(false);
+      setDialogItineraryId(null);
     }
   };
 
   const handleSubmitForQuote = async (id: string) => {
-    if (window.confirm("Submit this itinerary for quote?")) {
-      const success = await submitForQuote(id);
+    setDialogItineraryId(id);
+    setSubmitDialogOpen(true);
+  };
+
+  const confirmSubmit = async () => {
+    if (dialogItineraryId) {
+      const success = await submitForQuote(dialogItineraryId);
       if (success) {
         getMyItineraries(); // Refresh list
       }
+      setSubmitDialogOpen(false);
+      setDialogItineraryId(null);
     }
   };
 
@@ -110,15 +128,22 @@ export default function MyItineraries() {
   };
 
   const handleAcceptQuote = async (id: string) => {
-    if (window.confirm("Are you sure you want to accept this quote?")) {
-      setActionLoading(id);
+    setDialogItineraryId(id);
+    setAcceptDialogOpen(true);
+  };
+
+  const confirmAccept = async () => {
+    if (dialogItineraryId) {
+      setActionLoading(dialogItineraryId);
       try {
-        const success = await acceptQuote(id);
+        const success = await acceptQuote(dialogItineraryId);
         if (success) {
           await getMyItineraries(); // Refresh list
         }
       } finally {
         setActionLoading(null);
+        setAcceptDialogOpen(false);
+        setDialogItineraryId(null);
       }
     }
   };
@@ -438,9 +463,145 @@ export default function MyItineraries() {
           </div>
         )}
 
+        {/* Delete Confirmation Dialog */}
+        {deleteDialogOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+              onClick={() => setDeleteDialogOpen(false)}
+            ></div>
+
+            {/* Dialog */}
+            <div className="relative z-50 bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-in fade-in zoom-in duration-200">
+              <div className="flex flex-col items-center text-center">
+                {/* Icon */}
+                <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                  <FaTrash className="text-red-600 text-2xl" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Itinerary?</h3>
+
+                {/* Description */}
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete this itinerary? This action cannot be undone.
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={() => setDeleteDialogOpen(false)}
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Submit for Quote Dialog */}
+        {submitDialogOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+              onClick={() => setSubmitDialogOpen(false)}
+            ></div>
+
+            {/* Dialog */}
+            <div className="relative z-50 bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-in fade-in zoom-in duration-200">
+              <div className="flex flex-col items-center text-center">
+                {/* Icon */}
+                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                  <FaPaperPlane className="text-purple-600 text-2xl" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Submit for Quote?</h3>
+
+                {/* Description */}
+                <p className="text-gray-600 mb-6">
+                  Submit this itinerary to receive an official quote. Our team will review and provide pricing details.
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={() => setSubmitDialogOpen(false)}
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmSubmit}
+                    className="flex-1 px-4 py-3 bg-[#B749DB] text-white rounded-lg font-semibold hover:bg-[#8B2BB9] transition-colors shadow-lg"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Accept Quote Dialog */}
+        {acceptDialogOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+              onClick={() => setAcceptDialogOpen(false)}
+            ></div>
+
+            {/* Dialog */}
+            <div className="relative z-50 bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-in fade-in zoom-in duration-200">
+              <div className="flex flex-col items-center text-center">
+                {/* Icon */}
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                  <FaCheck className="text-green-600 text-2xl" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Accept Quote?</h3>
+
+                {/* Description */}
+                <p className="text-gray-600 mb-6">
+                  By accepting this quote, you agree to the proposed pricing and terms. Your booking will be confirmed.
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-3 w-full">
+                  <button
+                    onClick={() => setAcceptDialogOpen(false)}
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmAccept}
+                    disabled={actionLoading !== null}
+                    className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {actionLoading ? "Accepting..." : "Accept Quote"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <ToastContainer />
 
-      </main >
-    </div >
+      </main>
+    </div>
   );
 }
