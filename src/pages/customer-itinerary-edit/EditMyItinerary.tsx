@@ -29,6 +29,7 @@ export default function EditMyItinerary() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+    const [dateWarningOpen, setDateWarningOpen] = useState(false);
 
     // Auth and Itinerary stores
     const { isLoggedIn } = useAuthStore();
@@ -222,14 +223,21 @@ export default function EditMyItinerary() {
         const start = new Date(formData.arrivalDate);
         const end = new Date(formData.departureDate);
         const diffTime = Math.abs(end.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const dateDiffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
         const selectedCityNames = formData.selectedCities || [];
-        const daysPerCity = selectedCityNames.length > 0 ? Math.ceil(diffDays / selectedCityNames.length) : diffDays;
+
+        // CRITICAL FIX: Use MAXIMUM of date range OR number of destinations
+        // This ensures all destinations are included even if dates are the same
+        const totalDays = Math.max(dateDiffDays, selectedCityNames.length);
+
+        const daysPerCity = selectedCityNames.length > 0 ? Math.ceil(totalDays / selectedCityNames.length) : totalDays;
+
+        console.log('🗓️ Date range days:', dateDiffDays, '| Destinations:', selectedCityNames.length, '| Using:', totalDays);
 
         const days: any[] = [];
 
-        for (let i = 0; i < diffDays; i++) {
+        for (let i = 0; i < totalDays; i++) {
             const currentDate = new Date(start);
             currentDate.setDate(start.getDate() + i);
 
@@ -279,7 +287,7 @@ export default function EditMyItinerary() {
     };
 
     // Handle form submission
-    const handleUpdate = async () => {
+    const handleUpdate = async (skipWarning = false) => {
         if (!id) return;
 
         // Validate required fields
@@ -288,7 +296,23 @@ export default function EditMyItinerary() {
             return;
         }
 
+        // Check if destinations > days and warn user (unless they already confirmed)
+        const start = new Date(formData.arrivalDate);
+        const end = new Date(formData.departureDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const dateDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const destinationCount = (formData.selectedCities || []).length;
+
+        if (!skipWarning && destinationCount > dateDays) {
+            setDateWarningOpen(true);
+            return;
+        }
+
         const days = convertToDays();
+
+        console.log('📝 FormData selectedCities:', formData.selectedCities);
+        console.log('📝 FormData selectedDestinations:', formData.selectedDestinations);
+        console.log('📝 Converted days:', days);
 
         const updateData = {
             startDate: formData.arrivalDate,
@@ -304,6 +328,8 @@ export default function EditMyItinerary() {
             },
             days,
         };
+
+        console.log('📤 Sending update data:', JSON.stringify(updateData, null, 2));
 
         const success = await updateItinerary(id, updateData);
 
@@ -854,7 +880,7 @@ export default function EditMyItinerary() {
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={handleUpdate}
+                                            onClick={() => handleUpdate()}
                                             className="flex items-center gap-2 bg-[#B749DB] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#8B2BB9]"
                                         >
                                             Save Changes
@@ -865,6 +891,62 @@ export default function EditMyItinerary() {
                         </div>
                     </div>
                 </div>
+
+                {/* Date-Destination Mismatch Warning Dialog */}
+                {dateWarningOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                        <div
+                            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                            onClick={() => setDateWarningOpen(false)}
+                        ></div>
+
+                        <div className="relative z-50 bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+                                    <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Date Range Too Short</h3>
+
+                                <p className="text-gray-600 mb-2">
+                                    You've selected <strong>{(formData.selectedCities || []).length} destinations</strong>, but your trip is only <strong>
+                                        {(() => {
+                                            const start = new Date(formData.arrivalDate || '');
+                                            const end = new Date(formData.departureDate || '');
+                                            const diffTime = Math.abs(end.getTime() - start.getTime());
+                                            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                        })()} day(s)</strong> long.
+                                </p>
+                                <p className="text-gray-500 text-sm mb-6">
+                                    Please extend your departure date, or proceed anyway for admin review.
+                                </p>
+
+                                <div className="flex flex-col gap-3 w-full">
+                                    <button
+                                        onClick={() => {
+                                            setDateWarningOpen(false);
+                                            setStep(1);
+                                        }}
+                                        className="w-full px-4 py-3 bg-[#B749DB] text-white rounded-lg font-semibold hover:bg-[#8B2BB9] transition-colors"
+                                    >
+                                        Go Back & Adjust Dates
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setDateWarningOpen(false);
+                                            handleUpdate(true);
+                                        }}
+                                        className="w-full px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                                    >
+                                        Proceed Anyway
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );
