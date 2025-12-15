@@ -81,7 +81,7 @@ const DestinationHotelManagement = () => {
                 const [destinationsData, hotelsData, excursionsData] = await Promise.all([
                     destinationService.getAll(),
                     hotelService.getAll(),
-                    excursionService.getAll()
+                    excursionService.getAllAdmin() // Use getAllAdmin to see all excursions including inactive ones
                 ]);
                 console.log(destinationsData, hotelsData, excursionsData);
 

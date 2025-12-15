@@ -1,4 +1,4 @@
-import { publicApi } from './api';
+import { publicApi, api } from './api';
 
 export interface Hotel {
   id: string;
@@ -24,6 +24,14 @@ export interface Hotel {
     lng: number;
   };
   isActive?: boolean;
+  isFlagged?: boolean;
+  flagReason?: string;
+  flaggedAt?: string;
+  flaggedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
   destination?: {
     id: string;
     name: string;
@@ -46,6 +54,16 @@ export const hotelService = {
 
   getById: async (id: string): Promise<Hotel> => {
     const response = await publicApi.get<Hotel>(`/hotels/${id}`);
+    return response.data;
+  },
+
+  flagHotel: async (id: string, reason: string): Promise<Hotel> => {
+    const response = await api.patch<Hotel>(`/hotels/${id}/flag`, { reason });
+    return response.data;
+  },
+
+  unflagHotel: async (id: string): Promise<Hotel> => {
+    const response = await api.patch<Hotel>(`/hotels/${id}/unflag`);
     return response.data;
   },
 };

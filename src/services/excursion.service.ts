@@ -1,4 +1,4 @@
-import { publicApi } from './api';
+import { publicApi, api } from './api';
 
 export interface Excursion {
   id: string;
@@ -22,6 +22,7 @@ export interface Excursion {
     lng: number;
   };
   isActive?: boolean;
+  seasonalNote?: string;
   destination?: {
     id: string;
     name: string;
@@ -37,6 +38,11 @@ export const excursionService = {
     return response.data;
   },
 
+  getAllAdmin: async (): Promise<Excursion[]> => {
+    const response = await api.get<Excursion[]>('/excursions/admin/all');
+    return response.data;
+  },
+
   getByDestination: async (destinationId: string): Promise<Excursion[]> => {
     const response = await publicApi.get<Excursion[]>(`/excursions?destinationId=${destinationId}`);
     return response.data;
@@ -44,6 +50,14 @@ export const excursionService = {
 
   getById: async (id: string): Promise<Excursion> => {
     const response = await publicApi.get<Excursion>(`/excursions/${id}`);
+    return response.data;
+  },
+
+  toggleVisibility: async (id: string, isActive: boolean, seasonalNote?: string): Promise<Excursion> => {
+    const response = await api.patch<Excursion>(`/excursions/${id}/toggle-visibility`, {
+      isActive,
+      seasonalNote
+    });
     return response.data;
   },
 };

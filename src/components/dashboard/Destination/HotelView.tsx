@@ -1,11 +1,13 @@
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
+import { MdFlag, MdOutlineFlag } from "react-icons/md";
 import { useState, useEffect } from "react";
 import Pagination from "../../ui/Pagination";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
 import deleteicon from "../../../assets/delete.png"; // Import delete icon image
+import hotelService from "../../../services/hotel.service";
 
 // Function to render star ratings
 const renderStars = (rating: number) => {
@@ -32,6 +34,10 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
 
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedHotelId, setSelectedHotelId] = useState<string | null>(null);
+
+  const [flagModalVisible, setFlagModalVisible] = useState(false);
+  const [flagReason, setFlagReason] = useState("");
+  const [selectedHotelForFlag, setSelectedHotelForFlag] = useState<any>(null);
 
   // Ensure hotels is always an array
   const hotelsArray = Array.isArray(hotels) ? hotels : [];
@@ -89,6 +95,75 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
   const cancelDelete = () => {
     setDeleteConfirmationVisible(false); // Hide the overlay
   };
+
+  // Handle flag hotel
+  const handleFlagClick = (hotel: any) => {
+    setSelectedHotelForFlag(hotel);
+    setFlagReason("");
+    setFlagModalVisible(true);
+  };
+
+  // Confirm flag hotel
+  const confirmFlag = async () => {
+    if (!selectedHotelForFlag) return;
+
+    if (!flagReason.trim()) {
+      toast.error("Please provide a reason for flagging this hotel", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      await hotelService.flagHotel(selectedHotelForFlag.id, flagReason);
+
+      // Update local state
+      setHotels(hotelsArray.map((h: any) =>
+        h.id === selectedHotelForFlag.id
+          ? { ...h, isFlagged: true, flagReason: flagReason }
+          : h
+      ));
+
+      setFlagModalVisible(false);
+      toast.success("Hotel flagged successfully! Affected customers and staff have been notified.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error: any) {
+      console.error("Failed to flag hotel:", error);
+      toast.error(error.response?.data?.message || "Failed to flag hotel", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  // Handle unflag hotel
+  const handleUnflagClick = async (hotel: any) => {
+    try {
+      await hotelService.unflagHotel(hotel.id);
+
+      // Update local state
+      setHotels(hotelsArray.map((h: any) =>
+        h.id === hotel.id
+          ? { ...h, isFlagged: false, flagReason: null }
+          : h
+      ));
+
+      toast.success("Hotel unflagged successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.error("Failed to unflag hotel:", error);
+      toast.error(error.response?.data?.message || "Failed to unflag hotel", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
   return (
     <div>
       {/* VIEW & MANAGE SECTION - Desktop */}
@@ -218,7 +293,8 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               <th className="px-3 py-3 whitespace-nowrap">Contact No</th>
               <th className="px-3 py-3 whitespace-nowrap">Location</th>
               <th className="px-3 py-3 whitespace-nowrap">Review</th>
-              <th className="px-3 py-3 text-center whitespace-nowrap"></th>
+              <th className="px-3 py-3 whitespace-nowrap">Status</th>
+              <th className="px-3 py-3 text-center whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className="font-poppins">
@@ -234,10 +310,27 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
                 <td className="px-3 py-1 text-center">{h.contactNumber || 'N/A'}</td>
                 <td className="px-3 py-1 text-center">{h.address || h.destination?.location || 'N/A'}</td>
                 <td className="px-3 py-1 text-center">{h.reviewCount ? `${h.reviewCount} reviews` : 'No reviews'}</td>
+                <td className="px-3 py-1 text-center">
+                  {h.isFlagged ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium" title={h.flagReason}>
+                      <MdFlag className="text-sm" />
+                      Unavailable
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      Available
+                    </span>
+                  )}
+                </td>
                 <td className="px-3 py-1 whitespace-nowrap">
-                  <div className="flex gap-2 justify-center">
-                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} />
-                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(h.id)} />
+                  <div className="flex gap-2 justify-center items-center">
+                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} title="Edit" />
+                    {h.isFlagged ? (
+                      <MdOutlineFlag className="text-green-600 cursor-pointer text-[20px]" onClick={() => handleUnflagClick(h)} title="Unflag Hotel" />
+                    ) : (
+                      <MdFlag className="text-orange-500 cursor-pointer text-[20px]" onClick={() => handleFlagClick(h)} title="Flag as Unavailable" />
+                    )}
+                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(h.id)} title="Delete" />
                   </div>
                 </td>
               </tr>
@@ -298,6 +391,66 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
           </div>
         </div>
       )}
+
+      {/* Flag Hotel Modal */}
+      {flagModalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500/50 z-50 p-4">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-[500px] relative">
+            {/* Close icon at the top-right */}
+            <button
+              className="absolute top-2 right-2 text-gray-500 text-2xl"
+              onClick={() => setFlagModalVisible(false)}
+            >
+              &times;
+            </button>
+
+            <div className="mb-4 flex items-center justify-center gap-2">
+              <MdFlag className="text-orange-500 text-3xl" />
+              <h3 className="text-[18px] md:text-[20px] font-semibold font-inter">
+                Flag Hotel as Unavailable
+              </h3>
+            </div>
+
+            <p className="text-gray-600 text-sm mb-4">
+              Hotel: <span className="font-semibold">{selectedHotelForFlag?.name}</span>
+            </p>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reason for flagging <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={flagReason}
+                onChange={(e) => setFlagReason(e.target.value)}
+                placeholder="E.g., Renovation ongoing until June 2024, Temporary closure due to maintenance..."
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B749DB] min-h-[100px]"
+              />
+            </div>
+
+            <p className="text-xs text-gray-500 mb-4">
+              ⚠️ Customers with accepted itineraries using this hotel and all staff members will be notified immediately.
+            </p>
+
+            {/* Buttons */}
+            <div className="flex gap-3 mt-6 justify-end">
+              <button
+                className="bg-gray-200 font-medium font-inter text-black px-6 py-2 rounded-lg hover:bg-gray-300 text-[14px] md:text-[16px]"
+                onClick={() => setFlagModalVisible(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="bg-orange-500 font-medium font-inter text-white px-6 py-2 rounded-lg hover:bg-orange-600 text-[14px] md:text-[16px]"
+                onClick={confirmFlag}
+              >
+                Flag Hotel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </div>
   );
