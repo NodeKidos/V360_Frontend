@@ -36,9 +36,22 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
       }
     }
 
-    // Fetch unread count
+    // Fetch unread count on mount
     fetchUnreadCount();
+
+    // Set up interval to refresh count every 30 seconds
+    const interval = setInterval(() => {
+      fetchUnreadCount();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [fetchUnreadCount]);
+
+  const handleBellClick = () => {
+    // Refresh count when opening notifications
+    fetchUnreadCount();
+    setNotificationOpen(!notificationOpen);
+  };
 
   return (
     <div className="flex justify-between items-center mb-6 gap-2">
@@ -61,7 +74,7 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
           </div>
 
           {/* Notification Bell - Mobile */}
-          <div className="relative cursor-pointer" onClick={() => setNotificationOpen(!notificationOpen)}>
+          <div className="relative cursor-pointer" onClick={handleBellClick}>
             <FiBell className="text-xl text-gray-500 hover:text-purple-600" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
@@ -86,7 +99,7 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
           </div>
           <div className="flex items-center gap-4">
             {/* Notification Bell - Desktop */}
-            <div className="relative cursor-pointer" onClick={() => setNotificationOpen(!notificationOpen)}>
+            <div className="relative cursor-pointer" onClick={handleBellClick}>
               <FiBell className="text-lg text-gray-500 hover:text-purple-600 transition-colors" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
