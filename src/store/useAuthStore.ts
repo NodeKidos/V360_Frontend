@@ -3,6 +3,7 @@ import { authService } from "../services/auth.service";
 import type { User } from "../types/auth.types";
 import { OtpType, OtpPurpose } from "../types/auth.types";
 import { toast } from "react-toastify";
+import { useNotificationStore } from "./useNotificationStore";
 
 interface AuthState {
   user: User | null;
@@ -43,6 +44,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Also store userRole separately for sidebar
         localStorage.setItem("userRole", user.role);
         set({ user, isLoggedIn: true, isInitialized: true });
+
+        // Connect WebSocket for notifications
+        useNotificationStore.getState().connectWebSocket(accessToken);
+        useNotificationStore.getState().fetchUnreadCount();
       } catch (error) {
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
@@ -72,6 +77,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoggedIn: true,
         isLoading: false
       });
+
+      // Connect WebSocket for real-time notifications
+      useNotificationStore.getState().connectWebSocket(response.accessToken);
+      useNotificationStore.getState().fetchUnreadCount();
 
       toast.success("Login successful!");
       return true;
@@ -233,6 +242,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: () => {
     authService.logout();
     localStorage.removeItem("userRole");
+
+    // Disconnect WebSocket
+    useNotificationStore.getState().disconnectWebSocket();
+
     set({
       user: null,
       isLoggedIn: false,

@@ -2,9 +2,11 @@
 import { useState, useEffect } from "react";
 import { FiBell, FiMenu } from "react-icons/fi";
 import { CiSearch } from "react-icons/ci";
-import logo from "../assets/favicon.png"; // Your logo
+import logo from "../assets/favicon.png";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import NotificationPopup from "./NotificationPopup";
+import { useNotificationStore } from "../store/useNotificationStore";
 
 interface TopBarProps {
   isMobile: boolean;
@@ -16,6 +18,9 @@ interface TopBarProps {
 const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery = "", onSearchChange }) => {
   const [userName, setUserName] = useState('User');
   const [userImage, setUserImage] = useState('');
+  const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const { unreadCount, fetchUnreadCount } = useNotificationStore();
 
   useEffect(() => {
     // Fetch user info from localStorage
@@ -30,7 +35,10 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
         console.error('Error parsing user data:', error);
       }
     }
-  }, []);
+
+    // Fetch unread count
+    fetchUnreadCount();
+  }, [fetchUnreadCount]);
 
   return (
     <div className="flex justify-between items-center mb-6 gap-2">
@@ -51,7 +59,16 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
               className="w-20 h-20 object-contain mx-auto"
             />
           </div>
-          <FiBell className="text-xl text-gray-500 cursor-pointer hover:text-purple-600" />
+
+          {/* Notification Bell - Mobile */}
+          <div className="relative cursor-pointer" onClick={() => setNotificationOpen(!notificationOpen)}>
+            <FiBell className="text-xl text-gray-500 hover:text-purple-600" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </div>
         </div>
       ) : (
         <>
@@ -68,7 +85,16 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <FiBell className="text-lg text-gray-500 cursor-pointer hover:text-purple-600" />
+            {/* Notification Bell - Desktop */}
+            <div className="relative cursor-pointer" onClick={() => setNotificationOpen(!notificationOpen)}>
+              <FiBell className="text-lg text-gray-500 hover:text-purple-600 transition-colors" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </div>
+
             <Avatar>
               <AvatarImage src={userImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName)} alt={userName} />
               <AvatarFallback>{userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</AvatarFallback>
@@ -76,6 +102,9 @@ const TopBar: React.FC<TopBarProps> = ({ isMobile, setSidebarOpen, searchQuery =
           </div>
         </>
       )}
+
+      {/* Notification Popup */}
+      <NotificationPopup isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />
     </div>
   );
 };
