@@ -26,12 +26,15 @@ const sidebarMenuConfig = {
   ],
   staff: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
-    { label: 'Trip', icon: <BiTrip />, link: '/trip' },
-    { label: 'Driver', icon: <FaTruck />, link: '/driver' }
+    { label: 'Driver', icon: <FaTruck />, link: '/driver' },
   ],
   driver: [
+    { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
     { label: 'My Trips', icon: <BiTrip />, link: '/driver-trips' },
-    { label: 'Profile', icon: <FaUser />, link: '/driver-profile' }
+    { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
+    { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
+    { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle' },
+    { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-summary' },
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
@@ -68,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (storedRole && sidebarMenuConfig[storedRole]) {
       setRole(storedRole); // Set role if valid
     } else {
-      setRole('user'); // Default role if invalid or not found
+      setRole('driver'); // Default role if invalid or not found
     }
   }, []);
 

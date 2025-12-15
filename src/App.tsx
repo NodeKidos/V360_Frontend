@@ -42,6 +42,7 @@ import UserDashboard from "./pages/dashboard/UserDashboard";
 import PackagePrice from "./components/user-dashboard/PackagePrice";
 import Reward from "./components/user-dashboard/Reward";
 import UserProfile from "./components/user-dashboard/UserProfile";
+import DriverDashboard from "./pages/dashboard/DriverDashboard";
 
 
 export default function App() {
@@ -101,6 +102,8 @@ export default function App() {
       <Route path="/package-price" element={<PackagePrice />} />
       <Route path="/reward" element={<Reward />} />
       <Route path="/user-profile" element={<UserProfile />} />
+
+      <Route path="/driver-dashboard" element={<DriverDashboard />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
