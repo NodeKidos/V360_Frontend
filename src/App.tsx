@@ -45,6 +45,8 @@ import UserProfile from "./components/user-dashboard/UserProfile";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
 import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
+import RewardManagement from "./components/dashboard/reward/RewardView";
+import AddReward from "./components/dashboard/reward/AddReward";
 
 
 export default function App() {
@@ -98,6 +100,9 @@ export default function App() {
       <Route path="/staff" element={<StaffManagement />} />
       <Route path="/staff/add" element={<AddStaff />} />
       <Route path="/staff/edit/:staffId" element={<EditStaff />} />
+
+      <Route path="/reward" element={<RewardManagement />} />
+      <Route path="/reward/add" element={<AddReward />} />
 
       <Route path="/user-dashboard" element={<UserDashboard />} />
       <Route path="/itinerary-summary" element={<ItinerarySummary />} />

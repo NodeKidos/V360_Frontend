@@ -71,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (storedRole && sidebarMenuConfig[storedRole]) {
       setRole(storedRole); // Set role if valid
     } else {
-      setRole('driver'); // Default role if invalid or not found
+      setRole('admin'); // Default role if invalid or not found
     }
   }, []);
 
