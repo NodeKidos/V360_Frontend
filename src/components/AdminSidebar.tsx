@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/Tooltip';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TiThLargeOutline } from 'react-icons/ti';
-import { FaUser, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList } from 'react-icons/fa';
+import { FaUser, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList, FaMapMarkedAlt } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
 import logo from '../assets/favicon.png'; // Your logo
@@ -33,8 +33,12 @@ const sidebarMenuConfig = {
     { label: 'Driver', icon: <FaTruck />, link: '/driver' }
   ],
   driver: [
+    { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
     { label: 'My Trips', icon: <BiTrip />, link: '/driver-trips' },
-    { label: 'Profile', icon: <FaUser />, link: '/driver-profile' }
+    { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
+    { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
+    { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle-details' },
+    { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-details' },
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
@@ -75,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (storedRole && sidebarMenuConfig[storedRole]) {
       setRole(storedRole); // Set role if valid
     } else {
-      setRole('user'); // Default role if invalid or not found
+      setRole('driver'); // Default role if invalid or not found
     }
 
     // Fetch user info from localStorage

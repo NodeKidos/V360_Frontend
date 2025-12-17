@@ -54,6 +54,12 @@ import UserProfile from "./components/user-dashboard/UserProfile";
 import ActivityLogView from "./components/dashboard/ActivityLog/ActivityLogView";
 import EditUser from "./components/dashboard/User/EditUser";
 import EditMyItinerary from "./pages/customer-itinerary-edit/EditMyItinerary";
+import DriverDashboard from "./pages/dashboard/DriverDashboard";
+import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
+import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
+import RewardManagement from "./components/dashboard/reward/RewardView";
+import AddReward from "./components/dashboard/reward/AddReward";
+import VehicleDetails from "./components/driver-dashboard/VehicleDetails";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -306,10 +312,6 @@ export default function App() {
           }
         />
 
-        <Route path="/package-price" element={<PackagePrice />} />
-        <Route path="/reward" element={<Reward />} />
-        <Route path="/user-profile" element={<UserProfile />} />
-
         <Route
           path="/staff"
           element={
@@ -345,6 +347,24 @@ export default function App() {
           }
         />
 
+        {/* Reward Management Routes */}
+        <Route
+          path="/reward"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <RewardManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reward/add"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <AddReward />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Itinerary Management Routes */}
         <Route
           path="/itineraries"
@@ -367,6 +387,45 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <EditItinerary />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Package and User Routes */}
+        <Route path="/package-price" element={<PackagePrice />} />
+        <Route path="/user-reward" element={<Reward />} />
+        <Route path="/user-profile" element={<UserProfile />} />
+
+        {/* Driver Dashboard Routes */}
+        <Route
+          path="/driver-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <DriverDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/itinerary-details"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <ItineraryDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver-trips"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <ScheduleTrip />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vehicle-details"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <VehicleDetails />
             </ProtectedRoute>
           }
         />
