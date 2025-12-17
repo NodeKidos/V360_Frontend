@@ -5,7 +5,7 @@ import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import driverService from "../../../services/driver.service";
+import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 
 interface DriverData {
@@ -111,9 +111,11 @@ export default function AddDriver() {
             return;
         }
 
+
         try {
             setLoading(true);
-            await driverService.createDriver({
+
+            await adminDriverService.createDriver({
                 firstName: driverData.firstName,
                 lastName: driverData.lastName,
                 email: driverData.email,
@@ -460,6 +462,6 @@ export default function AddDriver() {
                     <ToastContainer />
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

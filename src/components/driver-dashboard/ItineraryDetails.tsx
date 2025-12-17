@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaPlayCircle } from 'react-icons/fa';
-import { LuListFilter } from 'react-icons/lu'; // Import the filter icon
-import { CiSearch } from 'react-icons/ci'; // Search Icon
+import { LuListFilter } from 'react-icons/lu';
+import { CiSearch } from 'react-icons/ci';
+import { useNavigate } from 'react-router-dom';
 import TopBar from '../Topbar';
 import Pagination from '../ui/Pagination';
 import Sidebar from '../AdminSidebar';
+import { useDriverStore } from '../../store/useDriverStore';
 
 const ItineraryDetails = () => {
   const [showItems, setShowItems] = useState(3); // Number of items to show per page
@@ -17,32 +19,27 @@ const ItineraryDetails = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [destinationFilter, setDestinationFilter] = useState("");
 
-  // Sample data for the table
-  const itineraries = [
-    { id: 'ID001', cName: 'Alice', destination: 'Colombo', tour: 'Lotus Tower', startDate: 'July 25, 2025', endDate: 'July 28, 2025', status: 'Started' },
-    { id: 'ID002', cName: 'Bob', destination: 'Singapore', tour: 'Marina Bay Sands', startDate: 'Aug 25, 2025', endDate: 'Aug 28, 2025', status: 'Planned' },
-    { id: 'ID003', cName: 'Charlie', destination: 'Australia', tour: 'Sydney Opera House', startDate: 'Sept 5, 2025', endDate: 'Sept 7, 2025', status: 'Planned' },
-    { id: 'ID004', cName: 'Dave', destination: 'Colombo', tour: 'Galle Face', startDate: 'Oct 12, 2025', endDate: 'Oct 14, 2025', status: 'Started' },
-    { id: 'ID005', cName: 'Eve', destination: 'Australia', tour: 'Great Barrier Reef', startDate: 'Nov 10, 2025', endDate: 'Nov 15, 2025', status: 'Planned' },
-    { id: 'ID006', cName: 'Frank', destination: 'Singapore', tour: 'Sentosa Island', startDate: 'Dec 20, 2025', endDate: 'Dec 22, 2025', status: 'Started' },
-    { id: 'ID007', cName: 'Grace', destination: 'Colombo', tour: 'Independence Memorial Hall', startDate: 'Jan 5, 2026', endDate: 'Jan 7, 2026', status: 'Planned' },
-    { id: 'ID008', cName: 'Hank', destination: 'Australia', tour: 'Sydney Harbour Bridge', startDate: 'Feb 20, 2026', endDate: 'Feb 23, 2026', status: 'Started' },
-  ];
+  const navigate = useNavigate();
+  const { itineraries, isLoadingItineraries, fetchAssignedItineraries } = useDriverStore();
+
+  // Fetch itineraries on mount
+  useEffect(() => {
+    fetchAssignedItineraries();
+  }, [fetchAssignedItineraries]);
 
   // Filter itineraries based on search query, destination, and status
   const filteredItineraries = itineraries.filter((itinerary) => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = (
-      itinerary.id.toLowerCase().includes(searchLower) ||
-      itinerary.cName.toLowerCase().includes(searchLower) ||
-      itinerary.destination.toLowerCase().includes(searchLower) ||
-      itinerary.tour.toLowerCase().includes(searchLower) ||
-      itinerary.startDate.toLowerCase().includes(searchLower) ||
-      itinerary.endDate.toLowerCase().includes(searchLower) ||
-      itinerary.status.toLowerCase().includes(searchLower)
+      itinerary.itineraryNumber?.toLowerCase().includes(searchLower) ||
+      itinerary.customerName?.toLowerCase().includes(searchLower) ||
+      itinerary.destination?.toLowerCase().includes(searchLower) ||
+      itinerary.startDate?.toLowerCase().includes(searchLower) ||
+      itinerary.endDate?.toLowerCase().includes(searchLower) ||
+      itinerary.status?.toLowerCase().includes(searchLower)
     );
 
-    const matchesDestination = destinationFilter === "" || itinerary.destination === destinationFilter;
+    const matchesDestination = destinationFilter === "" || itinerary.destination?.includes(destinationFilter);
     const matchesStatus = statusFilter === "" || itinerary.status === statusFilter;
 
     return matchesSearch && matchesDestination && matchesStatus;
@@ -53,17 +50,17 @@ const ItineraryDetails = () => {
   const indexOfFirstItem = indexOfLastItem - showItems;
   const currentItineraries = filteredItineraries.slice(indexOfFirstItem, indexOfLastItem);
 
-   // Handle window resizing for mobile responsiveness
-    useEffect(() => {
-      const handleResize = () => {
-        setIsMobile(window.innerWidth < 768);
-      };
-  
-      handleResize();
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, [])
-    
+  // Handle window resizing for mobile responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [])
+
   return (
     <div className="h-screen bg-white flex overflow-hidden">
       <Sidebar
@@ -115,7 +112,7 @@ const ItineraryDetails = () => {
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
                 View & manage Itinerary Details
               </h4>
-              
+
               {/* RIGHT: Filters */}
               <div className="flex items-center gap-3 mt-4">
                 <select
@@ -203,34 +200,62 @@ const ItineraryDetails = () => {
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="border-b">
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">Itinerary id</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">C_Name</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">Destination</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">Tour</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">Start Date</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">End Date</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">Status</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[20px] font-poppins">Actions</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Itinerary ID</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Customer Name</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Destination</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Vehicle</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Start Date</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">End Date</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Status</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {currentItineraries.map((item, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.id}</td>
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.cName}</td>
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.destination}</td>
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.tour}</td>
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.startDate}</td>
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.endDate}</td>
-                    <td className={`p-4 text-sm font-bold ${item.status === 'Started' ? 'text-red-500' : 'text-green-500'} text-[18px] font-poppins`}>{item.status}</td>
-                    <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
-                      <button className="text-purple-500 cursor-pointer">
-                        <FaEye className="inline mr-2" />
-                        <FaPlayCircle className="inline" />
-                      </button>
+                {isLoadingItineraries ? (
+                  <tr>
+                    <td colSpan={8} className="p-8 text-center text-gray-500">
+                      Loading itineraries...
                     </td>
                   </tr>
-                ))}
+                ) : currentItineraries.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="p-8 text-center text-gray-500">
+                      No itineraries assigned yet
+                    </td>
+                  </tr>
+                ) : (
+                  currentItineraries.map((item) => (
+                    <tr key={item.id} className="border-b hover:bg-gray-50">
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.itineraryNumber}</td>
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.customerName}</td>
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.destination}</td>
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
+                        {item.assignedVehicle?.name || 'Not Assigned'}
+                      </td>
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
+                        {new Date(item.startDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
+                        {new Date(item.endDate).toLocaleDateString()}
+                      </td>
+                      <td className={`p-4 text-sm font-bold text-[18px] font-poppins ${item.status === 'in_progress' ? 'text-red-500' :
+                        item.status === 'accepted' ? 'text-green-500' : 'text-gray-500'
+                        }`}>
+                        {item.status.replace('_', ' ').toUpperCase()}
+                      </td>
+                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
+                        <button
+                          className="text-purple-500 cursor-pointer hover:text-purple-700"
+                          onClick={() => navigate(`/driver-trips?id=${item.id}`)}
+                          title="View Schedule"
+                        >
+                          <FaEye className="inline mr-2" />
+                          <FaPlayCircle className="inline" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

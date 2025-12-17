@@ -1,35 +1,27 @@
 import { useState, useEffect } from "react";
-import { CiSearch } from 'react-icons/ci'; // Search Icon for mobile
-import Sidebar from '../AdminSidebar'; // Assuming Sidebar component is already created
-import TopBar from '../Topbar'; // Assuming TopBar component is already created
+import { CiSearch } from 'react-icons/ci';
+import { useSearchParams } from 'react-router-dom';
+import Sidebar from '../AdminSidebar';
+import TopBar from '../Topbar';
+import { useDriverStore } from '../../store/useDriverStore';
 
 const ScheduleTrip = () => {
+  const [searchParams] = useSearchParams();
+  const itineraryId = searchParams.get('id');
+
   const [searchQuery, setSearchQuery] = useState("");
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Sample schedule data
-  const schedule = {
-    Colombo: [
-      { location: 'Lotus Tower', duration: '2 hr', date: '20/11/2025', time: '9:30 am', status: 'Completed' },
-      { location: 'Gangaramaya Temple', duration: '2 hr', date: '20/11/2025', time: '11:30 am', status: 'Completed' },
-      { location: 'Galle Face', duration: '2 hr', date: '20/11/2025', time: '12:30 pm', status: 'Arrived' },
-      { location: 'Independence Memorial Hall', duration: '2 hr', date: '20/11/2025', time: '12:30 pm', status: 'Planned' }
-    ],
-    Galle: [
-      { location: 'Galle Dutch fort', duration: '2 hr', date: '20/11/2025', time: '9:30 am', status: 'Completed' },
-      { location: 'Galle Light House', duration: '2 hr', date: '20/11/2025', time: '11:30 am', status: 'Started' },
-      { location: 'Mirissa Beach', duration: '2 hr', date: '20/11/2025', time: '12:30 pm', status: 'Arrived' },
-      { location: 'Unawatuna Beach', duration: '2 hr', date: '20/11/2025', time: '12:30 pm', status: 'Planned' }
-    ],
-    Kandy: [
-      { location: 'Galle Dutch fort', duration: '2 hr', date: '20/11/2025', time: '9:30 am', status: 'Completed' },
-      { location: 'Galle Light House', duration: '2 hr', date: '20/11/2025', time: '11:30 am', status: 'Started' },
-      { location: 'Mirissa Beach', duration: '2 hr', date: '20/11/2025', time: '12:30 pm', status: 'Arrived' },
-      { location: 'Unawatuna Beach', duration: '2 hr', date: '20/11/2025', time: '12:30 pm', status: 'Planned' }
-    ]
-  };
+  const { currentSchedule, isLoadingSchedule, fetchItinerarySchedule } = useDriverStore();
+
+  // Fetch schedule on mount
+  useEffect(() => {
+    if (itineraryId) {
+      fetchItinerarySchedule(itineraryId);
+    }
+  }, [itineraryId, fetchItinerarySchedule]);
 
   // Handle window resizing for mobile responsiveness
   useEffect(() => {
@@ -41,6 +33,40 @@ const ScheduleTrip = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Group schedule by destination
+  const groupedSchedule = currentSchedule?.schedule.reduce((acc: any, day: any) => {
+    const destination = day.destination?.name || 'Other';
+    if (!acc[destination]) {
+      acc[destination] = [];
+    }
+
+    // Add all excursions for this day
+    day.excursions?.forEach((excursion: any) => {
+      acc[destination].push({
+        location: excursion.name,
+        duration: excursion.duration ? `${excursion.duration} hr` : 'N/A',
+        date: new Date(day.date).toLocaleDateString(),
+        time: excursion.visitTime || 'TBD',
+        status: 'Planned', // You can add status logic here
+        type: 'excursion'
+      });
+    });
+
+    // Add hotel for this day
+    if (day.hotel) {
+      acc[destination].push({
+        location: `🏨 ${day.hotel.name}`,
+        duration: 'Overnight',
+        date: new Date(day.date).toLocaleDateString(),
+        time: day.hotel.checkInTime || '3:00 PM',
+        status: 'Planned',
+        type: 'hotel'
+      });
+    }
+
+    return acc;
+  }, {}) || {};
 
   return (
     <div className="h-screen bg-white flex overflow-hidden">
@@ -73,6 +99,23 @@ const ScheduleTrip = () => {
             </h2>
           </div>
 
+          {/* Itinerary Info */}
+          {currentSchedule && (
+            <div className="mb-6 bg-purple-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-lg text-purple-700">
+                {currentSchedule.itinerary.itineraryNumber} - {currentSchedule.itinerary.customerName}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {new Date(currentSchedule.itinerary.startDate).toLocaleDateString()} - {new Date(currentSchedule.itinerary.endDate).toLocaleDateString()}
+              </p>
+              {currentSchedule.itinerary.vehicle && (
+                <p className="text-sm text-gray-600 mt-1">
+                  🚗 Vehicle: {currentSchedule.itinerary.vehicle.name} ({currentSchedule.itinerary.vehicle.plateNumber})
+                </p>
+              )}
+            </div>
+          )}
+
           {/* SEARCH BAR - Mobile Only */}
           <div className="mb-6 relative md:hidden">
             <div className="relative">
@@ -86,103 +129,57 @@ const ScheduleTrip = () => {
               />
             </div>
           </div>
+
+          {/* Loading State */}
+          {isLoadingSchedule && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Loading schedule...</p>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoadingSchedule && !currentSchedule && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No schedule found. Please select an itinerary.</p>
+            </div>
+          )}
+
           {/* Schedule List */}
-          <div className="space-y-8">
-            <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg">
-              <h3 className="text-2xl font-bold text-purple-700 mb-4">Colombo</h3>
-              <div className="space-y-4">
-                {schedule.Colombo.map((trip, index) => (
-                  <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
-                    <div className="flex-1 flex items-center gap-6">
-                      {/* Location, Duration, Date, Time in a single row */}
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
-                    </div>
+          {!isLoadingSchedule && currentSchedule && (
+            <div className="space-y-8">
+              {Object.keys(groupedSchedule).map((destination) => (
+                <div key={destination} className="bg-white p-4 shadow shadow-purple-300 rounded-lg">
+                  <h3 className="text-2xl font-bold text-purple-700 mb-4">{destination}</h3>
+                  <div className="space-y-4">
+                    {groupedSchedule[destination].map((trip: any, index: number) => (
+                      <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
+                        <div className="flex-1 flex items-center gap-6">
+                          <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
+                          <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                          <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
+                          <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
+                        </div>
 
-                    {/* Status Badge */}
-                    <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
-                        ? 'bg-green-100 text-green-500'
-                        : trip.status === 'Arrived'
-                          ? 'bg-blue-100 text-blue-500'
-                          : trip.status === 'Planned'
-                            ? 'bg-orange-100 text-orange-500'
-                            : 'bg-red-100 text-red-500'
-                        }`}
-                    >
-                      {trip.status}
-                    </div>
+                        {/* Status Badge */}
+                        <div
+                          className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
+                              ? 'bg-green-100 text-green-500'
+                              : trip.status === 'Arrived'
+                                ? 'bg-blue-100 text-blue-500'
+                                : trip.status === 'Planned'
+                                  ? 'bg-orange-100 text-orange-500'
+                                  : 'bg-red-100 text-red-500'
+                            }`}
+                        >
+                          {trip.status}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-
-            {/* Galle Box */}
-            <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg mt-4">
-              <h3 className="text-2xl font-bold text-purple-700 mb-4">Galle</h3>
-              <div className="space-y-4">
-                {schedule.Galle.map((trip, index) => (
-                  <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
-                    <div className="flex-1 flex items-center gap-6">
-                      {/* Location, Duration, Date, Time in a single row */}
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
-                    </div>
-
-                    {/* Status Badge */}
-                    <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
-                        ? 'bg-green-100 text-green-500'
-                        : trip.status === 'Arrived'
-                          ? 'bg-blue-100 text-blue-500'
-                          : trip.status === 'Planned'
-                            ? 'bg-orange-100 text-orange-500'
-                            : 'bg-red-100 text-red-500'
-                        }`}
-                    >
-                      {trip.status}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Kandy Box */}
-            <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg mt-4">
-              <h3 className="text-2xl font-bold text-purple-700 mb-4">Kandy</h3>
-              <div className="space-y-4">
-                {schedule.Kandy.map((trip, index) => (
-                  <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
-                    <div className="flex-1 flex items-center gap-6">
-                      {/* Location, Duration, Date, Time in a single row */}
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
-                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
-                    </div>
-
-                    {/* Status Badge */}
-                    <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
-                        ? 'bg-green-100 text-green-500'
-                        : trip.status === 'Arrived'
-                          ? 'bg-blue-100 text-blue-500'
-                          : trip.status === 'Planned'
-                            ? 'bg-orange-100 text-orange-500'
-                            : 'bg-red-100 text-red-500'
-                        }`}
-                    >
-                      {trip.status}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

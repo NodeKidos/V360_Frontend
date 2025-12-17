@@ -6,7 +6,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import vehicleService from "../../../services/vehicle.service";
-import driverService, { type Driver } from "../../../services/driver.service";
+import { adminDriverService, type Driver } from "../../../services/admin.service";
 
 export default function EditVehicle() {
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ export default function EditVehicle() {
     const fetchDrivers = async () => {
       try {
         setDriversLoading(true);
-        const response = await driverService.getAllDrivers({ limit: 1000 });
+        const response = await adminDriverService.getAllDrivers();
         console.log("Fetched drivers response:", response);
         console.log("Drivers array:", response.drivers);
         setDrivers(response.drivers || []);

@@ -5,7 +5,7 @@ import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import driverService from "../../../services/driver.service";
+import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 import { Loader } from "../../ui/Loader";
 
@@ -108,7 +108,7 @@ export default function EditDriver() {
 
             try {
                 setFetchLoading(true);
-                const driver = await driverService.getDriverById(driverId);
+                const driver = await adminDriverService.getDriverById(driverId);
 
                 // Parse name into firstName and lastName
                 const nameParts = driver.name ? driver.name.split(' ') : ['', ''];
@@ -125,13 +125,15 @@ export default function EditDriver() {
                     licenseExpiry: driver.licenseExpiry ? driver.licenseExpiry.split('T')[0] : '',
                     languages: driver.languages ? (Array.isArray(driver.languages) ? driver.languages.join(', ') : driver.languages) : '',
                     experienceYears: driver.experienceYears ? driver.experienceYears.toString() : '',
-                    assignedVehicle: driver.assignedVehicleDetails?.id || '',
+                    assignedVehicle: driver.assignedVehicle?.id || '',
                     status: driver.status || 'Active',
                     profileImage: null,
                     licenseInfo: null,
                     joinDate: driver.joinDate ? driver.joinDate.split('T')[0] : '',
                     dob: driver.dateOfBirth ? driver.dateOfBirth.split('T')[0] : '',
                     bloodGroup: driver.bloodGroup || '',
+                    newPassword: '',
+                    confirmPassword: '',
                 });
             } catch (err: any) {
                 const errorMessage = err?.response?.data?.message || "Failed to fetch driver data";
@@ -207,7 +209,7 @@ export default function EditDriver() {
                 updateData.password = driverData.newPassword;
             }
 
-            await driverService.updateDriver(driverId, updateData);
+            await adminDriverService.updateDriver(driverId, updateData);
 
             toast.success("Driver updated successfully!", {
                 position: "top-right",
@@ -258,299 +260,299 @@ export default function EditDriver() {
                     ) : (
                         <>
 
-                    {/* Breadcrumb */}
-                    <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
-                        <span className="text-gray-500 cursor-pointer" onClick={() => navigate("/driver")}>
-                            Driver
-                        </span>
-                        <span className="text-gray-500">
-                            <MdKeyboardArrowRight />
-                        </span>
-                        <span className="font-semibold text-black">Edit Driver</span>
-                    </div>
+                            {/* Breadcrumb */}
+                            <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
+                                <span className="text-gray-500 cursor-pointer" onClick={() => navigate("/driver")}>
+                                    Driver
+                                </span>
+                                <span className="text-gray-500">
+                                    <MdKeyboardArrowRight />
+                                </span>
+                                <span className="font-semibold text-black">Edit Driver</span>
+                            </div>
 
-                    {/* Form Container */}
-                    <div className="mt-4 md:mt-6 bg-white rounded-2xl p-6 border border-purple-100 shadow-sm">
-                        {/* Title */}
-                        <div>
-                            <h2 className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-[#B749DB] font-poppins">
-                                Edit a Driver
-                            </h2>
-                            <p className="text-gray-500 text-[12px] md:text-[14px] mt-1 font-poppins">
-                                Update the driver details
-                            </p>
-                        </div>
-
-                        {fetchLoading ? (
-                            <div className="mt-6 text-center text-gray-500">Loading driver data...</div>
-                        ) : (
-                            /* FORM START */
-                            <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-                                {/* First Name & Last Name */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">First Name<span className="text-red-500">*</span></label>
-                                        <input
-                                            type="text"
-                                            value={driverData.firstName}
-                                            onChange={(e) => setDriverData({ ...driverData, firstName: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Last Name<span className="text-red-500">*</span></label>
-                                        <input
-                                            type="text"
-                                            value={driverData.lastName}
-                                            onChange={(e) => setDriverData({ ...driverData, lastName: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
+                            {/* Form Container */}
+                            <div className="mt-4 md:mt-6 bg-white rounded-2xl p-6 border border-purple-100 shadow-sm">
+                                {/* Title */}
+                                <div>
+                                    <h2 className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-[#B749DB] font-poppins">
+                                        Edit a Driver
+                                    </h2>
+                                    <p className="text-gray-500 text-[12px] md:text-[14px] mt-1 font-poppins">
+                                        Update the driver details
+                                    </p>
                                 </div>
 
-                                {/* Email & Contact */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Email<span className="text-red-500">*</span></label>
-                                        <input
-                                            type="email"
-                                            value={driverData.email}
-                                            onChange={(e) => setDriverData({ ...driverData, email: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
+                                {fetchLoading ? (
+                                    <div className="mt-6 text-center text-gray-500">Loading driver data...</div>
+                                ) : (
+                                    /* FORM START */
+                                    <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+                                        {/* First Name & Last Name */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">First Name<span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="text"
+                                                    value={driverData.firstName}
+                                                    onChange={(e) => setDriverData({ ...driverData, firstName: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
 
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No<span className="text-red-500">*</span></label>
-                                        <input
-                                            type="tel"
-                                            value={driverData.contact}
-                                            onChange={(e) => setDriverData({ ...driverData, contact: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Profile Image & License Info File */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Profile Image</label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, "profileImage")}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Info</label>
-                                        <input
-                                            type="file"
-                                            onChange={(e) => handleFileChange(e, "licenseInfo")}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* License Number & License Expiry */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Number<span className="text-red-500">*</span></label>
-                                        <input
-                                            type="text"
-                                            value={driverData.licenseNumber}
-                                            onChange={(e) => setDriverData({ ...driverData, licenseNumber: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Expiry<span className="text-red-500">*</span></label>
-                                        <input
-                                            type="date"
-                                            value={driverData.licenseExpiry}
-                                            onChange={(e) => setDriverData({ ...driverData, licenseExpiry: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    {/* Date of Birth */}
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Date of Birth</label>
-                                        <input
-                                            type="date"
-                                            value={driverData.dob}
-                                            onChange={(e) => setDriverData({ ...driverData, dob: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-
-                                    {/* Blood Group */}
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Blood Group</label>
-                                        <select
-                                            value={driverData.bloodGroup}
-                                            onChange={(e) => setDriverData({ ...driverData, bloodGroup: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        >
-                                            <option value="">Select Blood Group</option>
-                                            <option>A+</option>
-                                            <option>B+</option>
-                                            <option>O+</option>
-                                            <option>AB-</option>
-                                            <option>A-</option>
-                                            <option>B-</option>
-                                            <option>O-</option>
-                                            <option>AB+</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                {/* NIC & Assigned Vehicle */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">NIC</label>
-                                        <input
-                                            type="text"
-                                            value={driverData.nic}
-                                            onChange={(e) => setDriverData({ ...driverData, nic: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Assigned Vehicle</label>
-                                        <select
-                                            value={driverData.assignedVehicle}
-                                            onChange={(e) => setDriverData({ ...driverData, assignedVehicle: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                            disabled={vehiclesLoading}
-                                        >
-                                            <option value="">
-                                                {vehiclesLoading ? "Loading vehicles..." : "Select Vehicle"}
-                                            </option>
-                                            {vehicles.map((vehicle) => (
-                                                <option key={vehicle.id} value={vehicle.id}>
-                                                    {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Languages & Experience Years */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Languages (comma separated)</label>
-                                        <input
-                                            type="text"
-                                            value={driverData.languages}
-                                            onChange={(e) => setDriverData({ ...driverData, languages: e.target.value })}
-                                            placeholder="e.g., English, Sinhala, Tamil"
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Experience Years</label>
-                                        <input
-                                            type="number"
-                                            value={driverData.experienceYears}
-                                            onChange={(e) => setDriverData({ ...driverData, experienceYears: e.target.value })}
-                                            min="0"
-                                            placeholder="Years of driving experience"
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Status & Join Date */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
-                                        <select
-                                            value={driverData.status}
-                                            onChange={(e) => setDriverData({ ...driverData, status: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        >
-                                            <option value="">Select Status</option>
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Join Date</label>
-                                        <input
-                                            type="date"
-                                            value={driverData.joinDate}
-                                            onChange={(e) => setDriverData({ ...driverData, joinDate: e.target.value })}
-                                            className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Password Section */}
-                                <div className="border-t border-purple-200 pt-4 md:pt-6">
-                                    <h3 className="text-[16px] md:text-[18px] font-semibold text-gray-800 mb-4 font-poppins">
-                                        Change Password (Optional)
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                        <div>
-                                            <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">New Password</label>
-                                            <input
-                                                type="password"
-                                                value={driverData.newPassword}
-                                                onChange={(e) => setDriverData({ ...driverData, newPassword: e.target.value })}
-                                                placeholder="Leave blank to keep current password"
-                                                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                            />
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Last Name<span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="text"
+                                                    value={driverData.lastName}
+                                                    onChange={(e) => setDriverData({ ...driverData, lastName: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Confirm Password</label>
-                                            <input
-                                                type="password"
-                                                value={driverData.confirmPassword}
-                                                onChange={(e) => setDriverData({ ...driverData, confirmPassword: e.target.value })}
-                                                placeholder="Confirm new password"
-                                                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                            />
+
+                                        {/* Email & Contact */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Email<span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="email"
+                                                    value={driverData.email}
+                                                    onChange={(e) => setDriverData({ ...driverData, email: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No<span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="tel"
+                                                    value={driverData.contact}
+                                                    onChange={(e) => setDriverData({ ...driverData, contact: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                {/* ACTION BUTTONS */}
-                                <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
-                                    <button
-                                        type="button"
-                                        onClick={() => navigate("/driver")}
-                                        className="px-8 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
-                                    >
-                                        Cancel
-                                    </button>
+                                        {/* Profile Image & License Info File */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Profile Image</label>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleFileChange(e, "profileImage")}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
 
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:bg-purple-400 disabled:cursor-not-allowed flex items-center gap-2 justify-center min-w-[100px]"
-                                    >
-                                        {loading ? (
-                                            <>
-                                                <Loader className="w-4 h-4" />
-                                                <span>Saving...</span>
-                                            </>
-                                        ) : (
-                                            "Save"
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        )}
-                        {/* FORM END */}
-                    </div>
-                    </>
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Info</label>
+                                                <input
+                                                    type="file"
+                                                    onChange={(e) => handleFileChange(e, "licenseInfo")}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* License Number & License Expiry */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Number<span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="text"
+                                                    value={driverData.licenseNumber}
+                                                    onChange={(e) => setDriverData({ ...driverData, licenseNumber: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Expiry<span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="date"
+                                                    value={driverData.licenseExpiry}
+                                                    onChange={(e) => setDriverData({ ...driverData, licenseExpiry: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            {/* Date of Birth */}
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Date of Birth</label>
+                                                <input
+                                                    type="date"
+                                                    value={driverData.dob}
+                                                    onChange={(e) => setDriverData({ ...driverData, dob: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+
+                                            {/* Blood Group */}
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Blood Group</label>
+                                                <select
+                                                    value={driverData.bloodGroup}
+                                                    onChange={(e) => setDriverData({ ...driverData, bloodGroup: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                >
+                                                    <option value="">Select Blood Group</option>
+                                                    <option>A+</option>
+                                                    <option>B+</option>
+                                                    <option>O+</option>
+                                                    <option>AB-</option>
+                                                    <option>A-</option>
+                                                    <option>B-</option>
+                                                    <option>O-</option>
+                                                    <option>AB+</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        {/* NIC & Assigned Vehicle */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">NIC</label>
+                                                <input
+                                                    type="text"
+                                                    value={driverData.nic}
+                                                    onChange={(e) => setDriverData({ ...driverData, nic: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Assigned Vehicle</label>
+                                                <select
+                                                    value={driverData.assignedVehicle}
+                                                    onChange={(e) => setDriverData({ ...driverData, assignedVehicle: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    disabled={vehiclesLoading}
+                                                >
+                                                    <option value="">
+                                                        {vehiclesLoading ? "Loading vehicles..." : "Select Vehicle"}
+                                                    </option>
+                                                    {vehicles.map((vehicle) => (
+                                                        <option key={vehicle.id} value={vehicle.id}>
+                                                            {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        {/* Languages & Experience Years */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Languages (comma separated)</label>
+                                                <input
+                                                    type="text"
+                                                    value={driverData.languages}
+                                                    onChange={(e) => setDriverData({ ...driverData, languages: e.target.value })}
+                                                    placeholder="e.g., English, Sinhala, Tamil"
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Experience Years</label>
+                                                <input
+                                                    type="number"
+                                                    value={driverData.experienceYears}
+                                                    onChange={(e) => setDriverData({ ...driverData, experienceYears: e.target.value })}
+                                                    min="0"
+                                                    placeholder="Years of driving experience"
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Status & Join Date */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
+                                                <select
+                                                    value={driverData.status}
+                                                    onChange={(e) => setDriverData({ ...driverData, status: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                >
+                                                    <option value="">Select Status</option>
+                                                    <option value="Active">Active</option>
+                                                    <option value="Inactive">Inactive</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Join Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={driverData.joinDate}
+                                                    onChange={(e) => setDriverData({ ...driverData, joinDate: e.target.value })}
+                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Password Section */}
+                                        <div className="border-t border-purple-200 pt-4 md:pt-6">
+                                            <h3 className="text-[16px] md:text-[18px] font-semibold text-gray-800 mb-4 font-poppins">
+                                                Change Password (Optional)
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                                <div>
+                                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">New Password</label>
+                                                    <input
+                                                        type="password"
+                                                        value={driverData.newPassword}
+                                                        onChange={(e) => setDriverData({ ...driverData, newPassword: e.target.value })}
+                                                        placeholder="Leave blank to keep current password"
+                                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Confirm Password</label>
+                                                    <input
+                                                        type="password"
+                                                        value={driverData.confirmPassword}
+                                                        onChange={(e) => setDriverData({ ...driverData, confirmPassword: e.target.value })}
+                                                        placeholder="Confirm new password"
+                                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* ACTION BUTTONS */}
+                                        <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
+                                            <button
+                                                type="button"
+                                                onClick={() => navigate("/driver")}
+                                                className="px-8 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
+                                            >
+                                                Cancel
+                                            </button>
+
+                                            <button
+                                                type="submit"
+                                                disabled={loading}
+                                                className="px-8 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium disabled:bg-purple-400 disabled:cursor-not-allowed flex items-center gap-2 justify-center min-w-[100px]"
+                                            >
+                                                {loading ? (
+                                                    <>
+                                                        <Loader className="w-4 h-4" />
+                                                        <span>Saving...</span>
+                                                    </>
+                                                ) : (
+                                                    "Save"
+                                                )}
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
+                                {/* FORM END */}
+                            </div>
+                        </>
                     )}
                     <ToastContainer />
                 </div>

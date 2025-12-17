@@ -8,7 +8,7 @@ import { FaArrowLeft, FaHotel, FaTrash } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import { toast } from "react-toastify";
 import { itineraryService } from "../../services/itinerary.service";
-import driverService, { type Driver } from "../../services/driver.service";
+import { adminDriverService, type Driver } from "../../services/admin.service";
 import type { Itinerary, ItineraryStatus } from "../../types/itinerary.types";
 import SriLankaMap from "../../components/home/SriLankaMap";
 import { useItineraryStore } from "../../store/useItineraryStore";
@@ -352,10 +352,7 @@ const EditItinerary = () => {
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
-        const response = await driverService.getAllDrivers({
-          status: 'Active',
-          limit: 1000
-        });
+        const response = await adminDriverService.getAllDrivers();
         setAvailableDrivers(response.drivers || []);
       } catch (error) {
         console.error('Failed to fetch drivers:', error);

@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci"; // Search icon
 import { IoMdAdd } from "react-icons/io"; // Add icon
-import driverService, { type Driver } from "../../../services/driver.service";
+import { adminDriverService, type Driver } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 import { Loader } from "../../ui/Loader";
 
@@ -39,16 +39,10 @@ const DriverManagement = () => {
     const fetchDrivers = async () => {
         try {
             setLoading(true);
-            const response = await driverService.getAllDrivers({
-                page,
-                limit: itemsPerPage,
-                search: searchQuery || undefined,
-                bloodGroup: bloodGroupFilter || undefined,
-                status: statusFilter || undefined,
-                assignedVehicle: assignedVehicleFilter || undefined,
-            });
+            const response = await adminDriverService.getAllDrivers();
+            // TODO: Backend doesn't support pagination/filters yet, implement client-side filtering
+            setTotalDrivers(response.drivers.length);
             setDrivers(response.drivers);
-            setTotalDrivers(response.total);
         } catch (err: any) {
             const errorMessage = err?.response?.data?.message || "Failed to fetch drivers";
             toast.error(errorMessage, {
@@ -110,7 +104,7 @@ const DriverManagement = () => {
         if (!selectedDriverId) return;
 
         try {
-            await driverService.deleteDriver(selectedDriverId);
+            await adminDriverService.deleteDriver(selectedDriverId);
             setDeleteConfirmationVisible(false);
             toast.success("Driver deleted successfully!", {
                 position: "top-right",
@@ -348,46 +342,46 @@ const DriverManagement = () => {
 
                                 <tbody className="font-poppins">
                                     {drivers.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={10} className="py-8 text-center text-gray-500">
-                                            No drivers found
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    drivers.map((d) => (
-                                        <tr key={d.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                            {/* <td className="py-3 px-2" onClick={() => handleViewClick(d.id)}>
-                                                <span className="text-blue-500 cursor-pointer">{d.id}</span>
-                                            </td> */}
-                                             <td className="py-4 px-4 whitespace-nowrap cursor-pointer" onClick={() => handleViewClick(d.id)}>
-                                                <div className="flex items-center gap-3">
-                                                    <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
-                                                    <span className="font-medium text-gray-800">{d.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4 text-gray-600">{d.contact}</td>
-                                            <td className="py-4 px-4 text-gray-600">{d.email}</td>
-                                            <td className="py-4 px-4 text-gray-600">{new Date(d.dateOfBirth).toLocaleDateString()}</td>
-                                            <td className="py-4 px-4 text-gray-600">{d.bloodGroup}</td>
-                                            <td className="py-4 px-4 text-gray-600">{d.nic}</td>
-                                            <td className="py-4 px-4 text-gray-600">
-                                                {typeof d.assignedVehicle === 'object' && d.assignedVehicle
-                                                    ? d.assignedVehicle.registrationNumber || d.assignedVehicle.model || 'N/A'
-                                                    : d.assignedVehicle || 'Not Assigned'
-                                                }
-                                            </td>
-                                            <td className={`py-4 px-4 ${d.status === "Active" ? "text-green-600" : "text-red-600"}`}>
-                                                {d.status}
-                                            </td>
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <div className="flex gap-3 justify-center">
-                                                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d.id)} />
-                                                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d.id)} />
-                                                </div>
+                                        <tr>
+                                            <td colSpan={10} className="py-8 text-center text-gray-500">
+                                                No drivers found
                                             </td>
                                         </tr>
-                                    ))
-                                )}
+                                    ) : (
+                                        drivers.map((d) => (
+                                            <tr key={d.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                                                {/* <td className="py-3 px-2" onClick={() => handleViewClick(d.id)}>
+                                                <span className="text-blue-500 cursor-pointer">{d.id}</span>
+                                            </td> */}
+                                                <td className="py-4 px-4 whitespace-nowrap cursor-pointer" onClick={() => handleViewClick(d.id)}>
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
+                                                        <span className="font-medium text-gray-800">{d.name}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-4 text-gray-600">{d.contact}</td>
+                                                <td className="py-4 px-4 text-gray-600">{d.email}</td>
+                                                <td className="py-4 px-4 text-gray-600">{new Date(d.dateOfBirth).toLocaleDateString()}</td>
+                                                <td className="py-4 px-4 text-gray-600">{d.bloodGroup}</td>
+                                                <td className="py-4 px-4 text-gray-600">{d.nic}</td>
+                                                <td className="py-4 px-4 text-gray-600">
+                                                    {typeof d.assignedVehicle === 'object' && d.assignedVehicle
+                                                        ? d.assignedVehicle.registrationNumber || d.assignedVehicle.model || 'N/A'
+                                                        : d.assignedVehicle || 'Not Assigned'
+                                                    }
+                                                </td>
+                                                <td className={`py-4 px-4 ${d.status === "Active" ? "text-green-600" : "text-red-600"}`}>
+                                                    {d.status}
+                                                </td>
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <div className="flex gap-3 justify-center">
+                                                        <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d.id)} />
+                                                        <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d.id)} />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>

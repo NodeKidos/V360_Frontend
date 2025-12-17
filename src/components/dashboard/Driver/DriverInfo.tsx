@@ -4,7 +4,7 @@ import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import { MdArrowBack } from "react-icons/md";  // Back icon
 import { CiEdit } from "react-icons/ci"; // Edit icon
-import driverService, { type Driver } from "../../../services/driver.service";
+import { adminDriverService, type Driver } from "../../../services/admin.service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -27,7 +27,7 @@ export default function DriverInfo() {
 
             try {
                 setLoading(true);
-                const fetchedDriver = await driverService.getDriverById(driverId);
+                const fetchedDriver = await adminDriverService.getDriverById(driverId);
                 setDriver(fetchedDriver);
             } catch (err: any) {
                 const errorMessage = err?.response?.data?.message || "Failed to fetch driver data";
