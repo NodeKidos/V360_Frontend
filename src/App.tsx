@@ -47,6 +47,7 @@ import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
 import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
 import RewardManagement from "./components/dashboard/reward/RewardView";
 import AddReward from "./components/dashboard/reward/AddReward";
+import VehicleDetails from "./components/driver-dashboard/VehicleDetails";
 
 
 export default function App() {
@@ -113,6 +114,8 @@ export default function App() {
       <Route path="/driver-dashboard" element={<DriverDashboard />} />
       <Route path="/itinerary-details" element={<ItineraryDetails />} />
       <Route path="/driver-trips" element={<ScheduleTrip />} />
+      <Route path="/vehicle-details" element={<VehicleDetails />} />
+
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>

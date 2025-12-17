@@ -33,7 +33,7 @@ const sidebarMenuConfig = {
     { label: 'My Trips', icon: <BiTrip />, link: '/driver-trips' },
     { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
     { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
-    { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle' },
+    { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle-details' },
     { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-details' },
   ],
   user: [
