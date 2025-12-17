@@ -102,59 +102,59 @@ const DriverDashboard = () => {
                     className="rounded-md"
                   />
                 </CardContent>
-              </Card>              
+              </Card>
             </div>
 
-   {/* Current Trip - Step Indicator with Dynamic Icons */}
-<div className="flex flex-col gap-5">
-  <Card className="bg-white rounded-xl shadow-sm border-0">
-    <CardContent className="p-5">
-      <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Current Trip</p>
-      <div className="flex flex-col mt-4 relative gap-2">
-        {trips.map(({ location, time}, idx) => (
-          <div key={idx} className="flex items-center mb-6 relative">
-            {/* Left Side: Step Indicator with Location Icon */}
-            <div className="flex items-center justify-center w-10">
-              {/* First Location Icon */}
-              {idx === 0 ? (
-                <div className="w-6 h-6 rounded-full flex justify-center items-center">
-                  <span className="text-blue-800 text-[28px] ml-1.5 font-bold">{<FaLocationDot />}</span> {/* Location Icon for First Stop */}
-                </div>
-              ) : (
-                <div className="w-6 h-6 border ml-1 border-blue-800 rounded-full flex justify-center items-center">
-                  {/* Circle with Dot for Subsequent Stops */}
-                  <span className="w-2 h-2 bg-blue-800 rounded-full"></span>
-                </div>
-              )}
+            {/* Current Trip - Step Indicator with Dynamic Icons */}
+            <div className="flex flex-col gap-5">
+              <Card className="bg-white rounded-xl shadow-sm border-0">
+                <CardContent className="p-5">
+                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Current Trip</p>
+                  <div className="flex flex-col mt-4 relative gap-2">
+                    {trips.map(({ location, time }, idx) => (
+                      <div key={idx} className="flex items-center mb-6 relative">
+                        {/* Left Side: Step Indicator with Location Icon */}
+                        <div className="flex items-center justify-center w-10">
+                          {/* First Location Icon */}
+                          {idx === 0 ? (
+                            <div className="w-6 h-6 rounded-full flex justify-center items-center">
+                              <span className="text-blue-800 text-[28px] ml-1.5 font-bold">{<FaLocationDot />}</span> {/* Location Icon for First Stop */}
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 border ml-1 border-blue-800 rounded-full flex justify-center items-center">
+                              {/* Circle with Dot for Subsequent Stops */}
+                              <span className="w-2 h-2 bg-blue-800 rounded-full"></span>
+                            </div>
+                          )}
 
-              {/* Vertical Line */}
-              {idx < trips.length - 1 && (
-                <div className="absolute top-6 left-5.5 h-10 border-l-2 border-blue-600"></div>
-              )}
+                          {/* Vertical Line */}
+                          {idx < trips.length - 1 && (
+                            <div className="absolute top-6 left-5.5 h-10 border-l-2 border-blue-600"></div>
+                          )}
+                        </div>
+
+                        {/* Center: Location */}
+                        <div className="flex-1 flex justify-left">
+                          <span className="font-medium text-[16px] text-gray-800">{location}</span>
+                        </div>
+
+                        {/* Right Side: Time */}
+                        <div className="w-20 flex justify-end">
+                          <span className="text-sm text-gray-600">{time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Duration Box */}
+                  <div className="flex justify-center mt-4">
+                    <div className="bg-purple-100 rounded-lg p-2">
+                      <p className="text-sm text-purple-600">Duration: 3 hr 45 min</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-
-            {/* Center: Location */}
-            <div className="flex-1 flex justify-left">
-              <span className="font-medium text-[16px] text-gray-800">{location}</span>
-            </div>
-
-            {/* Right Side: Time */}
-            <div className="w-20 flex justify-end">
-              <span className="text-sm text-gray-600">{time}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Duration Box */}
-      <div className="flex justify-center mt-4">
-        <div className="bg-purple-100 rounded-lg p-2">
-          <p className="text-sm text-purple-600">Duration: 3 hr 45 min</p>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-</div>
 
 
             {/* Right Column: Map */}
@@ -272,7 +272,7 @@ const DriverDashboard = () => {
                           </div>
                           <div className="flex items-center text-sm text-gray-500">
                             <div className="bg-orange-100 p-2 rounded-full">
-                               <MdEventAvailable className="text-orange-500" />
+                              <MdEventAvailable className="text-orange-500" />
                             </div>
                             <div className="ml-3">
                               <span className="block text-black text-[18px] font-bold">Service Due:</span>

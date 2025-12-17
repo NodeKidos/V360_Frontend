@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa'; // Search Icon
+import { useState, useEffect } from "react";
 import { CiSearch } from 'react-icons/ci'; // Search Icon for mobile
 import Sidebar from '../AdminSidebar'; // Assuming Sidebar component is already created
 import TopBar from '../Topbar'; // Assuming TopBar component is already created
@@ -32,6 +31,17 @@ const ScheduleTrip = () => {
     ]
   };
 
+  // Handle window resizing for mobile responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="h-screen bg-white flex overflow-hidden">
       <Sidebar
@@ -45,46 +55,62 @@ const ScheduleTrip = () => {
       {/* MAIN CONTAINER */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="p-6">
-          <TopBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <TopBar
+            isMobile={isMobile}
+            setSidebarOpen={setSidebarOpen}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+          <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
+            <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+              Schedule of Trip
+            </h2>
+          </div>
+          {/* TITLE - Mobile */}
+          <div className="mb-4 mt-4 md:hidden">
+            <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
+              Schedule of Trip
+            </h2>
+          </div>
 
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Schedule of Trip</h2>
-
-            {/* Search Bar */}
-            <div className="relative mt-4">
-              <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+          {/* SEARCH BAR - Mobile Only */}
+          <div className="mb-6 relative md:hidden">
+            <div className="relative">
+              <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
               <input
                 type="text"
                 placeholder="Search here"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-sm font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
+                className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
               />
             </div>
           </div>
-
           {/* Schedule List */}
           <div className="space-y-8">
-            {/* Colombo Box */}
-            <div className="bg-white p-4 shadow rounded-lg">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Colombo</h3>
+            <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg">
+              <h3 className="text-xl font-semibold text-purple-700 mb-4">Colombo</h3>
               <div className="space-y-4">
                 {schedule.Colombo.map((trip, index) => (
                   <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
-                    <div className="flex flex-col">
-                      <span className="text-md font-semibold">{trip.location}</span>
-                      <span className="text-sm text-gray-600">{`${trip.duration} | ${trip.date} | ${trip.time}`}</span>
+                    <div className="flex-1 flex items-center gap-6">
+                      {/* Location, Duration, Date, Time in a single row */}
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.location}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.date}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.time}</span>
                     </div>
+
+                    {/* Status Badge */}
                     <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        trip.status === 'Completed'
-                          ? 'bg-green-100 text-green-500'
-                          : trip.status === 'Started'
-                          ? 'bg-red-100 text-red-500'
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
+                        ? 'bg-green-100 text-green-500'
+                        : trip.status === 'Arrived'
+                          ? 'bg-blue-100 text-blue-500'
                           : trip.status === 'Planned'
-                          ? 'bg-orange-100 text-orange-500'
-                          : 'bg-blue-100 text-blue-500'
-                      }`}
+                            ? 'bg-orange-100 text-orange-500'
+                            : 'bg-red-100 text-red-500'
+                        }`}
                     >
                       {trip.status}
                     </div>
@@ -94,25 +120,29 @@ const ScheduleTrip = () => {
             </div>
 
             {/* Galle Box */}
-            <div className="bg-white p-4 shadow rounded-lg">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Galle</h3>
+            <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg mt-4">
+              <h3 className="text-xl font-semibold text-purple-700 mb-4">Galle</h3>
               <div className="space-y-4">
                 {schedule.Galle.map((trip, index) => (
                   <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
-                    <div className="flex flex-col">
-                      <span className="text-md font-semibold">{trip.location}</span>
-                      <span className="text-sm text-gray-600">{`${trip.duration} | ${trip.date} | ${trip.time}`}</span>
+                    <div className="flex-1 flex items-center gap-6">
+                      {/* Location, Duration, Date, Time in a single row */}
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.location}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.date}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.time}</span>
                     </div>
+
+                    {/* Status Badge */}
                     <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        trip.status === 'Completed'
-                          ? 'bg-green-100 text-green-500'
-                          : trip.status === 'Started'
-                          ? 'bg-red-100 text-red-500'
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
+                        ? 'bg-green-100 text-green-500'
+                        : trip.status === 'Arrived'
+                          ? 'bg-blue-100 text-blue-500'
                           : trip.status === 'Planned'
-                          ? 'bg-orange-100 text-orange-500'
-                          : 'bg-blue-100 text-blue-500'
-                      }`}
+                            ? 'bg-orange-100 text-orange-500'
+                            : 'bg-red-100 text-red-500'
+                        }`}
                     >
                       {trip.status}
                     </div>
@@ -122,25 +152,29 @@ const ScheduleTrip = () => {
             </div>
 
             {/* Kandy Box */}
-            <div className="bg-white p-4 shadow rounded-lg">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Kandy</h3>
+            <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg mt-4">
+              <h3 className="text-xl font-semibold text-purple-700 mb-4">Kandy</h3>
               <div className="space-y-4">
                 {schedule.Kandy.map((trip, index) => (
                   <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
-                    <div className="flex flex-col">
-                      <span className="text-md font-semibold">{trip.location}</span>
-                      <span className="text-sm text-gray-600">{`${trip.duration} | ${trip.date} | ${trip.time}`}</span>
+                    <div className="flex-1 flex items-center gap-6">
+                      {/* Location, Duration, Date, Time in a single row */}
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.location}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.date}</span>
+                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.time}</span>
                     </div>
+
+                    {/* Status Badge */}
                     <div
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        trip.status === 'Completed'
-                          ? 'bg-green-100 text-green-500'
-                          : trip.status === 'Started'
-                          ? 'bg-red-100 text-red-500'
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
+                        ? 'bg-green-100 text-green-500'
+                        : trip.status === 'Arrived'
+                          ? 'bg-blue-100 text-blue-500'
                           : trip.status === 'Planned'
-                          ? 'bg-orange-100 text-orange-500'
-                          : 'bg-blue-100 text-blue-500'
-                      }`}
+                            ? 'bg-orange-100 text-orange-500'
+                            : 'bg-red-100 text-red-500'
+                        }`}
                     >
                       {trip.status}
                     </div>
@@ -149,8 +183,6 @@ const ScheduleTrip = () => {
               </div>
             </div>
           </div>
-
-          
         </div>
       </div>
     </div>
