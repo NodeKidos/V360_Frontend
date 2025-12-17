@@ -79,9 +79,12 @@ const VehicleDetails = () => {
   };
 
   const openModal = (vehicle: SetStateAction<null>, type: SetStateAction<string>) => {
-    setSelectedVehicle(vehicle);
-    setModalType(type);
-    setShowModal(true);
+    // Only open the modal if the status is "Need Repair" or "In Service"
+    if (type === "Need Repair" || type === "In Service") {
+      setSelectedVehicle(vehicle);
+      setModalType(type);
+      setShowModal(true);
+    }
   };
 
   const handleSaveNote = () => {
@@ -202,7 +205,9 @@ const VehicleDetails = () => {
       {showModal && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900/40 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg w-96">
-            <h3 className="text-xl font-semibold mb-4">Add a Note for {selectedVehicle?.name}</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              Add a Note for {selectedVehicle?.name}
+            </h3>
             <p className="text-gray-500 mb-4">
               Please describe your concern or the specific change you would like:
             </p>
