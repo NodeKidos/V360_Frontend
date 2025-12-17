@@ -13,6 +13,7 @@ import { GiGasPump } from "react-icons/gi";
 import { FaCarSide } from 'react-icons/fa'; // Length icon (car)
 import { IoMdKey } from 'react-icons/io'; // Key icon (license plate)
 import { MdEventAvailable } from 'react-icons/md'; // Service due icon
+import { FaLocationDot } from "react-icons/fa6";
 
 const DriverDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -101,40 +102,60 @@ const DriverDashboard = () => {
                     className="rounded-md"
                   />
                 </CardContent>
-              </Card>
-
-              {/* Rating */}
-              <Card className="bg-white rounded-xl shadow-sm border-0">
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-center mb-4">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Rating</p>
-                    <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-900 font-poppins">4.8 ⭐</h3>
-                </CardContent>
-              </Card>
+              </Card>              
             </div>
 
-            {/* Current Trip */}
-            <div className="flex flex-col gap-5">
-              <Card className="bg-white rounded-xl shadow-sm border-0">
-                <CardContent className="p-5">
-                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Current Trip</p>
-                  <ul className="space-y-4 mt-4">
-                    {trips.map(({ location, time }, idx) => (
-                      <li key={idx} className="flex items-center text-sm text-gray-600">
-                        <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mr-3"></div>
-                        <span>{location}</span>
-                        <span className="ml-auto">{time}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-500">Duration: 3 hr 45 min</p>
-                  </div>
-                </CardContent>
-              </Card>
+   {/* Current Trip - Step Indicator with Dynamic Icons */}
+<div className="flex flex-col gap-5">
+  <Card className="bg-white rounded-xl shadow-sm border-0">
+    <CardContent className="p-5">
+      <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Current Trip</p>
+      <div className="flex flex-col mt-4 relative gap-2">
+        {trips.map(({ location, time}, idx) => (
+          <div key={idx} className="flex items-center mb-6 relative">
+            {/* Left Side: Step Indicator with Location Icon */}
+            <div className="flex items-center justify-center w-10">
+              {/* First Location Icon */}
+              {idx === 0 ? (
+                <div className="w-6 h-6 rounded-full flex justify-center items-center">
+                  <span className="text-blue-800 text-[28px] ml-1.5 font-bold">{<FaLocationDot />}</span> {/* Location Icon for First Stop */}
+                </div>
+              ) : (
+                <div className="w-6 h-6 border ml-1 border-blue-800 rounded-full flex justify-center items-center">
+                  {/* Circle with Dot for Subsequent Stops */}
+                  <span className="w-2 h-2 bg-blue-800 rounded-full"></span>
+                </div>
+              )}
+
+              {/* Vertical Line */}
+              {idx < trips.length - 1 && (
+                <div className="absolute top-6 left-5.5 h-10 border-l-2 border-blue-600"></div>
+              )}
             </div>
+
+            {/* Center: Location */}
+            <div className="flex-1 flex justify-left">
+              <span className="font-medium text-[16px] text-gray-800">{location}</span>
+            </div>
+
+            {/* Right Side: Time */}
+            <div className="w-20 flex justify-end">
+              <span className="text-sm text-gray-600">{time}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Duration Box */}
+      <div className="flex justify-center mt-4">
+        <div className="bg-purple-100 rounded-lg p-2">
+          <p className="text-sm text-purple-600">Duration: 3 hr 45 min</p>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
 
             {/* Right Column: Map */}
             <div className="flex flex-col gap-5">
