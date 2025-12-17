@@ -89,16 +89,16 @@ const ScheduleTrip = () => {
           {/* Schedule List */}
           <div className="space-y-8">
             <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg">
-              <h3 className="text-xl font-semibold text-purple-700 mb-4">Colombo</h3>
+              <h3 className="text-2xl font-bold text-purple-700 mb-4">Colombo</h3>
               <div className="space-y-4">
                 {schedule.Colombo.map((trip, index) => (
                   <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
                     <div className="flex-1 flex items-center gap-6">
                       {/* Location, Duration, Date, Time in a single row */}
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.location}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.duration}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.date}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.time}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
                     </div>
 
                     {/* Status Badge */}
@@ -121,16 +121,16 @@ const ScheduleTrip = () => {
 
             {/* Galle Box */}
             <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg mt-4">
-              <h3 className="text-xl font-semibold text-purple-700 mb-4">Galle</h3>
+              <h3 className="text-2xl font-bold text-purple-700 mb-4">Galle</h3>
               <div className="space-y-4">
                 {schedule.Galle.map((trip, index) => (
                   <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
                     <div className="flex-1 flex items-center gap-6">
                       {/* Location, Duration, Date, Time in a single row */}
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.location}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.duration}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.date}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.time}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
                     </div>
 
                     {/* Status Badge */}
@@ -153,16 +153,16 @@ const ScheduleTrip = () => {
 
             {/* Kandy Box */}
             <div className="bg-white p-4 shadow shadow-purple-300 rounded-lg mt-4">
-              <h3 className="text-xl font-semibold text-purple-700 mb-4">Kandy</h3>
+              <h3 className="text-2xl font-bold text-purple-700 mb-4">Kandy</h3>
               <div className="space-y-4">
                 {schedule.Kandy.map((trip, index) => (
                   <div key={index} className="flex justify-between items-center p-4 bg-white shadow rounded-lg">
                     <div className="flex-1 flex items-center gap-6">
                       {/* Location, Duration, Date, Time in a single row */}
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.location}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.duration}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.date}</span>
-                      <span className="text-md font-semibold text-gray-800 flex-1">{trip.time}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.location}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.duration}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.date}</span>
+                      <span className="text-lg font-semibold text-gray-800 flex-1">{trip.time}</span>
                     </div>
 
                     {/* Status Badge */}
