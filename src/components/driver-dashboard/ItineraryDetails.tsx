@@ -102,7 +102,7 @@ const ItineraryDetails = () => {
             <div className="flex justify-between items-center p-2">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                View & manage vehicle Details
+                View & manage Itinerary Details
               </h4>
               
               {/* RIGHT: Filters */}
