@@ -430,6 +430,16 @@ const ItineraryManagement = () => {
                               ⚠️
                             </span>
                           )}
+
+                          {/* Driver Assignment Indicator */}
+                          {(itinerary as any).driver && (itinerary as any).driver.name && (itinerary.status === 'accepted' || itinerary.status === 'in_progress' || itinerary.status === 'on_hold') && (
+                            <span
+                              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1"
+                              title={`Driver: ${(itinerary as any).driver.name}`}
+                            >
+                              🚗 {(itinerary as any).driver.name.split(' ')[0]}
+                            </span>
+                          )}
                         </div>
 
                         {/* Status Dropdown - Using fixed positioning to escape table overflow */}

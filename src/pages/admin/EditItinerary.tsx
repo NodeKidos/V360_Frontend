@@ -8,6 +8,7 @@ import { FaArrowLeft, FaHotel, FaTrash } from "react-icons/fa";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import { toast } from "react-toastify";
 import { itineraryService } from "../../services/itinerary.service";
+import driverService, { type Driver } from "../../services/driver.service";
 import type { Itinerary, ItineraryStatus } from "../../types/itinerary.types";
 import SriLankaMap from "../../components/home/SriLankaMap";
 import { useItineraryStore } from "../../store/useItineraryStore";
@@ -25,7 +26,7 @@ const EditItinerary = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "destinations" | "quote">(
+  const [activeTab, setActiveTab] = useState<"details" | "destinations" | "quote" | "management">(
     (location.state as any)?.returnTab || "details"
   );
 
@@ -77,6 +78,11 @@ const EditItinerary = () => {
     internalNotes: "",
     validUntil: "",
   });
+
+  // Driver assignment state
+  const [availableDrivers, setAvailableDrivers] = useState<Driver[]>([]);
+  const [selectedDriverId, setSelectedDriverId] = useState('');
+  const [assigning, setAssigning] = useState(false);
 
   useEffect(() => {
     fetchDestinations();
@@ -341,6 +347,27 @@ const EditItinerary = () => {
     quoteData.serviceCharge,
     quoteData.discount,
   ]);
+
+  // Fetch available drivers for assignment
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const response = await driverService.getAllDrivers({
+          status: 'Active',
+          limit: 1000
+        });
+        setAvailableDrivers(response.drivers || []);
+      } catch (error) {
+        console.error('Failed to fetch drivers:', error);
+        toast.error('Failed to load drivers list');
+      }
+    };
+
+    const validStatuses = ['accepted', 'in_progress', 'on_hold'];
+    if (validStatuses.includes(formData.status)) {
+      fetchDrivers();
+    }
+  }, [formData.status]);
 
   // Regenerate days when returning from hotel/excursion selection
   useEffect(() => {
@@ -630,6 +657,38 @@ const EditItinerary = () => {
     }
   };
 
+  const handleAssignDriver = async () => {
+    if (!selectedDriverId || !itineraryId) return;
+
+    setAssigning(true);
+    try {
+      await itineraryService.assignDriver(itineraryId, selectedDriverId);
+      setSelectedDriverId('');
+      toast.success('Driver assigned successfully!');
+
+      const refreshed = await itineraryService.getById(itineraryId);
+      setItinerary(refreshed);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to assign driver');
+    } finally {
+      setAssigning(false);
+    }
+  };
+
+  const handleUnassignDriver = async () => {
+    if (!itineraryId || !window.confirm('Remove driver assignment?')) return;
+
+    try {
+      await itineraryService.unassignDriver(itineraryId);
+      toast.success('Driver unassigned successfully');
+
+      const refreshed = await itineraryService.getById(itineraryId);
+      setItinerary(refreshed);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to unassign driver');
+    }
+  };
+
   return (
     <div className="flex w-full min-h-screen bg-white">
       <Sidebar
@@ -727,6 +786,15 @@ const EditItinerary = () => {
                 >
                   Quote & Pricing
                 </button>
+                <button
+                  onClick={() => setActiveTab("management")}
+                  className={`px-4 py-2 font-medium transition-colors ${activeTab === "management"
+                    ? "text-[#B749DB] border-b-2 border-[#B749DB]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
+                >
+                  Trip Management
+                </button>
               </div>
 
               <motion.div
@@ -738,8 +806,8 @@ const EditItinerary = () => {
                 {/* TRIP DETAILS TAB */}
                 {activeTab === "details" && (
                   <div className="space-y-8">
-                    {/* Status Management Section (Admin Only) */}
-                    {(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                    {/* Note: Status Management and Driver Assignment moved to Trip Management tab */}
+                    {false && (formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
                       <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-[#B749DB] rounded-lg p-6">
                         <h2 className="text-xl font-semibold text-[#5B247A] mb-4">
                           Itinerary Status Management
@@ -748,6 +816,12 @@ const EditItinerary = () => {
                           {formData.status === 'accepted' && (
                             <button
                               onClick={async () => {
+                                if (!itinerary?.driver) {
+                                  const confirmed = window.confirm(
+                                    '⚠️ No driver assigned to this trip.\n\nIt is recommended to assign a driver before starting. Do you want to proceed anyway?'
+                                  );
+                                  if (!confirmed) return;
+                                }
                                 if (window.confirm('Start this itinerary? The trip will begin.')) {
                                   try {
                                     await itineraryService.startItinerary(itineraryId!);
@@ -850,6 +924,73 @@ const EditItinerary = () => {
                               ❌ Cancel Trip
                             </button>
                           )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Driver Assignment Section - Moved to Trip Management tab */}
+                    {false && (formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-400 rounded-lg p-6 mb-6">
+                        <h2 className="text-xl font-semibold text-blue-900 mb-4 flex items-center gap-2">
+                          🚗 Driver Assignment
+                        </h2>
+
+                        {itinerary?.driver ? (
+                          <div className="bg-white p-4 rounded-lg mb-4 border border-blue-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-gray-600 mb-1">Assigned Driver</p>
+                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName}` : 'Unknown'}</p>
+                                <p className="text-sm text-gray-600">{itinerary.driver.user?.email}</p>
+                                <p className="text-sm text-gray-600">{itinerary.driver.user?.contact || itinerary.driver.user?.phone}</p>
+                                {itinerary.assignedAt && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    Assigned: {new Date(itinerary.assignedAt).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                              <button
+                                onClick={handleUnassignDriver}
+                                className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                              >
+                                Unassign
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-yellow-50 border border-yellow-300 p-3 rounded-lg mb-4">
+                            <p className="text-sm text-yellow-800">⚠️ No driver assigned yet</p>
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {itinerary?.driver ? 'Reassign Driver' : 'Assign Driver'}
+                          </label>
+                          <div className="flex gap-3">
+                            <select
+                              value={selectedDriverId}
+                              onChange={(e) => setSelectedDriverId(e.target.value)}
+                              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none"
+                            >
+                              <option value="">Select a driver...</option>
+                              {availableDrivers
+                                .filter(d => d.status === 'Active')
+                                .map(driver => (
+                                  <option key={driver.id} value={driver.id}>
+                                    {driver.name} - {driver.email}
+                                  </option>
+                                ))
+                              }
+                            </select>
+                            <button
+                              onClick={handleAssignDriver}
+                              disabled={!selectedDriverId || assigning}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {assigning ? 'Assigning...' : 'Assign'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1617,6 +1758,209 @@ const EditItinerary = () => {
                         </button>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* TRIP MANAGEMENT TAB */}
+                {activeTab === "management" && (
+                  <div className="space-y-8">
+                    {/* Status Management Section */}
+                    {(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-[#B749DB] rounded-lg p-6">
+                        <h2 className="text-xl font-semibold text-[#5B247A] mb-4">
+                          Itinerary Status Management
+                        </h2>
+                        <div className="flex flex-wrap gap-3">
+                          {formData.status === 'accepted' && (
+                            <button
+                              onClick={async () => {
+                                if (!itinerary?.driver) {
+                                  const confirmed = window.confirm(
+                                    '⚠️ No driver assigned to this trip.\n\nIt is recommended to assign a driver before starting. Do you want to proceed anyway?'
+                                  );
+                                  if (!confirmed) return;
+                                }
+                                if (window.confirm('Start this itinerary? The trip will begin.')) {
+                                  try {
+                                    await itineraryService.startItinerary(itineraryId!);
+                                    toast.success('Itinerary started successfully!');
+                                    const refreshedData = await itineraryService.getById(itineraryId!);
+                                    setItinerary(refreshedData);
+                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                  } catch (error: any) {
+                                    toast.error(error.response?.data?.message || 'Failed to start itinerary');
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
+                            >
+                              🚀 Start Trip
+                            </button>
+                          )}
+
+                          {formData.status === 'in_progress' && (
+                            <>
+                              <button
+                                onClick={async () => {
+                                  const reason = window.prompt('Reason for putting on hold (optional):');
+                                  if (reason !== null) {
+                                    try {
+                                      await itineraryService.holdItinerary(itineraryId!, reason || undefined);
+                                      toast.success('Itinerary put on hold');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to hold itinerary');
+                                    }
+                                  }
+                                }}
+                                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 flex items-center gap-2"
+                              >
+                                ⏸️ Put On Hold
+                              </button>
+
+                              <button
+                                onClick={async () => {
+                                  if (window.confirm('Mark this itinerary as completed?')) {
+                                    try {
+                                      await itineraryService.completeItinerary(itineraryId!);
+                                      toast.success('Itinerary completed successfully!');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to complete itinerary');
+                                    }
+                                  }
+                                }}
+                                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2"
+                              >
+                                ✅ Mark Completed
+                              </button>
+                            </>
+                          )}
+
+                          {formData.status === 'on_hold' && (
+                            <button
+                              onClick={async () => {
+                                if (window.confirm('Resume this itinerary?')) {
+                                  try {
+                                    await itineraryService.resumeItinerary(itineraryId!);
+                                    toast.success('Itinerary resumed successfully!');
+                                    const refreshedData = await itineraryService.getById(itineraryId!);
+                                    setItinerary(refreshedData);
+                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                  } catch (error: any) {
+                                    toast.error(error.response?.data?.message || 'Failed to resume itinerary');
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                            >
+                              ▶️ Resume Trip
+                            </button>
+                          )}
+
+                          {(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                            <button
+                              onClick={async () => {
+                                const reason = window.prompt('Reason for cancellation (optional):');
+                                if (reason !== null) {
+                                  try {
+                                    await itineraryService.cancelItinerary(itineraryId!, reason || undefined);
+                                    toast.success('Itinerary cancelled');
+                                    const refreshedData = await itineraryService.getById(itineraryId!);
+                                    setItinerary(refreshedData);
+                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                  } catch (error: any) {
+                                    toast.error(error.response?.data?.message || 'Failed to cancel itinerary');
+                                  }
+                                }
+                              }}
+                              className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 flex items-center gap-2"
+                            >
+                              ❌ Cancel Trip
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Driver Assignment Section */}
+                    {(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-400 rounded-lg p-6 mb-6">
+                        <h2 className="text-xl font-semibold text-blue-900 mb-4 flex items-center gap-2">
+                          🚗 Driver Assignment
+                        </h2>
+
+                        {itinerary?.driver ? (
+                          <div className="bg-white p-4 rounded-lg mb-4 border border-blue-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-gray-600 mb-1">Assigned Driver</p>
+                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName}` : 'Unknown'}</p>
+                                <p className="text-sm text-gray-600">{itinerary.driver.user?.email}</p>
+                                <p className="text-sm text-gray-600">{itinerary.driver.user?.contact || itinerary.driver.user?.phone}</p>
+                                {itinerary.assignedAt && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    Assigned: {new Date(itinerary.assignedAt).toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                              <button
+                                onClick={handleUnassignDriver}
+                                className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                              >
+                                Unassign
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-yellow-50 border border-yellow-300 p-3 rounded-lg mb-4">
+                            <p className="text-sm text-yellow-800">⚠️ No driver assigned yet</p>
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {itinerary?.driver ? 'Reassign Driver' : 'Assign Driver'}
+                          </label>
+                          <div className="flex gap-3">
+                            <select
+                              value={selectedDriverId}
+                              onChange={(e) => setSelectedDriverId(e.target.value)}
+                              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none"
+                            >
+                              <option value="">Select a driver...</option>
+                              {availableDrivers
+                                .filter(d => d.status === 'Active')
+                                .map(driver => (
+                                  <option key={driver.id} value={driver.id}>
+                                    {driver.name} - {driver.email}
+                                  </option>
+                                ))
+                              }
+                            </select>
+                            <button
+                              onClick={handleAssignDriver}
+                              disabled={!selectedDriverId || assigning}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {assigning ? 'Assigning...' : 'Assign'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Info Message if no active trip */}
+                    {!(formData.status === 'accepted' || formData.status === 'in_progress' || formData.status === 'on_hold') && (
+                      <div className="bg-gray-50 border border-gray-300 p-6 rounded-lg text-center">
+                        <p className="text-gray-600 font-medium mb-2">Trip management is only available for accepted, in-progress, or on-hold itineraries.</p>
+                        <p className="text-sm text-gray-500">Current status: <span className="font-semibold">{formData.status?.toUpperCase().replace(/_/g, ' ')}</span></p>
+                      </div>
+                    )}
                   </div>
                 )}
 

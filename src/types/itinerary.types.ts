@@ -57,6 +57,9 @@ export type Itinerary = {
   negotiations?: any[];
   issues?: any[];
   booking?: any;
+  driver?: any;
+  driverId?: string;
+  assignedAt?: string;
   metadata?: {
     groupComposition?: string;
     hotelCategory?: number;

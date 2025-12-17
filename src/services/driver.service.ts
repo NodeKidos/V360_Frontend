@@ -88,7 +88,13 @@ class DriverService {
     status?: string;
     assignedVehicle?: string;
   }): Promise<DriverListResponse> {
-    const response = await api.get('/drivers', { params });
+    // Convert status from title case to lowercase for backend compatibility
+    const queryParams = { ...params };
+    if (queryParams.status) {
+      queryParams.status = queryParams.status.toLowerCase();
+    }
+
+    const response = await api.get('/drivers', { params: queryParams });
     return response.data;
   }
 

@@ -117,6 +117,18 @@ export const itineraryService = {
     return response.data;
   },
 
+  // Assign driver to itinerary (admin)
+  assignDriver: async (id: string, driverId: string): Promise<Itinerary> => {
+    const response = await api.patch<Itinerary>(`/itineraries/${id}/assign-driver`, { driverId });
+    return response.data;
+  },
+
+  // Unassign driver from itinerary (admin)
+  unassignDriver: async (id: string): Promise<Itinerary> => {
+    const response = await api.patch<Itinerary>(`/itineraries/${id}/unassign-driver`);
+    return response.data;
+  },
+
   // Update itinerary status (admin)
   updateStatus: async (id: string, status: ItineraryStatus): Promise<Itinerary> => {
     const response = await api.patch<Itinerary>(`/itineraries/${id}/status`, { status });

@@ -368,6 +368,39 @@ const ItinerarySummary = () => {
                     </div>
                   </div>
 
+                  {/* Assigned Driver Info */}
+                  {(itinerary as any).driver && (itinerary.status === 'accepted' || itinerary.status === 'in_progress' || itinerary.status === 'on_hold') && (
+                    <div className="mt-6 lg:ml-5 lg:mr-5 bg-blue-50 border-2 border-blue-400 p-4 rounded-[25px] font-poppins">
+                      <h2 className="text-[20px] font-semibold mb-4 text-blue-900 flex items-center gap-2">
+                        🚗 Your Assigned Driver
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 text-[16px]">
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Name:</span>{" "}
+                          <span className="text-gray-900">{(itinerary as any).driver.name}</span>
+                        </div>
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Contact:</span>{" "}
+                          <span className="text-gray-900">{(itinerary as any).driver.contact || (itinerary as any).driver.phone}</span>
+                        </div>
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700">Email:</span>{" "}
+                          <span className="text-gray-900">{(itinerary as any).driver.email}</span>
+                        </div>
+                        {(itinerary as any).driver.languages && (
+                          <div className="mb-2">
+                            <span className="font-semibold text-gray-700">Languages:</span>{" "}
+                            <span className="text-gray-900">
+                              {Array.isArray((itinerary as any).driver.languages)
+                                ? (itinerary as any).driver.languages.join(', ')
+                                : (itinerary as any).driver.languages}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Trip Preferences */}
                   {itinerary.metadata && (
                     <div className="mt-6 lg:ml-5 lg:mr-5 bg-indigo-50 border border-indigo-300 p-4 rounded-[25px] font-poppins">
