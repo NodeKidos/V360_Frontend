@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState, useEffect } from "react";
 import { FaEye, FaPlayCircle } from 'react-icons/fa';
 import { LuListFilter } from 'react-icons/lu'; // Import the filter icon
 import { CiSearch } from 'react-icons/ci'; // Search Icon
@@ -53,6 +53,17 @@ const ItineraryDetails = () => {
   const indexOfFirstItem = indexOfLastItem - showItems;
   const currentItineraries = filteredItineraries.slice(indexOfFirstItem, indexOfLastItem);
 
+   // Handle window resizing for mobile responsiveness
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+  
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, [])
+    
   return (
     <div className="h-screen bg-white flex overflow-hidden">
       <Sidebar
