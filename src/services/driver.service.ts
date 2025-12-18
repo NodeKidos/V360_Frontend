@@ -85,6 +85,12 @@ export const driverService = {
     return response.data;
   },
 
+  // Get driver earnings and statistics
+  getEarnings: async () => {
+    const response = await axios.get(`${API_URL}/earnings`, getAuthHeader());
+    return response.data;
+  },
+
   // Update driver location
   updateLocation: async (location: { lat: number; lng: number }) => {
     const response = await axios.put(

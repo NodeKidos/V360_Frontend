@@ -14,14 +14,22 @@ const ScheduleTrip = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { currentSchedule, isLoadingSchedule, fetchItinerarySchedule } = useDriverStore();
+  const { currentSchedule, isLoadingSchedule, fetchItinerarySchedule, clearSchedule } = useDriverStore();
 
-  // Fetch schedule on mount
+  // Fetch schedule on mount or clear if no ID
   useEffect(() => {
     if (itineraryId) {
       fetchItinerarySchedule(itineraryId);
+    } else {
+      // Clear schedule if no itinerary ID is provided
+      clearSchedule();
     }
-  }, [itineraryId, fetchItinerarySchedule]);
+
+    // Cleanup: clear schedule when component unmounts
+    return () => {
+      clearSchedule();
+    };
+  }, [itineraryId, fetchItinerarySchedule, clearSchedule]);
 
   // Handle window resizing for mobile responsiveness
   useEffect(() => {
@@ -163,12 +171,12 @@ const ScheduleTrip = () => {
                         {/* Status Badge */}
                         <div
                           className={`px-3 py-1 rounded-full text-sm font-semibold ${trip.status === 'Completed'
-                              ? 'bg-green-100 text-green-500'
-                              : trip.status === 'Arrived'
-                                ? 'bg-blue-100 text-blue-500'
-                                : trip.status === 'Planned'
-                                  ? 'bg-orange-100 text-orange-500'
-                                  : 'bg-red-100 text-red-500'
+                            ? 'bg-green-100 text-green-500'
+                            : trip.status === 'Arrived'
+                              ? 'bg-blue-100 text-blue-500'
+                              : trip.status === 'Planned'
+                                ? 'bg-orange-100 text-orange-500'
+                                : 'bg-red-100 text-red-500'
                             }`}
                         >
                           {trip.status}

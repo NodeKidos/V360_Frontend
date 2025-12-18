@@ -34,11 +34,10 @@ const sidebarMenuConfig = {
   ],
   driver: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
-    { label: 'My Trips', icon: <BiTrip />, link: '/driver-trips' },
+    { label: 'My Trips', icon: <BiTrip />, link: '/itinerary-details' },
     { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
     { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
     { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle-details' },
-    { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-details' },
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
@@ -152,28 +151,28 @@ const Sidebar: React.FC<SidebarProps> = ({
                 {menuItems.map((item) => {
                   const active = isActive(item.link);
                   return (
-                  <Tooltip key={item.label}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        onClick={() => navigate(item.link)}
-                        className={`w-full flex items-center gap-2 py-2 transition-all
+                    <Tooltip key={item.label}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          onClick={() => navigate(item.link)}
+                          className={`w-full flex items-center gap-2 py-2 transition-all
                           ${collapsed && !isMobile ? "justify-center px-2" : "justify-start pl-3"}
                           ${active
-                            ? "bg-purple-100 text-purple-700 border-l-4 border-purple-600 font-semibold"
-                            : "text-gray-700 hover:bg-purple-50 hover:text-purple-600"
-                          }`}
-                      >
-                        <span className="text-base">{item.icon}</span>
-                        {(!collapsed || isMobile) && (
-                          <span className="text-sm font-roboto font-medium">{item.label}</span>
-                        )}
-                      </Button>
-                    </TooltipTrigger>
-                    {collapsed && !isMobile && (
-                      <TooltipContent side="right">{item.label}</TooltipContent>
-                    )}
-                  </Tooltip>
+                              ? "bg-purple-100 text-purple-700 border-l-4 border-purple-600 font-semibold"
+                              : "text-gray-700 hover:bg-purple-50 hover:text-purple-600"
+                            }`}
+                        >
+                          <span className="text-base">{item.icon}</span>
+                          {(!collapsed || isMobile) && (
+                            <span className="text-sm font-roboto font-medium">{item.label}</span>
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      {collapsed && !isMobile && (
+                        <TooltipContent side="right">{item.label}</TooltipContent>
+                      )}
+                    </Tooltip>
                   );
                 })}
               </nav>
