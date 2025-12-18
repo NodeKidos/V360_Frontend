@@ -58,6 +58,10 @@ import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
 import DetailedItinerary from "./components/driver-dashboard/DetailedItinerary";
 import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
+import DriverItineraryView from "./pages/driver/DriverItineraryView";
+import TourDetails from "./pages/driver/TourDetails";
+import MapView from "./pages/driver/MapView";
+import EmergencyPage from "./pages/driver/EmergencyPage";
 import RewardManagement from "./components/dashboard/reward/RewardView";
 import AddReward from "./components/dashboard/reward/AddReward";
 import VehicleDetails from "./components/driver-dashboard/VehicleDetails";
@@ -427,6 +431,38 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
               <DetailedItinerary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/itinerary/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <DriverItineraryView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/tour-details/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <TourDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/map/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <MapView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/emergency"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <EmergencyPage />
             </ProtectedRoute>
           }
         />

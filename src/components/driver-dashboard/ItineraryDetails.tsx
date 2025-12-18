@@ -277,7 +277,7 @@ const ItineraryDetails = () => {
                         </td>
                         <td className="p-4 text-center">
                           <button
-                            onClick={() => navigate(`/itinerary-details/${item.id}`)}
+                            onClick={() => navigate(`/driver/itinerary/${item.id}`)}
                             className="bg-[#B749DB] text-white px-4 py-2 rounded-lg text-xs md:text-sm font-medium hover:bg-purple-600 transition-colors flex items-center gap-2 mx-auto"
                           >
                             <FaEye />
