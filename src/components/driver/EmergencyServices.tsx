@@ -1,9 +1,11 @@
 import React from 'react';
+import { MdLocalPolice, MdLocalHospital, MdLocalFireDepartment, MdDirectionsCar } from 'react-icons/md';
+import { FaAmbulance } from 'react-icons/fa';
 
 interface EmergencyService {
     type: 'driver' | 'ambulance' | 'police' | 'firefighter';
     label: string;
-    icon: string;
+    icon: JSX.Element;
     color: string;
 }
 
@@ -13,10 +15,30 @@ interface EmergencyServicesProps {
 
 const EmergencyServices: React.FC<EmergencyServicesProps> = ({ onServiceSelect }) => {
     const services: EmergencyService[] = [
-        { type: 'driver', label: 'Driver', icon: '🚗', color: 'bg-purple-100 text-purple-700' },
-        { type: 'ambulance', label: 'Ambulance', icon: '🚑', color: 'bg-purple-100 text-purple-700' },
-        { type: 'police', label: 'Police', icon: '👮', color: 'bg-purple-100 text-purple-700' },
-        { type: 'firefighter', label: 'Firefighters', icon: '🚒', color: 'bg-purple-100 text-purple-700' },
+        {
+            type: 'driver',
+            label: 'Driver',
+            icon: <MdDirectionsCar className="text-2xl" />,
+            color: 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+        },
+        {
+            type: 'ambulance',
+            label: 'Ambulance',
+            icon: <FaAmbulance className="text-2xl" />,
+            color: 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+        },
+        {
+            type: 'police',
+            label: 'Police',
+            icon: <MdLocalPolice className="text-2xl" />,
+            color: 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+        },
+        {
+            type: 'firefighter',
+            label: 'Firefighters',
+            icon: <MdLocalFireDepartment className="text-2xl" />,
+            color: 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+        },
     ];
 
     return (
@@ -25,9 +47,9 @@ const EmergencyServices: React.FC<EmergencyServicesProps> = ({ onServiceSelect }
                 <button
                     key={service.type}
                     onClick={() => onServiceSelect(service.type)}
-                    className={`${service.color} px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:opacity-80 transition`}
+                    className={`${service.color} px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition`}
                 >
-                    <span className="text-2xl">{service.icon}</span>
+                    {service.icon}
                     <span>{service.label}</span>
                 </button>
             ))}

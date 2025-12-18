@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Sidebar from '../../components/AdminSidebar';
 import TopBar from '../../components/Topbar';
 import DestinationTimeline from '../../components/driver/DestinationTimeline';
@@ -80,6 +81,14 @@ const TourDetails = () => {
         return locs;
     }) || [];
 
+    const handlePrevious = () => {
+        navigate(`/driver/itinerary/${id}`);
+    };
+
+    const handleNext = () => {
+        navigate(`/driver/map/${id}`);
+    };
+
     if (isLoadingSchedule) {
         return (
             <div className="h-screen bg-gray-50 flex overflow-hidden">
@@ -111,7 +120,26 @@ const TourDetails = () => {
                 <div className="p-4 md:p-6 lg:p-8">
                     <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 font-poppins mt-4">
+                    {/* Top Navigation Bar - Driver Friendly */}
+                    <div className="flex items-center justify-between mt-4 mb-4">
+                        <button
+                            onClick={() => navigate(`/driver/itinerary/${id}`)}
+                            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-poppins font-medium text-lg"
+                        >
+                            <FaArrowLeft /> Back
+                        </button>
+
+                        {/* SOS Button */}
+                        <button
+                            onClick={() => navigate('/driver/emergency')}
+                            className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-lg transition-all duration-200 transform hover:scale-110"
+                            title="Emergency SOS"
+                        >
+                            <span className="text-white font-bold text-sm">SOS</span>
+                        </button>
+                    </div>
+
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 font-poppins">
                         Tour Details
                     </h1>
 
@@ -149,6 +177,22 @@ const TourDetails = () => {
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Bottom Navigation - Large Touch-Friendly Buttons */}
+                    <div className="flex gap-4 mt-6">
+                        <button
+                            onClick={handlePrevious}
+                            className="flex-1 px-8 py-4 rounded-lg border-2 border-purple-600 text-purple-600 font-semibold text-lg hover:bg-purple-50 transition flex items-center justify-center gap-2"
+                        >
+                            <FaArrowLeft /> Previous
+                        </button>
+                        <button
+                            onClick={handleNext}
+                            className="flex-1 px-8 py-4 rounded-lg bg-purple-600 text-white font-semibold text-lg hover:bg-purple-700 transition flex items-center justify-center gap-2"
+                        >
+                            Next <FaArrowRight />
+                        </button>
                     </div>
                 </div>
             </div>

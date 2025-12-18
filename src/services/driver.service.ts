@@ -100,4 +100,47 @@ export const driverService = {
     );
     return response.data;
   },
+
+  // Update trip status (START, ARRIVED, FINISHED)
+  updateTripStatus: async (itineraryId: string, locationId: string, status: 'started' | 'arrived' | 'completed') => {
+    const response = await axios.patch(
+      `${API_URL}/itineraries/${itineraryId}/locations/${locationId}/status`,
+      { status },
+      getAuthHeader()
+    );
+    return response.data;
+  },
+
+  // Update overall itinerary status
+  updateItineraryStatus: async (itineraryId: string, status: 'in_progress' | 'completed') => {
+    const response = await axios.patch(
+      `${API_URL}/itineraries/${itineraryId}/status`,
+      { status },
+      getAuthHeader()
+    );
+    return response.data;
+  },
+
+  // Get location progress for an itinerary
+  getLocationProgress: async (itineraryId: string) => {
+    const response = await axios.get(
+      `${API_URL}/itineraries/${itineraryId}/progress`,
+      getAuthHeader()
+    );
+    return response.data;
+  },
+
+  // Update specific location progress
+  updateLocationProgress: async (
+    itineraryId: string,
+    locationId: string,
+    status: 'not_started' | 'started' | 'arrived' | 'completed'
+  ) => {
+    const response = await axios.patch(
+      `${API_URL}/itineraries/${itineraryId}/locations/${locationId}/status`,
+      { status },
+      getAuthHeader()
+    );
+    return response.data;
+  },
 };

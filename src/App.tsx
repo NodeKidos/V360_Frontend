@@ -55,6 +55,9 @@ import ActivityLogView from "./components/dashboard/ActivityLog/ActivityLogView"
 import EditUser from "./components/dashboard/User/EditUser";
 import EditMyItinerary from "./pages/customer-itinerary-edit/EditMyItinerary";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
+import MyTrips from "./pages/driver/MyTrips";
+import DriverProfile from "./pages/driver/DriverProfile";
+import DriverVehicle from "./pages/driver/DriverVehicle";
 import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
 import DetailedItinerary from "./components/driver-dashboard/DetailedItinerary";
 import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
@@ -411,18 +414,34 @@ export default function App() {
           }
         />
         <Route
-          path="/itinerary-details"
+          path="/driver-trips"
           element={
             <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
-              <ItineraryDetails />
+              <MyTrips />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/driver-trips"
+          path="/driver-profile"
           element={
             <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
-              <ScheduleTrip />
+              <DriverProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver-vehicle"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <DriverVehicle />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/itinerary-details"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <ItineraryDetails />
             </ProtectedRoute>
           }
         />

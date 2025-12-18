@@ -34,10 +34,10 @@ const sidebarMenuConfig = {
   ],
   driver: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
-    { label: 'My Trips', icon: <BiTrip />, link: '/itinerary-details' },
-    { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' },
+    { label: 'My Trip', icon: <BiTrip />, link: '/driver-trips' },
+    { label: 'Itinerary', icon: <FaMapMarkedAlt />, link: '/itinerary-details' },
     { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
-    { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle-details' },
+    { label: 'Vehicle', icon: <FaCarSide />, link: '/driver-vehicle' },
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
