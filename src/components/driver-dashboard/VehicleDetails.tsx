@@ -79,8 +79,8 @@ const VehicleDetails = () => {
   };
 
   const openModal = (vehicle: SetStateAction<null>, type: SetStateAction<string>) => {
-    // Only open the modal if the status is "Need Repair" or "In Service"
-    if (type === "Need Repair" || type === "In Service") {
+    // Only open the modal if the status is "Need Repair", "In Service", or "Active"
+    if (type === "Need Repair" || type === "In Service" || type === "Active") {
       setSelectedVehicle(vehicle);
       setModalType(type);
       setShowModal(true);
@@ -93,12 +93,11 @@ const VehicleDetails = () => {
     );
     setVehicles(updatedVehicles);
     setShowModal(false);
-    setNote("");
+    setNote(""); // Reset note field
   };
 
   return (
-    <div className="flex w-full min-h-screen bg-white">
-      {/* Sidebar */}
+    <div className="h-screen bg-white flex overflow-hidden">
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -107,97 +106,101 @@ const VehicleDetails = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* Content Area */}
-      <div className={`flex-1 p-4 transition-all duration-300 ${collapsed ? "ml-2" : "ml-6"}`}>
-        {/* TopBar */}
-        <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
-
-        {/* SEARCH BAR - Mobile Only */}
-        <div className="mb-6 relative md:hidden">
-          <div className="relative">
-            <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
-            <input
-              type="text"
-              placeholder="Search here"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
-            />
+      {/* MAIN CONTAINER */}
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <div className="p-6">
+          <TopBar
+            isMobile={isMobile}
+            setSidebarOpen={setSidebarOpen}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+          <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
+            <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+              Schedule of Trip
+            </h2>
           </div>
-        </div>
+          {/* TITLE - Mobile */}
+          <div className="mb-4 mt-4 md:hidden">
+            <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
+              Schedule of Trip
+            </h2>
+          </div>
 
-        {/* Main Content */}
-        <div className="bg-white p-4 min-h-[80vh]">
-          <motion.div className="space-y-6">
-            {/* Main Heading for Vehicle Details */}
-            <h1 className="text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-6">Vehicle Details</h1>
+          {/* SEARCH BAR - Mobile Only */}
+          <div className="mb-6 relative md:hidden">
+            <div className="relative">
+              <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
+              <input
+                type="text"
+                placeholder="Search here"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
+              />
+            </div>
+          </div>
 
-            {/* Mapping through vehicle details to show each vehicle */}
-            {vehicles.map((vehicle) => (
-              <div key={vehicle.id} className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
-                <div className="flex justify-between items-start mb-4">
-                  {/* Vehicle Information Heading */}
-                  <h2 className="text-[20px] font-semibold">Vehicle Information</h2>
+          {/* Mapping through vehicle details to show each vehicle */}
+          {vehicles.map((vehicle) => (
+            <div key={vehicle.id} className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
+              <div className="flex justify-between items-start mb-4">
+                {/* Vehicle Information Heading */}
+                <h2 className="text-[20px] font-semibold">Vehicle Information</h2>
 
-                  {/* Buttons for "Need Repair", "In Service", "Active" */}
-                  <div className="flex space-x-4">
-                    <button
-                      className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${
-                        vehicle.status === "Need Repair" ? "bg-red-500" : ""
-                      }`}
-                      onClick={() => openModal(vehicle, "Need Repair")}
-                    >
-                      Need Repair
-                    </button>
-                    <button
-                      className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${
-                        vehicle.status === "In Service" ? "bg-yellow-500" : ""
-                      }`}
-                      onClick={() => openModal(vehicle, "In Service")}
-                    >
-                      In Service
-                    </button>
-                    <button
-                      className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${
-                        vehicle.status === "Active" ? "bg-green-500" : ""
-                      }`}
-                      onClick={() => openModal(vehicle, "Active")}
-                    >
-                      Active
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px] font-roboto">
-                  <div className="mb-2">
-                    <span className="font-semibold">Vehicle Id:</span> {vehicle.id}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Vehicle Model:</span> {vehicle.model}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Vehicle Type:</span> {vehicle.type}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Vehicle No Plate:</span> {vehicle.plate}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Seat Count:</span> {vehicle.seatCount}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Vehicle Status:</span> {vehicle.status}
-                  </div>
-                </div>
-
-                {/* Vehicle Images */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                  {vehicle.images.map((img, index) => (
-                    <img key={index} src={img} alt={`Vehicle Image ${index + 1}`} className="w-full h-50 rounded-lg shadow-md" />
-                  ))}
+                {/* Buttons for "Need Repair", "In Service", "Active" */}
+                <div className="flex space-x-4">
+                  <button
+                    className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${vehicle.status === "Need Repair" ? "bg-red-500" : ""}`}
+                    onClick={() => openModal(vehicle, "Need Repair")}
+                  >
+                    Need Repair
+                  </button>
+                  <button
+                    className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${vehicle.status === "In Service" ? "bg-yellow-500" : ""}`}
+                    onClick={() => openModal(vehicle, "In Service")}
+                  >
+                    In Service
+                  </button>
+                  <button
+                    className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${vehicle.status === "Active" ? "bg-green-500" : ""}`}
+                    onClick={() => openModal(vehicle, "Active")}
+                  >
+                    Active
+                  </button>
                 </div>
               </div>
-            ))}
-          </motion.div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px] font-roboto">
+                <div className="mb-2">
+                  <span className="font-semibold">Vehicle Id:</span> {vehicle.id}
+                </div>
+                <div className="mb-2">
+                  <span className="font-semibold">Vehicle Model:</span> {vehicle.model}
+                </div>
+                <div className="mb-2">
+                  <span className="font-semibold">Vehicle Type:</span> {vehicle.type}
+                </div>
+                <div className="mb-2">
+                  <span className="font-semibold">Vehicle No Plate:</span> {vehicle.plate}
+                </div>
+                <div className="mb-2">
+                  <span className="font-semibold">Seat Count:</span> {vehicle.seatCount}
+                </div>
+                <div className="mb-2">
+                  <span className="font-semibold">Vehicle Status:</span> {vehicle.status}
+                </div>
+              </div>
+
+              {/* Vehicle Images */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                {vehicle.images.map((img, index) => (
+                  <img key={index} src={img} alt={`Vehicle Image ${index + 1}`} className="w-50 lg:w-full h-50 rounded-lg shadow-md" />
+                ))}
+              </div>
+            </div>
+          ))}
+
         </div>
       </div>
 
@@ -235,6 +238,7 @@ const VehicleDetails = () => {
         </div>
       )}
     </div>
+
   );
 };
 
