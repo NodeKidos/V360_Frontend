@@ -20,9 +20,7 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
     onStatusChange,
     status = 'not-started'
 }) => {
-    // Calculate padding to align line with dot centers
-    const dotWidth = 48; // w-12 = 48px
-    const paddingPercent = (dotWidth / 2) / (dotWidth * locations.length) * 100;
+    const numLocations = locations.length;
 
     return (
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-4">
@@ -66,34 +64,40 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
 
             {/* Progress Stepper */}
             <div className="relative pt-6">
-                {/* Background line container with padding */}
-                <div className="absolute top-6 left-0 right-0 px-6">
-                    {/* Gray background line */}
-                    <div className="relative h-2 bg-gray-400">
-                        {/* Blue progress line */}
-                        <div
-                            className="absolute left-0 top-0 h-2 bg-blue-500 transition-all duration-500"
-                            style={{
-                                width: `${(locations.filter(l => l.visited).length / Math.max(locations.length - 1, 1)) * 100}%`
-                            }}
-                        ></div>
-                    </div>
-                </div>
-
                 {/* Location Markers */}
-                <div className="flex justify-between items-center relative z-10">
-                    {locations.map((location) => (
+                <div className="flex justify-between items-start relative">
+                    {locations.map((location, index) => (
                         <div key={location.id} className="flex flex-col items-center relative" style={{ flex: 1 }}>
-                            {/* Marker */}
+                            {/* Connecting line - only show between dots */}
+                            {index < numLocations - 1 && (
+                                <div className="absolute left-1/2 top-6 h-2 bg-gray-400"
+                                    style={{
+                                        width: `calc(100% / ${numLocations} * ${numLocations})`,
+                                        left: '50%'
+                                    }}>
+                                </div>
+                            )}
+
+                            {/* Blue progress line overlay */}
+                            {index < numLocations - 1 && location.visited && (
+                                <div className="absolute left-1/2 top-6 h-2 bg-blue-500 transition-all duration-500"
+                                    style={{
+                                        width: `calc(100% / ${numLocations} * ${numLocations})`,
+                                        left: '50%'
+                                    }}>
+                                </div>
+                            )}
+
+                            {/* Marker Dot */}
                             <div className={`
-                w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300
-                ${location.visited
+                                w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 relative z-10
+                                ${location.visited
                                     ? 'bg-blue-500 border-4 border-blue-200'
                                     : location.current
                                         ? 'bg-white border-4 border-blue-500 ring-4 ring-blue-100'
                                         : 'bg-white border-4 border-gray-300'
                                 }
-              `}>
+                            `}>
                                 {location.visited ? (
                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -105,13 +109,29 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
 
                             {/* Location Name */}
                             <p className={`
-                text-xs text-center mt-3 font-medium max-w-[100px] leading-tight
-                ${location.visited || location.current ? 'text-gray-800' : 'text-gray-500'}
-              `}>
+                                text-xs text-center mt-3 font-medium max-w-[100px] leading-tight
+                                ${location.visited || location.current ? 'text-gray-800' : 'text-gray-500'}
+                            `}>
                                 {location.name}
                             </p>
                         </div>
                     ))}
+
+                    {/* Single horizontal line spanning from first to last dot */}
+                    <div className="absolute top-6 h-2 bg-gray-400"
+                        style={{
+                            left: `calc(100% / ${numLocations} / 2)`,
+                            right: `calc(100% / ${numLocations} / 2)`,
+                        }}>
+                    </div>
+
+                    {/* Blue progress overlay */}
+                    <div className="absolute top-6 h-2 bg-blue-500 transition-all duration-500"
+                        style={{
+                            left: `calc(100% / ${numLocations} / 2)`,
+                            width: `calc((100% - 100% / ${numLocations}) * ${(locations.filter(l => l.visited).length - 1) / Math.max(numLocations - 1, 1)})`,
+                        }}>
+                    </div>
                 </div>
             </div>
         </div>
