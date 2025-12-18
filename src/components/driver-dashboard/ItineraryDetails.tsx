@@ -200,14 +200,13 @@ const ItineraryDetails = () => {
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="border-b">
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Itinerary ID</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Customer Name</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Destination</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Vehicle</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Start Date</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">End Date</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Status</th>
-                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[16px] md:text-[18px] lg:text-[20px] font-poppins">Actions</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Itinerary #</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Customer</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Destinations</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Duration</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Trip Info</th>
+                  <th className="p-4 text-left text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Status</th>
+                  <th className="p-4 text-center text-sm font-semibold text-gray-700 text-[14px] md:text-[16px] font-poppins">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,37 +223,70 @@ const ItineraryDetails = () => {
                     </td>
                   </tr>
                 ) : (
-                  currentItineraries.map((item) => (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.itineraryNumber}</td>
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.customerName}</td>
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">{item.destination}</td>
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
-                        {item.assignedVehicle?.name || 'Not Assigned'}
-                      </td>
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
-                        {new Date(item.startDate).toLocaleDateString()}
-                      </td>
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
-                        {new Date(item.endDate).toLocaleDateString()}
-                      </td>
-                      <td className={`p-4 text-sm font-bold text-[18px] font-poppins ${item.status === 'in_progress' ? 'text-red-500' :
-                        item.status === 'accepted' ? 'text-green-500' : 'text-gray-500'
-                        }`}>
-                        {item.status.replace('_', ' ').toUpperCase()}
-                      </td>
-                      <td className="p-4 text-sm text-gray-700 text-[18px] font-poppins">
-                        <button
-                          className="text-purple-500 cursor-pointer hover:text-purple-700"
-                          onClick={() => navigate(`/driver-trips?id=${item.id}`)}
-                          title="View Schedule"
-                        >
-                          <FaEye className="inline mr-2" />
-                          <FaPlayCircle className="inline" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  currentItineraries.map((item) => {
+                    const startDate = new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const endDate = new Date(item.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                    return (
+                      <tr key={item.id} className="border-b hover:bg-gray-50">
+                        <td className="p-4 text-sm text-gray-700 text-[14px] font-poppins font-medium">{item.itineraryNumber}</td>
+                        <td className="p-4 text-sm text-gray-700 text-[14px] font-poppins">
+                          <div>
+                            <p className="font-medium">{item.customerName}</p>
+                            <p className="text-xs text-gray-500">{item.numberOfParticipants} participants</p>
+                          </div>
+                        </td>
+                        <td className="p-4 text-sm text-gray-700 text-[14px] font-poppins">
+                          {item.allDestinations && item.allDestinations.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {item.allDestinations.slice(0, 2).map((dest: string, idx: number) => (
+                                <span key={idx} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                  {dest}
+                                </span>
+                              ))}
+                              {item.allDestinations.length > 2 && (
+                                <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                                  +{item.allDestinations.length - 2} more
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-gray-500">{item.destination}</span>
+                          )}
+                        </td>
+                        <td className="p-4 text-sm text-gray-700 text-[14px] font-poppins">
+                          <div>
+                            <p className="font-medium">{item.totalDays || 0} Days</p>
+                            <p className="text-xs text-gray-500">{startDate} - {endDate}</p>
+                          </div>
+                        </td>
+                        <td className="p-4 text-sm text-gray-700 text-[14px] font-poppins">
+                          <div className="flex gap-3 text-xs">
+                            <span className="flex items-center gap-1">
+                              🏨 {item.totalHotels || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              🎯 {item.totalExcursions || 0}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4 text-sm font-poppins">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${item.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' : item.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : item.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+                            {item.status || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            onClick={() => navigate(`/itinerary-details/${item.id}`)}
+                            className="bg-[#B749DB] text-white px-4 py-2 rounded-lg text-xs md:text-sm font-medium hover:bg-purple-600 transition-colors flex items-center gap-2 mx-auto"
+                          >
+                            <FaEye />
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

@@ -56,6 +56,7 @@ import EditUser from "./components/dashboard/User/EditUser";
 import EditMyItinerary from "./pages/customer-itinerary-edit/EditMyItinerary";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
+import DetailedItinerary from "./components/driver-dashboard/DetailedItinerary";
 import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
 import RewardManagement from "./components/dashboard/reward/RewardView";
 import AddReward from "./components/dashboard/reward/AddReward";
@@ -418,6 +419,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
               <ScheduleTrip />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/itinerary-details/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
+              <DetailedItinerary />
             </ProtectedRoute>
           }
         />
