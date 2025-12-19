@@ -109,7 +109,7 @@ const DriverVehicle = () => {
                                         <div className={`px-4 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 ${vehicle.status === 'available'
                                             ? 'bg-green-100 text-green-700'
                                             : vehicle.status === 'in_use'
-                                                ? 'bg-blue-100 text-orange-700'
+                                                ? 'bg-orange-100 text-orange-700'
                                                 : vehicle.status === 'maintenance'
                                                     ? 'bg-orange-100 text-orange-700'
                                                     : vehicle.status === 'out_of_service'
