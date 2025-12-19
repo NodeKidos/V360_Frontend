@@ -106,14 +106,7 @@ export default function App() {
 
         {/* Informational & Feature Pages */}
         <Route path="/about-us" element={<AboutUs />} />
-        <Route
-          path="/itinerary"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
-              <Itinerary />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/itinerary" element={<Itinerary />} />
         <Route
           path="/my-itineraries"
           element={

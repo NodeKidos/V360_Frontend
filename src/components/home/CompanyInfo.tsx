@@ -23,7 +23,7 @@ const CompanyInfo = () => {
 
         {/* Button on the Right */}
         <Link
-          to="/packages"
+          to="/itinerary"
           className="text-center bg-[#B749DB] text-white py-2 px-8 rounded-xl hover:bg-purple-700 transition duration-300 text-[16px] font-medium font-roboto-condensed"
         >
           Begin Your Journey
