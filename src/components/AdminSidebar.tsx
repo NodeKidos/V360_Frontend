@@ -9,6 +9,7 @@ import { FiLogOut } from 'react-icons/fi';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { IoMdClose, IoMdSettings } from 'react-icons/io';
+import { useAuthStore } from '../store/useAuthStore';
 
 // Define the menu configuration for each role
 const sidebarMenuConfig = {
@@ -187,7 +188,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <TooltipTrigger asChild>
                   <Button
                     variant="outline"
-                    onClick={() => navigate("/login")}
+                    onClick={() => {
+                      useAuthStore.getState().logout();
+                      navigate("/login");
+                    }}
                     className={`w-full flex items-center gap-2 text-gray-700 border-gray-300 hover:bg-purple-50 py-2
                       ${collapsed && !isMobile ? "justify-center px-2" : "justify-start pl-3"}`}
                   >

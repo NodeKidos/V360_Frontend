@@ -240,19 +240,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   // Logout
   logout: () => {
-    authService.logout();
-    localStorage.removeItem("userRole");
+    // Clear all localStorage items
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
 
     // Disconnect WebSocket
     useNotificationStore.getState().disconnectWebSocket();
 
+    // Reset all state
     set({
       user: null,
       isLoggedIn: false,
       otpMode: null,
       otpTarget: null,
-      error: null
+      error: null,
+      isLoading: false
     });
+
     toast.info("Logged out successfully");
   },
 }));
