@@ -44,17 +44,19 @@ export interface Driver {
 
 export const adminDriverService = {
   getAllDrivers: async (): Promise<{ drivers: Driver[] }> => {
-    const response = await axios.get(`${API_URL}/admin/drivers`, {
+    const response = await axios.get(`${API_URL}/drivers`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    // Backend returns array directly, wrap in drivers object for frontend compatibility
-    return { drivers: Array.isArray(response.data) ? response.data : [] };
+    console.log('📥 Drivers API response:', response.data);
+    // Backend already returns { drivers: [...], total, page, limit, totalPages }
+    // Just return it as is
+    return response.data;
   },
 
   getDriverById: async (id: string): Promise<any> => {
-    const response = await axios.get(`${API_URL}/admin/drivers/${id}`, {
+    const response = await axios.get(`${API_URL}/drivers/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
@@ -63,7 +65,7 @@ export const adminDriverService = {
   },
 
   createDriver: async (data: any): Promise<any> => {
-    const response = await axios.post(`${API_URL}/admin/drivers`, data, {
+    const response = await axios.post(`${API_URL}/drivers`, data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
@@ -72,7 +74,7 @@ export const adminDriverService = {
   },
 
   updateDriver: async (id: string, data: any): Promise<any> => {
-    const response = await axios.put(`${API_URL}/admin/drivers/${id}`, data, {
+    const response = await axios.put(`${API_URL}/drivers/${id}`, data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
@@ -81,7 +83,7 @@ export const adminDriverService = {
   },
 
   deleteDriver: async (id: string): Promise<any> => {
-    const response = await axios.delete(`${API_URL}/admin/drivers/${id}`, {
+    const response = await axios.delete(`${API_URL}/drivers/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },

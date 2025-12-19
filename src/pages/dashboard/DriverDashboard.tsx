@@ -347,7 +347,25 @@ const DriverDashboard = () => {
                     ) : assignedVehicle ? (
                       <div className="flex flex-col lg:flex-row gap-5 lg:gap-8 items-center lg:items-start">
                         <div className="flex flex-col gap-4 w-full lg:w-1/2">
-                          <p className="font-semibold text-gray-900 text-base md:text-[20px] font-poppins">Current Vehicle</p>
+                          <div className="flex items-center justify-between">
+                            <p className="font-semibold text-gray-900 text-base md:text-[20px] font-poppins">Current Vehicle</p>
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${assignedVehicle.status === 'available'
+                              ? 'bg-green-100 text-green-700'
+                              : assignedVehicle.status === 'in_use'
+                                ? 'bg-blue-100 text-blue-700'
+                                : assignedVehicle.status === 'maintenance'
+                                  ? 'bg-orange-100 text-orange-700'
+                                  : assignedVehicle.status === 'out_of_service'
+                                    ? 'bg-red-100 text-red-700'
+                                    : 'bg-gray-100 text-gray-700'
+                              }`}>
+                              {assignedVehicle.status === 'available' ? 'Available'
+                                : assignedVehicle.status === 'in_use' ? 'In Service'
+                                  : assignedVehicle.status === 'maintenance' ? 'Maintenance'
+                                    : assignedVehicle.status === 'out_of_service' ? 'Out of Service'
+                                      : assignedVehicle.status || 'Unknown'}
+                            </span>
+                          </div>
                           <div className="mt-4 space-y-3">
                             <div className="flex items-center text-sm text-gray-500">
                               <div className="bg-blue-100 p-2 rounded-full">
