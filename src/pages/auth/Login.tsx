@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Link } from "react-router-dom";
 import hero from "../../assets/travel.jpg"; // ✅ background image
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
 
 interface LoginForm {
   emailOrPhone: string;
@@ -11,6 +13,7 @@ interface LoginForm {
 export default function Login() {
   const { login } = useAuthStore();
   const { register, handleSubmit } = useForm<LoginForm>();
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const onSubmit = (data: LoginForm) => {
     login(data.emailOrPhone, data.password);
@@ -39,16 +42,26 @@ export default function Login() {
             className="w-full border rounded-md p-3 text-[16px] mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:sm:text-[10px] placeholder:md:text-[20px] placeholder:lg:text-[24px] placeholder:text-gray-400"
           />
 
-          {/* Password Field */}
-          <label className="block text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800 mb-2">
-            Password
-          </label>
-          <input
-            {...register("password")}
-            type="password"
-            placeholder="Enter Password"
-            className="w-full border rounded-md p-3 text-[16px] mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:sm:text-[10px] placeholder:md:text-[20px] placeholder:lg:text-[24px] placeholder:text-gray-400"
-          />
+        <label className="block text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800 mb-2">
+  Password
+</label>
+
+<div className="relative">
+  <input
+    {...register("password")}
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter Password"
+    className="w-full border rounded-md p-3 pr-12 text-[16px] focus:outline-none focus:ring-2 focus:ring-purple-500"
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-black"
+  >
+    {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+  </button>
+</div>
 
           {/* Options */}
           <div className="flex justify-between items-center text-[12px] md:text-[20px] lg:text-[24px] mb-4">
