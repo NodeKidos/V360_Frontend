@@ -26,8 +26,14 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     // Logged in but doesn't have the required role
-    // Redirect to home or show unauthorized page
-    return <Navigate to="/home" replace />;
+    // Redirect to their appropriate dashboard based on role
+    const dashboardRoute = user.role === UserRole.ADMIN || user.role === UserRole.STAFF
+      ? '/admin-dashboard'
+      : user.role === UserRole.DRIVER
+        ? '/driver-dashboard'
+        : '/user-dashboard';
+
+    return <Navigate to={dashboardRoute} replace />;
   }
 
   // Authorized, render the protected component

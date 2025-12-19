@@ -25,7 +25,7 @@ const getDashboardRoute = (role: UserRole): string => {
     case UserRole.CUSTOMER:
       return "/user-dashboard"; // Customers go to user dashboard
     default:
-      return "/home";
+      return "/user-dashboard";
   }
 };
 
@@ -48,8 +48,8 @@ export default function VerifyOtp() {
         const dashboardRoute = getDashboardRoute(currentUser.role);
         navigate(dashboardRoute);
       } else {
-        // Fallback to home if no user data
-        navigate("/home");
+        // Fallback to user dashboard if no user data
+        navigate("/user-dashboard");
       }
     }
   };

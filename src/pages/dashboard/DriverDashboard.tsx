@@ -33,7 +33,7 @@ const DriverDashboard = () => {
   const [currentTrip, setCurrentTrip] = useState<any>(null);
   const [loadingTrip, setLoadingTrip] = useState(true);
 
-  const { assignedVehicle, isLoadingVehicle, fetchAssignedVehicle } = useDriverStore();
+  const { assignedVehicles, isLoadingVehicles, fetchAssignedVehicles } = useDriverStore();
 
   // Handle window resizing
   useEffect(() => {
@@ -51,16 +51,14 @@ const DriverDashboard = () => {
     const fetchStats = async () => {
       try {
         setLoadingStats(true);
-        const [earningsData, profileData] = await Promise.all([
-          driverService.getEarnings(),
-          driverService.getProfile(),
-        ]);
+        const earningsData = await driverService.getEarnings();
+        // const profileData = await driverService.getProfile(); // Temporarily disabled - 500 error
 
         setStats({
           totalTrips: earningsData.totalTrips || 0,
           distance: 1628, // TODO: Add distance tracking to backend
           drivingHours: 16.2, // TODO: Add hours tracking to backend
-          rating: profileData.rating || 0,
+          rating: 4.5, // TODO: Fix profile endpoint
         });
       } catch (error) {
         console.error("Failed to fetch stats:", error);
@@ -101,10 +99,13 @@ const DriverDashboard = () => {
     fetchCurrentTrip();
   }, []);
 
-  // Fetch assigned vehicle
+  // Fetch assigned vehicles
   useEffect(() => {
-    fetchAssignedVehicle();
-  }, [fetchAssignedVehicle]);
+    fetchAssignedVehicles();
+  }, [fetchAssignedVehicles]);
+
+  // Get first vehicle from assigned vehicles array
+  const assignedVehicle = assignedVehicles?.[0];
 
   // Calculate trip duration from current trip
   const getTripDuration = () => {
@@ -339,7 +340,7 @@ const DriverDashboard = () => {
               <Card className="bg-white rounded-xl shadow-sm border-0 w-full">
                 <CardContent className="p-5">
                   <div className="mt-4">
-                    {isLoadingVehicle ? (
+                    {isLoadingVehicles ? (
                       <div className="flex justify-center py-8">
                         <Loader className="w-6 h-6" />
                       </div>

@@ -22,6 +22,8 @@ export default function AddVehicle() {
         vehicleNoPlate: string;
         vehicleModel: string;
         seatCount: string;
+        fuelType: string;
+        nextServiceDate: string;
         assignDriver: string;
         status: string;
         vehicleImage: File | null;
@@ -31,6 +33,8 @@ export default function AddVehicle() {
         vehicleNoPlate: "",
         vehicleModel: "",
         seatCount: "",
+        fuelType: "diesel",
+        nextServiceDate: "",
         assignDriver: "",
         status: "Active",
         vehicleImage: null,
@@ -109,6 +113,8 @@ export default function AddVehicle() {
                 make: vehicleData.vehicleName,
                 model: vehicleData.vehicleModel,
                 seatingCapacity: parseInt(vehicleData.seatCount),
+                fuelType: vehicleData.fuelType,
+                nextServiceDate: vehicleData.nextServiceDate || undefined,
                 status: mappedStatus,
                 pricePerDay: 0, // Default or add field if needed
                 year: new Date().getFullYear(), // Default
@@ -238,7 +244,7 @@ export default function AddVehicle() {
                                 </div>
                             </div>
 
-                            {/* Seat Count + Assign Driver */}
+                            {/* Seat Count + Fuel Type */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Seat Count</label>
@@ -251,6 +257,34 @@ export default function AddVehicle() {
                                         onChange={handleChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                         placeholder="Enter Seat Count"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Fuel Type</label>
+                                    <select
+                                        name="fuelType"
+                                        value={vehicleData.fuelType}
+                                        onChange={handleChange}
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    >
+                                        <option value="diesel">Diesel</option>
+                                        <option value="petrol">Petrol</option>
+                                        <option value="electric">Electric</option>
+                                        <option value="hybrid">Hybrid</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Next Service Date + Assign Driver */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Next Service Date (Optional)</label>
+                                    <input
+                                        type="date"
+                                        name="nextServiceDate"
+                                        value={vehicleData.nextServiceDate}
+                                        onChange={handleChange}
+                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                                 <div>

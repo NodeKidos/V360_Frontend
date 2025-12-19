@@ -22,7 +22,7 @@ const getDashboardRoute = (role: UserRole): string => {
     case UserRole.CUSTOMER:
       return "/user-dashboard";
     default:
-      return "/home";
+      return "/user-dashboard";
   }
 };
 
@@ -41,7 +41,7 @@ export default function Login() {
         const dashboardRoute = getDashboardRoute(currentUser.role);
         navigate(dashboardRoute);
       } else {
-        navigate("/home");
+        navigate("/user-dashboard");
       }
     }
   };

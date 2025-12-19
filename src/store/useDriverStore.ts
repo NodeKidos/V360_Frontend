@@ -9,14 +9,14 @@ interface DriverState {
     isLoadingItineraries: boolean;
     isLoadingSchedule: boolean;
 
-    // Vehicle
-    assignedVehicle: Vehicle | null;
-    isLoadingVehicle: boolean;
+    // Vehicles (now supports multiple)
+    assignedVehicles: any[];
+    isLoadingVehicles: boolean;
 
     // Actions
     fetchAssignedItineraries: () => Promise<void>;
     fetchItinerarySchedule: (itineraryId: string) => Promise<void>;
-    fetchAssignedVehicle: () => Promise<void>;
+    fetchAssignedVehicles: () => Promise<void>;
     updateTripStatus: (itineraryId: string, status: string) => Promise<void>;
     clearSchedule: () => void;
 }
@@ -27,8 +27,8 @@ export const useDriverStore = create<DriverState>((set) => ({
     currentSchedule: null,
     isLoadingItineraries: false,
     isLoadingSchedule: false,
-    assignedVehicle: null,
-    isLoadingVehicle: false,
+    assignedVehicles: [],
+    isLoadingVehicles: false,
 
     // Fetch assigned itineraries
     fetchAssignedItineraries: async () => {
@@ -56,16 +56,16 @@ export const useDriverStore = create<DriverState>((set) => ({
         }
     },
 
-    // Fetch assigned vehicle
-    fetchAssignedVehicle: async () => {
-        set({ isLoadingVehicle: true });
+    // Fetch assigned vehicles (now returns array)
+    fetchAssignedVehicles: async () => {
+        set({ isLoadingVehicles: true });
         try {
-            const vehicle = await driverService.getAssignedVehicle();
-            set({ assignedVehicle: vehicle, isLoadingVehicle: false });
+            const vehicles = await driverService.getAssignedVehicles();
+            set({ assignedVehicles: vehicles, isLoadingVehicles: false });
         } catch (error: any) {
-            console.error('Failed to fetch vehicle:', error);
-            toast.error(error.response?.data?.message || 'Failed to load vehicle');
-            set({ isLoadingVehicle: false });
+            console.error('Failed to fetch vehicles:', error);
+            toast.error(error.response?.data?.message || 'Failed to load vehicles');
+            set({ isLoadingVehicles: false });
         }
     },
 

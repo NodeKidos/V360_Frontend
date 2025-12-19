@@ -106,7 +106,14 @@ export default function App() {
 
         {/* Informational & Feature Pages */}
         <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/itinerary" element={<Itinerary />} />
+        <Route
+          path="/itinerary"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <Itinerary />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/my-itineraries"
           element={
@@ -402,7 +409,14 @@ export default function App() {
         {/* Package and User Routes */}
         <Route path="/package-price" element={<PackagePrice />} />
         <Route path="/user-reward" element={<Reward />} />
-        <Route path="/user-profile" element={<UserProfile />} />
+        <Route
+          path="/user-profile"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Driver Dashboard Routes */}
         <Route

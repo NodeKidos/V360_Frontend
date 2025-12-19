@@ -143,4 +143,13 @@ export const driverService = {
     );
     return response.data;
   },
+
+  // Get assigned vehicles
+  getAssignedVehicles: async () => {
+    const response = await axios.get(
+      `${API_URL}/vehicles`,
+      getAuthHeader()
+    );
+    return response.data;
+  },
 };

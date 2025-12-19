@@ -74,7 +74,8 @@ export default function MyItineraries() {
     getMyItineraries().then(() => {
       console.log("✅ Itineraries fetched");
     });
-  }, [isLoggedIn, navigate, getMyItineraries]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, navigate]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -397,7 +398,7 @@ export default function MyItineraries() {
 
                     {![ItineraryStatus.DRAFT, ItineraryStatus.PENDING_QUOTE, ItineraryStatus.QUOTED].includes(itinerary.status) && (
                       <button
-                        onClick={() => navigate(`/itinerary/${itinerary.id}`)}
+                        onClick={() => navigate(`/itinerary-summary?id=${itinerary.id}`)}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-[#B749DB] text-white rounded-lg hover:bg-[#8B2BB9] text-sm"
                       >
                         <FaEye size={14} /> View Details

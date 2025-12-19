@@ -43,28 +43,30 @@ const VehicleManagement = () => {
                 else if (v.status === "in_use") displayStatus = "In Service";
                 else if (v.status === "maintenance" || v.status === "out_of_service") displayStatus = "Need Repair";
 
-                // Extract driver name - driver info is in driver.user relation
+                // Extract driver name - check new assignedDrivers first, then legacy drivers
                 let driverName = "Unassigned";
-                if ((v as any).drivers && Array.isArray((v as any).drivers) && (v as any).drivers.length > 0) {
-                    const driver = (v as any).drivers[0];
-                    console.log(`Driver object for vehicle ${v.registrationNumber}:`, driver); // Debug driver object
 
-                    // Driver entity has a 'user' relation where firstName/lastName are stored
+                // Check new junction table assignments
+                if ((v as any).assignedDrivers && Array.isArray((v as any).assignedDrivers) && (v as any).assignedDrivers.length > 0) {
+                    const driver = (v as any).assignedDrivers[0];
+                    console.log(`Assigned driver from junction table for ${v.registrationNumber}:`, driver);
+                    const firstName = driver.firstName || '';
+                    const lastName = driver.lastName || '';
+                    driverName = `${firstName} ${lastName}`.trim() || "Unknown Driver";
+                }
+                // Fallback to legacy drivers relation
+                else if ((v as any).drivers && Array.isArray((v as any).drivers) && (v as any).drivers.length > 0) {
+                    const driver = (v as any).drivers[0];
+                    console.log(`Driver from legacy relation for ${v.registrationNumber}:`, driver);
+
                     if (driver.user) {
                         const firstName = driver.user.firstName || '';
                         const lastName = driver.user.lastName || '';
                         driverName = `${firstName} ${lastName}`.trim() || "Unknown Driver";
-                    } else if (driver.name) {
-                        // Fallback to name field if user relation not loaded
-                        driverName = driver.name;
-                    } else {
-                        // Last fallback
-                        const fullName = `${driver.firstName || ''} ${driver.lastName || ''}`.trim();
-                        driverName = fullName || "Unknown Driver";
                     }
                 }
 
-                console.log(`Vehicle ${v.registrationNumber} - Final Driver Name:`, driverName); // Debug final name
+                console.log(`Vehicle ${v.registrationNumber} - Final Driver Name:`, driverName);
 
                 return {
                     id: v.id,
@@ -362,28 +364,28 @@ const VehicleManagement = () => {
 
                                 <tbody className="font-poppins">
                                     {currentVehicles.map((v) => (
-                                    <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                        {/* <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td> */}
-                                        <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
-                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.type}</td>
-                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>
-                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.model}</td>
-                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.seats}</td>
-                                        <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.driver}</td>
-                                        <td className={`px-2 py-3 font-medium whitespace-nowrap ${v.status === "Active" ? "text-green-600" : v.status === "In Service" ? "text-[#FF8D28]" : "text-red-600"}`}>{v.status}</td>
-                                        <td className="px-4 py-4 whitespace-nowrap">
-                                            <div className="flex gap-3 justify-center">
-                                                <CiEdit
-                                                    className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                    onClick={() => handleEditClick(v.id)}
-                                                />
-                                                <MdDeleteOutline
-                                                    className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                    onClick={() => handleDeleteClick(v.id)}
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                                            {/* <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td> */}
+                                            <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
+                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.type}</td>
+                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>
+                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.model}</td>
+                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.seats}</td>
+                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.driver}</td>
+                                            <td className={`px-2 py-3 font-medium whitespace-nowrap ${v.status === "Active" ? "text-green-600" : v.status === "In Service" ? "text-[#FF8D28]" : "text-red-600"}`}>{v.status}</td>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                <div className="flex gap-3 justify-center">
+                                                    <CiEdit
+                                                        className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                        onClick={() => handleEditClick(v.id)}
+                                                    />
+                                                    <MdDeleteOutline
+                                                        className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                        onClick={() => handleDeleteClick(v.id)}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>

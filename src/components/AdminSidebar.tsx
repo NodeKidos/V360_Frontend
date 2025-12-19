@@ -43,7 +43,7 @@ const sidebarMenuConfig = {
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
     { label: 'My Itineraries', icon: <FaRoute />, link: '/my-itineraries' },
     { label: 'Create Itinerary', icon: <BiTrip />, link: '/itinerary' },
-    { label: 'Rewards', icon: <FaGift />, link: '/reward' },
+    { label: 'Rewards', icon: <FaGift />, link: '/user-reward' },
     { label: 'Profile', icon: <FaUser />, link: '/user-profile' }
   ]
 };
@@ -78,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (storedRole && sidebarMenuConfig[storedRole]) {
       setRole(storedRole); // Set role if valid
     } else {
-      setRole('driver'); // Default role if invalid or not found
+      setRole('user'); // Default role if invalid or not found (customer)
     }
 
     // Fetch user info from localStorage
