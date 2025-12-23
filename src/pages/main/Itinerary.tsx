@@ -16,6 +16,8 @@ import { IoSearch } from "react-icons/io5";
 
 import CustomPagination from "../../components/CustomPagination";
 import { Loader } from "../../components/ui/Loader";
+import { CountrySelect } from "../../components/ui/CountrySelect";
+import { PhoneInput } from "../../components/ui/PhoneInput";
 
 export default function Itinerary() {
     const [step, setStep] = useState(1);
@@ -248,14 +250,25 @@ export default function Itinerary() {
                                         { label: "Gender", type: "select", options: ["Choose gender", "male", "female", "other"], fieldName: "gender" },
                                         { label: "Email Address", type: "email", placeholder: "Enter email", fieldName: "email" },
                                         { label: "Group Composition", type: "select", options: ["Select group type", "Solo", "Couple", "Family"], fieldName: "groupComposition" },
-                                        { label: "Contact Number", type: "text", placeholder: "Enter contact number", fieldName: "contactNumber" },
-                                        { label: "Country of Residence", type: "select", options: ["Select country", "Sri Lanka", "India", "UK", "USA", "Australia"], fieldName: "country" },
+                                        { label: "Contact Number", type: "phone", fieldName: "contactNumber" },
+                                        { label: "Country of Residence", type: "country", fieldName: "country" },
                                         { label: "Arrival Date", type: "date", fieldName: "arrivalDate" },
                                         { label: "Departure Date", type: "date", fieldName: "departureDate" },
                                     ].map((field: any, i: number) => (
                                         <div key={i} className="flex flex-col gap-2">
                                             <label className="text-[16px] sm:text-[18px] font-medium ">{field.label}</label>
-                                            {field.type === "select" ? (
+                                            {field.type === "phone" ? (
+                                                <PhoneInput
+                                                    value={(formData as any)[field.fieldName || ""] || ""}
+                                                    onChange={(value) => updateFormData({ [field.fieldName || ""]: value })}
+                                                />
+                                            ) : field.type === "country" ? (
+                                                <CountrySelect
+                                                    value={(formData as any)[field.fieldName || ""] || ""}
+                                                    onChange={(e) => updateFormData({ [field.fieldName || ""]: e.target.value })}
+                                                    className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                                />
+                                            ) : field.type === "select" ? (
                                                 <select
                                                     value={(formData as any)[field.fieldName || ""] || ""}
                                                     onChange={(e) => updateFormData({ [field.fieldName || ""]: e.target.value })}

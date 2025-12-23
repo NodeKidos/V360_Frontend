@@ -7,6 +7,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { UserRole } from "../../types/auth.types";
 import { CountrySelect } from "../../components/ui/CountrySelect";
+import { PhoneInput } from "../../components/ui/PhoneInput";
 
 type FormData = {
   username: string;
@@ -42,9 +43,19 @@ export default function Register() {
     register: formRegister,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<FormData>();
 
+  const phoneValue = watch("phone") || "";
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+    // Validate phone number
+    if (!data.phone) {
+      // This will be caught by form validation
+      return;
+    }
+
     // Register endpoint creates customer account by default
     const success = await registerUser(data);
 
@@ -148,13 +159,12 @@ export default function Register() {
               >
                 Phone Number
               </label>
-              <input
+              <PhoneInput
                 id="phone"
-                type="tel"
-                {...formRegister("phone", { required: "Phone number is required" })}
-                placeholder="Enter your phone number"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
+                value={phoneValue}
+                onChange={(value) => setValue("phone", value)}
                 disabled={isLoading}
+                placeholder="Enter your phone number"
               />
               {errors.phone && (
                 <p className="text-sm text-red-500">{errors.phone.message}</p>
