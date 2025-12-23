@@ -207,12 +207,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div
               className={`flex cursor-pointer hover:bg-purple-50 rounded-lg p-2 transition-colors ${collapsed && !isMobile ? "justify-center" : "items-center gap-2"}`}
               onClick={() => {
-                // Navigate based on role
-                if (role === 'admin' || role === 'staff') {
-                  navigate('/setting');
-                } else if (role === 'driver') {
+                // Navigate to profile based on role
+                if (role === 'driver') {
                   navigate('/driver-profile');
                 } else {
+                  // Admin, staff, and users all go to user-profile
                   navigate('/user-profile');
                 }
               }}
