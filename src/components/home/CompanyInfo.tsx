@@ -6,6 +6,7 @@ import trainrideImg from "../../assets/companyinfo/trainride.jpg";
 import beachImg from "../../assets/companyinfo/beach.jpg";
 import elephantImg from "../../assets/companyinfo/Elephant.jpg";
 import mountainImg from "../../assets/companyinfo/Mountain.jpg";
+import Statistics from "./statistics";
 
 const CompanyInfo = () => {
   return (
@@ -30,8 +31,9 @@ const CompanyInfo = () => {
         </Link>
       </div>
 
+
       {/* Image Grid with Centering */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 px-16 mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 px-16 pb-5 mx-auto">
         <img
           src={templeImg}
           alt="Sri Lanka Temple"
@@ -57,6 +59,22 @@ const CompanyInfo = () => {
           alt="Sri Lanka Mountain"
           className="w-full h-full object-cover rounded-lg"
         />
+      </div>
+      <Statistics />
+      {/* New Section for Company Info */}
+      <div className="mb-3 mt-10 px-16">
+        <h3 className="text-[32px] font-bold mb-4 font-roboto-condensed">
+          Our Experience
+        </h3>
+        <p className="text-[20px] font-normal text-gray-700 mb-4 font-roboto-condensed">
+          With over 5 years of experience, Vibes Lanka Travel has organized more than 100 unforgettable tours for over 10,000 happy travelers. From serene beach escapes to thrilling safaris, we offer tailored travel packages that suit every need.
+        </p>
+        <p className="text-[20px] font-normal text-gray-700 mb-4 font-roboto-condensed">
+          We are proud to have received numerous accolades for our exceptional services, including recognition from local and international travel associations. Our commitment to quality ensures that every trip is crafted with care and precision.
+        </p>
+        <p className="text-[20px] font-normal text-gray-700 mb-4 font-roboto-condensed">
+          Our packages are designed with you in mind – whether you're looking for a romantic retreat, an adventurous journey, or a family-friendly getaway, Vibes Lanka Travel has something for everyone.
+        </p>
       </div>
     </div>
   );
