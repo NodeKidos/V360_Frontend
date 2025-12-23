@@ -5,7 +5,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { ItineraryStatus } from "../../types/itinerary.types";
 import Sidebar from "../../components/AdminSidebar";
 import TopBar from "../../components/Topbar";
-import { FaPlus, FaEye, FaEdit, FaTrash, FaPaperPlane, FaCheck, FaTimes, FaChevronDown } from "react-icons/fa";
+import { FaPlus, FaEye, FaEdit, FaTrash, FaPaperPlane, FaCheck, FaTimes } from "react-icons/fa";
 import { itineraryService } from "../../services/itinerary.service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -45,7 +45,6 @@ export default function MyItineraries() {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [statusDropdownOpen, setStatusDropdownOpen] = useState<string | null>(null);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [selectedItineraryId, setSelectedItineraryId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -77,16 +76,7 @@ export default function MyItineraries() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, navigate]);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => {
-      if (statusDropdownOpen) {
-        setStatusDropdownOpen(null);
-      }
-    };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [statusDropdownOpen]);
+
 
   const handleDelete = async (id: string) => {
     setDialogItineraryId(id);
@@ -117,16 +107,7 @@ export default function MyItineraries() {
     }
   };
 
-  const handleStatusChange = async (id: string, newStatus: ItineraryStatus) => {
-    try {
-      await itineraryService.updateStatus(id, newStatus);
-      toast.success("Status updated successfully!");
-      getMyItineraries(); // Refresh list
-      setStatusDropdownOpen(null);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update status");
-    }
-  };
+
 
   const handleAcceptQuote = async (id: string) => {
     setDialogItineraryId(id);
@@ -253,44 +234,15 @@ export default function MyItineraries() {
                         <h3 className="text-lg font-bold">{itinerary.itineraryNumber}</h3>
                       </div>
                       <div className="relative">
-                        <button
-                          id={`status-btn-${itinerary.id}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setStatusDropdownOpen(statusDropdownOpen === itinerary.id ? null : itinerary.id);
-                          }}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${statusColors[itinerary.status]} hover:opacity-80 transition-opacity`}
+                        {/* Static status badge - display only, no dropdown */}
+                        <div
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[itinerary.status]}`}
                         >
                           {statusLabels[itinerary.status]}
-                          <FaChevronDown size={10} />
-                        </button>
+                        </div>
                       </div>
 
-                      {/* Status Dropdown - Using fixed positioning */}
-                      {statusDropdownOpen === itinerary.id && (
-                        <div
-                          className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[180px] max-h-[300px] overflow-y-auto overflow-x-hidden z-[9999] flex flex-col"
-                          style={{
-                            top: `${(document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom || 0) + 4}px`,
-                            left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left || 0}px`,
-                            scrollbarWidth: 'thin'
-                          }}
-                        >
-                          {Object.entries(statusLabels).map(([status, label]) => (
-                            <button
-                              key={status}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleStatusChange(itinerary.id, status as ItineraryStatus);
-                              }}
-                              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors block ${itinerary.status === status ? 'bg-purple-50 font-semibold' : ''
-                                }`}
-                            >
-                              {label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                      {/* Removed status dropdown - customers cannot change status */}
                     </div>
                   </div>
 
