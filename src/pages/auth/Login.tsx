@@ -105,15 +105,34 @@ export default function Login() {
             </div>
 
             {/* Password Field */}
-            <label className="block text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800 mb-2">
-              Password
-            </label>
-            <input
-              {...register("password")}
-              type="password"
-              placeholder="Enter Password"
-              className="w-full border rounded-md p-3 text-[16px] mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:sm:text-[10px] placeholder:md:text-[20px] placeholder:lg:text-[24px] placeholder:text-gray-400"
-            />
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="block text-sm sm:text-base font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  {...register("password", { required: "Password is required" })}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-500 pr-12"
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-black"
+                >
+                  {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password.message}</p>
+              )}
+            </div>
 
             {/* Options */}
             <div className="flex justify-between items-center text-sm">
