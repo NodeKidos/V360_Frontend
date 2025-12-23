@@ -6,6 +6,7 @@ import { Loader } from "../../components/ui/Loader";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { UserRole } from "../../types/auth.types";
+import { CountrySelect } from "../../components/ui/CountrySelect";
 
 type FormData = {
   username: string;
@@ -44,6 +45,7 @@ export default function Register() {
   } = useForm<FormData>();
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
+    // Register endpoint creates customer account by default
     const success = await registerUser(data);
 
     if (success) {
@@ -159,7 +161,7 @@ export default function Register() {
               )}
             </div>
 
-            {/* Country Field */}
+            {/* Country Field - Using CountrySelect Component */}
             <div className="space-y-2">
               <label
                 htmlFor="country"
@@ -167,12 +169,11 @@ export default function Register() {
               >
                 Country
               </label>
-              <input
+              <CountrySelect
                 id="country"
                 {...formRegister("country", { required: "Country is required" })}
-                placeholder="Enter your country"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
                 disabled={isLoading}
+                placeholder="Select your country"
               />
               {errors.country && (
                 <p className="text-sm text-red-500">{errors.country.message}</p>
