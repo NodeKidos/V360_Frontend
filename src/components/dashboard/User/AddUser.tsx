@@ -6,6 +6,8 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import userService from "../../../services/user.service";
+import { CountrySelect } from "../../ui/CountrySelect";
+import { PhoneInput } from "../../ui/PhoneInput";
 
 export default function AddCustomer() {
   const navigate = useNavigate();
@@ -160,14 +162,12 @@ export default function AddCustomer() {
               {/* Contact */}
               <div>
                 <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="+94771234567"
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                />
+                <div className="mt-1">
+                  <PhoneInput
+                    value={formData.phone}
+                    onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+                  />
+                </div>
               </div>
 
               {/* Passport */}
@@ -198,18 +198,13 @@ export default function AddCustomer() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Country</label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  >
-                    <option value="">Select</option>
-                    <option value="Sri Lanka">Sri Lanka</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Singapore">Singapore</option>
-                    <option value="Canada">Canada</option>
-                  </select>
+                  <div className="mt-1">
+                    <CountrySelect
+                      value={formData.country}
+                      onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                      className="w-full border border-purple-300 rounded-xl px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    />
+                  </div>
                 </div>
 
                 <div>

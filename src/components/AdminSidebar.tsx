@@ -206,7 +206,16 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* Avatar */}
             <div
               className={`flex cursor-pointer hover:bg-purple-50 rounded-lg p-2 transition-colors ${collapsed && !isMobile ? "justify-center" : "items-center gap-2"}`}
-              onClick={() => navigate('/user-profile')}
+              onClick={() => {
+                // Navigate based on role
+                if (role === 'admin' || role === 'staff') {
+                  navigate('/setting');
+                } else if (role === 'driver') {
+                  navigate('/driver-profile');
+                } else {
+                  navigate('/user-profile');
+                }
+              }}
             >
               <Avatar className={collapsed && !isMobile ? "w-8 h-8" : "w-9 h-9"}>
                 <AvatarImage src={userImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName)} alt={userName} />

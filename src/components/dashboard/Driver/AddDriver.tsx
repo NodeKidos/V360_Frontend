@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
+import { PhoneInput } from "../../ui/PhoneInput";
 
 interface DriverData {
     firstName: string;
@@ -242,14 +243,12 @@ export default function AddDriver() {
 
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No<span className="text-red-500">*</span></label>
-                                    <input
-                                        type="tel"
-                                        name="contact"
-                                        value={driverData.contact}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    />
+                                    <div className="mt-1">
+                                        <PhoneInput
+                                            value={driverData.contact}
+                                            onChange={(value) => setDriverData(prev => ({ ...prev, contact: value }))}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

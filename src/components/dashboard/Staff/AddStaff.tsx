@@ -6,6 +6,8 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import staffService from "../../../services/staff.service";
+import { CountrySelect } from "../../ui/CountrySelect";
+import { PhoneInput } from "../../ui/PhoneInput";
 
 export default function AddStaff() {
     const navigate = useNavigate();
@@ -200,24 +202,10 @@ export default function AddStaff() {
                                 {/* Contact */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Contact No</label>
-                                    <div className="flex items-center border border-purple-300 rounded-xl px-2 md:px-3 py-2 mt-1">
-                                        <select
-                                            name="countryCode"
-                                            value={staffData.countryCode}
-                                            onChange={handleInputChange}
-                                            className="text-gray-700 border-r pr-2 md:pr-3 mr-2 md:mr-3 outline-none text-[12px] md:text-[14px] font-poppins"
-                                        >
-                                            <option>🇱🇰 +94</option>
-                                            <option>🇮🇳 +91</option>
-                                            <option>🇦🇺 +61</option>
-                                        </select>
-                                        <input
-                                            type="text"
-                                            name="contact"
+                                    <div className="mt-1">
+                                        <PhoneInput
                                             value={staffData.contact}
-                                            onChange={handleInputChange}
-                                            placeholder="769052508"
-                                            className="flex-1 outline-none px-2 text-[14px] md:text-[16px] font-poppins"
+                                            onChange={(value) => setStaffData(prev => ({ ...prev, contact: value }))}
                                         />
                                     </div>
                                 </div>
