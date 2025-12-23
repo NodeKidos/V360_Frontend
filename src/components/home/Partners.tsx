@@ -86,7 +86,7 @@ export default function Partners() {
   };
 
   return (
-    <div className="py-16 bg-white overflow-hidden">
+    <div className="py-5 bg-white overflow-hidden">
       {/* Heading */}
       <h2 className="text-[48px] font-semibold mb-8 text-left pl-16 pr-16 font-roboto-condensed">
         Our Trusted Partners
