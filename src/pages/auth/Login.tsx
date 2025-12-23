@@ -4,6 +4,8 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { UserRole } from "../../types/auth.types";
 import hero from "../../assets/travel.jpg";
 import { Loader } from "../../components/ui/Loader";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
 
 interface LoginForm {
   emailOrPhone: string;
@@ -30,6 +32,7 @@ export default function Login() {
   const navigate = useNavigate();
   const { login, isLoading } = useAuthStore();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const onSubmit = async (data: LoginForm) => {
     const success = await login(data.emailOrPhone, data.password);
@@ -102,25 +105,15 @@ export default function Login() {
             </div>
 
             {/* Password Field */}
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="block text-sm sm:text-base font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                {...register("password", { required: "Password is required" })}
-                type="password"
-                placeholder="Enter your password"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
-                disabled={isLoading}
-              />
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
-              )}
-            </div>
+            <label className="block text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800 mb-2">
+              Password
+            </label>
+            <input
+              {...register("password")}
+              type="password"
+              placeholder="Enter Password"
+              className="w-full border rounded-md p-3 text-[16px] mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:sm:text-[10px] placeholder:md:text-[20px] placeholder:lg:text-[24px] placeholder:text-gray-400"
+            />
 
             {/* Options */}
             <div className="flex justify-between items-center text-sm">

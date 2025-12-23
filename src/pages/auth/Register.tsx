@@ -14,6 +14,7 @@ type FormData = {
   phone: string;
   password: string;
   country: string;
+  dob: string; // New field for Date of Birth
 };
 
 // Helper function to get dashboard route based on user role
@@ -113,7 +114,7 @@ export default function Register() {
                 <Input
                   {...formRegister("phone", { required: "Required" })}
                   placeholder="Enter phone"
-                  className="w-full border rounded-md p-3 text-[16px] placeholder-gray-400"
+                  className="w-full rounded-md p-3 text-[16px] placeholder-gray-400"
                 />
                 {errors.phone && (
                   <p className="text-sm text-red-500">{errors.phone.message}</p>
@@ -129,6 +130,19 @@ export default function Register() {
                 />
                 {errors.country && (
                   <p className="text-sm text-red-500">{errors.country.message}</p>
+                )}
+              </div>
+
+              {/* Add Date of Birth Input */}
+              <div>
+                <Label className="text-[16px] md:text-[20px] lg:text-[24px] font-medium text-gray-800">Date of Birth</Label>
+                <Input
+                  type="date"
+                  {...formRegister("dob", { required: "Required" })}
+                  className="w-full border rounded-md p-3 text-[16px] placeholder-gray-400"
+                />
+                {errors.dob && (
+                  <p className="text-sm text-red-500">{errors.dob.message}</p>
                 )}
               </div>
 
