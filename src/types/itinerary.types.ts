@@ -137,7 +137,7 @@ export interface ItineraryFormData {
   specialRequirements: string;
   selectedDestinations?: {
     [destinationName: string]: {
-      hotel?: any;
+      hotels?: any[];  // Changed from hotel?: any to hotels?: any[] for multi-selection
       excursions?: any[];
     };
   };

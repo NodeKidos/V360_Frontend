@@ -496,7 +496,9 @@ export default function Itinerary() {
                                         {currentDestinations.map((d, i) => {
                                             const isSelected = (formData.selectedCities || []).includes(d.name);
                                             const destinationData = formData.selectedDestinations?.[d.name];
-                                            const hasHotel = !!destinationData?.hotel;
+                                            const selectedHotels = destinationData?.hotels || [];
+                                            const hasHotel = selectedHotels.length > 0;
+                                            const hotelCount = selectedHotels.length;
                                             const excursionCount = destinationData?.excursions?.length || 0;
 
                                             return (
@@ -559,7 +561,7 @@ export default function Itinerary() {
                                                             }}
                                                             className={`relative p-3 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:bg-white transition ${isSelected && !hasHotel ? 'animate-pulse ring-2 ring-yellow-400' : ''
                                                                 }`}
-                                                            title={hasHotel ? 'Hotel selected' : 'Select a hotel'}
+                                                            title={hasHotel ? `${hotelCount} hotel${hotelCount > 1 ? 's' : ''} selected` : 'Select a hotel'}
                                                         >
                                                             <FaHotel
                                                                 size={20}
@@ -567,7 +569,7 @@ export default function Itinerary() {
                                                             />
                                                             {hasHotel && (
                                                                 <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                                                                    ✓
+                                                                    {hotelCount}
                                                                 </span>
                                                             )}
                                                         </button>

@@ -39,13 +39,17 @@ export default function ExcursionPoints() {
     const fetchExcursions = async () => {
       try {
         setLoading(true);
+        let data;
         if (destinationId) {
-          const data = await excursionService.getByDestination(destinationId);
-          setExcursions(data);
+          data = await excursionService.getByDestination(destinationId);
         } else {
-          const data = await excursionService.getAll();
-          setExcursions(data);
+          data = await excursionService.getAll();
         }
+        // Filter out flagged and inactive excursions
+        const activeExcursions = data.filter((exc: any) =>
+          exc.isActive !== false && exc.isFlagged !== true
+        );
+        setExcursions(activeExcursions);
       } catch (error) {
         console.error("Failed to fetch excursions:", error);
         toast.error("Failed to load excursions");
@@ -326,12 +330,11 @@ export default function ExcursionPoints() {
             {!fromEdit && !fromCustomerEdit && (
               <button
                 onClick={() =>
-                  navigate("/itinerary", { state: { destination, step: 4 } })
+                  navigate("/itinerary", { state: { destination, step: 3 } })
                 }
-                className="flex items-center gap-2 border border-[#B749DB]
-              text-[#B749DB] px-8 py-2.5 rounded-lg font-semibold hover:bg-[#B749DB]/10 transition-all"
+                className="flex items-center gap-2 bg-[#B749DB] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-[#8B2BB9] transition-all"
               >
-                Next <FaArrowRight className="text-[#B749DB]" />
+                Done <FaArrowRight className="text-[#B749DB]" />
               </button>
             )}
           </div>

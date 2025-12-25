@@ -115,8 +115,10 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
           // Get additional data for this destination
           const selectedDestData = formData.selectedDestinations?.[cityName];
 
-          if (selectedDestData?.hotel) {
-            // hotelId = selectedDestData.hotel.id; 
+          // changed from single hotel to hotels array - use first hotel for now
+          // TODO: Admin will later choose which hotel from the selections when creating quotation
+          if (selectedDestData?.hotels && selectedDestData.hotels.length > 0) {
+            hotelId = selectedDestData.hotels[0].id;
           }
 
           if (selectedDestData?.excursions && selectedDestData.excursions.length > 0) {

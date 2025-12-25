@@ -14,8 +14,11 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
   const { formData, updateFormData } = useItineraryStore();
   const { destination } = useLocation().state || { destination: "Colombo" };
 
-  const isSelected = formData.selectedDestinations?.[destination]?.hotel?.name === hotel.name;
-  const existingRoomDetails = formData.selectedDestinations?.[destination]?.hotel?.roomDetails;
+  // Check if this hotel is in the selected hotels array
+  const selectedHotels = formData.selectedDestinations?.[destination]?.hotels || [];
+  const isSelected = selectedHotels.some((h: any) => h.name === hotel.name);
+  const existingHotel = selectedHotels.find((h: any) => h.name === hotel.name);
+  const existingRoomDetails = existingHotel?.roomDetails;
 
   // Initialize state with existing room details if available, otherwise use defaults
   const [roomType, setRoomType] = useState(existingRoomDetails?.roomType || 'single');
@@ -61,37 +64,37 @@ const HotelDetailsModal = ({ hotel, onClose }: { hotel: any; onClose: () => void
 
   const handleSelectHotel = () => {
     const currentSelection = formData.selectedDestinations?.[destination] || {};
+    const currentHotels = currentSelection.hotels || [];
+    const isSelected = currentHotels.some((h: any) => h.name === hotel.name);
 
+    let updatedHotels;
     if (isSelected) {
-      // Unselect the hotel
-      const { hotel: _, ...rest } = currentSelection;
-      updateFormData({
-        selectedDestinations: {
-          ...formData.selectedDestinations,
-          [destination]: rest
-        }
-      });
+      // Remove this hotel from the array
+      updatedHotels = currentHotels.filter((h: any) => h.name !== hotel.name);
       toast.info(`${hotel.name} removed from ${destination}`);
     } else {
-      // Select the hotel with room details
-      updateFormData({
-        selectedDestinations: {
-          ...formData.selectedDestinations,
-          [destination]: {
-            ...currentSelection,
-            hotel: {
-              ...hotel,
-              roomDetails: {
-                roomType,
-                bedTypes: selectedBedTypes,
-                dietPlans: selectedDietPlans,
-              }
-            }
-          }
+      // Add this hotel to the array with room details
+      const hotelWithDetails = {
+        ...hotel,
+        roomDetails: {
+          roomType,
+          bedTypes: selectedBedTypes,
+          dietPlans: selectedDietPlans,
         }
-      });
-      toast.success(`${hotel.name} selected for ${destination}`);
+      };
+      updatedHotels = [...currentHotels, hotelWithDetails];
+      toast.success(`${hotel.name} selected for ${destination} (${updatedHotels.length} hotel${updatedHotels.length > 1 ? 's' : ''} selected)`);
     }
+
+    updateFormData({
+      selectedDestinations: {
+        ...formData.selectedDestinations,
+        [destination]: {
+          ...currentSelection,
+          hotels: updatedHotels
+        }
+      }
+    });
 
     onClose();
   };
@@ -339,7 +342,13 @@ const HotelList = () => {
   };
 
   const isHotelSelected = (hotelName: string) => {
-    return formData.selectedDestinations?.[destination]?.hotel?.name === hotelName;
+    const selectedHotels = formData.selectedDestinations?.[destination]?.hotels || [];
+    return selectedHotels.some((h: any) => h.name === hotelName);
+  };
+
+  const getSelectedHotelCount = () => {
+    const selectedHotels = formData.selectedDestinations?.[destination]?.hotels || [];
+    return selectedHotels.length;
   };
 
   return (
@@ -460,9 +469,16 @@ const HotelList = () => {
             &gt; Hotels
           </p>
 
-          <h2 className="text-2xl font-bold mb-10 text-[#1E1E1E]">
-            Hotels in {destination}
-          </h2>
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-2xl font-bold text-[#1E1E1E]">
+              Hotels in {destination}
+            </h2>
+            {getSelectedHotelCount() > 0 && (
+              <div className="bg-[#B749DB] text-white px-4 py-2 rounded-full font-semibold">
+                {getSelectedHotelCount()} hotel{getSelectedHotelCount() > 1 ? 's' : ''} selected
+              </div>
+            )}
+          </div>
 
           {loading ? (
             <div className="flex justify-center items-center min-h-[300px]">
@@ -567,11 +583,11 @@ const HotelList = () => {
             {!fromEdit && !fromCustomerEdit && (
               <button
                 onClick={() =>
-                  navigate("/itinerary", { state: { destination, step: 4 } })
+                  navigate("/itinerary", { state: { destination, step: 3 } })
                 }
                 className="flex items-center gap-2 bg-[#B749DB] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-[#8B2BB9] transition-all"
               >
-                Next <FaArrowRight className="text-white" />
+                Done <FaArrowRight className="text-white" />
               </button>
             )}
           </div>
