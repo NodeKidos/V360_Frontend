@@ -14,6 +14,7 @@ import SriLankaMap from "../../components/home/SriLankaMap";
 import { useItineraryStore } from "../../store/useItineraryStore";
 import colombo from "../../assets/packages/family.png";
 import { DayPlannerTab } from "../../components/dashboard/Itinerary/DayPlannerTab";
+import { ConfirmModal } from "../../components/ui/ConfirmModal";
 
 const EditItinerary = () => {
   const { itineraryId } = useParams<{ itineraryId: string }>();
@@ -24,9 +25,22 @@ const EditItinerary = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
-  const [collapsed, setCollapsed] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    isDangerous?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => { },
+  });
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "destinations" | "dayPlanner" | "quote" | "management">(
     (location.state as any)?.returnTab || "details"
   );
@@ -647,12 +661,24 @@ const EditItinerary = () => {
     }
   };
 
-  const handleRemoveDay = async (dayId: string) => {
-    if (window.confirm("Are you sure you want to remove this day?")) {
-      const updatedDays = formData.days.filter(day => day.id !== dayId);
-      setFormData({ ...formData, days: updatedDays });
-      toast.success("Day removed. Don't forget to save changes!");
-    }
+  const handleRemoveDay = (dayIndexToRemove: number) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Day',
+      message: 'Are you sure you want to remove this day?',
+      isDangerous: true,
+      onConfirm: () => {
+        const newDays = formData.days.filter(
+          (_, index: number) => index !== dayIndexToRemove
+        );
+        // Renumber remaining days
+        const renumbered = newDays.map((day: any, index: number) => ({
+          ...day,
+          dayNumber: index + 1,
+        }));
+        setFormData(prev => ({ ...prev, days: renumbered }));
+      },
+    });
   };
 
   const handleAssignDriver = async () => {
@@ -674,17 +700,24 @@ const EditItinerary = () => {
   };
 
   const handleUnassignDriver = async () => {
-    if (!itineraryId || !window.confirm('Remove driver assignment?')) return;
+    if (!itineraryId) return;
 
-    try {
-      await itineraryService.unassignDriver(itineraryId);
-      toast.success('Driver unassigned successfully');
-
-      const refreshed = await itineraryService.getById(itineraryId);
-      setItinerary(refreshed);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to unassign driver');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Driver Assignment',
+      message: 'Remove driver assignment?',
+      isDangerous: true,
+      onConfirm: async () => {
+        try {
+          await itineraryService.unassignDriver(itineraryId);
+          toast.success('Driver unassigned successfully!');
+          const refreshedData = await itineraryService.getById(itineraryId);
+          setItinerary(refreshedData);
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Failed to unassign driver');
+        }
+      },
+    });
   };
 
   return (
@@ -824,22 +857,48 @@ const EditItinerary = () => {
                             <button
                               onClick={async () => {
                                 if (!itinerary?.driver) {
-                                  const confirmed = window.confirm(
-                                    '⚠️ No driver assigned to this trip.\n\nIt is recommended to assign a driver before starting. Do you want to proceed anyway?'
-                                  );
-                                  if (!confirmed) return;
+                                  setConfirmModal({
+                                    isOpen: true,
+                                    title: 'No Driver Assigned',
+                                    message: '⚠️ No driver assigned to this trip.\n\nIt is recommended to assign a driver before starting. Do you want to proceed anyway?',
+                                    isDangerous: true,
+                                    onConfirm: () => {
+                                      setConfirmModal({
+                                        isOpen: true,
+                                        title: 'Start Trip',
+                                        message: 'Start this itinerary? The trip will begin.',
+                                        onConfirm: async () => {
+                                          try {
+                                            await itineraryService.startItinerary(itineraryId!);
+                                            toast.success('Itinerary started successfully!');
+                                            const refreshedData = await itineraryService.getById(itineraryId!);
+                                            setItinerary(refreshedData);
+                                            setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                          } catch (error: any) {
+                                            toast.error(error.response?.data?.message || 'Failed to start itinerary');
+                                          }
+                                        },
+                                      });
+                                    },
+                                  });
+                                  return;
                                 }
-                                if (window.confirm('Start this itinerary? The trip will begin.')) {
-                                  try {
-                                    await itineraryService.startItinerary(itineraryId!);
-                                    toast.success('Itinerary started successfully!');
-                                    const refreshedData = await itineraryService.getById(itineraryId!);
-                                    setItinerary(refreshedData);
-                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                  } catch (error: any) {
-                                    toast.error(error.response?.data?.message || 'Failed to start itinerary');
-                                  }
-                                }
+                                setConfirmModal({
+                                  isOpen: true,
+                                  title: 'Start Trip',
+                                  message: 'Start this itinerary? The trip will begin.',
+                                  onConfirm: async () => {
+                                    try {
+                                      await itineraryService.startItinerary(itineraryId!);
+                                      toast.success('Itinerary started successfully!');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to start itinerary');
+                                    }
+                                  },
+                                });
                               }}
                               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
                             >
@@ -850,37 +909,48 @@ const EditItinerary = () => {
                           {formData.status === 'in_progress' && (
                             <>
                               <button
-                                onClick={async () => {
-                                  const reason = window.prompt('Reason for putting on hold (optional):');
-                                  if (reason !== null) {
-                                    try {
-                                      await itineraryService.holdItinerary(itineraryId!, reason || undefined);
-                                      toast.success('Itinerary put on hold');
-                                      const refreshedData = await itineraryService.getById(itineraryId!);
-                                      setItinerary(refreshedData);
-                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                    } catch (error: any) {
-                                      toast.error(error.response?.data?.message || 'Failed to hold itinerary');
-                                    }
-                                  }
+                                onClick={() => {
+                                  setConfirmModal({
+                                    isOpen: true,
+                                    title: 'Put Trip on Hold',
+                                    message: 'Put this trip on hold? You can provide a reason.',
+                                    isDangerous: true,
+                                    onConfirm: async () => {
+                                      const reason = prompt('Reason for hold (optional):');
+                                      try {
+                                        await itineraryService.holdItinerary(itineraryId!, reason || undefined);
+                                        toast.success('Trip put on hold');
+                                        const refreshed = await itineraryService.getById(itineraryId!);
+                                        setItinerary(refreshed);
+                                        setFormData(prev => ({ ...prev, status: refreshed.status }));
+                                      } catch (error: any) {
+                                        toast.error(error.response?.data?.message || 'Failed to hold trip');
+                                      }
+                                    },
+                                  });
                                 }}
                                 className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 flex items-center gap-2"
                               >
                                 ⏸️ Put On Hold
                               </button>
                               <button
-                                onClick={async () => {
-                                  if (window.confirm('Mark this itinerary as completed?')) {
-                                    try {
-                                      await itineraryService.completeItinerary(itineraryId!);
-                                      toast.success('Itinerary completed successfully!');
-                                      const refreshedData = await itineraryService.getById(itineraryId!);
-                                      setItinerary(refreshedData);
-                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                    } catch (error: any) {
-                                      toast.error(error.response?.data?.message || 'Failed to complete itinerary');
-                                    }
-                                  }
+                                onClick={() => {
+                                  setConfirmModal({
+                                    isOpen: true,
+                                    title: 'Mark Trip as Completed',
+                                    message: 'Mark this itinerary as completed?',
+                                    onConfirm: async () => {
+                                      try {
+                                        await itineraryService.completeItinerary(itineraryId!);
+                                        toast.success('Itinerary completed successfully!');
+                                        const refreshedData = await itineraryService.getById(itineraryId!);
+                                        setItinerary(refreshedData);
+                                        setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                      } catch (error: any) {
+                                        toast.error(error.response?.data?.message || 'Failed to complete itinerary');
+                                      }
+                                    },
+                                  });
                                 }}
                                 className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2"
                               >
@@ -891,18 +961,23 @@ const EditItinerary = () => {
 
                           {formData.status === 'on_hold' && (
                             <button
-                              onClick={async () => {
-                                if (window.confirm('Resume this itinerary?')) {
-                                  try {
-                                    await itineraryService.resumeItinerary(itineraryId!);
-                                    toast.success('Itinerary resumed');
-                                    const refreshedData = await itineraryService.getById(itineraryId!);
-                                    setItinerary(refreshedData);
-                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                  } catch (error: any) {
-                                    toast.error(error.response?.data?.message || 'Failed to resume itinerary');
-                                  }
-                                }
+                              onClick={() => {
+                                setConfirmModal({
+                                  isOpen: true,
+                                  title: 'Resume Trip',
+                                  message: 'Resume this itinerary?',
+                                  onConfirm: async () => {
+                                    try {
+                                      await itineraryService.resumeItinerary(itineraryId!);
+                                      toast.success('Itinerary resumed');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to resume itinerary');
+                                    }
+                                  },
+                                });
                               }}
                               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
                             >
@@ -1813,22 +1888,48 @@ const EditItinerary = () => {
                             <button
                               onClick={async () => {
                                 if (!itinerary?.driver) {
-                                  const confirmed = window.confirm(
-                                    '⚠️ No driver assigned to this trip.\n\nIt is recommended to assign a driver before starting. Do you want to proceed anyway?'
-                                  );
-                                  if (!confirmed) return;
+                                  setConfirmModal({
+                                    isOpen: true,
+                                    title: 'No Driver Assigned',
+                                    message: '⚠️ No driver assigned to this trip.\n\nIt is recommended to assign a driver before starting. Do you want to proceed anyway?',
+                                    isDangerous: true,
+                                    onConfirm: () => {
+                                      setConfirmModal({
+                                        isOpen: true,
+                                        title: 'Start Trip',
+                                        message: 'Start this itinerary? The trip will begin.',
+                                        onConfirm: async () => {
+                                          try {
+                                            await itineraryService.startItinerary(itineraryId!);
+                                            toast.success('Itinerary started successfully!');
+                                            const refreshedData = await itineraryService.getById(itineraryId!);
+                                            setItinerary(refreshedData);
+                                            setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                          } catch (error: any) {
+                                            toast.error(error.response?.data?.message || 'Failed to start itinerary');
+                                          }
+                                        },
+                                      });
+                                    },
+                                  });
+                                  return;
                                 }
-                                if (window.confirm('Start this itinerary? The trip will begin.')) {
-                                  try {
-                                    await itineraryService.startItinerary(itineraryId!);
-                                    toast.success('Itinerary started successfully!');
-                                    const refreshedData = await itineraryService.getById(itineraryId!);
-                                    setItinerary(refreshedData);
-                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                  } catch (error: any) {
-                                    toast.error(error.response?.data?.message || 'Failed to start itinerary');
-                                  }
-                                }
+                                setConfirmModal({
+                                  isOpen: true,
+                                  title: 'Start Trip',
+                                  message: 'Start this itinerary? The trip will begin.',
+                                  onConfirm: async () => {
+                                    try {
+                                      await itineraryService.startItinerary(itineraryId!);
+                                      toast.success('Itinerary started successfully!');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to start itinerary');
+                                    }
+                                  },
+                                });
                               }}
                               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
                             >
@@ -1839,19 +1940,25 @@ const EditItinerary = () => {
                           {formData.status === 'in_progress' && (
                             <>
                               <button
-                                onClick={async () => {
-                                  const reason = window.prompt('Reason for putting on hold (optional):');
-                                  if (reason !== null) {
-                                    try {
-                                      await itineraryService.holdItinerary(itineraryId!, reason || undefined);
-                                      toast.success('Itinerary put on hold');
-                                      const refreshedData = await itineraryService.getById(itineraryId!);
-                                      setItinerary(refreshedData);
-                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                    } catch (error: any) {
-                                      toast.error(error.response?.data?.message || 'Failed to hold itinerary');
-                                    }
-                                  }
+                                onClick={() => {
+                                  setConfirmModal({
+                                    isOpen: true,
+                                    title: 'Put Trip on Hold',
+                                    message: 'Put this trip on hold? You can provide a reason.',
+                                    isDangerous: true,
+                                    onConfirm: async () => {
+                                      const reason = prompt('Reason for hold (optional):');
+                                      try {
+                                        await itineraryService.holdItinerary(itineraryId!, reason || undefined);
+                                        toast.success('Trip put on hold');
+                                        const refreshed = await itineraryService.getById(itineraryId!);
+                                        setItinerary(refreshed);
+                                        setFormData(prev => ({ ...prev, status: refreshed.status }));
+                                      } catch (error: any) {
+                                        toast.error(error.response?.data?.message || 'Failed to hold trip');
+                                      }
+                                    },
+                                  });
                                 }}
                                 className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 flex items-center gap-2"
                               >
@@ -1859,18 +1966,23 @@ const EditItinerary = () => {
                               </button>
 
                               <button
-                                onClick={async () => {
-                                  if (window.confirm('Mark this itinerary as completed?')) {
-                                    try {
-                                      await itineraryService.completeItinerary(itineraryId!);
-                                      toast.success('Itinerary completed successfully!');
-                                      const refreshedData = await itineraryService.getById(itineraryId!);
-                                      setItinerary(refreshedData);
-                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                    } catch (error: any) {
-                                      toast.error(error.response?.data?.message || 'Failed to complete itinerary');
-                                    }
-                                  }
+                                onClick={() => {
+                                  setConfirmModal({
+                                    isOpen: true,
+                                    title: 'Mark Trip as Completed',
+                                    message: 'Mark this itinerary as completed?',
+                                    onConfirm: async () => {
+                                      try {
+                                        await itineraryService.completeItinerary(itineraryId!);
+                                        toast.success('Itinerary completed successfully!');
+                                        const refreshedData = await itineraryService.getById(itineraryId!);
+                                        setItinerary(refreshedData);
+                                        setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                      } catch (error: any) {
+                                        toast.error(error.response?.data?.message || 'Failed to complete itinerary');
+                                      }
+                                    },
+                                  });
                                 }}
                                 className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2"
                               >
@@ -1881,18 +1993,23 @@ const EditItinerary = () => {
 
                           {formData.status === 'on_hold' && (
                             <button
-                              onClick={async () => {
-                                if (window.confirm('Resume this itinerary?')) {
-                                  try {
-                                    await itineraryService.resumeItinerary(itineraryId!);
-                                    toast.success('Itinerary resumed successfully!');
-                                    const refreshedData = await itineraryService.getById(itineraryId!);
-                                    setItinerary(refreshedData);
-                                    setFormData(prev => ({ ...prev, status: refreshedData.status }));
-                                  } catch (error: any) {
-                                    toast.error(error.response?.data?.message || 'Failed to resume itinerary');
-                                  }
-                                }
+                              onClick={() => {
+                                setConfirmModal({
+                                  isOpen: true,
+                                  title: 'Resume Trip',
+                                  message: 'Resume this itinerary?',
+                                  onConfirm: async () => {
+                                    try {
+                                      await itineraryService.resumeItinerary(itineraryId!);
+                                      toast.success('Itinerary resumed');
+                                      const refreshedData = await itineraryService.getById(itineraryId!);
+                                      setItinerary(refreshedData);
+                                      setFormData(prev => ({ ...prev, status: refreshedData.status }));
+                                    } catch (error: any) {
+                                      toast.error(error.response?.data?.message || 'Failed to resume itinerary');
+                                    }
+                                  },
+                                });
                               }}
                               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
                             >
@@ -2048,6 +2165,16 @@ const EditItinerary = () => {
           )}
         </div>
       </div>
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        isDangerous={confirmModal.isDangerous}
+      />
     </div>
   );
 };
