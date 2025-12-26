@@ -13,6 +13,7 @@ import type { Itinerary, ItineraryStatus } from "../../types/itinerary.types";
 import SriLankaMap from "../../components/home/SriLankaMap";
 import { useItineraryStore } from "../../store/useItineraryStore";
 import colombo from "../../assets/packages/family.png";
+import { DayPlannerTab } from "../../components/dashboard/Itinerary/DayPlannerTab";
 
 const EditItinerary = () => {
   const { itineraryId } = useParams<{ itineraryId: string }>();
@@ -26,7 +27,7 @@ const EditItinerary = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "destinations" | "quote" | "management">(
+  const [activeTab, setActiveTab] = useState<"details" | "destinations" | "dayPlanner" | "quote" | "management">(
     (location.state as any)?.returnTab || "details"
   );
 
@@ -775,6 +776,15 @@ const EditItinerary = () => {
                   Destinations & Days
                 </button>
                 <button
+                  onClick={() => setActiveTab("dayPlanner")}
+                  className={`px-4 py-2 font-medium transition-colors ${activeTab === "dayPlanner"
+                    ? "text-[#B749DB] border-b-2 border-[#B749DB]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
+                >
+                  Day Planner
+                </button>
+                <button
                   onClick={() => setActiveTab("quote")}
                   className={`px-4 py-2 font-medium transition-colors ${activeTab === "quote"
                     ? "text-[#B749DB] border-b-2 border-[#B749DB]"
@@ -1430,6 +1440,37 @@ const EditItinerary = () => {
                       </div>
                     </div>
                   </div>
+                )}
+
+                {/* DAY PLANNER TAB */}
+                {activeTab === "dayPlanner" && itinerary && (
+                  <DayPlannerTab
+                    itinerary={itinerary}
+                    onSave={async (dayPlans) => {
+                      try {
+                        // Convert day plans to DTO format
+                        const daysUpdate = dayPlans.map((plan) => ({
+                          dayNumber: plan.dayNumber,
+                          date: plan.date,
+                          destinationId: plan.destination?.id,
+                          hotelId: plan.hotel?.id,
+                          excursionIds: plan.excursions.map((ex) => ex.id),
+                        }));
+
+                        // Update itinerary with new day plans
+                        await itineraryService.update(itinerary.id, {
+                          days: daysUpdate,
+                        });
+
+                        // Refresh itinerary data
+                        const updated = await itineraryService.getById(itinerary.id);
+                        setItinerary(updated);
+                      } catch (error) {
+                        console.error("Failed to save day plans:", error);
+                        throw error;
+                      }
+                    }}
+                  />
                 )}
 
                 {/* QUOTE TAB */}
