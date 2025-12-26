@@ -276,16 +276,17 @@ const DriverItineraryView = () => {
     const { itinerary } = currentSchedule;
 
     console.log('Itinerary data:', itinerary);
+    console.log('Customer data from itinerary:', (itinerary as any).customer);
 
     // Prepare customer info - use itinerary data directly
     const customerInfo = {
         name: itinerary.customerName,
-        dateOfBirth: undefined,
-        gender: undefined,
-        email: (itinerary as any).customerEmail || 'N/A',
-        phone: (itinerary as any).customerPhone || 'N/A',
+        dateOfBirth: (itinerary as any).customer?.dateOfBirth,
+        gender: (itinerary as any).customer?.gender,
+        email: (itinerary as any).customerEmail || (itinerary as any).customer?.email || 'N/A',
+        phone: (itinerary as any).customerPhone || (itinerary as any).customer?.contactNo || 'N/A',
         groupComposition: `${itinerary.numberOfParticipants} Participant${itinerary.numberOfParticipants > 1 ? 's' : ''}`,
-        countryOfResidence: undefined,
+        countryOfResidence: (itinerary as any).customer?.country,
         arrivalDate: itinerary.startDate,
         departureDate: itinerary.endDate,
         preferredDuration: `${currentSchedule.schedule.length} day${currentSchedule.schedule.length > 1 ? 's' : ''}`,
