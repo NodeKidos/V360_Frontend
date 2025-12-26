@@ -17,6 +17,8 @@ import type { Itinerary } from "../../types/itinerary.types";
 import { ItineraryStatus } from "../../types/itinerary.types";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuthStore } from "../../store/useAuthStore";
+import { UserRole } from "../../types/auth.types";
 
 const ItinerarySummary = () => {
   const { itineraryId: paramId } = useParams<{ itineraryId: string }>(); // Get itinerary ID from URL params
@@ -24,6 +26,7 @@ const ItinerarySummary = () => {
   const queryId = searchParams.get('id'); // Get id from query string
   const itineraryId = paramId || queryId; // Use either URL param or query param
   const navigate = useNavigate(); // Initialize navigate function
+  const user = useAuthStore((state) => state.user); // Get current user
 
   const [step, setStep] = useState(1);
   const [showDetails, setShowDetails] = useState(false);
@@ -237,7 +240,14 @@ const ItinerarySummary = () => {
                     </button>
                   )}
                   <button
-                    onClick={() => navigate("/my-itineraries")}
+                    onClick={() => {
+                      // Route based on user role
+                      if (user?.role === UserRole.ADMIN || user?.role === UserRole.STAFF) {
+                        navigate("/itineraries");
+                      } else {
+                        navigate("/my-itineraries");
+                      }
+                    }}
                     className="text-[#B749DB] hover:text-[#9f37c9] font-poppins flex items-center gap-2"
                   >
                     <FaArrowLeft /> Back to List
