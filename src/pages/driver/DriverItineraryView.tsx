@@ -59,51 +59,49 @@ const DriverItineraryView = () => {
         }
     };
 
-    // Group schedule by destination/city
-    const groupedTrips = currentSchedule?.schedule.reduce((acc: any, day: any) => {
-        const cityName = day.destination?.name || 'Other';
-        if (!acc[cityName]) {
-            acc[cityName] = [];
-        }
+    // Group schedule by DAY instead of city
+    const dayGroups = currentSchedule?.schedule.map((day: any, index: number) => {
+        const dayNumber = index + 1;
 
-        // Add destination
-        if (day.destination) {
-            acc[cityName].push({
-                id: day.destination.id,
-                name: day.destination.name,
-                type: 'destination',
-            });
-        }
+        return {
+            dayNumber,
+            date: day.date,
+            destination: day.destination,
+            hotel: day.hotel,
+            excursions: day.excursions || [],
+            // Flatten all locations for this day with unique IDs per day
+            locations: [
+                ...(day.destination ? [{
+                    id: `day-${dayNumber}-dest-${day.destination.id}`, // Make ID unique per day
+                    originalId: day.destination.id, // Keep original for backend calls
+                    name: day.destination.name,
+                    type: 'destination',
+                }] : []),
+                ...(day.excursions || []).map((exc: any) => ({
+                    id: `day-${dayNumber}-exc-${exc.id}`, // Make ID unique per day
+                    originalId: exc.id,
+                    name: exc.name,
+                    type: 'excursion',
+                })),
+                ...(day.hotel ? [{
+                    id: `day-${dayNumber}-hotel-${day.hotel.id}`, // Make ID unique per day
+                    originalId: day.hotel.id,
+                    name: day.hotel.name,
+                    type: 'hotel',
+                }] : []),
+            ]
+        };
+    }) || [];
 
-        // Add excursions
-        day.excursions?.forEach((exc: any) => {
-            acc[cityName].push({
-                id: exc.id,
-                name: exc.name,
-                type: 'excursion',
-            });
+    // Get status for a specific day
+    const getDayStatus = (dayLocations: any[]): 'not-started' | 'in-progress' | 'completed' => {
+        if (dayLocations.length === 0) return 'not-started';
+
+        const locationsWithProgress = dayLocations.map((loc: any) => {
+            // Use originalId to look up progress (backend stores by original ID)
+            const originalId = loc.originalId || loc.id;
+            return locationProgress.find(p => p.locationId === originalId);
         });
-
-        // Add hotel
-        if (day.hotel) {
-            acc[cityName].push({
-                id: day.hotel.id,
-                name: day.hotel.name,
-                type: 'hotel',
-            });
-        }
-
-        return acc;
-    }, {}) || {};
-
-    // Get status for a specific city's locations
-    const getCityStatus = (cityName: string): 'not-started' | 'in-progress' | 'completed' => {
-        const locations = groupedTrips[cityName] || [];
-        if (locations.length === 0) return 'not-started';
-
-        const locationsWithProgress = locations.map((loc: any) =>
-            locationProgress.find(p => p.locationId === loc.id)
-        );
 
         const allCompleted = locationsWithProgress.every(p => p?.status === 'completed');
         const anyStarted = locationsWithProgress.some(p =>
@@ -115,15 +113,16 @@ const DriverItineraryView = () => {
         return 'not-started';
     };
 
-    // Get all locations in sequential order across all cities
-    const allLocationsInOrder = Object.keys(groupedTrips).flatMap(city =>
-        groupedTrips[city].map(loc => ({ ...loc, cityName: city }))
-    );
+
+    // Get all locations in sequential order across all days
+    const allLocationsInOrder = dayGroups.flatMap(day => day.locations);
 
     // Update locations with progress from backend
-    const getLocationsWithProgress = (cityName: string, locations: any[]) => {
+    const getLocationsWithProgress = (locations: any[]) => {
         return locations.map((loc) => {
-            const progress = locationProgress.find(p => p.locationId === loc.id);
+            // Look up progress using originalId (backend stores by original location ID)
+            const originalId = loc.originalId || loc.id;
+            const progress = locationProgress.find(p => p.locationId === originalId);
             const status = progress?.status || 'not_started';
             const isCompleted = status === 'completed';
 
@@ -134,7 +133,8 @@ const DriverItineraryView = () => {
             const allBeforeThisCompleted = globalIndex === 0 || allLocationsInOrder
                 .slice(0, globalIndex)
                 .every(prevLoc => {
-                    const prevProgress = locationProgress.find(p => p.locationId === prevLoc.id);
+                    const prevOriginalId = prevLoc.originalId || prevLoc.id;
+                    const prevProgress = locationProgress.find(p => p.locationId === prevOriginalId);
                     return prevProgress?.status === 'completed';
                 });
 
@@ -148,36 +148,42 @@ const DriverItineraryView = () => {
         });
     };
 
-    const handleStatusChange = async (cityName: string, locationId: string, status: string) => {
+    const handleStatusChange = async (dayNumber: number, locationId: string, status: string) => {
         if (!id) return;
 
         try {
-            const locations = groupedTrips[cityName] || [];
+            const day = dayGroups[dayNumber - 1];
+            const locations = day.locations;
+
+            // Find the location and extract original ID for backend
+            const location = locations.find(loc => loc.id === locationId);
+            const originalLocationId = (location as any)?.originalId || locationId;
 
             if (status === 'start') {
                 // Mark first location as started
-                await driverService.updateLocationProgress(id, locationId, 'started');
+                await driverService.updateLocationProgress(id, originalLocationId, 'started');
                 await updateTripStatus(id, 'start');
             } else if (status === 'arrived') {
-                // Mark current location as completed (arrived = completed)
-                await driverService.updateLocationProgress(id, locationId, 'completed');
+                // Mark current location as completed
+                await driverService.updateLocationProgress(id, originalLocationId, 'completed');
 
                 // Find next location
                 const currentIndex = locations.findIndex(loc => loc.id === locationId);
                 if (currentIndex < locations.length - 1) {
                     // Start next location automatically
                     const nextLocation = locations[currentIndex + 1];
-                    await driverService.updateLocationProgress(id, nextLocation.id, 'started');
+                    const nextOriginalId = (nextLocation as any)?.originalId || nextLocation.id;
+                    await driverService.updateLocationProgress(id, nextOriginalId, 'started');
                 }
             } else if (status === 'finished') {
-                // Mark all remaining locations as completed
+                // Mark all remaining locations in this day as completed
                 for (const loc of locations) {
-                    const progress = locationProgress.find(p => p.locationId === loc.id);
+                    const origId = (loc as any)?.originalId || loc.id;
+                    const progress = locationProgress.find(p => p.locationId === origId);
                     if (!progress || progress.status !== 'completed') {
-                        await driverService.updateLocationProgress(id, loc.id, 'completed');
+                        await driverService.updateLocationProgress(id, origId, 'completed');
                     }
                 }
-                await updateTripStatus(id, 'finished');
             }
 
             // Reload progress from backend
@@ -324,16 +330,20 @@ const DriverItineraryView = () => {
                     {/* Customer Info Card */}
                     <CustomerInfoCard {...customerInfo} />
 
-                    {/* Trip Progress by City */}
+                    {/* Trip Progress by Day */}
                     <div className="mt-6">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4 font-poppins">Trip Details</h2>
-                        {Object.keys(groupedTrips).map((cityName) => (
+                        {dayGroups.map((day) => (
                             <TripProgressStepper
-                                key={cityName}
-                                cityName={cityName}
-                                locations={getLocationsWithProgress(cityName, groupedTrips[cityName])}
-                                status={getCityStatus(cityName)}
-                                onStatusChange={(locationId, status) => handleStatusChange(cityName, locationId, status)}
+                                key={day.dayNumber}
+                                dayNumber={day.dayNumber}
+                                date={day.date}
+                                destination={day.destination}
+                                hotel={day.hotel}
+                                excursions={day.excursions}
+                                locations={getLocationsWithProgress(day.locations)}
+                                status={getDayStatus(day.locations)}
+                                onStatusChange={(locationId, status) => handleStatusChange(day.dayNumber, locationId, status)}
                             />
                         ))}
                     </div>

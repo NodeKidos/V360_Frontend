@@ -234,16 +234,23 @@ const EditItinerary = () => {
               const fetchedSelection = destData[destName];
 
               if (storeSelection && fetchedSelection) {
+                // Convert: Store has 'hotels' array, but we need 'hotel' object for EditItinerary
+                const hotelFromStore = storeSelection.hotels?.[0] || null; // Take first hotel from array
+
                 // Merge: prefer store's hotel and excursions if they exist
                 finalSelectedDestinations[destName] = {
-                  hotel: storeSelection.hotel || fetchedSelection.hotel,
+                  hotel: hotelFromStore || fetchedSelection.hotel,
                   excursions: (storeSelection.excursions?.length ?? 0) > 0
                     ? storeSelection.excursions
                     : fetchedSelection.excursions
                 };
               } else if (storeSelection) {
                 // Only in store (newly added)
-                finalSelectedDestinations[destName] = storeSelection;
+                // Convert hotels array to hotel object
+                finalSelectedDestinations[destName] = {
+                  hotel: storeSelection.hotels?.[0] || null,
+                  excursions: storeSelection.excursions || []
+                };
               }
             });
           }
@@ -634,6 +641,33 @@ const EditItinerary = () => {
   const handleNavigateToHotels = (destinationName: string) => {
     const destination = destinations.find(d => d.name === destinationName);
     if (destination) {
+      // Sync current formData to store before navigating
+      // Convert structure: EditItinerary uses 'hotel' (singular), but HotelList expects 'hotels' (plural array)
+      if (formData.selectedDestinations) {
+        const convertedDestinations: any = {};
+
+        Object.keys(formData.selectedDestinations).forEach(destName => {
+          const destData = formData.selectedDestinations[destName];
+          convertedDestinations[destName] = {
+            // Convert hotel (singular) to hotels (plural array)
+            hotels: destData.hotel ? [destData.hotel] : [],
+            excursions: destData.excursions || []
+          };
+        });
+
+        // Update the store with the converted structure
+        updateStoreFormData({
+          selectedCities: formData.selectedCities || [],
+          selectedDestinations: convertedDestinations
+        });
+
+        console.log('🔄 Synced to store (converted structure):', {
+          destination: destinationName,
+          original: formData.selectedDestinations,
+          converted: convertedDestinations
+        });
+      }
+
       navigate("/hotel-list", {
         state: {
           destination: destinationName,
@@ -649,6 +683,31 @@ const EditItinerary = () => {
   const handleNavigateToExcursions = (destinationName: string) => {
     const destination = destinations.find(d => d.name === destinationName);
     if (destination) {
+      // Sync current formData to store before navigating
+      if (formData.selectedDestinations) {
+        const convertedDestinations: any = {};
+
+        Object.keys(formData.selectedDestinations).forEach(destName => {
+          const destData = formData.selectedDestinations[destName];
+          convertedDestinations[destName] = {
+            // Convert hotel (singular) to hotels (plural array)
+            hotels: destData.hotel ? [destData.hotel] : [],
+            excursions: destData.excursions || []
+          };
+        });
+
+        // Update the store with the converted structure
+        updateStoreFormData({
+          selectedCities: formData.selectedCities || [],
+          selectedDestinations: convertedDestinations
+        });
+
+        console.log('🔄 Synced to store (converted structure):', {
+          destination: destinationName,
+          converted: convertedDestinations
+        });
+      }
+
       navigate("/excursion-points", {
         state: {
           destination: destinationName,
