@@ -169,7 +169,7 @@ const GalleryUpload = () => {
               onClick={handleAddFolder}
               className="px-4 py-2 rounded-lg border border-[#B749DB] text-[#B749DB]"
             >
-              + New Folder
+              Add File
             </button>
 
             <button
