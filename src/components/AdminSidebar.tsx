@@ -41,7 +41,9 @@ const sidebarMenuConfig = {
     { label: 'Itinerary', icon: <FaGift />, link: '/itinerary-summary' },
     { label: 'Package Pricing', icon: <IoPricetagOutline />, link: '/package-price' },
     { label: 'My Plans', icon: <BiTrip />, link: '/user-plans' },
-    { label: 'Rewards', icon: <FaGift />, link: '/reward' }
+    { label: 'Rewards', icon: <FaGift />, link: '/reward' },
+    { label: 'Memories', icon: <FaGift />, link: '/memories' }
+
   ]
 };
 
@@ -71,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (storedRole && sidebarMenuConfig[storedRole]) {
       setRole(storedRole); // Set role if valid
     } else {
-      setRole('driver'); // Default role if invalid or not found
+      setRole('user'); // Default role if invalid or not found
     }
   }, []);
 
