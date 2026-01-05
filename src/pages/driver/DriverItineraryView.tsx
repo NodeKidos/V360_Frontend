@@ -9,6 +9,7 @@ import TopBar from '../../components/Topbar';
 import CustomerInfoCard from '../../components/driver/CustomerInfoCard';
 import TripProgressStepper from '../../components/driver/TripProgressStepper';
 import ItineraryMap from '../../components/driver-dashboard/ItineraryMap';
+import PDFDownloadButton from '../../components/PDFDownloadButton';
 import { useDriverStore } from '../../store/useDriverStore';
 import { driverService } from '../../services/driver.service';
 import { Loader } from '../../components/ui/Loader';
@@ -306,7 +307,7 @@ const DriverItineraryView = () => {
                 <div className="p-4 md:p-6 lg:p-8">
                     <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
-                    {/* Header with back button, title, and SOS */}
+                    {/* Header with back button, PDF, and SOS */}
                     <div className="flex items-center justify-between mt-4 mb-4">
                         <button
                             onClick={() => navigate('/driver-trips')}
@@ -315,13 +316,23 @@ const DriverItineraryView = () => {
                             ← Back to Itineraries
                         </button>
 
-                        <button
-                            onClick={handleSOSClick}
-                            className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-lg transition-all duration-200 transform hover:scale-110"
-                            title="Emergency SOS"
-                        >
-                            <span className="text-white font-bold text-sm">SOS</span>
-                        </button>
+                        <div className="flex items-center gap-3">
+                            {/* PDF Download Button */}
+                            <PDFDownloadButton
+                                itineraryId={itinerary.id}
+                                itineraryNumber={itinerary.itineraryNumber}
+                                variant="download"
+                            />
+
+                            {/* SOS Button */}
+                            <button
+                                onClick={handleSOSClick}
+                                className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-lg transition-all duration-200 transform hover:scale-110"
+                                title="Emergency SOS"
+                            >
+                                <span className="text-white font-bold text-sm">SOS</span>
+                            </button>
+                        </div>
                     </div>
 
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 font-poppins">

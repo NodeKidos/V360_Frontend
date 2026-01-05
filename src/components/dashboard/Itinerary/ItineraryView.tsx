@@ -9,7 +9,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
 import { FiEye, FiTrash2, FiEdit, FiChevronDown } from "react-icons/fi";
+import { FaFilePdf } from "react-icons/fa";
 import { itineraryService } from "../../../services/itinerary.service";
+import pdfService from "../../../services/pdf.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
 import { Loader } from "../../ui/Loader";
@@ -475,20 +477,31 @@ const ItineraryManagement = () => {
                       </td>
 
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex gap-3 justify-center">
+                        <div className="flex gap-2 justify-center items-center">
+                          <FaFilePdf
+                            className="text-green-600 cursor-pointer text-[18px] hover:text-green-700 transition-colors"
+                            onClick={async () => {
+                              try {
+                                await pdfService.downloadPDF(itinerary.id, itinerary.itineraryNumber);
+                              } catch (error) {
+                                toast.error("Failed to download PDF. Please try again.");
+                              }
+                            }}
+                            title="Download PDF"
+                          />
                           <FiEye
-                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                            className="text-[#B749DB] cursor-pointer text-[18px] hover:text-purple-700 transition-colors"
                             onClick={() => handleViewClick(itinerary.id)}
                             title="View Details"
                           />
                           <FiEdit
-                            className="text-blue-600 cursor-pointer text-[20px] hover:text-blue-800"
+                            className="text-blue-600 cursor-pointer text-[18px] hover:text-blue-800 transition-colors"
                             onClick={() => navigate(`/itinerary/${itinerary.id}/edit`)}
                             title="Edit Itinerary"
                           />
                           {(itinerary.status === ItineraryStatus.DRAFT || itinerary.status === ItineraryStatus.REJECTED) && (
                             <FiTrash2
-                              className="text-red-500 cursor-pointer text-[20px] hover:text-red-700"
+                              className="text-red-500 cursor-pointer text-[18px] hover:text-red-700 transition-colors"
                               onClick={() => handleDeleteClick(itinerary.id, itinerary.itineraryNumber)}
                               title="Delete Itinerary"
                             />
