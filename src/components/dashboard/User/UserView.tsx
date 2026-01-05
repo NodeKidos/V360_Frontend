@@ -28,6 +28,7 @@ const CustomerManagement = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [dependencies, setDependencies] = useState<{ itineraries: number; bookings: number } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -125,10 +126,19 @@ const CustomerManagement = () => {
   };
 
   // Handle delete action
-  const handleDeleteClick = (customerId: string) => {
+  const handleDeleteClick = async (customerId: string) => {
     console.log("🗑️ Delete customer clicked:", customerId);
     setSelectedCustomerId(customerId); // Store the selected customer ID
-    setDeleteConfirmationVisible(true); // Show confirmation overlay
+
+    try {
+      const deps = await userService.getUserDependencies(customerId);
+      setDependencies(deps);
+    } catch (err) {
+      console.error("Failed to fetch user dependencies", err);
+      setDependencies({ itineraries: 0, bookings: 0 });
+    } finally {
+      setDeleteConfirmationVisible(true); // Show confirmation overlay
+    }
   };
 
   // Confirm the delete action
@@ -148,12 +158,14 @@ const CustomerManagement = () => {
     } finally {
       setDeleteConfirmationVisible(false);
       setSelectedCustomerId(null);
+      setDependencies(null);
     }
   };
 
   // Cancel delete action
   const cancelDelete = () => {
     setDeleteConfirmationVisible(false); // Hide the overlay
+    setDependencies(null);
   };
 
   // Navigate to AddCustomer page
@@ -440,7 +452,17 @@ const CustomerManagement = () => {
                 </div>
 
                 <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
-                  Are you sure you want to delete this?
+                  {dependencies && (dependencies.itineraries > 0 || dependencies.bookings > 0) ? (
+                    <div className="text-red-600">
+                      <p className="mb-2">⚠️ Warning: Sensitive Data!</p>
+                      <p className="text-[14px] md:text-[16px] font-normal text-gray-700">
+                        This customer has <span className="font-bold">{dependencies.itineraries} itineraries</span> and <span className="font-bold">{dependencies.bookings} bookings</span>.
+                        Deleting them will permanently remove all associated records.
+                      </p>
+                    </div>
+                  ) : (
+                    "Are you sure you want to delete this?"
+                  )}
                 </h3>
 
                 {/* Buttons */}

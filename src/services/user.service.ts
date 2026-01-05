@@ -144,6 +144,14 @@ class UserService {
         const response = await api.put('/users/me', userData);
         return response.data;
     }
+
+    /**
+     * Get user dependencies
+     */
+    async getUserDependencies(id: string): Promise<{ itineraries: number; bookings: number }> {
+        const response = await api.get(`/users/${id}/dependencies`);
+        return response.data;
+    }
 }
 
 export default new UserService();
