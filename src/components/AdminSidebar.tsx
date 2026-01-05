@@ -6,6 +6,7 @@ import { TiThLargeOutline } from 'react-icons/ti';
 import { FaUser, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList, FaMapMarkedAlt } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
+import { IoPricetagOutline } from 'react-icons/io5';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { IoMdClose, IoMdSettings } from 'react-icons/io';
@@ -44,7 +45,11 @@ const sidebarMenuConfig = {
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
     { label: 'My Itineraries', icon: <FaRoute />, link: '/my-itineraries' },
     { label: 'Create Itinerary', icon: <BiTrip />, link: '/itinerary' },
-    { label: 'Rewards', icon: <FaGift />, link: '/user-reward' },
+    { label: 'Itinerary Summary', icon: <FaGift />, link: '/itinerary-summary' },
+    { label: 'Package Pricing', icon: <IoPricetagOutline />, link: '/package-price' },
+    { label: 'My Plans', icon: <BiTrip />, link: '/user-plans' },
+    { label: 'Rewards', icon: <FaGift />, link: '/reward' },
+    { label: 'Memories', icon: <FaGift />, link: '/memories' },
     { label: 'Profile', icon: <FaUser />, link: '/user-profile' }
   ]
 };

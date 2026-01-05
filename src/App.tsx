@@ -68,6 +68,8 @@ import EmergencyPage from "./pages/driver/EmergencyPage";
 import RewardManagement from "./components/dashboard/reward/RewardView";
 import AddReward from "./components/dashboard/reward/AddReward";
 import VehicleDetails from "./components/driver-dashboard/VehicleDetails";
+import TripPhotos from "./components/user-dashboard/TripPhotos";
+import Gallery from "./components/user-dashboard/Gallery";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -320,6 +322,7 @@ export default function App() {
           }
         />
 
+
         <Route
           path="/staff"
           element={
@@ -344,6 +347,16 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* User Routes */}
+        <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/itinerary-summary" element={<ItinerarySummary />} />
+        <Route path="/package-price" element={<PackagePrice />} />
+        <Route path="/reward" element={<Reward />} />
+        <Route path="/user-profile" element={<UserProfile />} />
+        <Route path="/memories" element={<TripPhotos />} />
+        <Route path="/memories/:place" element={<Gallery />} />
+
 
         {/* Activity Log Route */}
         <Route
