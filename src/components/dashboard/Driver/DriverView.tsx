@@ -90,6 +90,7 @@ const DriverManagement = () => {
 
     // Navigate to Edit Driver page
     const handleEditClick = (driverId: string) => {
+        console.log('✏️ Edit driver clicked (from list):', driverId);
         navigate(`/driver/edit/${driverId}`); // Navigate to the Edit Driver page with the driverId
     };
 

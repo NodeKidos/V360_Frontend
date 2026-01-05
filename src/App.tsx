@@ -308,7 +308,7 @@ export default function App() {
         <Route
           path="/driver/edit/:driverId"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.DRIVER]}>
               <EditDriver />
             </ProtectedRoute>
           }

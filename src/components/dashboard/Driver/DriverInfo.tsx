@@ -75,7 +75,10 @@ export default function DriverInfo() {
                                 </h2>
                                 <CiEdit
                                     className="text-[#B749DB] cursor-pointer text-[24px] hover:text-[#9f37c9]"
-                                    onClick={() => navigate(`/driver/edit/${driverId}`)}  // Navigate to Edit Driver page
+                                    onClick={() => {
+                                        console.log('✏️ Edit driver clicked (from info):', driverId);
+                                        navigate(`/driver/edit/${driverId}`);
+                                    }}  // Navigate to Edit Driver page
                                 />
                             </div>
 

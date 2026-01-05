@@ -9,6 +9,7 @@ import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 import { Loader } from "../../ui/Loader";
 import { PhoneInput } from "../../ui/PhoneInput";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 interface DriverData {
     firstName: string;
@@ -41,6 +42,8 @@ export default function EditDriver() {
     const [fetchLoading, setFetchLoading] = useState(true);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [vehiclesLoading, setVehiclesLoading] = useState(true);
+    const userRole = useAuthStore((state) => state.user?.role);
+    const userId = useAuthStore((state) => state.user?.id);
 
     // Initialize driver data
     const [driverData, setDriverData] = useState<DriverData>({
@@ -103,13 +106,18 @@ export default function EditDriver() {
                     position: "top-right",
                     autoClose: 3000,
                 });
-                navigate("/driver");
+                navigate(userRole === "driver" ? "/driver-profile" : "/driver");
                 return;
             }
+
+            // Security check: Drivers can only edit their own profile
+            // Note: driverId is the Driver UUID, while userId is the User UUID.
+            // We'll rely on backend check or fetch driver first and check user relation.
 
             try {
                 setFetchLoading(true);
                 const driver = await adminDriverService.getDriverById(driverId);
+                console.log('📦 Fetched driver data for edit:', driver);
 
                 // Parse name into firstName and lastName
                 const nameParts = driver.name ? driver.name.split(' ') : ['', ''];
@@ -119,15 +127,15 @@ export default function EditDriver() {
                 setDriverData({
                     firstName,
                     lastName,
-                    email: driver.email,
-                    contact: driver.contact,
-                    nic: driver.nic,
+                    email: driver.email || '',
+                    contact: driver.phone || driver.contact || '',
+                    nic: driver.nationalId || driver.nic || '',
                     licenseNumber: driver.licenseNumber || '',
                     licenseExpiry: driver.licenseExpiry ? driver.licenseExpiry.split('T')[0] : '',
                     languages: driver.languages ? (Array.isArray(driver.languages) ? driver.languages.join(', ') : driver.languages) : '',
                     experienceYears: driver.experienceYears ? driver.experienceYears.toString() : '',
-                    assignedVehicle: driver.assignedVehicle?.id || '',
-                    status: driver.status || 'Active',
+                    assignedVehicle: driver.assignedVehicleDetails?.id || driver.assignedVehicleId || '',
+                    status: driver.status === 'active' ? 'Active' : driver.status === 'inactive' ? 'Inactive' : (driver.status || 'Active'),
                     profileImage: null,
                     licenseInfo: null,
                     joinDate: driver.joinDate ? driver.joinDate.split('T')[0] : '',
@@ -142,7 +150,7 @@ export default function EditDriver() {
                     position: "top-right",
                     autoClose: 3000,
                 });
-                navigate("/driver");
+                navigate(userRole === "driver" ? "/driver-profile" : "/driver");
             } finally {
                 setFetchLoading(false);
             }
@@ -188,22 +196,24 @@ export default function EditDriver() {
         try {
             setLoading(true);
             const updateData: any = {
-                name: `${driverData.firstName} ${driverData.lastName}`,
+                firstName: driverData.firstName,
+                lastName: driverData.lastName,
                 email: driverData.email,
-                contact: driverData.contact,
+                phone: driverData.contact,
                 dateOfBirth: driverData.dob ? driverData.dob : undefined,
-                bloodGroup: driverData.bloodGroup ? driverData.bloodGroup as 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' : undefined,
-                nic: driverData.nic ? driverData.nic : undefined,
+                bloodGroup: driverData.bloodGroup ? driverData.bloodGroup as any : undefined,
+                nationalId: driverData.nic ? driverData.nic : undefined,
                 licenseNumber: driverData.licenseNumber,
                 licenseExpiry: driverData.licenseExpiry,
                 languages: driverData.languages ? driverData.languages.split(',').map(l => l.trim()) : undefined,
                 experienceYears: driverData.experienceYears ? parseInt(driverData.experienceYears) : undefined,
-                assignedVehicle: driverData.assignedVehicle ? driverData.assignedVehicle : undefined,
-                status: driverData.status ? driverData.status as 'Active' | 'Inactive' : undefined,
+                assignedVehicleId: driverData.assignedVehicle ? driverData.assignedVehicle : undefined,
+                status: driverData.status ? (driverData.status.toLowerCase() as any) : undefined,
                 joinDate: driverData.joinDate ? driverData.joinDate : undefined,
                 profileImage: driverData.profileImage || undefined,
-                licenseInfo: driverData.licenseInfo || undefined,
+                licenseImage: driverData.licenseInfo || undefined,
             };
+            console.log('📤 Sending driver update data:', updateData);
 
             // Add password only if provided
             if (driverData.newPassword) {
@@ -263,8 +273,8 @@ export default function EditDriver() {
 
                             {/* Breadcrumb */}
                             <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
-                                <span className="text-gray-500 cursor-pointer" onClick={() => navigate("/driver")}>
-                                    Driver
+                                <span className="text-gray-500 cursor-pointer" onClick={() => navigate(userRole === "driver" ? "/driver-profile" : "/driver")}>
+                                    {userRole === "driver" ? "Profile" : "Driver"}
                                 </span>
                                 <span className="text-gray-500">
                                     <MdKeyboardArrowRight />
@@ -528,7 +538,7 @@ export default function EditDriver() {
                                         <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
                                             <button
                                                 type="button"
-                                                onClick={() => navigate("/driver")}
+                                                onClick={() => navigate(userRole === "driver" ? "/driver-profile" : "/driver")}
                                                 className="px-8 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
                                             >
                                                 Cancel

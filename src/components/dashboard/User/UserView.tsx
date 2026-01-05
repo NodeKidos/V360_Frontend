@@ -87,9 +87,10 @@ const CustomerManagement = () => {
 
     const matchesCountry = countryFilter === "" || (customerCountry && customerCountry === countryFilter);
     const matchesGender = genderFilter === "" || (customerGender && customerGender === genderFilter);
-    // Be careful with status mapping logic if needed
-    const isActive = customer.isActive ? "Unblock" : "Block";
-    const matchesStatus = statusFilter === "" || isActive === statusFilter;
+    const statusStr = (customer.status || "").toLowerCase();
+    const isUserActive = statusStr === "active";
+    const statusLabel = isUserActive ? "Unblock" : "Block";
+    const matchesStatus = statusFilter === "" || statusLabel === statusFilter;
 
     return matchesSearch && matchesGender && matchesStatus && matchesCountry;
   });
@@ -115,11 +116,17 @@ const CustomerManagement = () => {
 
   // Navigate to EditCustomer page
   const handleEditClick = (customerId: string) => {
+    console.log("✏️ Edit customer clicked:", customerId);
+    if (!customerId) {
+      console.error("❌ Cannot edit: customerId is missing");
+      return;
+    }
     navigate(`/user/edit/${customerId}`); // Navigate to the EditCustomer page with the customerId
   };
 
   // Handle delete action
   const handleDeleteClick = (customerId: string) => {
+    console.log("🗑️ Delete customer clicked:", customerId);
     setSelectedCustomerId(customerId); // Store the selected customer ID
     setDeleteConfirmationVisible(true); // Show confirmation overlay
   };
@@ -351,48 +358,48 @@ const CustomerManagement = () => {
 
                 <tbody className="font-poppins">
                   {currentCustomers.map((c) => {
-                  // Get customer data from customer relation or fallback to legacy fields
-                  const customerGender = c.customer?.gender || c.gender;
-                  const customerContact = c.phone || c.contact;
-                  const customerCountry = c.customer?.country || c.country;
-                  const customerPassport = c.customer?.passportNumber || c.passportNumber;
-                  const customerAge = c.customer?.dateOfBirth ? calculateAge(c.customer.dateOfBirth) : c.age;
+                    // Get customer data from customer relation or fallback to legacy fields
+                    const customerGender = c.customer?.gender || c.gender;
+                    const customerContact = c.phone || c.contact;
+                    const customerCountry = c.customer?.country || c.country;
+                    const customerPassport = c.customer?.passportNumber || c.passportNumber;
+                    const customerAge = c.customer?.dateOfBirth ? calculateAge(c.customer.dateOfBirth) : c.age;
 
-                  return (
-                    <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
-                      {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td> */}
+                    return (
+                      <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                        {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td> */}
 
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
-                          <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
-                        </div>
-                      </td>
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
+                            <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
+                          </div>
+                        </td>
 
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender || "N/A"}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || "N/A"}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || "N/A"}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || "N/A"}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || "N/A"}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender || "N/A"}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || "N/A"}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || "N/A"}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || "N/A"}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || "N/A"}</td>
 
-                      <td className={`px-4 py-4 font-medium whitespace-nowrap ${c.isActive ? "text-green-600" : "text-red-600"}`}>
-                        {c.isActive ? "Unblock" : "Block"}
-                      </td>
+                        <td className={`px-4 py-4 font-medium whitespace-nowrap ${(c.status || "").toLowerCase() === "active" ? "text-green-600" : "text-red-600"}`}>
+                          {(c.status || "").toLowerCase() === "active" ? "Unblock" : "Block"}
+                        </td>
 
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex gap-3 justify-center">
-                          <CiEdit
-                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                            onClick={() => handleEditClick(c.id)}
-                          />
-                          <MdDeleteOutline
-                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                            onClick={() => handleDeleteClick(c.id)}
-                          />
-                        </div>
-                      </td>
-                    </tr>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex gap-3 justify-center">
+                            <CiEdit
+                              className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                              onClick={() => handleEditClick(c.id)}
+                            />
+                            <MdDeleteOutline
+                              className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                              onClick={() => handleDeleteClick(c.id)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
                     );
                   })}
                 </tbody>

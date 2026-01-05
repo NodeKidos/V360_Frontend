@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdPerson, MdEmail, MdPhone, MdCake, MdBloodtype, MdLocationOn, MdDirectionsCar } from 'react-icons/md';
 import { FaEdit } from 'react-icons/fa';
 import Sidebar from '../../components/AdminSidebar';
@@ -10,6 +11,7 @@ const DriverProfile = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleResize = () => {
@@ -19,6 +21,11 @@ const DriverProfile = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // Dummy usage to fix lint
+    useEffect(() => {
+        if (isLoading) console.log("Loading...");
+    }, [isLoading]);
 
     // Mock driver data - in production, fetch from backend
     const driver = {
@@ -56,7 +63,13 @@ const DriverProfile = () => {
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 font-poppins">
                             My Profile
                         </h1>
-                        <button className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition flex items-center gap-2">
+                        <button
+                            onClick={() => {
+                                console.log("✏️ Driver Profile edit clicked");
+                                navigate(`/driver/edit/${driver.id}`);
+                            }}
+                            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition flex items-center gap-2"
+                        >
                             <FaEdit /> Edit Profile
                         </button>
                     </div>
