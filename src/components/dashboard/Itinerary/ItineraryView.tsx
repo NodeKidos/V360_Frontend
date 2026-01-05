@@ -489,6 +489,19 @@ const ItineraryManagement = () => {
                             }}
                             title="Download PDF"
                           />
+                          <button
+                            onClick={async () => {
+                              try {
+                                await pdfService.previewPDF(itinerary.id);
+                              } catch (error) {
+                                toast.error("Failed to view PDF. Please try again.");
+                              }
+                            }}
+                            className="text-orange-500 cursor-pointer text-[18px] hover:text-orange-700 transition-colors bg-transparent border-none p-0 flex items-center"
+                            title="View PDF"
+                          >
+                            <FiEye />
+                          </button>
                           <FiEye
                             className="text-[#B749DB] cursor-pointer text-[18px] hover:text-purple-700 transition-colors"
                             onClick={() => handleViewClick(itinerary.id)}
