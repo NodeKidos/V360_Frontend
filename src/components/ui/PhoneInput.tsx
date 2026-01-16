@@ -103,11 +103,11 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
 
         return (
             <div className="flex gap-2">
-                <select
+                <select 
                     value={countryCode}
                     onChange={handleCodeChange}
                     disabled={disabled}
-                    className="w-32 px-3 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                    className="w-20 md:px-1 py-3 text-base border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                 >
                     {countryCodes.map((cc) => (
                         <option key={cc.code} value={cc.code}>
@@ -127,7 +127,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
                     disabled={disabled}
                     className={
                         className ||
-                        "flex-1 px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
+                        "flex-1 w-30 px-4 md:px-2 py-3 text-base border border-purple-300  rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-500"
                     }
                 />
             </div>
