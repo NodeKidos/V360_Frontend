@@ -15,6 +15,23 @@ export interface Customer {
     dietaryRequirements?: string;
 }
 
+export interface Driver {
+    id: string;
+    licenseNumber: string;
+    licenseExpiry: string;
+    licenseImage?: string;
+    dateOfBirth: string;
+    bloodGroup: string;
+    nationalId: string;
+    languages: string[];
+    rating: number;
+    totalTrips: number;
+    driverStatus: string;
+    currentLocation?: string;
+    experienceYears: number;
+    joinDate?: string;
+}
+
 export interface User {
     id: string;
     firstName: string;
@@ -34,6 +51,8 @@ export interface User {
     age?: number;
     // Customer relation when role is 'customer'
     customer?: Customer;
+    // Driver relation when role is 'driver'
+    driver?: Driver;
 }
 
 export interface UserListResponse {

@@ -226,50 +226,114 @@ const DestinationHotelManagement = () => {
                                 </TabsList>
                             </div>
 
-                        {/* VIEW & MANAGE SECTION - Desktop */}
-                        <TabsContent value="destination">
-                            <div className="mb-6 hidden md:block">
-                                <div className="flex justify-between items-center p-2">
-                                    {/* LEFT: Title */}
-                                    <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                                        View & manage Destination Details
-                                    </h4>
+                            {/* VIEW & MANAGE SECTION - Desktop */}
+                            <TabsContent value="destination">
+                                <div className="mb-6 hidden md:block">
+                                    <div className="flex justify-between items-center p-2">
+                                        {/* LEFT: Title */}
+                                        <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
+                                            View & manage Destination Details
+                                        </h4>
 
-                                    {/* RIGHT: Filters */}
-                                    <div className="flex items-center gap-3">
-                                        <select
-                                            className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
-                                            value={locationFilter}
-                                            onChange={(e) => setLocationFilter(e.target.value)}
-                                        >
-                                            <option value="">Location</option>
-                                            <option value="Matale">Matale</option>
-                                            <option value="Matara">Matara</option>
-                                            <option value="Galle">Galle</option>
-                                            <option value="Negombo">Negombo</option>
-                                            <option value="Nuwara Eliya">Nuwara Eliya</option>
-                                            <option value="Trincomalee">Trincomalee</option>
-                                        </select>
-                                        <select
-                                            className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
-                                            value={destinationFilter}
-                                            onChange={(e) => setDestinationFilter(e.target.value)}
-                                        >
-                                            <option value="">Destination</option>
-                                            <option value="Sigiriya Rock Fortress">Sigiriya Rock Fortress</option>
-                                            <option value="Mirissa Beach">Mirissa Beach</option>
-                                            <option value="Adam's Peak">Adam's Peak</option>
-                                            <option value="Horton Plains & World's End">Horton Plains & World's End</option>
-                                            <option value="Polonnaruwa Ancient City">Polonnaruwa Ancient City</option>
-                                            <option value="Galle Dutch Fort Walk">Galle Dutch Fort Walk</option>
-                                        </select>
+                                        {/* RIGHT: Filters */}
+                                        <div className="flex items-center gap-3">
+                                            <select
+                                                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                                                value={locationFilter}
+                                                onChange={(e) => setLocationFilter(e.target.value)}
+                                            >
+                                                <option value="">Location</option>
+                                                <option value="Matale">Matale</option>
+                                                <option value="Matara">Matara</option>
+                                                <option value="Galle">Galle</option>
+                                                <option value="Negombo">Negombo</option>
+                                                <option value="Nuwara Eliya">Nuwara Eliya</option>
+                                                <option value="Trincomalee">Trincomalee</option>
+                                            </select>
+                                            <select
+                                                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 text-[12px] sm:text-[14px] font-poppins bg-white cursor-pointer"
+                                                value={destinationFilter}
+                                                onChange={(e) => setDestinationFilter(e.target.value)}
+                                            >
+                                                <option value="">Destination</option>
+                                                <option value="Sigiriya Rock Fortress">Sigiriya Rock Fortress</option>
+                                                <option value="Mirissa Beach">Mirissa Beach</option>
+                                                <option value="Adam's Peak">Adam's Peak</option>
+                                                <option value="Horton Plains & World's End">Horton Plains & World's End</option>
+                                                <option value="Polonnaruwa Ancient City">Polonnaruwa Ancient City</option>
+                                                <option value="Galle Dutch Fort Walk">Galle Dutch Fort Walk</option>
+                                            </select>
 
+                                            <button
+                                                className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 hover:bg-purple-50 cursor-pointer"
+                                                onClick={() => {
+                                                    setLocationFilter("");
+                                                    setSearchQuery("");
+                                                    setDestinationFilter("");
+                                                }}
+                                                title="Clear all filters"
+                                            >
+                                                <LuListFilter className="text-[18px]" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* VIEW & MANAGE SECTION - Mobile */}
+                                <div className="mb-6 md:hidden">
+                                    <div className="flex justify-between items-center mb-4">
+                                        {/* LEFT: Title */}
+                                        <h4 className="font-poppins font-medium text-black text-[16px] sm:text-[16px]">
+                                            View & manage Destination Details
+                                        </h4>
+
+                                        {/* RIGHT: Add button */}
                                         <button
-                                            className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 hover:bg-purple-50 cursor-pointer"
+                                            className="w-8 h-8 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
+                                            onClick={handleAddDestinationClick}
+                                        >
+                                            <IoMdAdd className="text-[20px]" />
+                                        </button>
+                                    </div>
+
+                                    {/* FILTERS - Mobile */}
+                                    <div className="flex items-center justify-between w-full">
+                                        {/* LEFT SIDE DROPDOWNS */}
+                                        <div className="flex items-center gap-2">
+                                            <select
+                                                className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 w-35 py-2 text-[16px] font-poppins bg-white cursor-pointer"
+                                                value={locationFilter}
+                                                onChange={(e) => setLocationFilter(e.target.value)}
+                                            >
+                                                <option value="">Location</option>
+                                                <option value="Colombo">Colombo</option>
+                                                <option value="Kandy">Kandy</option>
+                                                <option value="Galle">Galle</option>
+                                                <option value="Negombo">Negombo</option>
+                                                <option value="Nuwara Eliya">Nuwara Eliya</option>
+                                                <option value="Trincomalee">Trincomalee</option>
+                                            </select>
+                                            <select
+                                                className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 w-35 py-2 text-[16px] font-poppins bg-white cursor-pointer"
+                                                value={destinationFilter}
+                                                onChange={(e) => setDestinationFilter(e.target.value)}
+                                            >
+                                                <option value="">Destination</option>
+                                                <option value="Sigiriya Rock Fortress">Sigiriya Rock Fortress</option>
+                                                <option value="Mirissa Beach">Mirissa Beach</option>
+                                                <option value="Adam's Peak">Adam's Peak</option>
+                                                <option value="Horton Plains & World's End">Horton Plains & World's End</option>
+                                                <option value="Polonnaruwa Ancient City">Polonnaruwa Ancient City</option>
+                                                <option value="Galle Dutch Fort Walk">Galle Dutch Fort Walk</option>
+                                            </select>
+                                        </div>
+                                        {/* RIGHT SIDE FILTER ICON */}
+                                        <button
+                                            className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50 cursor-pointer"
                                             onClick={() => {
                                                 setLocationFilter("");
                                                 setSearchQuery("");
-                                                setDestinationFilter("");
+                                                setDestinationFilter("")
                                             }}
                                             title="Clear all filters"
                                         >
@@ -277,131 +341,77 @@ const DestinationHotelManagement = () => {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* VIEW & MANAGE SECTION - Mobile */}
-                            <div className="mb-6 md:hidden">
-                                <div className="flex justify-between items-center mb-4">
-                                    {/* LEFT: Title */}
-                                    <h4 className="font-poppins font-medium text-black text-[16px] sm:text-[16px]">
-                                        View & manage Destination Details
-                                    </h4>
-
-                                    {/* RIGHT: Add button */}
-                                    <button
-                                        className="w-8 h-8 rounded-full border-2 border-[#B749DB] text-[#B749DB] flex items-center justify-center hover:bg-purple-50 cursor-pointer"
-                                        onClick={handleAddDestinationClick}
-                                    >
-                                        <IoMdAdd className="text-[20px]" />
-                                    </button>
-                                </div>
-
-                                {/* FILTERS - Mobile */}
-                                <div className="flex items-center justify-between w-full">
-                                    {/* LEFT SIDE DROPDOWNS */}
-                                    <div className="flex items-center gap-2">
-                                        <select
-                                            className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 w-35 py-2 text-[16px] font-poppins bg-white cursor-pointer"
-                                            value={locationFilter}
-                                            onChange={(e) => setLocationFilter(e.target.value)}
-                                        >
-                                            <option value="">Location</option>
-                                            <option value="Colombo">Colombo</option>
-                                            <option value="Kandy">Kandy</option>
-                                            <option value="Galle">Galle</option>
-                                            <option value="Negombo">Negombo</option>
-                                            <option value="Nuwara Eliya">Nuwara Eliya</option>
-                                            <option value="Trincomalee">Trincomalee</option>
-                                        </select>
-                                        <select
-                                            className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 w-35 py-2 text-[16px] font-poppins bg-white cursor-pointer"
-                                            value={destinationFilter}
-                                            onChange={(e) => setDestinationFilter(e.target.value)}
-                                        >
-                                            <option value="">Destination</option>
-                                            <option value="Sigiriya Rock Fortress">Sigiriya Rock Fortress</option>
-                                            <option value="Mirissa Beach">Mirissa Beach</option>
-                                            <option value="Adam's Peak">Adam's Peak</option>
-                                            <option value="Horton Plains & World's End">Horton Plains & World's End</option>
-                                            <option value="Polonnaruwa Ancient City">Polonnaruwa Ancient City</option>
-                                            <option value="Galle Dutch Fort Walk">Galle Dutch Fort Walk</option>
-                                        </select>
-                                    </div>
-                                    {/* RIGHT SIDE FILTER ICON */}
-                                    <button
-                                        className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50 cursor-pointer"
-                                        onClick={() => {
-                                            setLocationFilter("");
-                                            setSearchQuery("");
-                                            setDestinationFilter("")
-                                        }}
-                                        title="Clear all filters"
-                                    >
-                                        <LuListFilter className="text-[18px]" />
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* TABLE - Both Desktop and Mobile (Horizontally Scrollable) */}
-                            <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
-                                <table className="min-w-full bg-white">
-                                    <thead>
-                                        <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                                            {/* <th className="px-3 py-4 whitespace-nowrap">ID</th> */}
-                                            <th className="px-3 py-3 whitespace-nowrap">Destination Name</th>
-                                            <th className="px-3 py-3 whitespace-nowrap">Image</th>
-                                            <th className="px-3 py-3 whitespace-nowrap">Location</th>
-                                            <th className="px-3 py-3 whitespace-nowrap">Category</th>
-                                            <th className="px-3 py-3 whitespace-nowrap">Best Time to Visit</th>
-                                            <th className="px-3 py-3 whitespace-nowrap">Review</th>
-                                            <th className="px-3 py-3 whitespace-nowrap"></th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody className="font-poppins">
-                                        {currentDestinations.map((d) => (
-                                            <tr key={d.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                                {/* <td className="py-1 px-3">{d.id}</td> */}
-                                                <td className="py-1 px-3">{d.name}</td>
-                                                <td className="px-5 py-1 text-center">
-                                                    <img src={d.image} alt={d.name} className="w-16 h-16 object-cover rounded-md" />
-                                                </td>
-                                                <td className="px-3 py-1 text-center">{d.location}</td>
-                                                <td className="px-3 py-1 text-center">{d.category}</td>
-                                                <td className="px-3 py-1 text-center">{d.bestTimeToVisit || "N/A"}</td>
-                                                <td className="px-5 py-1 whitespace-nowrap">
-                                                    <div className="flex gap-2 justify-center">
-                                                        <CiEdit
-                                                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                            onClick={() => handleEditDestinationClick(d.id)}
-                                                        />
-                                                        <MdDeleteOutline
-                                                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                            onClick={() => handleDeleteClick(d.id)}
-                                                        />
-                                                    </div>
-                                                </td>
+                                {/* TABLE - Both Desktop and Mobile (Horizontally Scrollable) */}
+                                <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
+                                    <table className="min-w-full bg-white">
+                                        <thead>
+                                            <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
+                                                {/* <th className="px-3 py-4 whitespace-nowrap">ID</th> */}
+                                                <th className="px-3 py-3 whitespace-nowrap">Destination Name</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">Image</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">Location</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">Category</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">Best Time to Visit</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">Review</th>
+                                                <th className="px-3 py-3 whitespace-nowrap"></th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {/* PAGINATION */}
-                            <div className="mt-4">
-                                <Pagination
-                                    currentPage={page}
-                                    totalItems={filteredDestinations.length}
-                                    itemsPerPage={itemsPerPage}
-                                    onPageChange={setPage}
-                                    onItemsPerPageChange={setItemsPerPage}
-                                />
-                            </div>
-                        </TabsContent>
-                        {/* Hotel Tab Panel */}
-                        <TabsContent value="hotel">
-                            <Hotel hotels={hotels} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setHotels={setHotels} onAdd={handleAddHotelClick} onEdit={handleEditHotelClick} />
-                        </TabsContent>
-                        {/* Excursion Tab Panel */}
+                                        </thead>
+
+                                        <tbody className="font-poppins">
+                                            {currentDestinations.map((d) => (
+                                                <tr key={d.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                                                    {/* <td className="py-1 px-3">{d.id}</td> */}
+                                                    <td className="py-1 px-3">{d.name}</td>
+                                                    <td className="px-5 py-1 text-center">
+                                                        {d.images && d.images.length > 0 ? (
+                                                            <img
+                                                                src={d.images[0].startsWith('/') ? `http://localhost:3000${d.images[0]}` : d.images[0]}
+                                                                alt={d.name}
+                                                                className="w-16 h-16 object-cover rounded-md mx-auto"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center mx-auto text-gray-400 text-xs text-center px-1">
+                                                                No Image
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-3 py-1 text-center">{d.location}</td>
+                                                    <td className="px-3 py-1 text-center">{d.category}</td>
+                                                    <td className="px-3 py-1 text-center">{d.bestTimeToVisit || "N/A"}</td>
+                                                    <td className="px-5 py-1 whitespace-nowrap">
+                                                        <div className="flex gap-2 justify-center">
+                                                            <CiEdit
+                                                                className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                                onClick={() => handleEditDestinationClick(d.id)}
+                                                            />
+                                                            <MdDeleteOutline
+                                                                className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                                onClick={() => handleDeleteClick(d.id)}
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {/* PAGINATION */}
+                                <div className="mt-4">
+                                    <Pagination
+                                        currentPage={page}
+                                        totalItems={filteredDestinations.length}
+                                        itemsPerPage={itemsPerPage}
+                                        onPageChange={setPage}
+                                        onItemsPerPageChange={setItemsPerPage}
+                                    />
+                                </div>
+                            </TabsContent>
+                            {/* Hotel Tab Panel */}
+                            <TabsContent value="hotel">
+                                <Hotel hotels={hotels} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setHotels={setHotels} onAdd={handleAddHotelClick} onEdit={handleEditHotelClick} />
+                            </TabsContent>
+                            {/* Excursion Tab Panel */}
                             <TabsContent value="excursion">
                                 <Excursion excursions={excursions} page={page} itemsPerPage={itemsPerPage} setPage={setPage} setItemsPerPage={setItemsPerPage} setExcursions={setExcursions} onAdd={handleAddExcursionClick} onEdit={handleEditExcursionClick} />
                             </TabsContent>

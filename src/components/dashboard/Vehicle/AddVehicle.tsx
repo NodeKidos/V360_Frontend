@@ -103,8 +103,7 @@ export default function AddVehicle() {
             else if (vehicleData.status === "In Service") mappedStatus = "in_use";
             else if (vehicleData.status === "Need Repair") mappedStatus = "maintenance";
 
-            let mappedType = vehicleData.vehicleType.toLowerCase();
-            if (mappedType === "car") mappedType = "sedan";
+            const mappedType = vehicleData.vehicleType.toLowerCase();
 
             // Create Vehicle
             const newVehicle = await vehicleService.createVehicle({
@@ -206,14 +205,20 @@ export default function AddVehicle() {
 
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Vehicle Type</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="vehicleType"
                                         value={vehicleData.vehicleType}
                                         onChange={handleChange}
                                         className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        placeholder="Enter Vehicle Type (e.g. Sedan, SUV)"
-                                    />
+                                    >
+                                        <option value="">Select Type</option>
+                                        <option value="sedan">Sedan</option>
+                                        <option value="suv">SUV</option>
+                                        <option value="van">Van</option>
+                                        <option value="minibus">Minibus</option>
+                                        <option value="bus">Bus</option>
+                                        <option value="luxury">Luxury</option>
+                                    </select>
                                 </div>
                             </div>
 

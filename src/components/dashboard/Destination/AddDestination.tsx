@@ -3,15 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Sidebar from "../../AdminSidebar"; // Assuming Sidebar component is reusable
-import TopBar from "../../Topbar"; // Assuming TopBar component is reusable
+import Sidebar from "../../AdminSidebar";
+import TopBar from "../../Topbar";
 import SriLankaMap from "../../home/SriLankaMap";
+import destinationService from "../../../services/destination.service";
 
 export default function AddDestination() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Track form data
   const [destinationName, setDestinationName] = useState("");
@@ -36,7 +38,21 @@ export default function AddDestination() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const mapCategoryToBackend = (cat: string) => {
+    const mapping: Record<string, string> = {
+      "Historical / Cultural": "historical_cultural",
+      "Beach / Nature": "beach_nature",
+      "Hiking / Spiritual": "hiking_spiritual",
+      "Historical / Heritage": "historical_cultural",
+      "Nature / Hiking": "beach_nature",
+      "Heritage / City Tour": "urban",
+      "Wildlife": "wildlife",
+      "Adventure": "adventure"
+    };
+    return mapping[cat] || "historical_cultural";
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate form fields
@@ -45,24 +61,35 @@ export default function AddDestination() {
       return;
     }
 
-    const newDestination = {
-      destinationName,
-      location,
-      category,
-      destinationImages,
-      reviews,
-    };
+    try {
+      setIsSubmitting(true);
+      const formData = new FormData();
+      formData.append("name", destinationName);
+      formData.append("location", location);
+      formData.append("category", mapCategoryToBackend(category));
+      formData.append("description", reviews);
 
-    // Handle the backend save or API call here (e.g., save to database)
-    console.log("New Destination added:", newDestination);
+      destinationImages.forEach((image) => {
+        formData.append("images", image);
+      });
 
-    toast.success("Destination added successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
+      await destinationService.create(formData);
 
-    // Navigate back to destination list page
-    navigate("/destination-hotel");
+      toast.success("Destination added successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // Navigate back to destination list page
+      setTimeout(() => {
+        navigate("/destination-hotel");
+      }, 1500);
+    } catch (error: any) {
+      console.error("Error creating destination:", error);
+      toast.error(error.response?.data?.message || "Failed to create destination");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -220,9 +247,17 @@ export default function AddDestination() {
 
                 <button
                   type="submit"
-                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
+                  disabled={isSubmitting}
+                  className={`px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  Submit
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
               </div>
             </form>
