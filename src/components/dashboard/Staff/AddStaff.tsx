@@ -182,7 +182,7 @@ export default function AddStaff() {
                                         name="name"
                                         value={staffData.name}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -194,7 +194,7 @@ export default function AddStaff() {
                                         name="email"
                                         value={staffData.email}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
@@ -216,7 +216,7 @@ export default function AddStaff() {
                                         name="accessLevel"
                                         value={staffData.accessLevel}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">Select</option>
                                         <option value="Admin">Admin</option>
@@ -234,7 +234,7 @@ export default function AddStaff() {
                                         name="age"
                                         value={staffData.age}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -245,7 +245,7 @@ export default function AddStaff() {
                                         name="gender"
                                         value={staffData.gender}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">Select</option>
                                         <option value="Male">Male</option>
@@ -261,7 +261,7 @@ export default function AddStaff() {
                                         name="status"
                                         value={staffData.status}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">Select</option>
                                         <option value="Block">Block</option>
@@ -276,7 +276,7 @@ export default function AddStaff() {
                                         name="nic"
                                         value={staffData.nic}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
