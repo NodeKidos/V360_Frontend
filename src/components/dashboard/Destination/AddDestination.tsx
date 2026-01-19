@@ -139,7 +139,7 @@ export default function AddDestination() {
                   type="text"
                   value={destinationName}
                   onChange={(e) => setDestinationName(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter destination name"
                 />
               </div>
@@ -164,7 +164,7 @@ export default function AddDestination() {
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter location or select from map"
                 />
               </div>
@@ -175,7 +175,7 @@ export default function AddDestination() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 >
                   <option value="">Select Category</option>
                   <option value="Historical / Cultural">Historical / Cultural</option>
@@ -197,7 +197,7 @@ export default function AddDestination() {
                   onChange={handleFileChange}
                   accept="image/*"
                   multiple
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 />
                 {destinationImages.length > 0 && (
                   <div className="mt-2">
@@ -230,7 +230,7 @@ export default function AddDestination() {
                 <textarea
                   value={reviews}
                   onChange={(e) => setReviews(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter destination reviews"
                 />
               </div>
