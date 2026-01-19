@@ -198,7 +198,7 @@ export default function AddVehicle() {
                                         name="vehicleName"
                                         value={vehicleData.vehicleName}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                         placeholder="Enter Vehicle Name (e.g. Toyota)"
                                     />
                                 </div>
@@ -209,7 +209,7 @@ export default function AddVehicle() {
                                         name="vehicleType"
                                         value={vehicleData.vehicleType}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">Select Type</option>
                                         <option value="sedan">Sedan</option>
@@ -231,7 +231,7 @@ export default function AddVehicle() {
                                         name="vehicleNoPlate"
                                         value={vehicleData.vehicleNoPlate}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                         placeholder="Enter Vehicle No Plate"
                                     />
                                 </div>
@@ -243,7 +243,7 @@ export default function AddVehicle() {
                                         name="vehicleModel"
                                         value={vehicleData.vehicleModel}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                         placeholder="Enter Vehicle Model (e.g. Prius)"
                                     />
                                 </div>
@@ -260,7 +260,7 @@ export default function AddVehicle() {
                                         step="1"
                                         value={vehicleData.seatCount}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                         placeholder="Enter Seat Count"
                                     />
                                 </div>
@@ -270,7 +270,7 @@ export default function AddVehicle() {
                                         name="fuelType"
                                         value={vehicleData.fuelType}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="diesel">Diesel</option>
                                         <option value="petrol">Petrol</option>
@@ -289,7 +289,7 @@ export default function AddVehicle() {
                                         name="nextServiceDate"
                                         value={vehicleData.nextServiceDate}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                                 <div>
@@ -298,7 +298,7 @@ export default function AddVehicle() {
                                         name="assignDriver"
                                         value={vehicleData.assignDriver}
                                         onChange={handleChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">
                                             {drivers.length === 0 ? "No drivers available" : "Select a driver (optional)"}
@@ -324,7 +324,7 @@ export default function AddVehicle() {
                                     type="file"
                                     accept="image/*"
                                     onChange={handleImageChange}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                                 {vehicleData.vehicleImage && <p className="text-gray-500 mt-2">{vehicleData.vehicleImage.name}</p>}
                             </div>
