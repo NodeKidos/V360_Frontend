@@ -307,7 +307,7 @@ export default function EditDriver() {
                                                     type="text"
                                                     value={driverData.firstName}
                                                     onChange={(e) => setDriverData({ ...driverData, firstName: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -317,7 +317,7 @@ export default function EditDriver() {
                                                     type="text"
                                                     value={driverData.lastName}
                                                     onChange={(e) => setDriverData({ ...driverData, lastName: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
                                         </div>
@@ -330,7 +330,7 @@ export default function EditDriver() {
                                                     type="email"
                                                     value={driverData.email}
                                                     onChange={(e) => setDriverData({ ...driverData, email: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -353,7 +353,7 @@ export default function EditDriver() {
                                                     type="file"
                                                     accept="image/*"
                                                     onChange={(e) => handleFileChange(e, "profileImage")}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -362,7 +362,7 @@ export default function EditDriver() {
                                                 <input
                                                     type="file"
                                                     onChange={(e) => handleFileChange(e, "licenseInfo")}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
                                         </div>
@@ -375,7 +375,7 @@ export default function EditDriver() {
                                                     type="text"
                                                     value={driverData.licenseNumber}
                                                     onChange={(e) => setDriverData({ ...driverData, licenseNumber: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -385,7 +385,7 @@ export default function EditDriver() {
                                                     type="date"
                                                     value={driverData.licenseExpiry}
                                                     onChange={(e) => setDriverData({ ...driverData, licenseExpiry: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
                                         </div>
@@ -397,7 +397,7 @@ export default function EditDriver() {
                                                     type="date"
                                                     value={driverData.dob}
                                                     onChange={(e) => setDriverData({ ...driverData, dob: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -407,7 +407,7 @@ export default function EditDriver() {
                                                 <select
                                                     value={driverData.bloodGroup}
                                                     onChange={(e) => setDriverData({ ...driverData, bloodGroup: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 >
                                                     <option value="">Select Blood Group</option>
                                                     <option>A+</option>
@@ -429,7 +429,7 @@ export default function EditDriver() {
                                                     type="text"
                                                     value={driverData.nic}
                                                     onChange={(e) => setDriverData({ ...driverData, nic: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -438,7 +438,7 @@ export default function EditDriver() {
                                                 <select
                                                     value={driverData.assignedVehicle}
                                                     onChange={(e) => setDriverData({ ...driverData, assignedVehicle: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                     disabled={vehiclesLoading}
                                                 >
                                                     <option value="">
@@ -462,7 +462,7 @@ export default function EditDriver() {
                                                     value={driverData.languages}
                                                     onChange={(e) => setDriverData({ ...driverData, languages: e.target.value })}
                                                     placeholder="e.g., English, Sinhala, Tamil"
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
 
@@ -474,7 +474,7 @@ export default function EditDriver() {
                                                     onChange={(e) => setDriverData({ ...driverData, experienceYears: e.target.value })}
                                                     min="0"
                                                     placeholder="Years of driving experience"
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
                                         </div>
@@ -486,7 +486,7 @@ export default function EditDriver() {
                                                 <select
                                                     value={driverData.status}
                                                     onChange={(e) => setDriverData({ ...driverData, status: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 >
                                                     <option value="">Select Status</option>
                                                     <option value="Active">Active</option>
@@ -500,7 +500,7 @@ export default function EditDriver() {
                                                     type="date"
                                                     value={driverData.joinDate}
                                                     onChange={(e) => setDriverData({ ...driverData, joinDate: e.target.value })}
-                                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                 />
                                             </div>
                                         </div>
@@ -518,7 +518,7 @@ export default function EditDriver() {
                                                         value={driverData.newPassword}
                                                         onChange={(e) => setDriverData({ ...driverData, newPassword: e.target.value })}
                                                         placeholder="Leave blank to keep current password"
-                                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                     />
                                                 </div>
                                                 <div>
@@ -528,7 +528,7 @@ export default function EditDriver() {
                                                         value={driverData.confirmPassword}
                                                         onChange={(e) => setDriverData({ ...driverData, confirmPassword: e.target.value })}
                                                         placeholder="Confirm new password"
-                                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                                     />
                                                 </div>
                                             </div>
