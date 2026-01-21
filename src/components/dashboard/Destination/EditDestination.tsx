@@ -15,6 +15,7 @@ export default function EditDestination() {
     const [isMobile, setIsMobile] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [existingDestinations, setExistingDestinations] = useState<any[]>([]);
 
     // Form states
     const [destinationName, setDestinationName] = useState("");
@@ -39,13 +40,42 @@ export default function EditDestination() {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
+
+                // Fetch existing destinations to show on map
+                try {
+                    const allDestinations = await destinationService.getAll();
+                    setExistingDestinations(allDestinations);
+                } catch (err) {
+                    console.error("Failed to fetch all destinations:", err);
+                }
+
+                const cleanHighlights = (raw: string) => {
+                    if (!raw) return "";
+                    let current = raw;
+                    // Robustly unwrap nested JSON strings if they occur
+                    try {
+                        while (typeof current === 'string' && (current.trim().startsWith('[') || current.trim().startsWith('{') || current.trim().startsWith('"'))) {
+                            const parsed = JSON.parse(current);
+                            if (parsed === current) break;
+                            if (Array.isArray(parsed)) {
+                                current = parsed.join(", ");
+                                break;
+                            }
+                            current = String(parsed);
+                        }
+                    } catch (e) {
+                        // If parsing fails, it's likely a normal string with some odd characters
+                    }
+                    return current;
+                };
+
                 if (id) {
                     const destination = await destinationService.getById(id);
                     setDestinationName(destination.name);
                     setLocation(destination.location || "");
                     setCategory(destination.category || "");
                     setDescription(destination.description || "");
-                    setHighlights(destination.highlights || "");
+                    setHighlights(cleanHighlights(destination.highlights || ""));
                     setBestTimeToVisit(destination.bestTimeToVisit || "");
                     setLatitude(destination.latitude?.toString() || destination.coordinates?.lat?.toString() || "");
                     setLongitude(destination.longitude?.toString() || destination.coordinates?.lng?.toString() || "");
@@ -72,11 +102,29 @@ export default function EditDestination() {
 
     const handleCityClick = (cityName: string) => {
         setLocation(cityName);
-        const city = sriLankaCities.find(c => c.name === cityName);
-        if (city) {
-            setLatitude(city.lat.toString());
-            setLongitude(city.lng.toString());
+        // Find coordinates for the city in hardcoded list first, then in fetched destinations
+        let city = sriLankaCities.find(c => c.name === cityName);
+        if (!city && existingDestinations.length > 0) {
+            const dest = existingDestinations.find(d => d.name === cityName);
+            if (dest) {
+                city = { name: dest.name, lat: dest.latitude || dest.coordinates?.lat, lng: dest.longitude || dest.coordinates?.lng };
+            }
         }
+
+        if (city) {
+            setLatitude(city.lat?.toString() || "");
+            setLongitude(city.lng?.toString() || "");
+        } else {
+            setLatitude("");
+            setLongitude("");
+        }
+    };
+
+    const handleMapClick = (lat: number, lng: number) => {
+        setLatitude(lat.toFixed(6));
+        setLongitude(lng.toFixed(6));
+        // Always update location to show it's a pinned point, which also clears any previously selected named city
+        setLocation(`Pinned Location (${lat.toFixed(2)}, ${lng.toFixed(2)})`);
     };
 
     const removeExistingImage = (imgUrl: string) => {
@@ -262,6 +310,9 @@ export default function EditDestination() {
                                     <SriLankaMap
                                         selectedCities={location ? [location] : []}
                                         onCityClick={handleCityClick}
+                                        onLocationSelect={handleMapClick}
+                                        destinations={existingDestinations}
+                                        currentLocation={latitude && longitude && !isNaN(parseFloat(latitude)) && !isNaN(parseFloat(longitude)) ? { lat: parseFloat(latitude), lng: parseFloat(longitude) } : undefined}
                                     />
                                 </div>
                             </div>

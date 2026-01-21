@@ -14,6 +14,7 @@ export default function AddDestination() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [existingDestinations, setExistingDestinations] = useState<any[]>([]);
 
   // Track form data
   const [destinationName, setDestinationName] = useState("");
@@ -33,6 +34,18 @@ export default function AddDestination() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
+
+    // Fetch existing destinations to show on map
+    const fetchDestinations = async () => {
+      try {
+        const data = await destinationService.getAll();
+        setExistingDestinations(data);
+      } catch (error) {
+        console.error("Failed to fetch destinations:", error);
+      }
+    };
+    fetchDestinations();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -44,12 +57,29 @@ export default function AddDestination() {
 
   const handleCityClick = (cityName: string) => {
     setLocation(cityName);
-    // Find coordinates for the city
-    const city = sriLankaCities.find(c => c.name === cityName);
-    if (city) {
-      setLatitude(city.lat.toString());
-      setLongitude(city.lng.toString());
+    // Find coordinates for the city in hardcoded list first, then in fetched destinations
+    let city = sriLankaCities.find(c => c.name === cityName);
+    if (!city && existingDestinations.length > 0) {
+      const dest = existingDestinations.find(d => d.name === cityName);
+      if (dest) {
+        city = { name: dest.name, lat: dest.latitude || dest.coordinates?.lat, lng: dest.longitude || dest.coordinates?.lng };
+      }
     }
+
+    if (city) {
+      setLatitude(city.lat?.toString() || "");
+      setLongitude(city.lng?.toString() || "");
+    } else {
+      setLatitude("");
+      setLongitude("");
+    }
+  };
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setLatitude(lat.toFixed(6));
+    setLongitude(lng.toFixed(6));
+    // Always update location to show it's a pinned point, which also clears any previously selected named city
+    setLocation(`Pinned Location (${lat.toFixed(2)}, ${lng.toFixed(2)})`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -241,6 +271,9 @@ export default function AddDestination() {
                   <SriLankaMap
                     selectedCities={location ? [location] : []}
                     onCityClick={handleCityClick}
+                    onLocationSelect={handleMapClick}
+                    destinations={existingDestinations}
+                    currentLocation={latitude && longitude && !isNaN(parseFloat(latitude)) && !isNaN(parseFloat(longitude)) ? { lat: parseFloat(latitude), lng: parseFloat(longitude) } : undefined}
                   />
                 </div>
               </div>

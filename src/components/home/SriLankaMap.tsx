@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -58,11 +58,10 @@ const createCustomIcon = (isSelected: boolean) => {
                 stroke-width="2"/>
           <circle cx="16" cy="16" r="6" fill="white"/>
         </svg>
-        ${
-          isSelected
-            ? '<div style="position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; background: #22c55e; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 12px; font-weight: bold;">✓</span></div>'
-            : ""
-        }
+        ${isSelected
+        ? '<div style="position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; background: #22c55e; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 12px; font-weight: bold;">✓</span></div>'
+        : ""
+      }
       </div>
     `,
     iconSize: [32, 42],
@@ -87,46 +86,78 @@ function SetMapBounds() {
   return null;
 }
 
+// Map Click Handler
+function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e) {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
 interface Destination {
   id: string;
   name: string;
   latitude?: number;
   longitude?: number;
+  coordinates?: { lat: number; lng: number };
 }
 
 interface SriLankaMapProps {
   selectedCities: string[];
   onCityClick: (cityName: string) => void;
+  onLocationSelect?: (lat: number, lng: number) => void;
   destinations?: Destination[];
+  currentLocation?: { lat: number; lng: number };
 }
 
 export default function SriLankaMap({
   selectedCities,
   onCityClick,
+  onLocationSelect,
   destinations = [],
+  currentLocation,
 }: SriLankaMapProps) {
   const [mapKey, setMapKey] = useState(0);
 
-  // Force re-render when component mounts to fix map display issues
+  // Force a small delay on map mount to fix Leaflet's grey tile/layout issue
   useEffect(() => {
-    const timer = setTimeout(() => setMapKey((prev) => prev + 1), 100);
+    const timer = setTimeout(() => setMapKey(1), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // Use database destinations if available, otherwise fall back to hardcoded cities
+  // Show both hardcoded cities and database destinations for better reference
   // Filter out destinations without valid coordinates
-  const citiesToDisplay = destinations.length > 0
-    ? destinations.filter(d => d.latitude && d.longitude).map(d => ({
+  // Show both hardcoded cities and database destinations for better reference
+  const citiesToDisplay = [
+    ...sriLankaCities,
+    ...(destinations.length > 0
+      ? destinations.filter(d => d.latitude || d.longitude || d.coordinates).map(d => ({
         name: d.name,
-        lat: d.latitude!,
-        lng: d.longitude!
+        lat: d.latitude || d.coordinates?.lat || 0,
+        lng: d.longitude || d.coordinates?.lng || 0
       }))
-    : sriLankaCities;
+      : [])
+  ];
+
+  // Filter out duplicates based on very close coordinates
+  const uniqueCities = citiesToDisplay.filter((city, index, self) =>
+    index === self.findIndex((c) => (
+      Math.abs(c.lat - city.lat) < 0.001 && Math.abs(c.lng - city.lng) < 0.001
+    ))
+  );
+
+  // Check if current selection is one of the displayed cities/points
+  const isCustomLocation = !!(currentLocation && !uniqueCities.some(c =>
+    Math.abs(c.lat - currentLocation.lat) < 0.001 &&
+    Math.abs(c.lng - currentLocation.lng) < 0.001
+  ));
 
   return (
     <div className="w-full h-[500px] rounded-xl overflow-hidden border-2 border-[#E5D4EF] shadow-lg">
       <MapContainer
-        key={mapKey}
+        key={mapKey} // Use mapKey to force remount on initial load
         center={[7.8731, 80.7718]} // Center of Sri Lanka
         zoom={8}
         className="w-full h-full"
@@ -139,11 +170,15 @@ export default function SriLankaMap({
         />
         <SetMapBounds />
 
-        {citiesToDisplay.map((city) => {
-          const isSelected = selectedCities.includes(city.name);
+        {uniqueCities.map((city) => {
+          const isSelected = !!(selectedCities.includes(city.name) || (
+            currentLocation &&
+            Math.abs(city.lat - currentLocation.lat) < 0.0001 &&
+            Math.abs(city.lng - currentLocation.lng) < 0.0001
+          ));
           return (
             <Marker
-              key={city.name}
+              key={`${city.name}-${city.lat}-${city.lng}`}
               position={[city.lat, city.lng]}
               icon={createCustomIcon(isSelected)}
               eventHandlers={{
@@ -157,11 +192,10 @@ export default function SriLankaMap({
                   </p>
                   <button
                     onClick={() => onCityClick(city.name)}
-                    className={`mt-2 px-4 py-1 rounded-md text-white text-sm font-semibold ${
-                      isSelected
-                        ? "bg-red-500 hover:bg-red-600"
-                        : "bg-[#B749DB] hover:bg-[#8B2BB9]"
-                    }`}
+                    className={`mt-2 px-4 py-1 rounded-md text-white text-sm font-semibold ${isSelected
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-[#B749DB] hover:bg-[#8B2BB9]"
+                      }`}
                   >
                     {isSelected ? "Deselect" : "Select"}
                   </button>
@@ -170,6 +204,25 @@ export default function SriLankaMap({
             </Marker>
           );
         })}
+
+        {isCustomLocation && (
+          <Marker
+            position={[currentLocation.lat, currentLocation.lng]}
+            icon={createCustomIcon(true)}
+          >
+            <Popup>
+              <div className="text-center p-2">
+                <p className="font-bold text-[#B749DB]">Pinned Location</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Lat: {currentLocation.lat.toFixed(4)}<br />
+                  Lng: {currentLocation.lng.toFixed(4)}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+
+        {onLocationSelect && <MapClickHandler onMapClick={onLocationSelect} />}
       </MapContainer>
     </div>
   );
