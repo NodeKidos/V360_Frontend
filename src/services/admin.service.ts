@@ -40,6 +40,22 @@ export interface Driver {
   name?: string;
   email?: string;
   phone?: string;
+  contact?: string; // Mapped from phone in backend
+  profileImage?: string;
+  status?: string; // 'Active' | 'Inactive'
+  licenseNumber?: string;
+  licenseInfo?: string; // URL to license image
+  dateOfBirth?: string | Date;
+  bloodGroup?: string;
+  nic?: string;
+  joinDate?: string | Date;
+  assignedVehicle?: string | {
+    registrationNumber: string;
+    make: string;
+    model: string;
+    type?: string;
+    id?: string;
+  };
 }
 
 export const adminDriverService = {

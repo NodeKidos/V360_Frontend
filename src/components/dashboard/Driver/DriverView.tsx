@@ -362,7 +362,7 @@ const DriverManagement = () => {
                                                 </td>
                                                 <td className="py-4 px-4 text-gray-600">{d.contact}</td>
                                                 <td className="py-4 px-4 text-gray-600">{d.email}</td>
-                                                <td className="py-4 px-4 text-gray-600">{new Date(d.dateOfBirth).toLocaleDateString()}</td>
+                                                <td className="py-4 px-4 text-gray-600">{d.dateOfBirth ? new Date(d.dateOfBirth).toLocaleDateString() : 'N/A'}</td>
                                                 <td className="py-4 px-4 text-gray-600">{d.bloodGroup}</td>
                                                 <td className="py-4 px-4 text-gray-600">{d.nic}</td>
                                                 <td className="py-4 px-4 text-gray-600">

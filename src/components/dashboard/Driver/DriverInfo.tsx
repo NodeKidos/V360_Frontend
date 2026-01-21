@@ -99,7 +99,7 @@ export default function DriverInfo() {
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Date of Birth</p>
-                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{new Date(driver.dateOfBirth).toLocaleDateString()}</p>
+                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{driver.dateOfBirth ? new Date(driver.dateOfBirth).toLocaleDateString() : 'N/A'}</p>
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Blood Group</p>
@@ -132,7 +132,7 @@ export default function DriverInfo() {
                                 </div>
                                 <div>
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">Join Date</p>
-                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{new Date(driver.joinDate).toLocaleDateString()}</p>
+                                    <p className="text-[14px] sm:text-[16px] md:text-[16px] lg:text-[18px] font-poppins">{driver.joinDate ? new Date(driver.joinDate).toLocaleDateString() : 'N/A'}</p>
                                 </div>
                                 <div className="sm:col-span-2">
                                     <p className="text-gray-700 text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-medium">License Info</p>
