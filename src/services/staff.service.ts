@@ -9,7 +9,7 @@ export interface Staff {
   nic: string;
   age: number;
   accessLevel: 'Staff' | 'Admin' | 'Manager';
-  status: 'Block' | 'Unblock';
+  status: 'active' | 'inactive';
   createdAt?: string;
   updatedAt?: string;
 }
@@ -22,10 +22,10 @@ export interface CreateStaffDto {
   nic: string;
   age: number;
   accessLevel: 'Staff' | 'Admin' | 'Manager';
-  status: 'Block' | 'Unblock';
+  status: 'active' | 'inactive';
 }
 
-export interface UpdateStaffDto extends Partial<CreateStaffDto> {}
+export interface UpdateStaffDto extends Partial<CreateStaffDto> { }
 
 export interface StaffListResponse {
   staffs: Staff[];
@@ -73,7 +73,7 @@ class StaffService {
       nic: staff.nationalId || staff.nic,
       age: staff.age,
       accessLevel: staff.accessLevel,
-      status: staff.status === 'active' ? 'Unblock' : 'Block',
+      status: staff.status === 'Unblock' || staff.status === 'active' ? 'active' : 'inactive',
       createdAt: staff.createdAt,
       updatedAt: staff.updatedAt,
     }));
@@ -103,7 +103,7 @@ class StaffService {
       nic: staff.nationalId || staff.nic,
       age: staff.age,
       accessLevel: staff.accessLevel,
-      status: staff.status === 'active' ? 'Unblock' : 'Block',
+      status: staff.status === 'Unblock' || staff.status === 'active' ? 'active' : 'inactive',
       createdAt: staff.createdAt,
       updatedAt: staff.updatedAt,
     };
@@ -128,7 +128,7 @@ class StaffService {
       gender: data.gender,
       age: data.age,
       accessLevel: data.accessLevel, // Backend expects: Staff, Admin, Manager
-      status: data.status === 'Unblock' ? 'active' : 'inactive',
+      status: data.status === 'active' ? 'active' : 'inactive',
       password: 'Staff@123', // Default password - should be changed on first login
     };
 
@@ -157,7 +157,7 @@ class StaffService {
     if (data.gender) backendData.gender = data.gender;
     if (data.age) backendData.age = data.age;
     if (data.accessLevel) backendData.accessLevel = data.accessLevel; // Backend expects: Staff, Admin, Manager
-    if (data.status) backendData.status = data.status === 'Unblock' ? 'active' : 'inactive';
+    if (data.status) backendData.status = data.status === 'active' ? 'active' : 'inactive';
     if ((data as any).password) backendData.password = (data as any).password;
 
     const response = await api.put(`/staff/${id}`, backendData);
@@ -174,7 +174,7 @@ class StaffService {
   /**
    * Toggle staff status (Block/Unblock)
    */
-  async toggleStaffStatus(id: string, status: 'Block' | 'Unblock'): Promise<Staff> {
+  async toggleStaffStatus(id: string, status: 'active' | 'inactive'): Promise<Staff> {
     const response = await api.patch(`/staff/${id}/status`, { status });
     return response.data;
   }
@@ -213,7 +213,7 @@ class StaffService {
         nic: user.nationalId || user.nic || '',
         age: user.age || 0,
         accessLevel: user.accessLevel || 'Admin',
-        status: user.status === 'active' ? 'Unblock' : 'Block',
+        status: user.status === 'Active' || user.status === 'active' ? 'active' : 'inactive',
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }));

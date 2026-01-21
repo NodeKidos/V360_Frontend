@@ -64,9 +64,16 @@ const StaffManagement = () => {
           const adminUsers = await staffService.getAdminUsers();
           console.log('Admin users fetched:', adminUsers);
 
-          // Merge admin users with staff, avoiding duplicates
-          const staffIds = new Set(allStaff.map(s => s._id));
-          const newAdminUsers = adminUsers.filter(admin => !staffIds.has(admin._id));
+          // Merge admin users with staff, avoiding duplicates by EMAIL
+          const staffEmails = new Set(allStaff.map(s => s.email));
+          const newAdminUsers = adminUsers
+            .filter(admin => !staffEmails.has(admin.email))
+            .map(admin => ({
+              ...admin,
+              isUserOnly: true,
+              status: admin.status // service already returns lowercase now
+            }));
+
           allStaff = [...allStaff, ...newAdminUsers];
 
           console.log('Total staff after merging admins:', allStaff.length);
@@ -113,9 +120,15 @@ const StaffManagement = () => {
     setPage(1);
   }, [searchQuery, genderFilter, statusFilter, accessLevelFilter, itemsPerPage]);
 
-  // Navigate to EditStaff page
-  const handleEditClick = (staffId: string) => {
-    navigate(`/staff/edit/${staffId}`); // Navigate to the EditStaff page with the staffId
+  // Navigate to EditStaff page or User Edit page
+  const handleEditClick = (staff: any) => {
+    if (staff.isUserOnly) {
+      // It's a User (Admin) entity, not Staff
+      navigate(`/user/edit/${staff._id}`, { state: { from: '/staff' } });
+    } else {
+      // It's a Staff entity
+      navigate(`/staff/edit/${staff._id}`);
+    }
   };
 
   // Handle delete action
@@ -290,38 +303,57 @@ const StaffManagement = () => {
                 </thead>
                 <tbody className="font-poppins">
                   {staff.length === 0 ? (
-                  <tr>
-                    <td colSpan={10} className="py-8 text-center text-gray-500">
-                      No staff found
-                    </td>
-                  </tr>
-                ) : (
-                  staff.map((s) => (
-                    <tr key={s._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                      {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s._id}</td> */}
-                      <td className="py-4 px-4 whitespace-nowrap">{s.name}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.email}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.gender}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.nic}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.contact}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.age}</td>
-                      <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.accessLevel}</td>
-                      <td className={`px-4 py-4 font-medium whitespace-nowrap ${s.status === "Unblock" ? "text-green-600" : "text-red-600"}`}>
-                        {s.status}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex gap-3 justify-center">
-                          <CiEdit
-                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                            onClick={() => handleEditClick(s._id)}
-                          />
-                          <MdDeleteOutline
-                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                            onClick={() => handleDeleteClick(s._id)}
-                          />
-                        </div>
+                    <tr>
+                      <td colSpan={10} className="py-8 text-center text-gray-500">
+                        No staff found
                       </td>
                     </tr>
+                  ) : (
+                    staff.map((s) => (
+                      <tr key={s._id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                        {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{s._id}</td> */}
+                        <td className="py-4 px-4 whitespace-nowrap">{s.name}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.email}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.gender}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.nic}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.contact}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.age}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{s.accessLevel}</td>
+                        <td className="px-4 py-4 font-medium whitespace-nowrap">
+                          <button
+                            onClick={async () => {
+                              try {
+                                console.log('Toggling status for staff:', s._id, 'Current status:', s.status);
+                                const newStatus = s.status === 'active' ? 'inactive' : 'active';
+                                await staffService.toggleStaffStatus(s._id, newStatus);
+                                // Refresh staff list
+                                fetchStaff();
+                                toast.success("Status updated");
+                              } catch (e) {
+                                toast.error("Failed to update status");
+                              }
+                            }}
+                            className={`px-3 py-1 rounded-full text-[12px] font-medium border ${s.status === "active"
+                              ? "text-green-600 border-green-200 bg-green-50 hover:bg-green-100"
+                              : "text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
+                              } transition-colors duration-200 cursor-pointer w-[80px]`}
+                          >
+                            {s.status === "active" ? "Active" : "Blocked"}
+                          </button>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex gap-3 justify-center">
+                            <CiEdit
+                              className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                              onClick={() => handleEditClick(s)}
+                            />
+                            <MdDeleteOutline
+                              className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                              onClick={() => handleDeleteClick(s._id)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
                     ))
                   )}
                 </tbody>
