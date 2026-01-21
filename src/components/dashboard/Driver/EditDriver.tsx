@@ -43,7 +43,6 @@ export default function EditDriver() {
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [vehiclesLoading, setVehiclesLoading] = useState(true);
     const userRole = useAuthStore((state) => state.user?.role);
-    const userId = useAuthStore((state) => state.user?.id);
 
     // Initialize driver data
     const [driverData, setDriverData] = useState<DriverData>({
@@ -294,8 +293,10 @@ export default function EditDriver() {
                                     </p>
                                 </div>
 
-                                {fetchLoading ? (
-                                    <div className="mt-6 text-center text-gray-500">Loading driver data...</div>
+                                {loading ? (
+                                    <div className="flex flex-col items-center justify-center py-10">
+                                        <Loader src="/loaders/travelloading.lottie" message="Updating Driver Details..." size={250} />
+                                    </div>
                                 ) : (
                                     /* FORM START */
                                     <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>

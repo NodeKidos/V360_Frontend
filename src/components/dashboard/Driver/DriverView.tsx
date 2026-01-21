@@ -355,10 +355,10 @@ const DriverManagement = () => {
                                                 <span className="text-blue-500 cursor-pointer">{d.id}</span>
                                             </td> */}
                                                 <td className="py-4 px-4 whitespace-nowrap cursor-pointer" onClick={() => handleViewClick(d.id)}>
-                                                    <div className="flex items-center gap-3">
-                                                        <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} />
-                                                        <span className="font-medium text-gray-800">{d.name}</span>
-                                                    </div>
+                                                    {/* <div className="flex items-center gap-3"> */}
+                                                    {/* <img src={d.profileImage || "https://i.pravatar.cc/40"} className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={d.name} /> */}
+                                                    <span className="font-medium text-gray-800">{d.name}</span>
+                                                    {/* </div> */}
                                                 </td>
                                                 <td className="py-4 px-4 text-gray-600">{d.contact}</td>
                                                 <td className="py-4 px-4 text-gray-600">{d.email}</td>
@@ -371,13 +371,44 @@ const DriverManagement = () => {
                                                         : d.assignedVehicle || 'Not Assigned'
                                                     }
                                                 </td>
-                                                <td className={`py-4 px-4 ${d.status === "Active" ? "text-green-600" : "text-red-600"}`}>
-                                                    {d.status}
+                                                <td className="px-4 py-4 font-medium whitespace-nowrap">
+                                                    <button
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation(); // Prevent row click
+                                                            try {
+                                                                const newStatus = d.status?.toLowerCase() === 'active' ? 'inactive' : 'active';
+                                                                await adminDriverService.updateDriver(d.id, { status: newStatus });
+                                                                // Refresh list
+                                                                fetchDrivers();
+                                                                toast.success("Status updated");
+                                                            } catch (err) {
+                                                                toast.error("Failed to update status");
+                                                            }
+                                                        }}
+                                                        className={`px-3 py-1 rounded-full text-[12px] font-medium border ${d.status?.toLowerCase() === "active"
+                                                            ? "text-green-600 border-green-200 bg-green-50 hover:bg-green-100"
+                                                            : "text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
+                                                            } transition-colors duration-200 cursor-pointer w-[80px]`}
+                                                    >
+                                                        {d.status?.toLowerCase() === "active" ? "Active" : "Blocked"}
+                                                    </button>
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
                                                     <div className="flex gap-3 justify-center">
-                                                        <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleEditClick(d.id)} />
-                                                        <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(d.id)} />
+                                                        <CiEdit
+                                                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleEditClick(d.id);
+                                                            }}
+                                                        />
+                                                        <MdDeleteOutline
+                                                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteClick(d.id);
+                                                            }}
+                                                        />
                                                     </div>
                                                 </td>
                                             </tr>
