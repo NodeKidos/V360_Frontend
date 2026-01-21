@@ -3,35 +3,33 @@ import { useNavigate } from "react-router-dom";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Sidebar from "../../AdminSidebar"; // Assuming Sidebar component is reusable
-import TopBar from "../../Topbar"; // Assuming TopBar component is reusable
+import Sidebar from "../../AdminSidebar";
+import TopBar from "../../Topbar";
 import StarRating from "../../ui/StarRating";
+import excursionService from "../../../services/excursion.service";
+import destinationService from "../../../services/destination.service";
 
 export default function AddExcursion() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Track form data
   const [excursionName, setExcursionName] = useState("");
+  const [description, setDescription] = useState("");
   const [destinationId, setDestinationId] = useState("");
   const [bestTime, setBestTime] = useState("");
   const [duration, setDuration] = useState("");
+  const [price, setPrice] = useState("");
+  const [difficulty, setDifficulty] = useState("easy");
   const [rating, setRating] = useState(0);
-  const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [excursionImages, setExcursionImages] = useState<File[]>([]);
 
-  // Available destinations (this should come from API in real implementation)
-  const [availableDestinations] = useState([
-    { id: "D001", name: "Sigiriya Rock Fortress" },
-    { id: "D002", name: "Mirissa Beach" },
-    { id: "D003", name: "Adam's Peak" },
-    { id: "D004", name: "Polonnaruwa Ancient City" },
-    { id: "D005", name: "Horton Plains & World's End" },
-    { id: "D006", name: "Galle Dutch Fort Walk" },
-  ]);
+  // Available destinations
+  const [availableDestinations, setAvailableDestinations] = useState<any[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -40,6 +38,19 @@ export default function AddExcursion() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
+
+    // Fetch destinations
+    const fetchDestinations = async () => {
+      try {
+        const data = await destinationService.getAll();
+        setAvailableDestinations(data);
+      } catch (error) {
+        console.error("Failed to fetch destinations:", error);
+        toast.error("Failed to load destinations");
+      }
+    };
+    fetchDestinations();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -49,41 +60,52 @@ export default function AddExcursion() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate form fields
-    if (!excursionName || !destinationId || !bestTime || !duration || !rating || !location || !category || excursionImages.length === 0) {
-      toast.error("All fields are required!");
+    if (!excursionName || !destinationId || !bestTime || !duration || !price || !description || !category || excursionImages.length === 0) {
+      toast.error("All fields (including at least one image) are required!");
       return;
     }
 
-    const newExcursion = {
-      excursionName,
-      destinationId,
-      bestTime,
-      duration,
-      rating,
-      location,
-      category,
-      excursionImages,
-    };
+    try {
+      setIsSubmitting(true);
+      const formData = new FormData();
+      formData.append("name", excursionName);
+      formData.append("description", description);
+      formData.append("destinationId", destinationId);
+      formData.append("bestTime", bestTime);
+      formData.append("duration", duration);
+      formData.append("price", price);
+      formData.append("difficulty", difficulty);
+      formData.append("rating", rating.toString());
+      formData.append("category", category);
 
-    // Handle the backend save or API call here (e.g., save to database)
-    console.log("New Excursion added:", newExcursion);
+      excursionImages.forEach((image) => {
+        formData.append("images", image);
+      });
 
-    toast.success("Excursion added successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
+      await excursionService.create(formData);
 
-    // Navigate back to excursion list page
-    navigate("/destination-hotel");
+      toast.success("Excursion added successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      setTimeout(() => {
+        navigate("/destination-hotel");
+      }, 1500);
+    } catch (error: any) {
+      console.error("Error creating excursion:", error);
+      toast.error(error.response?.data?.message || "Failed to create excursion");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="h-screen bg-white flex overflow-hidden">
-      {/* Sidebar */}
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -92,13 +114,10 @@ export default function AddExcursion() {
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* Main Section */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="p-4 md:p-6 lg:p-8">
-          {/* Top Bar */}
           <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
-          {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
             <span className="text-gray-500 cursor-pointer" onClick={() => navigate("/destination-hotel")}>
               Excursion
@@ -107,9 +126,7 @@ export default function AddExcursion() {
             <span className="font-semibold text-black">Add Excursion</span>
           </div>
 
-          {/* Form Container */}
           <div className="mt-4 md:mt-6 bg-white rounded-2xl p-4 md:p-6 lg:p-8 border border-purple-100 shadow-sm">
-            {/* Title */}
             <div>
               <h2 className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-[#B749DB] font-poppins">
                 Add an Excursion
@@ -119,94 +136,131 @@ export default function AddExcursion() {
               </p>
             </div>
 
-            {/* Form */}
             <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-              {/* Excursion Name */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Excursion Name</label>
-                <input
-                  type="text"
-                  value={excursionName}
-                  onChange={(e) => setExcursionName(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter excursion name"
-                />
-              </div>
-
-              {/* Destination Selection */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Select Destination</label>
-                <select
-                  value={destinationId}
-                  onChange={(e) => setDestinationId(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                >
-                  <option value="">Select a destination</option>
-                  {availableDestinations.map((destination) => (
-                    <option key={destination.id} value={destination.id}>
-                      {destination.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Best Time */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Best Time</label>
-                <input
-                  type="text"
-                  value={bestTime}
-                  onChange={(e) => setBestTime(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter best time"
-                />
-              </div>
-
-              {/* Duration */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Duration</label>
-                <input
-                  type="text"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter duration"
-                />
-              </div>
-
-              {/* Rating */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Rating</label>
-                <div className="mt-2">
-                  <StarRating
-                    rating={rating}
-                    onRatingChange={setRating}
-                    maxStars={5}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                {/* Excursion Name */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Excursion Name</label>
+                  <input
+                    type="text"
+                    value={excursionName}
+                    onChange={(e) => setExcursionName(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter excursion name"
                   />
+                </div>
+
+                {/* Destination Selection */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Select Destination</label>
+                  <select
+                    value={destinationId}
+                    onChange={(e) => setDestinationId(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  >
+                    <option value="">Select a destination</option>
+                    {availableDestinations.map((destination) => (
+                      <option key={destination.id} value={destination.id}>
+                        {destination.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="historical_cultural">Historical & Cultural</option>
+                    <option value="beach_nature">Beach & Nature</option>
+                    <option value="hiking_spiritual">Hiking & Spiritual</option>
+                    <option value="wildlife">Wildlife</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="relaxation">Relaxation</option>
+                    <option value="urban">Urban</option>
+                  </select>
+                </div>
+
+                {/* Difficulty */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Difficulty</label>
+                  <select
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  >
+                    <option value="easy">Easy</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="difficult">Difficult</option>
+                    <option value="extreme">Extreme</option>
+                  </select>
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Price (USD)</label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter price"
+                  />
+                </div>
+
+                {/* Duration */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Duration (Hours)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter duration in hours"
+                  />
+                </div>
+
+                {/* Best Time */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Best Time</label>
+                  <input
+                    type="text"
+                    value={bestTime}
+                    onChange={(e) => setBestTime(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="e.g. 6 AM - 10 AM"
+                  />
+                </div>
+
+                {/* Rating */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Rating</label>
+                  <div className="mt-2 text-2xl">
+                    <StarRating
+                      rating={rating}
+                      onRatingChange={setRating}
+                      maxStars={5}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Location */}
+              {/* Description */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter location"
-                />
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
-                <input
-                  type="text"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter category"
+                  placeholder="Enter excursion description"
+                  rows={4}
                 />
               </div>
 
@@ -223,18 +277,18 @@ export default function AddExcursion() {
                 {excursionImages.length > 0 && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-600 font-poppins">{excursionImages.length} image(s) selected</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-2">
                       {excursionImages.map((file, index) => (
-                        <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                        <div key={index} className="relative border border-purple-200 rounded-lg p-1 group">
                           <img
                             src={URL.createObjectURL(file)}
                             alt={`Preview ${index + 1}`}
-                            className="w-full h-20 object-cover rounded"
+                            className="w-full h-24 object-cover rounded shadow-sm"
                           />
                           <button
                             type="button"
                             onClick={() => setExcursionImages(excursionImages.filter((_, i) => i !== index))}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 shadow-md transition-colors"
                           >
                             ×
                           </button>
@@ -246,20 +300,28 @@ export default function AddExcursion() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
+              <div className="flex flex-row justify-end gap-3 md:gap-4 mt-8 pt-4 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => navigate("/destination-hotel")}
-                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
+                  className="px-6 md:px-10 py-2.5 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-semibold transition-all"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium"
+                  disabled={isSubmitting}
+                  className={`px-6 md:px-10 py-2.5 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-semibold shadow-md transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  Submit
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Excursion"
+                  )}
                 </button>
               </div>
             </form>

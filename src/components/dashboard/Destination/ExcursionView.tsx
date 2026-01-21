@@ -1,6 +1,6 @@
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline, MdToggleOn, MdToggleOff } from "react-icons/md";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Pagination from "../../ui/Pagination";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
@@ -82,14 +82,22 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
     };
 
     // Confirm the delete action
-    const confirmDelete = () => {
-        setExcursions(excursionsArray.filter((e: any) => e.id !== selectedExcursionId));
-        setDeleteConfirmationVisible(false);
+    const confirmDelete = async () => {
+        if (!selectedExcursionId) return;
 
-        toast.success("Excursion deleted successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
+        try {
+            await excursionService.delete(selectedExcursionId);
+            setExcursions(excursionsArray.filter((e: any) => e.id !== selectedExcursionId));
+            setDeleteConfirmationVisible(false);
+
+            toast.success("Excursion deleted successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+        } catch (error: any) {
+            console.error("Failed to delete excursion:", error);
+            toast.error(error.response?.data?.message || "Failed to delete excursion");
+        }
     };
     // Cancel delete action
     const cancelDelete = () => {
@@ -432,11 +440,10 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                             </button>
 
                             <button
-                                className={`font-medium font-inter text-white px-6 py-2 rounded-lg text-[14px] md:text-[16px] ${
-                                    selectedExcursion?.isActive !== false
-                                        ? 'bg-gray-500 hover:bg-gray-600'
-                                        : 'bg-green-600 hover:bg-green-700'
-                                }`}
+                                className={`font-medium font-inter text-white px-6 py-2 rounded-lg text-[14px] md:text-[16px] ${selectedExcursion?.isActive !== false
+                                    ? 'bg-gray-500 hover:bg-gray-600'
+                                    : 'bg-green-600 hover:bg-green-700'
+                                    }`}
                                 onClick={confirmToggle}
                             >
                                 {selectedExcursion?.isActive !== false ? 'Disable' : 'Enable'}

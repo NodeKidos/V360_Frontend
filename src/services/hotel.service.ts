@@ -66,6 +66,28 @@ export const hotelService = {
     const response = await api.patch<Hotel>(`/hotels/${id}/unflag`);
     return response.data;
   },
+
+  create: async (data: FormData): Promise<Hotel> => {
+    const response = await api.post<Hotel>('/hotels', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  update: async (id: string, data: FormData): Promise<Hotel> => {
+    const response = await api.put<Hotel>(`/hotels/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/hotels/${id}`);
+  },
 };
 
 export default hotelService;

@@ -60,6 +60,28 @@ export const excursionService = {
     });
     return response.data;
   },
+
+  create: async (data: FormData): Promise<Excursion> => {
+    const response = await api.post<Excursion>('/excursions', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  update: async (id: string, data: FormData): Promise<Excursion> => {
+    const response = await api.put<Excursion>(`/excursions/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/excursions/${id}`);
+  },
 };
 
 export default excursionService;

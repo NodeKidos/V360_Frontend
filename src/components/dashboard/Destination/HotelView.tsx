@@ -1,7 +1,7 @@
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteOutline } from "react-icons/md";
 import { MdFlag, MdOutlineFlag } from "react-icons/md";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Pagination from "../../ui/Pagination";
 import { LuListFilter } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
@@ -82,14 +82,22 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
   };
 
   // Confirm the delete action
-  const confirmDelete = () => {
-    setHotels(hotelsArray.filter((h: any) => h.id !== selectedHotelId));
-    setDeleteConfirmationVisible(false);
+  const confirmDelete = async () => {
+    if (!selectedHotelId) return;
 
-    toast.success("Hotel deleted successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-    });
+    try {
+      await hotelService.delete(selectedHotelId);
+      setHotels(hotelsArray.filter((h: any) => h.id !== selectedHotelId));
+      setDeleteConfirmationVisible(false);
+
+      toast.success("Hotel deleted successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.error("Failed to delete hotel:", error);
+      toast.error(error.response?.data?.message || "Failed to delete hotel");
+    }
   };
   // Cancel delete action
   const cancelDelete = () => {

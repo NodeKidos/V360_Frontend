@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
-import SriLankaMap from "../../home/SriLankaMap";
+import SriLankaMap, { sriLankaCities } from "../../home/SriLankaMap";
 import destinationService from "../../../services/destination.service";
 
 export default function AddDestination() {
@@ -20,7 +20,11 @@ export default function AddDestination() {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
   const [destinationImages, setDestinationImages] = useState<File[]>([]);
-  const [reviews, setReviews] = useState("");
+  const [description, setDescription] = useState("");
+  const [highlights, setHighlights] = useState("");
+  const [bestTimeToVisit, setBestTimeToVisit] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,26 +42,22 @@ export default function AddDestination() {
     }
   };
 
-  const mapCategoryToBackend = (cat: string) => {
-    const mapping: Record<string, string> = {
-      "Historical / Cultural": "historical_cultural",
-      "Beach / Nature": "beach_nature",
-      "Hiking / Spiritual": "hiking_spiritual",
-      "Historical / Heritage": "historical_cultural",
-      "Nature / Hiking": "beach_nature",
-      "Heritage / City Tour": "urban",
-      "Wildlife": "wildlife",
-      "Adventure": "adventure"
-    };
-    return mapping[cat] || "historical_cultural";
+  const handleCityClick = (cityName: string) => {
+    setLocation(cityName);
+    // Find coordinates for the city
+    const city = sriLankaCities.find(c => c.name === cityName);
+    if (city) {
+      setLatitude(city.lat.toString());
+      setLongitude(city.lng.toString());
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate form fields
-    if (!destinationName || !location || !category || destinationImages.length === 0 || !reviews) {
-      toast.error("All fields are required!");
+    if (!destinationName || !location || !category || destinationImages.length === 0 || !description) {
+      toast.error("Please fill in all required fields!");
       return;
     }
 
@@ -66,8 +66,17 @@ export default function AddDestination() {
       const formData = new FormData();
       formData.append("name", destinationName);
       formData.append("location", location);
-      formData.append("category", mapCategoryToBackend(category));
-      formData.append("description", reviews);
+      formData.append("category", category);
+      formData.append("description", description);
+
+      // Highlights should be an array for the backend DTO
+      const highlightsArray = highlights.split(/[,\n]/).map(h => h.trim()).filter(h => h);
+      highlightsArray.forEach(h => formData.append("highlights[]", h));
+
+      formData.append("bestTimeToVisit", bestTimeToVisit);
+
+      if (latitude) formData.append("latitude", latitude);
+      if (longitude) formData.append("longitude", longitude);
 
       destinationImages.forEach((image) => {
         formData.append("images", image);
@@ -93,7 +102,7 @@ export default function AddDestination() {
   };
 
   return (
-    <div className="h-screen bg-white flex overflow-hidden">
+    <div className="h-screen bg-white flex overflow-hidden text-[#515151]">
       {/* Sidebar */}
       <Sidebar
         collapsed={collapsed}
@@ -110,8 +119,8 @@ export default function AddDestination() {
           <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
-            <span className="text-gray-500 cursor-pointer" onClick={() => navigate("/destination-hotel")}>
+          <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins text-left">
+            <span className="text-gray-500 cursor-pointer text-left" onClick={() => navigate("/destination-hotel")}>
               Destination
             </span>
             <span className="text-gray-500"><MdKeyboardArrowRight /></span>
@@ -119,79 +128,150 @@ export default function AddDestination() {
           </div>
 
           {/* Form Container */}
-          <div className="mt-4 md:mt-6 bg-white rounded-2xl p-4 md:p-6 lg:p-8 border border-purple-100 shadow-sm">
+          <div className="mt-4 md:mt-6 bg-white rounded-2xl p-4 md:p-6 lg:p-8 border border-purple-100 shadow-sm relative overflow-hidden">
+            {isSubmitting && (
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex flex-col items-center justify-center gap-3">
+                <div className="w-12 h-12 border-4 border-[#B749DB] border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-sm font-semibold text-[#B749DB]">Creating Destination...</p>
+              </div>
+            )}
+
             {/* Title */}
             <div>
-              <h2 className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-[#B749DB] font-poppins">
+              <h2 className="text-[18px] md:text-[20px] lg:text-[22px] font-semibold text-[#B749DB] font-poppins text-left">
                 Add a Destination
               </h2>
-              <p className="text-gray-500 text-[12px] md:text-[14px] mt-1 font-poppins">
+              <p className="text-gray-500 text-[12px] md:text-[14px] mt-1 font-poppins text-left">
                 Details about the destination
               </p>
             </div>
 
             {/* Form */}
             <form className="mt-4 md:mt-6 space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-              {/* Destination Name */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Name</label>
-                <input
-                  type="text"
-                  value={destinationName}
-                  onChange={(e) => setDestinationName(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter destination name"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                {/* Destination Name */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Name</label>
+                  <input
+                    type="text"
+                    value={destinationName}
+                    onChange={(e) => setDestinationName(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter destination name"
+                  />
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="historical_cultural">Historical & Cultural</option>
+                    <option value="beach_nature">Beach & Nature</option>
+                    <option value="hiking_spiritual">Hiking & Spiritual</option>
+                    <option value="wildlife">Wildlife</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="relaxation">Relaxation</option>
+                    <option value="urban">Urban</option>
+                  </select>
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location (City)</label>
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter location or select from map"
+                  />
+                </div>
+
+                {/* Best Time to Visit */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Best Time to Visit</label>
+                  <input
+                    type="text"
+                    value={bestTimeToVisit}
+                    onChange={(e) => setBestTimeToVisit(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="e.g. November to April"
+                  />
+                </div>
+
+                {/* Coordinates */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-gray-700 text-[12px] md:text-[13px] font-poppins">Latitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value)}
+                      className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 py-2 outline-none text-[14px] font-poppins"
+                      placeholder="6.9271"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-700 text-[12px] md:text-[13px] font-poppins">Longitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value)}
+                      className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 py-2 outline-none text-[14px] font-poppins"
+                      placeholder="79.8612"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Map Selection */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins mb-2 block">
-                  Select Location on Map
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins mb-2 block font-semibold text-left">
+                  Or Select Location on Map
                 </label>
                 <div className="mb-4">
                   <SriLankaMap
                     selectedCities={location ? [location] : []}
-                    onCityClick={(city) => setLocation(city)}
+                    onCityClick={handleCityClick}
                   />
                 </div>
               </div>
 
-              {/* Location */}
+              {/* Description */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location</label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins text-left">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter location or select from map"
+                  placeholder="Enter destination description"
+                  rows={3}
                 />
               </div>
 
-              {/* Category */}
+              {/* Highlights */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins text-left">Highlights</label>
+                <textarea
+                  value={highlights}
+                  onChange={(e) => setHighlights(e.target.value)}
                   className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                >
-                  <option value="">Select Category</option>
-                  <option value="Historical / Cultural">Historical / Cultural</option>
-                  <option value="Beach / Nature">Beach / Nature</option>
-                  <option value="Hiking / Spiritual">Hiking / Spiritual</option>
-                  <option value="Historical / Heritage">Historical / Heritage</option>
-                  <option value="Nature / Hiking">Nature / Hiking</option>
-                  <option value="Heritage / City Tour">Heritage / City Tour</option>
-                  <option value="Wildlife">Wildlife</option>
-                  <option value="Adventure">Adventure</option>
-                </select>
+                  placeholder="Enter key highlights, separated by commas or new lines"
+                  rows={2}
+                />
               </div>
 
               {/* Destination Images */}
               <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Destination Images (Multiple)</label>
+                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins font-semibold">Destination Images</label>
                 <input
                   type="file"
                   onChange={handleFileChange}
@@ -202,18 +282,18 @@ export default function AddDestination() {
                 {destinationImages.length > 0 && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-600 font-poppins">{destinationImages.length} image(s) selected</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-2">
                       {destinationImages.map((file, index) => (
-                        <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                        <div key={index} className="relative border border-purple-200 rounded-lg p-1 group">
                           <img
                             src={URL.createObjectURL(file)}
                             alt={`Preview ${index + 1}`}
-                            className="w-full h-20 object-cover rounded"
+                            className="w-full h-24 object-cover rounded shadow-sm"
                           />
                           <button
                             type="button"
                             onClick={() => setDestinationImages(destinationImages.filter((_, i) => i !== index))}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 shadow-md transition-colors"
                           >
                             ×
                           </button>
@@ -224,23 +304,12 @@ export default function AddDestination() {
                 )}
               </div>
 
-              {/* Reviews */}
-              <div>
-                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Reviews</label>
-                <textarea
-                  value={reviews}
-                  onChange={(e) => setReviews(e.target.value)}
-                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  placeholder="Enter destination reviews"
-                />
-              </div>
-
               {/* Action Buttons */}
-              <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-6">
+              <div className="flex flex-row justify-end gap-3 md:gap-4 mt-8 pt-4 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => navigate("/destination-hotel")}
-                  className="px-6 md:px-8 py-2 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-medium"
+                  className="px-6 md:px-10 py-2.5 md:py-3 rounded-xl border border-[#B749DB] text-[#B749DB] hover:bg-purple-50 text-[14px] md:text-[16px] font-poppins font-semibold transition-all"
                 >
                   Cancel
                 </button>
@@ -248,15 +317,15 @@ export default function AddDestination() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`px-6 md:px-8 py-2 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-medium flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`px-6 md:px-10 py-2.5 md:py-3 rounded-xl bg-[#B749DB] text-white hover:bg-purple-600 text-[14px] md:text-[16px] font-poppins font-semibold shadow-md transition-all flex items-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Submitting...
+                      Creating...
                     </>
                   ) : (
-                    "Submit"
+                    "Create Destination"
                   )}
                 </button>
               </div>

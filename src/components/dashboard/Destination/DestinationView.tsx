@@ -134,14 +134,22 @@ const DestinationHotelManagement = () => {
     };
 
     // Confirm the delete action
-    const confirmDelete = () => {
-        setDestination(destinations.filter((destination) => destination.id !== selectedDestinationId));
-        setDeleteConfirmationVisible(false);
+    const confirmDelete = async () => {
+        if (!selectedDestinationId) return;
 
-        toast.success("Destination deleted successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
+        try {
+            await destinationService.delete(selectedDestinationId);
+            setDestination(destinations.filter((destination) => destination.id !== selectedDestinationId));
+            setDeleteConfirmationVisible(false);
+
+            toast.success("Destination deleted successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+        } catch (error: any) {
+            console.error("Failed to delete destination:", error);
+            toast.error(error.response?.data?.message || "Failed to delete destination");
+        }
     };
 
     // Cancel delete action
