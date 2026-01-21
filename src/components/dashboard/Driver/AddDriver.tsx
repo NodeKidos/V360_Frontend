@@ -210,7 +210,7 @@ export default function AddDriver() {
                                         value={driverData.firstName}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -222,7 +222,7 @@ export default function AddDriver() {
                                         value={driverData.lastName}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
@@ -237,7 +237,7 @@ export default function AddDriver() {
                                         value={driverData.email}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -263,7 +263,7 @@ export default function AddDriver() {
                                         onChange={handleInputChange}
                                         required
                                         minLength={6}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -273,7 +273,7 @@ export default function AddDriver() {
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => handleFileChange(e, "profileImage")}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
@@ -288,7 +288,7 @@ export default function AddDriver() {
                                         value={driverData.licenseNumber}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -300,7 +300,7 @@ export default function AddDriver() {
                                         value={driverData.licenseExpiry}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
@@ -314,7 +314,7 @@ export default function AddDriver() {
                                         name="dob"
                                         value={driverData.dob}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -324,7 +324,7 @@ export default function AddDriver() {
                                         name="bloodGroup"
                                         value={driverData.bloodGroup}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">Select Blood Group</option>
                                         <option>A+</option>
@@ -347,7 +347,7 @@ export default function AddDriver() {
                                         name="nic"
                                         value={driverData.nic}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -358,7 +358,7 @@ export default function AddDriver() {
                                         name="assignedVehicle"
                                         value={driverData.assignedVehicle}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                         disabled={vehiclesLoading}
                                     >
                                         <option value="">
@@ -382,7 +382,7 @@ export default function AddDriver() {
                                         value={driverData.languages}
                                         onChange={handleInputChange}
                                         placeholder="e.g., English, Sinhala, Tamil"
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
 
@@ -395,7 +395,7 @@ export default function AddDriver() {
                                         onChange={handleInputChange}
                                         min="0"
                                         placeholder="Years of driving experience"
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
@@ -408,7 +408,7 @@ export default function AddDriver() {
                                         name="status"
                                         value={driverData.status}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     >
                                         <option value="">Select Status</option>
                                         <option value="active">Active</option>
@@ -423,7 +423,7 @@ export default function AddDriver() {
                                         name="joinDate"
                                         value={driverData.joinDate}
                                         onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                     />
                                 </div>
                             </div>
@@ -433,7 +433,7 @@ export default function AddDriver() {
                                 <input
                                     type="file"
                                     onChange={(e) => handleFileChange(e, "licenseInfo")}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 

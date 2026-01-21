@@ -262,7 +262,7 @@ export default function EditStaff() {
                         name="name"
                         value={staffData.name}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       />
                     </div>
 
@@ -274,7 +274,7 @@ export default function EditStaff() {
                         name="email"
                         value={staffData.email}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       />
                     </div>
                   </div>
@@ -298,7 +298,7 @@ export default function EditStaff() {
                         name="accessLevel"
                         value={staffData.accessLevel}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       >
                         <option value="">Select</option>
                         <option value="Staff">Staff</option>
@@ -316,7 +316,7 @@ export default function EditStaff() {
                         name="age"
                         value={staffData.age}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       />
                     </div>
 
@@ -326,7 +326,7 @@ export default function EditStaff() {
                         name="gender"
                         value={staffData.gender}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       >
                         <option value="">Select</option>
                         <option value="Male">Male</option>
@@ -343,7 +343,7 @@ export default function EditStaff() {
                         name="status"
                         value={staffData.status}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       >
                         <option value="">Select</option>
                         <option value="Block">Block</option>
@@ -357,7 +357,7 @@ export default function EditStaff() {
                         name="nic"
                         value={staffData.nic}
                         onChange={handleInputChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       />
                     </div>
                   </div>
@@ -376,7 +376,7 @@ export default function EditStaff() {
                           value={staffData.newPassword}
                           onChange={handleInputChange}
                           placeholder="Leave blank to keep current password"
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                       <div>
@@ -387,7 +387,7 @@ export default function EditStaff() {
                           value={staffData.confirmPassword}
                           onChange={handleInputChange}
                           placeholder="Confirm new password"
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                     </div>

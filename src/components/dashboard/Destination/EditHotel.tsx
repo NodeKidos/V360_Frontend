@@ -119,7 +119,7 @@ export default function EditHotel() {
                                     type="text"
                                     value={hotelData.name}
                                     onChange={(e) => setHotelData({ ...hotelData, name: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
                             {/* Hotel Type */}
@@ -128,7 +128,7 @@ export default function EditHotel() {
                                 <select
                                     value={hotelData.type}
                                     onChange={(e) => setHotelData({ ...hotelData, type: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 >
                                     <option value="">Select Hotel Type</option>
                                     <option value="Luxury">Luxury</option>
@@ -172,7 +172,7 @@ export default function EditHotel() {
                                     onChange={handleFileChange}
                                     accept="image/*"
                                     multiple
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
 
                                 {/* New Images Preview */}
@@ -181,7 +181,7 @@ export default function EditHotel() {
                                         <p className="text-sm text-gray-600 font-poppins">{hotelImages.length} new image(s) selected</p>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-2">
                                             {hotelImages.map((file, index) => (
-                                                <div key={index} className="relative border border-purple-200 rounded-lg p-1">
+                                                <div key={index} className="relative border border-purple-300 rounded-lg p-1">
                                                     <img
                                                         src={URL.createObjectURL(file)}
                                                         alt={`Preview ${index + 1}`}
@@ -208,7 +208,7 @@ export default function EditHotel() {
                                     type="text"
                                     value={hotelData.location}
                                     onChange={(e) => setHotelData({ ...hotelData, location: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
@@ -219,7 +219,7 @@ export default function EditHotel() {
                                     type="text"
                                     value={hotelData.contactNo}
                                     onChange={(e) => setHotelData({ ...hotelData, contactNo: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 
@@ -229,7 +229,7 @@ export default function EditHotel() {
                                 <textarea
                                     value={hotelData.review}
                                     onChange={(e) => setHotelData({ ...hotelData, review: e.target.value })}
-                                    className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                                 />
                             </div>
 

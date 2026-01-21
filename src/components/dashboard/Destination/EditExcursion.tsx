@@ -129,7 +129,7 @@ export default function EditExcursion() {
                 type="text"
                 value={excursionData.name}
                 onChange={(e) => setExcursionData({ ...excursionData, name: e.target.value })}
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               />
             </div>
 
@@ -139,7 +139,7 @@ export default function EditExcursion() {
               <select
                 value={selectedDestination}
                 onChange={(e) => setSelectedDestination(e.target.value)}
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               >
                 <option value="">Select a destination</option>
                 {availableDestinations.map((destination) => (
@@ -157,7 +157,7 @@ export default function EditExcursion() {
                 type="text"
                 value={excursionData.location}
                 onChange={(e) => setExcursionData({ ...excursionData, location: e.target.value })}
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function EditExcursion() {
                 type="text"
                 value={excursionData.category}
                 onChange={(e) => setExcursionData({ ...excursionData, category: e.target.value })}
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function EditExcursion() {
                 type="text"
                 value={excursionData.bestTime}
                 onChange={(e) => setExcursionData({ ...excursionData, bestTime: e.target.value })}
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               />
             </div>
 
@@ -190,7 +190,7 @@ export default function EditExcursion() {
                 type="text"
                 value={excursionData.duration}
                 onChange={(e) => setExcursionData({ ...excursionData, duration: e.target.value })}
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               />
             </div>
 
@@ -240,7 +240,7 @@ export default function EditExcursion() {
                 onChange={handleFileChange}
                 accept="image/*"
                 multiple
-                className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
               />
 
               {/* New Images Preview */}

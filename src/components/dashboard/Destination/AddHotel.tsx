@@ -116,7 +116,7 @@ export default function AddHotel() {
                   type="text"
                   value={hotelName}
                   onChange={(e) => setHotelName(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter hotel name"
                 />
               </div>
@@ -127,7 +127,7 @@ export default function AddHotel() {
                 <select
                   value={hotelType}
                   onChange={(e) => setHotelType(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 >
                   <option value="">Select Hotel Type</option>
                   <option value="Luxury">Luxury</option>
@@ -144,7 +144,7 @@ export default function AddHotel() {
                   type="text"
                   value={contactNo}
                   onChange={(e) => setContactNo(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter contact number"
                 />
               </div>
@@ -156,7 +156,7 @@ export default function AddHotel() {
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter location"
                 />
               </div>
@@ -167,7 +167,7 @@ export default function AddHotel() {
                 <textarea
                   value={reviews}
                   onChange={(e) => setReviews(e.target.value)}
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   placeholder="Enter reviews"
                 />
               </div>
@@ -192,7 +192,7 @@ export default function AddHotel() {
                   onChange={handleFileChange}
                   accept="image/*"
                   multiple
-                  className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                  className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                 />
                 {hotelImages.length > 0 && (
                   <div className="mt-2">

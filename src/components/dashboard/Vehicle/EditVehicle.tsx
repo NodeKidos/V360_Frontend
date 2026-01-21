@@ -275,7 +275,7 @@ export default function EditVehicle() {
                           value={vehicleData.vehicleName}
                           onChange={handleChange}
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                           placeholder="e.g., Toyota"
                         />
                       </div>
@@ -290,7 +290,7 @@ export default function EditVehicle() {
                           value={vehicleData.vehicleModel}
                           onChange={handleChange}
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                           placeholder="e.g., KDH"
                         />
                       </div>
@@ -307,7 +307,7 @@ export default function EditVehicle() {
                           value={vehicleData.vehicleType}
                           onChange={handleChange}
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         >
                           <option value="">Select Type</option>
                           <option value="sedan">Sedan</option>
@@ -329,7 +329,7 @@ export default function EditVehicle() {
                           value={vehicleData.vehicleNoPlate}
                           onChange={handleChange}
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                           placeholder="e.g., ABC-1234"
                         />
                       </div>
@@ -349,7 +349,7 @@ export default function EditVehicle() {
                           min="1900"
                           max="2100"
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
 
@@ -362,7 +362,7 @@ export default function EditVehicle() {
                           name="color"
                           value={vehicleData.color}
                           onChange={handleChange}
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                           placeholder="e.g., White"
                         />
                       </div>
@@ -381,7 +381,7 @@ export default function EditVehicle() {
                           onChange={handleChange}
                           min="1"
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
 
@@ -394,7 +394,7 @@ export default function EditVehicle() {
                           value={vehicleData.fuelType}
                           onChange={handleChange}
                           required
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         >
                           <option value="diesel">Diesel</option>
                           <option value="petrol">Petrol</option>
@@ -417,7 +417,7 @@ export default function EditVehicle() {
                           onChange={handleChange}
                           min="0"
                           step="0.01"
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
 
@@ -459,7 +459,7 @@ export default function EditVehicle() {
                           value={vehicleData.mileage}
                           onChange={handleChange}
                           min="0"
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
 
@@ -472,7 +472,7 @@ export default function EditVehicle() {
                           name="insuranceExpiry"
                           value={vehicleData.insuranceExpiry}
                           onChange={handleChange}
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                     </div>
@@ -488,7 +488,7 @@ export default function EditVehicle() {
                           name="lastMaintenanceDate"
                           value={vehicleData.lastMaintenanceDate}
                           onChange={handleChange}
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
 
@@ -501,7 +501,7 @@ export default function EditVehicle() {
                           name="nextServiceDate"
                           value={vehicleData.nextServiceDate}
                           onChange={handleChange}
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                     </div>
@@ -527,7 +527,7 @@ export default function EditVehicle() {
                         name="assignDriver"
                         value={vehicleData.assignDriver}
                         onChange={handleChange}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       >
                         <option value="">
                           {drivers.length === 0 ? "No drivers available" : "Select a driver (optional)"}

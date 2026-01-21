@@ -208,7 +208,7 @@ export default function EditCustomer() {
                         value={customerData.firstName}
                         onChange={(e) => setCustomerData({ ...customerData, firstName: e.target.value })}
                         required
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       />
                     </div>
                     <div>
@@ -218,7 +218,7 @@ export default function EditCustomer() {
                         value={customerData.lastName}
                         onChange={(e) => setCustomerData({ ...customerData, lastName: e.target.value })}
                         required
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       />
                     </div>
                   </div>
@@ -232,7 +232,7 @@ export default function EditCustomer() {
                       onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
                       required
                       disabled
-                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins bg-gray-100"
+                      className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins bg-gray-100"
                     />
                   </div>
 
@@ -254,7 +254,7 @@ export default function EditCustomer() {
                       type="text"
                       value={customerData.passport}
                       onChange={(e) => setCustomerData({ ...customerData, passport: e.target.value })}
-                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                      className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                     />
                   </div>
 
@@ -265,7 +265,7 @@ export default function EditCustomer() {
                       type="date"
                       value={customerData.dateOfBirth}
                       onChange={(e) => setCustomerData({ ...customerData, dateOfBirth: e.target.value })}
-                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                      className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                     />
                   </div>
 
@@ -277,7 +277,7 @@ export default function EditCustomer() {
                         <CountrySelect
                           value={customerData.country}
                           onChange={(e) => setCustomerData({ ...customerData, country: e.target.value })}
-                          className="w-full border border-purple-300 rounded-xl px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                     </div>
@@ -287,7 +287,7 @@ export default function EditCustomer() {
                       <select
                         value={customerData.gender}
                         onChange={(e) => setCustomerData({ ...customerData, gender: e.target.value })}
-                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                       >
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
@@ -302,7 +302,7 @@ export default function EditCustomer() {
                     <select
                       value={customerData.isActive ? "active" : "inactive"}
                       onChange={(e) => setCustomerData({ ...customerData, isActive: e.target.value === "active" })}
-                      className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                      className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -322,7 +322,7 @@ export default function EditCustomer() {
                           value={customerData.newPassword}
                           onChange={(e) => setCustomerData({ ...customerData, newPassword: e.target.value })}
                           placeholder="Leave blank to keep current password"
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                       <div>
@@ -332,7 +332,7 @@ export default function EditCustomer() {
                           value={customerData.confirmPassword}
                           onChange={(e) => setCustomerData({ ...customerData, confirmPassword: e.target.value })}
                           placeholder="Confirm new password"
-                          className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
                       </div>
                     </div>
