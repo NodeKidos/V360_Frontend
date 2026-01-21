@@ -106,10 +106,10 @@ export default function EditHotel() {
 
             // Append existing images that were kept
             existingImages.forEach((img) => {
-                formData.append("existingImages[]", img);
+                formData.append("images", img);
             });
 
-            // Append new images
+            // Append new images - using 'images' (without []) as standard for multer FilesInterceptor
             hotelImages.forEach((image) => {
                 formData.append("images", image);
             });

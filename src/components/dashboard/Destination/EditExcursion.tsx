@@ -106,7 +106,7 @@ export default function EditExcursion() {
 
       // Append existing images that were kept
       existingImages.forEach((img) => {
-        formData.append("existingImages[]", img);
+        formData.append("images", img);
       });
 
       // Append new images

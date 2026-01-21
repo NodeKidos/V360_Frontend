@@ -174,15 +174,15 @@ export default function AddHotel() {
                     className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                   >
                     <option value="">Select Hotel Type</option>
-                    <option value="Luxury">Luxury</option>
-                    <option value="Heritage">Heritage</option>
-                    <option value="Standard">Standard</option>
-                    <option value="Premium">Premium</option>
-                    <option value="Mid Range">Mid Range</option>
-                    <option value="Boutique">Boutique</option>
-                    <option value="Budget">Budget</option>
-                    <option value="Resort">Resort</option>
-                    <option value="Guesthouse">Guesthouse</option>
+                    <option value="luxury">Luxury</option>
+                    <option value="heritage">Heritage</option>
+                    <option value="standard">Standard</option>
+                    <option value="premium">Premium</option>
+                    <option value="mid_range">Mid Range</option>
+                    <option value="boutique">Boutique</option>
+                    <option value="budget">Budget</option>
+                    <option value="resort">Resort</option>
+                    <option value="guesthouse">Guesthouse</option>
                   </select>
                 </div>
 
