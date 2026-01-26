@@ -8,69 +8,65 @@ import img2 from '../../../assets/reward/img2.png';
 import img3 from '../../../assets/reward/img3.png';
 import img4 from '../../../assets/reward/img4.png';
 import { CiSearch } from 'react-icons/ci';
+import rewardService, { type Reward } from '../../../services/reward.service';
+import { useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 
 const RewardManagement = () => {
     const navigate = useNavigate(); // Initialize navigate function
     const [searchQuery, setSearchQuery] = useState('');
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile] = useState(false);
 
-    // Sample statistics data
-    const rewardStats = {
-        activeCustomers: 10,
-        referralCount: 1000,
-        totalRewardsDistributed: 1000,
-        pendingApprovals: 500
+    const [rewards, setRewards] = useState<Reward[]>([]);
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [stats, setStats] = useState({
+        activeCustomers: 0,
+        referralCount: 0,
+        totalRewardsDistributed: 0,
+        pendingApprovals: 0
+    });
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const [rewardsData, transactionsData] = await Promise.all([
+                rewardService.getAllRewards(),
+                rewardService.getAllTransactions()
+            ]);
+            setRewards(rewardsData);
+            setTransactions(transactionsData);
+
+            // Calculate basic stats from transactions
+            const uniqueCustomers = new Set(transactionsData.map(t => t.customerId)).size;
+            const referrals = transactionsData.filter(t => t.type === 'referral').length;
+            // Assuming 'amount < 0' signifies a distributed reward, adjust if logic is different
+            const distributed = transactionsData.filter(t => t.amount < 0).length;
+
+            setStats({
+                activeCustomers: uniqueCustomers,
+                referralCount: referrals,
+                totalRewardsDistributed: distributed,
+                pendingApprovals: 0 // Logic for pending approvals if needed
+            });
+        } catch (error) {
+            console.error("Failed to fetch admin reward data", error);
+            toast.error("Failed to load reward management data");
+        }
     };
 
-    // Sample data for rewards
-    const rewards = [
-        { id: 'RI001', type: 'Referring a Friend', date: '03.04.2025', customerId: 'CI001' },
-        { id: 'RI002', type: 'Birthdays', date: '03.04.2025', customerId: 'CI002' },
-        { id: 'RI003', type: 'Review', date: '03.04.2025', customerId: 'CI001' },
-        { id: 'RI004', type: 'Active Participation', date: '03.04.2025', customerId: 'CI003' },
-        { id: 'RI005', type: 'Birthdays', date: '03.04.2025', customerId: 'CI001' },
-        { id: 'RI006', type: 'Active Participation', date: '03.04.2025', customerId: 'CI002' },
-        { id: 'RI007', type: 'Referring a Friend', date: '03.04.2025', customerId: 'CI001' },
-        { id: 'RI008', type: 'Review', date: '03.04.2025', customerId: 'CI001' }
-    ];
-
-    // Reward Categories
-    const rewardCategories = [
-        {
-            title: "Referring a Friend",
-            description: "Users earn rewards for referring friends.",
-            validUntil: "Valid for 03.11.2025",
-            image: "https://example.com/referring-a-friend.jpg"
-        },
-        {
-            title: "Birthdays",
-            description: "Automated birthday rewards.",
-            validUntil: "Valid for 03.11.2025",
-            image: "https://example.com/birthdays.jpg"
-        },
-        {
-            title: "Reviews",
-            description: "Rewards for leaving reviews.",
-            validUntil: "Valid for 03.11.2025",
-            image: "https://example.com/reviews.jpg"
-        },
-        {
-            title: "Active Participation",
-            description: "Points for staying active on the platform.",
-            validUntil: "Valid for 03.11.2025",
-            image: "https://example.com/active-participation.jpg"
-        }
-    ];
 
     // Filter rewards based on search query
-    const filteredRewards = rewards.filter((reward) => {
+    const filteredTransactions = transactions.filter((t) => {
         const searchLower = searchQuery.toLowerCase();
         return (
-            reward.id.toLowerCase().includes(searchLower) ||
-            reward.type.toLowerCase().includes(searchLower) ||
-            reward.customerId.toLowerCase().includes(searchLower)
+            t.id.toLowerCase().includes(searchLower) ||
+            t.type.toLowerCase().includes(searchLower) ||
+            t.customerId.toLowerCase().includes(searchLower)
         );
     });
 
@@ -140,7 +136,7 @@ const RewardManagement = () => {
                             <img src={img1} alt="Active Customers" className="w-35 h-36 object-cover" />
                             <div className="ml-4">
                                 <h3 className="text-xl font-bold text-gray-800">Active Customers</h3>
-                                <p className="text-2xl font-bold text-purple-500">{rewardStats.activeCustomers}</p>
+                                <p className="text-2xl font-bold text-purple-500">{stats.activeCustomers}</p>
                             </div>
                         </div>
 
@@ -149,7 +145,7 @@ const RewardManagement = () => {
                             <img src={img2} alt="Referral Count" className="w-30 h-36 object-cover" />
                             <div className="ml-4 mr-6">
                                 <h3 className="text-xl font-bold text-gray-800">Referral Count</h3>
-                                <p className="text-2xl font-bold text-purple-500">{rewardStats.referralCount}</p>
+                                <p className="text-2xl font-bold text-purple-500">{stats.referralCount}</p>
                             </div>
                         </div>
 
@@ -158,7 +154,7 @@ const RewardManagement = () => {
                             <img src={img3} alt="Total Rewards" className="w-35 h-36 object-cover" />
                             <div className="ml-9">
                                 <h3 className="text-xl font-bold text-gray-800">Total Rewards Distributed</h3>
-                                <p className="text-2xl font-bold text-purple-500">{rewardStats.totalRewardsDistributed}</p>
+                                <p className="text-2xl font-bold text-purple-500">{stats.totalRewardsDistributed}</p>
                             </div>
                         </div>
 
@@ -167,7 +163,7 @@ const RewardManagement = () => {
                             <img src={img4} alt="Pending Approvals" className="w-35 h-36 object-cover" />
                             <div className="ml-4">
                                 <h3 className="text-xl font-bold text-gray-800">Pending Approvals</h3>
-                                <p className="text-2xl font-bold text-purple-500">{rewardStats.pendingApprovals}</p>
+                                <p className="text-2xl font-bold text-purple-500">{stats.pendingApprovals}</p>
                             </div>
                         </div>
                     </div>
@@ -188,12 +184,12 @@ const RewardManagement = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredRewards.map((reward, index) => (
+                                        {filteredTransactions.map((t, index) => (
                                             <tr key={index} className="border-b text-center hover:bg-gray-50">
-                                                <td className="p-4 text-[16px] text-gray-700">{reward.id}</td>
-                                                <td className="p-4 text-[16px] text-gray-700">{reward.type}</td>
-                                                <td className="p-4 text-[16px] text-gray-700">{reward.date}</td>
-                                                <td className="p-4 text-[16px] text-gray-700">{reward.customerId}</td>
+                                                <td className="p-4 text-[16px] text-gray-700">{t.id.substring(0, 8)}</td>
+                                                <td className="p-4 text-[16px] text-gray-700 capitalize">{t.type}</td>
+                                                <td className="p-4 text-[16px] text-gray-700">{new Date(t.createdAt).toLocaleDateString()}</td>
+                                                <td className="p-4 text-[16px] text-gray-700">{t.customerId.substring(0, 8)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -201,26 +197,34 @@ const RewardManagement = () => {
                             </div>
                         </div>
 
-                        {/* Right: Reward Categories */}
+                        {/* Right: Reward Categories (Real managed rewards) */}
                         <div className="w-full md:w-[700px] bg-white rounded-lg shadow-md p-4">
-                            <h3 className="text-[24px] font-bold text-gray-800 mb-4">Reward Categories</h3>
-                            {rewardCategories.map((category, index) => (
+                            <h3 className="text-[24px] font-bold text-gray-800 mb-4">Managed Rewards</h3>
+                            {rewards.length > 0 ? rewards.map((reward, index) => (
                                 <div key={index} className="bg-purple-200 p-4 rounded-lg mb-4">
                                     <div className="flex items-center mb-4 ml-3">
-                                        <img src={category.image} alt={category.title} className="w-30 h-15 object-cover rounded-full" />
+                                        <img src={reward.image || img1} alt={reward.name} className="w-30 h-15 object-cover rounded-full" />
                                         <div className="ml-10">
-                                            <h4 className="text-xl font-semibold text-gray-800">{category.title}</h4>
-                                            <p className="text-lg text-gray-600">{category.description}</p>
-                                            <p className="text-sm text-gray-500">{category.validUntil}</p>
+                                            <h4 className="text-xl font-semibold text-gray-800">{reward.name}</h4>
+                                            <p className="text-lg text-gray-600">{reward.description}</p>
+                                            <p className="text-sm text-gray-500">Requires {reward.pointsRequired} points</p>
                                         </div>
                                     </div>
-                                    <button className="text-purple-500 hover:text-purple-700 text-sm">
-                                        <span>View Details</span>
-                                    </button>
+                                    <div className="flex gap-4">
+                                        <button className="text-purple-600 hover:text-purple-800 text-sm font-semibold" onClick={() => navigate(`/reward/edit/${reward.id}`)}>
+                                            <span>Edit Details</span>
+                                        </button>
+                                        <button className="text-red-500 hover:text-red-700 text-sm font-semibold" onClick={() => rewardService.deleteReward(reward.id).then(() => fetchData())}>
+                                            <span>Delete</span>
+                                        </button>
+                                    </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="text-center py-8 text-gray-500">No rewards created yet. Click "Add" to create one.</div>
+                            )}
                         </div>
                     </div>
+                    <ToastContainer />
 
                 </div>
             </div>

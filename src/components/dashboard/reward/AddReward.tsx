@@ -5,6 +5,7 @@ import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import rewardService from "../../../services/reward.service";
 
 export default function AddReward() {
     const navigate = useNavigate();
@@ -47,15 +48,26 @@ export default function AddReward() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        toast.success("Reward added successfully!", {
-            position: "top-right",
-            autoClose: 2000,
-        });
-        setTimeout(() => {
-            navigate("/rewards"); // Navigate to the rewards list page
-        }, 2000);
+        try {
+            await rewardService.createReward({
+                name: rewardData.rewardName,
+                description: rewardData.description,
+                pointsRequired: parseInt(rewardData.amount),
+                image: rewardData.image, // In a real app we'd upload this first
+                isActive: rewardData.status === 'Active'
+            });
+            toast.success("Reward added successfully!", {
+                position: "top-right",
+                autoClose: 2000,
+            });
+            setTimeout(() => {
+                navigate("/reward");
+            }, 2000);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to add reward");
+        }
     };
 
     return (
