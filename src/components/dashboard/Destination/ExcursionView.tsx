@@ -40,6 +40,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
 
     const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
     const [selectedExcursionId, setSelectedExcursionId] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const [toggleModalVisible, setToggleModalVisible] = useState(false);
     const [selectedExcursion, setSelectedExcursion] = useState<any>(null);
@@ -81,11 +82,11 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
         setDeleteConfirmationVisible(true); // Show confirmation overlay
     };
 
-    // Confirm the delete action
     const confirmDelete = async () => {
         if (!selectedExcursionId) return;
 
         try {
+            setErrorMessage(null);
             await excursionService.delete(selectedExcursionId);
             setExcursions(excursionsArray.filter((e: any) => e.id !== selectedExcursionId));
             setDeleteConfirmationVisible(false);
@@ -96,12 +97,15 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
             });
         } catch (error: any) {
             console.error("Failed to delete excursion:", error);
-            toast.error(error.response?.data?.message || "Failed to delete excursion");
+            const message = error.response?.data?.message || "Failed to delete excursion";
+            setErrorMessage(message);
+            toast.error(message);
         }
     };
     // Cancel delete action
     const cancelDelete = () => {
         setDeleteConfirmationVisible(false); // Hide the overlay
+        setErrorMessage(null);
     };
 
     // Handle toggle visibility
@@ -364,6 +368,12 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                         <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
                             Are you sure you want to delete this?
                         </h3>
+
+                        {errorMessage && (
+                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-poppins text-center">
+                                {errorMessage}
+                            </div>
+                        )}
 
                         {/* Buttons */}
                         <div className="flex gap-3 md:gap-4 mt-4 md:mt-6 justify-center">

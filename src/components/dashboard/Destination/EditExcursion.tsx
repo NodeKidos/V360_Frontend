@@ -27,6 +27,7 @@ export default function EditExcursion() {
   const [difficulty, setDifficulty] = useState("easy");
   const [rating, setRating] = useState(0);
   const [category, setCategory] = useState("");
+  const [meetingPoint, setMeetingPoint] = useState("");
   const [excursionImages, setExcursionImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [availableDestinations, setAvailableDestinations] = useState<any[]>([]);
@@ -58,6 +59,7 @@ export default function EditExcursion() {
           setDifficulty(excursion.difficulty || "easy");
           setRating(excursion.rating || 0);
           setCategory(excursion.category || "");
+          setMeetingPoint(excursion.meetingPoint || "");
           setExistingImages(excursion.images || []);
         }
       } catch (error) {
@@ -86,7 +88,7 @@ export default function EditExcursion() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!excursionName || !destinationId || !bestTime || !duration || !price || !description || !category) {
+    if (!excursionName || !destinationId || !bestTime || !duration || !price || !description || !category || !meetingPoint) {
       toast.error("All fields are required!");
       return;
     }
@@ -103,6 +105,7 @@ export default function EditExcursion() {
       formData.append("difficulty", difficulty);
       formData.append("rating", rating.toString());
       formData.append("category", category);
+      formData.append("meetingPoint", meetingPoint);
 
       // Append existing images that were kept
       existingImages.forEach((img) => {
@@ -201,6 +204,18 @@ export default function EditExcursion() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Location / Meeting Point */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins text-left">Location / Meeting Point</label>
+                  <input
+                    type="text"
+                    value={meetingPoint}
+                    onChange={(e) => setMeetingPoint(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter location or meeting point"
+                  />
                 </div>
 
                 <div>

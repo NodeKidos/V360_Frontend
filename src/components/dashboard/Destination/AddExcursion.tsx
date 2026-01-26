@@ -26,6 +26,7 @@ export default function AddExcursion() {
   const [difficulty, setDifficulty] = useState("easy");
   const [rating, setRating] = useState(0);
   const [category, setCategory] = useState("");
+  const [meetingPoint, setMeetingPoint] = useState("");
   const [excursionImages, setExcursionImages] = useState<File[]>([]);
 
   // Available destinations
@@ -64,8 +65,8 @@ export default function AddExcursion() {
     e.preventDefault();
 
     // Validate form fields
-    if (!excursionName || !destinationId || !bestTime || !duration || !price || !description || !category || excursionImages.length === 0) {
-      toast.error("All fields (including at least one image) are required!");
+    if (!excursionName || !destinationId || !bestTime || !duration || !price || !description || !category || !meetingPoint) {
+      toast.error("All fields are required!");
       return;
     }
 
@@ -81,6 +82,7 @@ export default function AddExcursion() {
       formData.append("difficulty", difficulty);
       formData.append("rating", rating.toString());
       formData.append("category", category);
+      formData.append("meetingPoint", meetingPoint);
 
       excursionImages.forEach((image) => {
         formData.append("images", image);
@@ -165,6 +167,18 @@ export default function AddExcursion() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Location / Meeting Point */}
+                <div>
+                  <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Location / Meeting Point</label>
+                  <input
+                    type="text"
+                    value={meetingPoint}
+                    onChange={(e) => setMeetingPoint(e.target.value)}
+                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                    placeholder="Enter location or meeting point"
+                  />
                 </div>
 
                 {/* Category */}

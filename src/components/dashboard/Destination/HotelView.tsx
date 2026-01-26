@@ -34,6 +34,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
 
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedHotelId, setSelectedHotelId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [flagModalVisible, setFlagModalVisible] = useState(false);
   const [flagReason, setFlagReason] = useState("");
@@ -81,11 +82,11 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
     setDeleteConfirmationVisible(true); // Show confirmation overlay
   };
 
-  // Confirm the delete action
   const confirmDelete = async () => {
     if (!selectedHotelId) return;
 
     try {
+      setErrorMessage(null);
       await hotelService.delete(selectedHotelId);
       setHotels(hotelsArray.filter((h: any) => h.id !== selectedHotelId));
       setDeleteConfirmationVisible(false);
@@ -96,12 +97,15 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
       });
     } catch (error: any) {
       console.error("Failed to delete hotel:", error);
-      toast.error(error.response?.data?.message || "Failed to delete hotel");
+      const message = error.response?.data?.message || "Failed to delete hotel";
+      setErrorMessage(message);
+      toast.error(message);
     }
   };
   // Cancel delete action
   const cancelDelete = () => {
     setDeleteConfirmationVisible(false); // Hide the overlay
+    setErrorMessage(null);
   };
 
   // Handle flag hotel
@@ -379,6 +383,12 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
             <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
               Are you sure you want to delete this?
             </h3>
+
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-poppins text-center">
+                {errorMessage}
+              </div>
+            )}
 
             {/* Buttons */}
             <div className="flex gap-3 md:gap-4 mt-4 md:mt-6 justify-center">

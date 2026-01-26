@@ -64,8 +64,8 @@ export default function AddHotel() {
     e.preventDefault();
 
     // Validate form fields
-    if (!hotelName || !hotelType || !contactNo || !location || !description || !pricePerNight || !totalRooms || !destinationId || hotelImages.length === 0) {
-      toast.error("All fields (including at least one image) are required!");
+    if (!hotelName || !hotelType || !contactNo || !location || !description || !pricePerNight || !totalRooms || !destinationId) {
+      toast.error("All fields are required!");
       return;
     }
 

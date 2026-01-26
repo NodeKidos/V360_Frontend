@@ -39,6 +39,7 @@ const DestinationHotelManagement = () => {
 
     const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
     const [selectedDestinationId, setSelectedDestinationId] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [locationFilter, setLocationFilter] = useState("");
@@ -133,11 +134,11 @@ const DestinationHotelManagement = () => {
         setDeleteConfirmationVisible(true); // Show confirmation overlay
     };
 
-    // Confirm the delete action
     const confirmDelete = async () => {
         if (!selectedDestinationId) return;
 
         try {
+            setErrorMessage(null);
             await destinationService.delete(selectedDestinationId);
             setDestination(destinations.filter((destination) => destination.id !== selectedDestinationId));
             setDeleteConfirmationVisible(false);
@@ -148,13 +149,16 @@ const DestinationHotelManagement = () => {
             });
         } catch (error: any) {
             console.error("Failed to delete destination:", error);
-            toast.error(error.response?.data?.message || "Failed to delete destination");
+            const message = error.response?.data?.message || "Failed to delete destination";
+            setErrorMessage(message);
+            toast.error(message);
         }
     };
 
     // Cancel delete action
     const cancelDelete = () => {
         setDeleteConfirmationVisible(false); // Hide the overlay
+        setErrorMessage(null);
     };
 
     // Handle Add Buttons -------------------
@@ -450,6 +454,12 @@ const DestinationHotelManagement = () => {
                                 <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
                                     Are you sure you want to delete this?
                                 </h3>
+
+                                {errorMessage && (
+                                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-poppins text-center">
+                                        {errorMessage}
+                                    </div>
+                                )}
 
                                 {/* Buttons */}
                                 <div className="flex gap-3 md:gap-4 mt-4 md:mt-6 justify-center">

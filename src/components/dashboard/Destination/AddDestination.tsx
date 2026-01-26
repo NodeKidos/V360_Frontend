@@ -86,7 +86,7 @@ export default function AddDestination() {
     e.preventDefault();
 
     // Validate form fields
-    if (!destinationName || !location || !category || destinationImages.length === 0 || !description) {
+    if (!destinationName || !location || !category || !description) {
       toast.error("Please fill in all required fields!");
       return;
     }
