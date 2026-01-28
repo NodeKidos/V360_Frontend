@@ -18,14 +18,27 @@
   --font-roboto-condensed: 'Roboto Condensed', sans-serif;
   --font-roboto: 'Roboto', sans-serif;
 
+  /* Game Theme - Sri Lankan Tourism Palette */
+  --color-game-red: #E21B3C;
+  /* Hibiscus/Sigiriya Red */
+  --color-game-blue: #1368CE;
+  /* Indian Ocean Blue */
+  --color-game-yellow: #D89E00;
+  /* Ceylon Cinnamon/Golden Temple Yellow */
+  --color-game-green: #26890C;
+  /* Tea Plantation/Jungle Green */
 }
+
 /* Hide scrollbar but allow scrolling */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-hide {
-  -ms-overflow-style: none; /* for IE and Edge */
-  scrollbar-width: none; /* for Firefox */
+  -ms-overflow-style: none;
+  /* for IE and Edge */
+  scrollbar-width: none;
+  /* for Firefox */
 }
 
 /* Optional: smooth scrolling effect */
@@ -213,6 +226,7 @@ button:focus-visible {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

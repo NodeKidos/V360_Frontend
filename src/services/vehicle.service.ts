@@ -12,6 +12,7 @@ export interface Vehicle {
   seatingCapacity?: number;
   assignedDriver?: any;
   status?: string;
+  insuranceExpiry?: string;
   createdAt?: string;
   updatedAt?: string;
 }

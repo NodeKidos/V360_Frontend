@@ -52,7 +52,6 @@ import PackagePrice from "./components/user-dashboard/PackagePrice";
 import Reward from "./components/user-dashboard/Reward";
 import UserProfile from "./components/user-dashboard/UserProfile";
 import ActivityLogView from "./components/dashboard/ActivityLog/ActivityLogView";
-import EditUser from "./components/dashboard/User/EditUser";
 import EditMyItinerary from "./pages/customer-itinerary-edit/EditMyItinerary";
 import DriverDashboard from "./pages/dashboard/DriverDashboard";
 import MyTrips from "./pages/driver/MyTrips";
@@ -60,7 +59,6 @@ import DriverProfile from "./pages/driver/DriverProfile";
 import DriverVehicle from "./pages/driver/DriverVehicle";
 import ItineraryDetails from "./components/driver-dashboard/ItineraryDetails";
 import DetailedItinerary from "./components/driver-dashboard/DetailedItinerary";
-import ScheduleTrip from "./components/driver-dashboard/ScheduleTrip";
 import DriverItineraryView from "./pages/driver/DriverItineraryView";
 import TourDetails from "./pages/driver/TourDetails";
 import MapView from "./pages/driver/MapView";
@@ -70,6 +68,12 @@ import AddReward from "./components/dashboard/reward/AddReward";
 import VehicleDetails from "./components/driver-dashboard/VehicleDetails";
 import TripPhotos from "./components/user-dashboard/TripPhotos";
 import Gallery from "./components/user-dashboard/Gallery";
+import GameManagement from "./components/dashboard/game/GameView";
+import QuizCreator from "./components/dashboard/game/QuizCreator";
+import GameHost from "./components/dashboard/game/GameHost";
+import JoinGame from "./pages/game/JoinGame";
+import GameLobby from "./pages/game/GameLobby";
+import PlayerScreen from "./pages/game/PlayerScreen";
 
 export default function App() {
   const loadUserFromStorage = useAuthStore((state) => state.loadUserFromStorage);
@@ -105,6 +109,11 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp" element={<OtpVerification />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+
+        {/* Public Game Play Routes */}
+        <Route path="/play" element={<JoinGame />} />
+        <Route path="/play/lobby/:pin" element={<GameLobby />} />
+        <Route path="/play/game/:pin" element={<PlayerScreen />} />
 
         {/* Informational & Feature Pages */}
         <Route path="/about-us" element={<AboutUs />} />
@@ -344,6 +353,40 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
               <EditStaff />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Game Management */}
+        <Route
+          path="/admin/game"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <GameManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/game/create"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <QuizCreator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/game/edit/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <QuizCreator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/game/host/:pin"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <GameHost />
             </ProtectedRoute>
           }
         />

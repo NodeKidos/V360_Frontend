@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationStore } from '../store/useNotificationStore';
 import type { Notification } from '../services/notification.service';

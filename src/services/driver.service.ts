@@ -23,6 +23,10 @@ export interface ItinerarySummary {
     name: string;
     plateNumber: string;
   };
+  allDestinations?: string[];
+  totalDays?: number;
+  totalHotels?: number;
+  totalExcursions?: number;
 }
 
 export interface ItinerarySchedule {
@@ -35,6 +39,8 @@ export interface ItinerarySchedule {
     status: string;
     numberOfParticipants: number;
     specialRequests?: string;
+    customerPhone?: string;
+    customerEmail?: string;
     vehicle?: any;
   };
   schedule: Array<{
@@ -54,6 +60,7 @@ export interface Vehicle {
   plateNumber: string;
   capacity: number;
   status: string;
+  insuranceExpiry?: string;
   currentMileage?: number;
 }
 

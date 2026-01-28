@@ -19,7 +19,7 @@ import { Loader } from "../../components/ui/Loader";
 const useCountUp = (end: number, duration: number = 2000) => {
   const [count, setCount] = useState(0);
   const startTimeRef = useRef<number | null>(null);
-  const rafRef = useRef<number>();
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (end === 0) {
@@ -158,15 +158,6 @@ const AdminDashboard = () => {
     });
   };
 
-  // Format time
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  };
 
   // Check if itinerary has date-destination mismatch
   const checkDateMismatch = (itinerary: Itinerary): boolean => {

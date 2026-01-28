@@ -143,6 +143,7 @@ export interface ItineraryFormData {
   allergies?: string;
   specialConditions?: string;
   specialRequirements: string;
+  groupComposition?: string;
   selectedDestinations?: {
     [destinationName: string]: {
       hotels?: any[];  // Changed from hotel?: any to hotels?: any[] for multi-selection
