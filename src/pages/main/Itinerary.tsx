@@ -283,6 +283,7 @@ export default function Itinerary() {
                                                     placeholder={field.placeholder}
                                                     value={(formData as any)[field.fieldName || ""] || ""}
                                                     onChange={(e) => updateFormData({ [field.fieldName || ""]: e.target.value })}
+                                                    max={field.fieldName === 'dateOfBirth' ? new Date().toISOString().split('T')[0] : undefined}
                                                     className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                                 />
                                             )}

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaSave, FaTimes, FaEdit } from 'react-icons/fa';
+import { FaSave, FaTimes, FaEdit, FaLock } from 'react-icons/fa';
 import Sidebar from '../AdminSidebar';
 import TopBar from '../Topbar';
 import { Card, CardContent } from '../ui/card';
@@ -13,7 +12,7 @@ interface UserData {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  phone?: string;
   profileImage?: string;
   role: string;
   status: string;
@@ -30,7 +29,6 @@ interface UserData {
 }
 
 const UserProfile = () => {
-  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -50,6 +48,12 @@ const UserProfile = () => {
     dateOfBirth: '',
     gender: '',
   });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -110,6 +114,30 @@ const UserProfile = () => {
       console.error('Update error:', error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return;
+    }
+
+    try {
+      await userService.changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      toast.success('Password changed successfully!');
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setShowPasswordSection(false);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to change password');
     }
   };
 
@@ -318,6 +346,7 @@ const UserProfile = () => {
                         name="dateOfBirth"
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
+                        max={new Date().toISOString().split('T')[0]}
                         disabled={!editMode}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-600"
                       />
@@ -387,6 +416,61 @@ const UserProfile = () => {
                       />
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Password Change Section */}
+              <Card className="bg-white rounded-xl shadow-sm border-0">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900 font-poppins">Security</h3>
+                    <button
+                      onClick={() => setShowPasswordSection(!showPasswordSection)}
+                      className="flex items-center gap-2 text-[#B749DB] hover:text-[#8B2BB9] transition-colors"
+                    >
+                      <FaLock /> {showPasswordSection ? 'Cancel' : 'Change Password'}
+                    </button>
+                  </div>
+                  {showPasswordSection && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                        <input
+                          type="password"
+                          value={passwordForm.currentPassword}
+                          onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="Enter current password"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                        <input
+                          type="password"
+                          value={passwordForm.newPassword}
+                          onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="Enter new password (min. 8 characters)"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                        <input
+                          type="password"
+                          value={passwordForm.confirmPassword}
+                          onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="Confirm new password"
+                        />
+                      </div>
+                      <button
+                        onClick={handlePasswordChange}
+                        className="w-full bg-[#B749DB] text-white px-6 py-3 rounded-lg hover:bg-[#8B2BB9] transition-colors"
+                      >
+                        Update Password
+                      </button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

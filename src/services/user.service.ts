@@ -156,6 +156,9 @@ class UserService {
         lastName?: string;
         phone?: string;
         country?: string;
+        city?: string;
+        nationality?: string;
+        passportNumber?: string;
         gender?: string;
         dateOfBirth?: string;
         address?: string;
@@ -169,6 +172,17 @@ class UserService {
      */
     async getUserDependencies(id: string): Promise<{ itineraries: number; bookings: number }> {
         const response = await api.get(`/users/${id}/dependencies`);
+        return response.data;
+    }
+
+    /**
+     * Change password
+     */
+    async changePassword(data: {
+        currentPassword: string;
+        newPassword: string;
+    }): Promise<{ message: string }> {
+        const response = await api.put('/users/me/password', data);
         return response.data;
     }
 }

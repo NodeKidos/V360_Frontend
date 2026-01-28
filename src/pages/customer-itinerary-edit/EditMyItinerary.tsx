@@ -543,6 +543,7 @@ export default function EditMyItinerary() {
                                                             onChange={(e) =>
                                                                 updateFormData({ [field.fieldName || ""]: e.target.value })
                                                             }
+                                                            max={field.fieldName === 'dateOfBirth' ? new Date().toISOString().split('T')[0] : undefined}
                                                             className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                                         />
                                                     )}
