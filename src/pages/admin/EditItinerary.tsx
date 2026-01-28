@@ -51,6 +51,10 @@ const EditItinerary = () => {
     startDate: "",
     endDate: "",
     numberOfParticipants: 1,
+    travelerType: "",
+    numberOfAdults: 0,
+    numberOfChildrenUnder5: 0,
+    numberOfChildren5Plus: 0,
     groupComposition: "",
     duration: "",
 
@@ -263,11 +267,32 @@ const EditItinerary = () => {
           return dateString.split('T')[0];
         };
 
-        // Pre-populate form
+        // Determine traveler type from existing data
+        let travelerType = "";
+        let numAdults = data.numberOfAdults || 0;
+        let numChildUnder5 = data.numberOfChildrenUnder5 || 0;
+        let numChild5Plus = data.numberOfChildren5Plus || 0;
+
+        if (numAdults || numChildUnder5 || numChild5Plus) {
+          travelerType = "Group";
+        } else if (data.numberOfParticipants === 1) {
+          travelerType = "Solo";
+        } else if (data.numberOfParticipants === 2) {
+          travelerType = "Couple";
+        } else if (data.numberOfParticipants > 2) {
+          travelerType = "Group";
+          // If it's a group but breakdown is missing, default to everyone as adults
+          numAdults = data.numberOfParticipants;
+        }
+
         setFormData({
           startDate: formatDateForInput(data.startDate) || "",
           endDate: formatDateForInput(data.endDate) || "",
           numberOfParticipants: data.numberOfParticipants || 1,
+          travelerType: travelerType,
+          numberOfAdults: numAdults,
+          numberOfChildrenUnder5: numChildUnder5,
+          numberOfChildren5Plus: numChild5Plus,
           groupComposition: data.metadata?.groupComposition || "",
           duration: data.metadata?.duration || "",
 
@@ -545,12 +570,31 @@ const EditItinerary = () => {
         excursionIds: day.excursionIds || day.excursions?.map((e: any) => e.id) || [],
       }));
 
+      // Calculate total number of participants based on traveler type
+      let totalParticipants = 1;
+      let numberOfAdults = 0;
+      let numberOfChildrenUnder5 = 0;
+      let numberOfChildren5Plus = 0;
+
+      if (formData.travelerType === "Solo") {
+        totalParticipants = 1;
+      } else if (formData.travelerType === "Couple") {
+        totalParticipants = 2;
+      } else if (formData.travelerType === "Group") {
+        numberOfAdults = formData.numberOfAdults || 0;
+        numberOfChildrenUnder5 = formData.numberOfChildrenUnder5 || 0;
+        numberOfChildren5Plus = formData.numberOfChildren5Plus || 0;
+        totalParticipants = numberOfAdults + numberOfChildrenUnder5 + numberOfChildren5Plus || 1;
+      }
+
       const updateData = {
-        numberOfParticipants: formData.numberOfParticipants,
+        numberOfParticipants: totalParticipants,
+        numberOfAdults,
+        numberOfChildrenUnder5,
+        numberOfChildren5Plus,
         specialRequests: formData.specialRequests,
         notes: formData.notes,
         metadata: {
-          groupComposition: formData.groupComposition,
           hotelCategory: formData.hotelCategory,
           roomCategory: formData.roomCategory,
           vehicleType: formData.vehicleType,
@@ -1176,81 +1220,119 @@ const EditItinerary = () => {
                       <h2 className="text-xl font-semibold text-[#5B247A] mb-4">
                         Trip Details
                       </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Number of Participants
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={formData.numberOfParticipants}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                numberOfParticipants: parseInt(e.target.value) || 1,
-                              })
-                            }
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 outline-none"
-                          />
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Traveler Type
+                            </label>
+                            <select
+                              value={formData.travelerType}
+                              onChange={(e) =>
+                                setFormData({ ...formData, travelerType: e.target.value })
+                              }
+                              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 outline-none"
+                            >
+                              <option value="">Select traveler type</option>
+                              <option value="Solo">Solo</option>
+                              <option value="Couple">Couple</option>
+                              <option value="Group">Group</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Total Participants
+                            </label>
+                            <div className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50 text-gray-700">
+                              {formData.travelerType === "Solo" ? 1 :
+                                formData.travelerType === "Couple" ? 2 :
+                                  formData.travelerType === "Group" ? (formData.numberOfAdults + formData.numberOfChildrenUnder5 + formData.numberOfChildren5Plus || 1) :
+                                    formData.numberOfParticipants}
+                            </div>
+                          </div>
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Group Composition
-                          </label>
-                          <select
-                            value={formData.groupComposition}
-                            onChange={(e) =>
-                              setFormData({ ...formData, groupComposition: e.target.value })
-                            }
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 outline-none"
-                          >
-                            <option value="">Select group type</option>
-                            <option value="Solo">Solo</option>
-                            <option value="Couple">Couple</option>
-                            <option value="Family">Family</option>
-                            <option value="Group">Group</option>
-                          </select>
-                        </div>
+                        {formData.travelerType === "Group" && (
+                          <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
+                            <h3 className="text-sm font-semibold text-purple-800 mb-4 uppercase tracking-wider">Group Composition Breakdown</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              <div>
+                                <label className="block text-xs font-bold text-purple-700 mb-2 uppercase">Number of Adults</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={formData.numberOfAdults}
+                                  onChange={(e) => setFormData({ ...formData, numberOfAdults: parseInt(e.target.value) || 0 })}
+                                  className="w-full border border-purple-200 rounded-lg px-4 py-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-purple-700 mb-2 uppercase">Children (Under 5)</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={formData.numberOfChildrenUnder5}
+                                  onChange={(e) => setFormData({ ...formData, numberOfChildrenUnder5: parseInt(e.target.value) || 0 })}
+                                  className="w-full border border-purple-200 rounded-lg px-4 py-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-purple-700 mb-2 uppercase">Children (5 and above)</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={formData.numberOfChildren5Plus}
+                                  onChange={(e) => setFormData({ ...formData, numberOfChildren5Plus: parseInt(e.target.value) || 0 })}
+                                  className="w-full border border-purple-200 rounded-lg px-4 py-2 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none"
+                                />
+                              </div>
+                            </div>
+                            <p className="text-xs text-purple-600 mt-3 italic">
+                              * Children aged 5+ are generally considered adults for hotel pricing in Sri Lanka.
+                            </p>
+                          </div>
+                        )}
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Start Date
-                          </label>
-                          <input
-                            type="date"
-                            value={formData.startDate}
-                            disabled
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">
-                            Dates cannot be changed after creation
-                          </p>
-                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Start Date
+                            </label>
+                            <input
+                              type="date"
+                              value={formData.startDate}
+                              disabled
+                              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Dates cannot be changed after creation
+                            </p>
+                          </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            End Date
-                          </label>
-                          <input
-                            type="date"
-                            value={formData.endDate}
-                            disabled
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50"
-                          />
-                        </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              End Date
+                            </label>
+                            <input
+                              type="date"
+                              value={formData.endDate}
+                              disabled
+                              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50"
+                            />
+                          </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Duration
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.duration}
-                            disabled
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50"
-                          />
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Duration
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.duration}
+                              disabled
+                              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-50"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>

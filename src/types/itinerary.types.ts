@@ -40,6 +40,9 @@ export type Itinerary = {
   startDate: string;
   endDate: string;
   numberOfParticipants: number;
+  numberOfAdults?: number;
+  numberOfChildrenUnder5?: number;
+  numberOfChildren5Plus?: number;
   specialRequests?: string;
   notes?: string;
   rejectionReason?: string;
@@ -87,9 +90,11 @@ export type CreateItineraryDto = {
   startDate: string;
   endDate: string;
   numberOfParticipants: number;
+  numberOfAdults?: number;
+  numberOfChildrenUnder5?: number;
+  numberOfChildren5Plus?: number;
   specialRequests?: string;
   metadata?: {
-    groupComposition?: string;
     hotelCategory?: number;
     roomCategory?: string[];
     vehicleType?: string[];
@@ -119,8 +124,11 @@ export interface ItineraryFormData {
   dateOfBirth: string;
   gender: string;
   email: string;
-  groupComposition: string;
+  travelerType?: string; // Solo, Couple, or Group
   numberOfParticipants?: number;
+  numberOfAdults?: number;
+  numberOfChildrenUnder5?: number;
+  numberOfChildren5Plus?: number;
   contactNumber: string;
   country: string;
   arrivalDate: string;

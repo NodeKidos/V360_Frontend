@@ -249,7 +249,6 @@ export default function Itinerary() {
                                         { label: "Date of Birth", type: "date", fieldName: "dateOfBirth" },
                                         { label: "Gender", type: "select", options: ["Choose gender", "male", "female", "other"], fieldName: "gender" },
                                         { label: "Email Address", type: "email", placeholder: "Enter email", fieldName: "email" },
-                                        { label: "Group Composition", type: "select", options: ["Select group type", "Solo", "Couple", "Family"], fieldName: "groupComposition" },
                                         { label: "Contact Number", type: "phone", fieldName: "contactNumber" },
                                         { label: "Country of Residence", type: "country", fieldName: "country" },
                                         { label: "Arrival Date", type: "date", fieldName: "arrivalDate" },
@@ -291,20 +290,75 @@ export default function Itinerary() {
                                     ))}
                                 </div>
 
-                                {/* Number of Participants */}
-                                {(formData.groupComposition && formData.groupComposition !== "Select group type" && formData.groupComposition !== "Solo") && (
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[16px] sm:text-[18px] font-medium">Number of Participants</label>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            placeholder="Enter number of participants"
-                                            value={formData.numberOfParticipants || ""}
-                                            onChange={(e) => updateFormData({ numberOfParticipants: parseInt(e.target.value) || 0 })}
-                                            className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
-                                        />
+                                <div className="flex flex-col sm:flex-row gap-6 mb-8 mt-2">
+                                    {/* Traveler Type */}
+                                    <div className="flex flex-col gap-2 flex-1">
+                                        <label className="text-[16px] sm:text-[18px] font-medium">Traveler Type</label>
+                                        <select
+                                            value={formData.travelerType || ""}
+                                            onChange={(e) => updateFormData({ travelerType: e.target.value })}
+                                            className="w-full h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
+                                            <option value="">Select traveler type</option>
+                                            <option value="Solo">Solo</option>
+                                            <option value="Couple">Couple</option>
+                                            <option value="Group">Group</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Total Participants Info */}
+                                    <div className="flex flex-col gap-2 flex-1">
+                                        <label className="text-[16px] sm:text-[18px] font-medium">Total Participants</label>
+                                        <div className="h-12 border border-[#E5D4EF] bg-gray-50 rounded-lg px-4 flex items-center text-[#5B247A] font-bold">
+                                            {formData.travelerType === "Solo" ? 1 :
+                                                formData.travelerType === "Couple" ? 2 :
+                                                    ((formData.numberOfAdults || 0) + (formData.numberOfChildrenUnder5 || 0) + (formData.numberOfChildren5Plus || 0)) || formData.numberOfParticipants || 1}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Group Composition Section - Only show for Groups */}
+                                {formData.travelerType === "Group" && (
+                                    <div>
+                                        <p className="font-semibold mb-3 text-[16px] sm:text-[20px]">Group Composition</p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-[16px] sm:text-[18px] font-medium">Number of Adults</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    placeholder="Enter number"
+                                                    value={formData.numberOfAdults || ""}
+                                                    onChange={(e) => updateFormData({ numberOfAdults: parseInt(e.target.value) || 0 })}
+                                                    className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-[16px] sm:text-[18px] font-medium">Children (Under 5)</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    placeholder="Enter number"
+                                                    value={formData.numberOfChildrenUnder5 || ""}
+                                                    onChange={(e) => updateFormData({ numberOfChildrenUnder5: parseInt(e.target.value) || 0 })}
+                                                    className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-[16px] sm:text-[18px] font-medium">Children (5 and above)</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    placeholder="Enter number"
+                                                    value={formData.numberOfChildren5Plus || ""}
+                                                    onChange={(e) => updateFormData({ numberOfChildren5Plus: parseInt(e.target.value) || 0 })}
+                                                    className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
+                                                />
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-gray-500 mt-2"><em>Note: Children aged 5+ are considered adults in most Sri Lankan hotels</em></p>
                                     </div>
                                 )}
+
 
                                 {/* Preferred Duration of Stay */}
                                 <div>

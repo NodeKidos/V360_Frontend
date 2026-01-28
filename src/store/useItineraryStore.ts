@@ -150,14 +150,26 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       });
     }
 
-    // Determine number of participants
-    let participants = formData.numberOfParticipants || 1;
-    if (!formData.numberOfParticipants && formData.groupComposition) {
-      // Default values based on group type
-      if (formData.groupComposition === "Solo") participants = 1;
-      else if (formData.groupComposition === "Couple") participants = 2;
-      else if (formData.groupComposition === "Family") participants = 4;
+    // Calculate total number of participants based on traveler type
+    let totalParticipants = 1;
+    let numberOfAdults = 0;
+    let numberOfChildrenUnder5 = 0;
+    let numberOfChildren5Plus = 0;
+
+    if (formData.travelerType === "Solo") {
+      totalParticipants = 1;
+    } else if (formData.travelerType === "Couple") {
+      totalParticipants = 2;
+    } else if (formData.travelerType === "Group") {
+      numberOfAdults = formData.numberOfAdults || 0;
+      numberOfChildrenUnder5 = formData.numberOfChildrenUnder5 || 0;
+      numberOfChildren5Plus = formData.numberOfChildren5Plus || 0;
+      totalParticipants = numberOfAdults + numberOfChildrenUnder5 + numberOfChildren5Plus || 1;
+    } else {
+      // Default if no traveler type selected
+      totalParticipants = 1;
     }
+
 
     // Determine duration
     const actualDuration = formData.duration === "Custom"
@@ -168,10 +180,12 @@ export const useItineraryStore = create<ItineraryState>((set, get) => ({
       type: ItineraryType.CUSTOM,
       startDate: formData.arrivalDate,
       endDate: formData.departureDate,
-      numberOfParticipants: participants,
+      numberOfParticipants: totalParticipants,
+      numberOfAdults,
+      numberOfChildrenUnder5,
+      numberOfChildren5Plus,
       specialRequests: formData.specialRequirements,
       metadata: {
-        groupComposition: formData.groupComposition,
         hotelCategory: formData.hotelCategory,
         roomCategory: formData.roomCategory,
         vehicleType: formData.vehicleType,

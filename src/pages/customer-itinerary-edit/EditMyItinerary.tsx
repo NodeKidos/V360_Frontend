@@ -44,6 +44,8 @@ export default function EditMyItinerary() {
         resetFormData
     } = useItineraryStore();
 
+    const isEditable = !['quoted', 'accepted', 'in_progress', 'completed', 'cancelled', 'rejected'].includes(itinerary?.status || '');
+
     // CRITICAL: Update step from location.state when navigating back from hotel/excursion pages
     useEffect(() => {
         if (location.state?.step) {
@@ -85,8 +87,9 @@ export default function EditMyItinerary() {
                 setItinerary(data);
 
                 // Check if editable
-                if (data.status !== 'draft') {
-                    toast.warning("This itinerary cannot be edited. Only draft itineraries can be modified.");
+                const readOnlyStatuses = ['quoted', 'accepted', 'in_progress', 'completed', 'cancelled', 'rejected'];
+                if (readOnlyStatuses.includes(data.status)) {
+                    toast.warning(`This itinerary cannot be edited in its current state (${data.status}).`);
                     navigate("/my-itineraries");
                     return;
                 }
@@ -124,6 +127,22 @@ export default function EditMyItinerary() {
                 // Pre-populate form data - ONLY if formData is empty
                 // This prevents overwriting user selections when returning from hotel/excursion pages
                 if (!formData.firstName) {
+                    // Determine traveler type from existing data
+                    let travelerType = "";
+                    let numAdults = data.numberOfAdults || 0;
+                    let numChildUnder5 = data.numberOfChildrenUnder5 || 0;
+                    let numChild5Plus = data.numberOfChildren5Plus || 0;
+
+                    if (numAdults || numChildUnder5 || numChild5Plus) {
+                        travelerType = "Group";
+                    } else if (data.numberOfParticipants === 1) {
+                        travelerType = "Solo";
+                    } else if (data.numberOfParticipants === 2) {
+                        travelerType = "Couple";
+                    } else if (data.numberOfParticipants > 2) {
+                        travelerType = "Group";
+                        numAdults = data.numberOfParticipants;
+                    }
                     updateFormData({
                         firstName: data.lead?.user?.firstName || "",
                         lastName: data.lead?.user?.lastName || "",
@@ -131,11 +150,13 @@ export default function EditMyItinerary() {
                         contactNumber: data.lead?.user?.phone || "",
                         dateOfBirth: data.lead?.dateOfBirth?.split('T')[0] || "",
                         gender: data.lead?.gender || "",
-                        groupComposition: data.metadata?.groupComposition || "",
+                        travelerType: travelerType,
+                        numberOfAdults: numAdults,
+                        numberOfChildrenUnder5: numChildUnder5,
+                        numberOfChildren5Plus: numChild5Plus,
                         country: data.lead?.nationality || "",
                         arrivalDate: data.startDate?.split('T')[0] || "",
                         departureDate: data.endDate?.split('T')[0] || "",
-                        numberOfParticipants: data.numberOfParticipants || 1,
                         duration: data.metadata?.duration || "",
 
                         dietaryPreferences: data.lead?.dietaryRequirements || "",
@@ -312,17 +333,28 @@ export default function EditMyItinerary() {
 
         const days = convertToDays();
 
-        console.log('📝 FormData selectedCities:', formData.selectedCities);
-        console.log('📝 FormData selectedDestinations:', formData.selectedDestinations);
-        console.log('📝 Converted days:', days);
+        // Calculate total number of participants based on traveler type
+        let totalParticipants = 1;
+        if (formData.travelerType === "Solo") {
+            totalParticipants = 1;
+        } else if (formData.travelerType === "Couple") {
+            totalParticipants = 2;
+        } else if (formData.travelerType === "Group") {
+            totalParticipants = (formData.numberOfAdults || 0) + (formData.numberOfChildrenUnder5 || 0) + (formData.numberOfChildren5Plus || 0) || 1;
+        } else {
+            totalParticipants = formData.numberOfParticipants || 1;
+        }
 
         const updateData = {
             startDate: formData.arrivalDate,
             endDate: formData.departureDate,
-            numberOfParticipants: formData.numberOfParticipants || 1,
+            numberOfParticipants: totalParticipants,
+            numberOfAdults: formData.numberOfAdults,
+            numberOfChildrenUnder5: formData.numberOfChildrenUnder5,
+            numberOfChildren5Plus: formData.numberOfChildren5Plus,
             specialRequests: formData.specialRequirements,
             metadata: {
-                groupComposition: formData.groupComposition,
+                groupComposition: formData.groupComposition, // Keep for backward compatibility if needed
                 hotelCategory: formData.hotelCategory,
                 roomCategory: formData.roomCategory,
                 vehicleType: formData.vehicleType,
@@ -489,12 +521,6 @@ export default function EditMyItinerary() {
                                                 },
                                                 { label: "Email Address", type: "email", placeholder: "Enter email", fieldName: "email" },
                                                 {
-                                                    label: "Group Composition",
-                                                    type: "select",
-                                                    options: ["Select group type", "Solo", "Couple", "Family"],
-                                                    fieldName: "groupComposition",
-                                                },
-                                                {
                                                     label: "Contact Number",
                                                     type: "phone",
                                                     fieldName: "contactNumber",
@@ -551,26 +577,78 @@ export default function EditMyItinerary() {
                                             ))}
                                         </div>
 
-                                        {/* Number of Participants */}
-                                        {formData.groupComposition &&
-                                            formData.groupComposition !== "Select group type" &&
-                                            formData.groupComposition !== "Solo" && (
-                                                <div className="flex flex-col gap-2">
-                                                    <label className="text-[16px] sm:text-[18px] font-medium">
-                                                        Number of Participants
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        min="1"
-                                                        placeholder="Enter number of participants"
-                                                        value={formData.numberOfParticipants || ""}
-                                                        onChange={(e) =>
-                                                            updateFormData({ numberOfParticipants: parseInt(e.target.value) || 0 })
-                                                        }
-                                                        className="w-full max-w-[420px] h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
-                                                    />
+                                        <div className="flex flex-col sm:flex-row gap-6 mb-8 mt-2">
+                                            {/* Traveler Type */}
+                                            <div className="flex flex-col gap-2 flex-1">
+                                                <label className="text-[16px] sm:text-[18px] font-medium">Traveler Type</label>
+                                                <select
+                                                    value={formData.travelerType || ""}
+                                                    onChange={(e) => updateFormData({ travelerType: e.target.value })}
+                                                    disabled={!isEditable}
+                                                    className="w-full h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                                    <option value="">Select traveler type</option>
+                                                    <option value="Solo">Solo</option>
+                                                    <option value="Couple">Couple</option>
+                                                    <option value="Group">Group</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Total Participants Info */}
+                                            <div className="flex flex-col gap-2 flex-1">
+                                                <label className="text-[16px] sm:text-[18px] font-medium">Total Participants</label>
+                                                <div className="h-12 border border-[#E5D4EF] bg-gray-50 rounded-lg px-4 flex items-center text-[#5B247A] font-bold">
+                                                    {formData.travelerType === "Solo" ? 1 :
+                                                        formData.travelerType === "Couple" ? 2 :
+                                                            ((formData.numberOfAdults || 0) + (formData.numberOfChildrenUnder5 || 0) + (formData.numberOfChildren5Plus || 0)) || formData.numberOfParticipants || 1}
                                                 </div>
-                                            )}
+                                            </div>
+                                        </div>
+
+                                        {/* Group Composition Section - Only show for Groups */}
+                                        {formData.travelerType === "Group" && (
+                                            <div>
+                                                <p className="font-semibold mb-3 text-[16px] sm:text-[20px]">Group Composition</p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="text-[16px] sm:text-[18px] font-medium">Number of Adults</label>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="Enter number"
+                                                            value={formData.numberOfAdults || ""}
+                                                            onChange={(e) => updateFormData({ numberOfAdults: parseInt(e.target.value) || 0 })}
+                                                            disabled={!isEditable}
+                                                            className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="text-[16px] sm:text-[18px] font-medium">Children (Under 5)</label>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="Enter number"
+                                                            value={formData.numberOfChildrenUnder5 || ""}
+                                                            onChange={(e) => updateFormData({ numberOfChildrenUnder5: parseInt(e.target.value) || 0 })}
+                                                            disabled={!isEditable}
+                                                            className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="text-[16px] sm:text-[18px] font-medium">Children (5 and above)</label>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="Enter number"
+                                                            value={formData.numberOfChildren5Plus || ""}
+                                                            onChange={(e) => updateFormData({ numberOfChildren5Plus: parseInt(e.target.value) || 0 })}
+                                                            disabled={!isEditable}
+                                                            className="w-full h-12 placeholder-gray-500 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <p className="text-sm text-gray-500 mt-2"><em>Note: Children aged 5+ are considered adults in most Sri Lankan hotels</em></p>
+                                            </div>
+                                        )}
 
                                         {/* Duration */}
                                         <div>
