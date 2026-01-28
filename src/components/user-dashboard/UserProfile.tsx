@@ -104,12 +104,16 @@ const UserProfile = () => {
 
   const handleSave = async () => {
     setSaving(true);
+    console.log('📤 Sending profile update with data:', formData);
     try {
-      await userService.updateCurrentUser(formData);
+      const result = await userService.updateCurrentUser(formData);
+      console.log('✅ Profile update successful, received:', result);
       toast.success('Profile updated successfully!');
       setEditMode(false);
       await fetchUserData(); // Refresh data
     } catch (error: any) {
+      console.error('❌ Profile update failed:', error);
+      console.error('Error response:', error.response?.data);
       toast.error(error.response?.data?.message || 'Failed to update profile');
       console.error('Update error:', error);
     } finally {
