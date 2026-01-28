@@ -32,6 +32,20 @@ export interface Driver {
     joinDate?: string;
 }
 
+export interface Admin {
+    id: string;
+    permissions: string[];
+    isSuperAdmin: boolean;
+    department?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    nationality?: string;
+    passportNumber?: string;
+    dateOfBirth?: string;
+    gender?: string;
+}
+
 export interface User {
     id: string;
     firstName: string;
@@ -51,6 +65,8 @@ export interface User {
     age?: number;
     // Customer relation when role is 'customer'
     customer?: Customer;
+    // Admin relation when role is 'admin'
+    admin?: Admin;
     // Driver relation when role is 'driver'
     driver?: Driver;
 }

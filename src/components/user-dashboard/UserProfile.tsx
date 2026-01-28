@@ -73,18 +73,24 @@ const UserProfile = () => {
     setLoading(true);
     try {
       const data = await userService.getCurrentUser();
+      console.log('📥 Loaded user data:', data);
       setUserData(data);
+
+      // Check if user has customer or admin profile
+      const profileData = data.customer || data.admin;
+      console.log('👤 Profile type:', data.customer ? 'customer' : data.admin ? 'admin' : 'none');
+
       setFormData({
         firstName: data.firstName || '',
         lastName: data.lastName || '',
         phone: data.phone || '',
-        address: data.customer?.address || '',
-        city: data.customer?.city || '',
-        country: data.customer?.country || '',
-        nationality: data.customer?.nationality || '',
-        passportNumber: data.customer?.passportNumber || '',
-        dateOfBirth: data.customer?.dateOfBirth || '',
-        gender: data.customer?.gender || '',
+        address: profileData?.address || '',
+        city: profileData?.city || '',
+        country: profileData?.country || '',
+        nationality: profileData?.nationality || '',
+        passportNumber: profileData?.passportNumber || '',
+        dateOfBirth: profileData?.dateOfBirth || '',
+        gender: profileData?.gender || '',
       });
     } catch (error: any) {
       toast.error('Failed to load profile data');
