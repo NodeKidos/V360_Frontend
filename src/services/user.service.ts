@@ -23,6 +23,13 @@ export interface Driver {
     dateOfBirth: string;
     bloodGroup: string;
     nationalId: string;
+    // Personal Information
+    gender?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    nationality?: string;
+    passportNumber?: string;
     languages: string[];
     rating: number;
     totalTrips: number;

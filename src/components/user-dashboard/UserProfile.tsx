@@ -76,9 +76,9 @@ const UserProfile = () => {
       console.log('📥 Loaded user data:', data);
       setUserData(data);
 
-      // Check if user has customer or admin profile
-      const profileData = data.customer || data.admin;
-      console.log('👤 Profile type:', data.customer ? 'customer' : data.admin ? 'admin' : 'none');
+      // Check if user has customer, admin, or driver profile
+      const profileData = data.customer || data.admin || data.driver;
+      console.log('👤 Profile type:', data.customer ? 'customer' : data.admin ? 'admin' : data.driver ? 'driver' : 'none');
 
       setFormData({
         firstName: data.firstName || '',
