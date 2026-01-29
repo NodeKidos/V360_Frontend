@@ -63,6 +63,7 @@ export type Itinerary = {
   driver?: any;
   driverId?: string;
   assignedAt?: string;
+  slackChannelId?: string;
   metadata?: {
     groupComposition?: string;
     hotelCategory?: number;

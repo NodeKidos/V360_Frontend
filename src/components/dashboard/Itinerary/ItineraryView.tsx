@@ -9,8 +9,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
 import { FiEye, FiTrash2, FiEdit, FiChevronDown } from "react-icons/fi";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFilePdf, FaSlack } from "react-icons/fa";
 import { itineraryService } from "../../../services/itinerary.service";
+import slackService from "../../../services/slack.service";
 import pdfService from "../../../services/pdf.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
@@ -136,6 +137,20 @@ const ItineraryManagement = () => {
       toast.error(error.response?.data?.message || "Failed to delete itinerary");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Create Slack channel
+  const handleCreateSlackChannel = async (itineraryId: string) => {
+    try {
+      const response = await slackService.createChannel(itineraryId);
+      toast.success(response.message || "Slack channel created successfully!");
+      // Update the itinerary in the list
+      setItineraries(itineraries.map(it =>
+        it.id === itineraryId ? { ...it, slackChannelId: response.channelId } : it
+      ));
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to create Slack channel. Check bot configuration.");
     }
   };
 
@@ -449,8 +464,8 @@ const ItineraryManagement = () => {
                           <div
                             className="fixed bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] max-h-[300px] overflow-y-auto overflow-x-hidden z-[9999] flex flex-col"
                             style={{
-                              top: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom + 4}px`,
-                              left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left}px`,
+                              top: `${(document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().bottom || 0) + 4}px`,
+                              left: `${document.getElementById(`status-btn-${itinerary.id}`)?.getBoundingClientRect().left || 0}px`,
                               scrollbarWidth: 'thin'
                             }}
                           >
@@ -519,6 +534,17 @@ const ItineraryManagement = () => {
                               title="Delete Itinerary"
                             />
                           )}
+                          <FaSlack
+                            className={`${itinerary.slackChannelId ? 'text-blue-500 hover:text-blue-700' : 'text-gray-400 hover:text-gray-600'} cursor-pointer text-[18px] transition-colors`}
+                            onClick={() => {
+                              if (!itinerary.slackChannelId) {
+                                handleCreateSlackChannel(itinerary.id);
+                              } else {
+                                toast.info(`Slack Channel ID: ${itinerary.slackChannelId}`);
+                              }
+                            }}
+                            title={itinerary.slackChannelId ? "Slack Channel Linked" : "Create Slack Channel"}
+                          />
                         </div>
                       </td>
                     </tr>
