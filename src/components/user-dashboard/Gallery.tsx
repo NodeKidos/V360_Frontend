@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { CiSearch } from "react-icons/ci";
 import { IoArrowBackOutline, IoClose } from "react-icons/io5";
-import { FiUploadCloud } from "react-icons/fi";
+import { FiUploadCloud, FiTrash2 } from "react-icons/fi";
 import { useDropzone } from "react-dropzone";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import memoriesService from "../../services/memories.service";
+import type { Memory } from "../../services/memories.service";
+import { Loader } from "../ui/Loader";
 
 import Sidebar from "../AdminSidebar";
 import TopBar from "../Topbar";
@@ -15,28 +20,22 @@ type FileItem = {
   preview: string;
 };
 
-type FolderItem = {
-  id: string;
-  name: string;
-};
-
 const GalleryUpload = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [itineraryMemories, setItineraryMemories] = useState<Memory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
   const [files, setFiles] = useState<FileItem[]>([]);
-  const [folders, setFolders] = useState<FolderItem[]>([]);
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
-  const { place } = useParams();
+  const { place: itineraryId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const destinationName =
-    (location?.state as any)?.name || place || "Destination";
-  const destinationId = place || "";
+  const destinationName = (location?.state as any)?.name || "Trip Memory Book";
+  const destinationId = (location?.state as any)?.destinationId;
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -44,6 +43,24 @@ const GalleryUpload = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const fetchMemories = async () => {
+    if (!itineraryId) return;
+    setLoading(true);
+    try {
+      const data = await memoriesService.getByItinerary(itineraryId, destinationId);
+      setItineraryMemories(data);
+    } catch (error) {
+      console.error("Failed to fetch memories:", error);
+      toast.error("Failed to load memories");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMemories();
+  }, [itineraryId, destinationId]);
 
   /* ---------- FILE HANDLING ---------- */
   const addFiles = (acceptedFiles: File[]) => {
@@ -73,39 +90,25 @@ const GalleryUpload = () => {
   }, [files]);
 
   const filtered = useMemo(() => {
-    if (!searchQuery) return files;
-    return files.filter((f) =>
-      f.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [files, searchQuery]);
+    return files;
+  }, [files]);
 
-  const removeOne = (id: string) =>
-    setFiles((prev) => prev.filter((x) => x.id !== id));
+  const removeOne = async (id: string, isFromBackend: boolean = false) => {
+    if (isFromBackend) {
+      if (!window.confirm("Are you sure you want to delete this memory?")) return;
+      try {
+        await memoriesService.delete(id);
+        toast.success("Memory deleted");
+        fetchMemories();
+      } catch (error) {
+        toast.error("Failed to delete memory");
+      }
+    } else {
+      setFiles((prev) => prev.filter((x) => x.id !== id));
+    }
+  };
+
   const clearAll = () => setFiles([]);
-
-  /* ---------- FOLDER ---------- */
-  const handleAddFolder = () => {
-    const name = prompt("Folder name?");
-    if (!name) return;
-
-    const newFolder: FolderItem = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-    };
-
-    setFolders((prev) => [newFolder, ...prev]);
-    setActiveFolderId(newFolder.id);
-  };
-
-  const activeFolderName =
-    folders.find((f) => f.id === activeFolderId)?.name ||
-    "No folder selected";
-
-  const handleFolderPick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const picked = Array.from(e.target.files || []);
-    addFiles(picked);
-    e.target.value = "";
-  };
 
   /* ---------- UPLOAD ---------- */
   const handleUpload = async () => {
@@ -114,9 +117,34 @@ const GalleryUpload = () => {
       return;
     }
 
-    alert(
-      `Uploading ${files.length} image(s)\nDestination: ${destinationName} (${destinationId})\nFolder: ${activeFolderName}`
-    );
+    if (!itineraryId) return;
+
+    setIsUploading(true);
+    try {
+      // 1. Upload files to S3
+      const fileObjects = files.map(f => f.file);
+      const { urls } = await memoriesService.uploadItineraryImages(itineraryId, fileObjects);
+
+      // 2. Create memory records for each or group them
+      // For now, let's create one memory record with all images
+      await memoriesService.create({
+        title: `Memories from ${destinationName}`,
+        description: `Uploaded on ${new Date().toLocaleDateString()}`,
+        images: urls,
+        date: new Date(),
+        itineraryId,
+        destinationId,
+      });
+
+      toast.success("Memories uploaded successfully!");
+      setFiles([]);
+      fetchMemories();
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload memories");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -130,9 +158,8 @@ const GalleryUpload = () => {
       />
 
       <div
-        className={`flex-1 p-4 transition-all duration-300 ${
-          collapsed ? "ml-2" : "ml-6"
-        }`}
+        className={`flex-1 p-4 transition-all duration-300 ${collapsed ? "ml-2" : "ml-6"
+          }`}
       >
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
@@ -147,75 +174,57 @@ const GalleryUpload = () => {
             </button>
 
             <div>
-              <p className="text-sm text-gray-500">Memories</p>
-              <h2 className="text-xl font-semibold">Image Gallery</h2>
+              <p className="text-sm text-gray-500">Memories for</p>
+              <h2 className="text-xl font-semibold">{destinationName}</h2>
             </div>
           </div>
 
           <div className="flex gap-2">
-            <label className="px-4 py-2 rounded-lg border border-[#B749DB] text-[#B749DB] cursor-pointer">
-              Add Folder
-              <input
-                type="file"
-                // @ts-ignore
-                webkitdirectory="true"
-                multiple
-                hidden
-                onChange={handleFolderPick}
-              />
-            </label>
-
-            <button
-              onClick={handleAddFolder}
-              className="px-4 py-2 rounded-lg border border-[#B749DB] text-[#B749DB]"
-            >
-              Add File
-            </button>
-
             <button
               onClick={handleUpload}
-              className="px-4 py-2 rounded-lg bg-[#B749DB] text-white"
+              disabled={isUploading || files.length === 0}
+              className={`px-6 py-2 rounded-lg font-semibold transition shadow-sm ${isUploading || files.length === 0
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-[#B749DB] text-white hover:bg-[#a33cc4]"
+                }`}
             >
-              Upload
+              {isUploading ? "Uploading..." : "Save Memories"}
             </button>
           </div>
         </div>
 
-        {/* Destination */}
-        <div className="mb-4">
-          <p className="text-sm text-gray-500">Destination</p>
-          <h3 className="text-2xl font-bold">{destinationName}</h3>
-          <p className="text-sm text-gray-500">
-            Selected Folder:{" "}
-            <span className="font-semibold">{activeFolderName}</span>
-          </p>
+        {/* EXISTING MEMORIES */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800">Your Saved Memories</h3>
+          {loading ? (
+            <Loader size={100} />
+          ) : itineraryMemories.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {itineraryMemories.flatMap(m => m.images.map(imgUrl => (
+                <div key={imgUrl} className="group relative rounded-xl overflow-hidden shadow-sm border h-40">
+                  <img src={imgUrl} className="w-full h-full object-cover" alt="Memory" />
+                  <button
+                    onClick={() => removeOne(m.id, true)}
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-600/80 text-white p-1.5 rounded-full transition"
+                    title="Delete Memory"
+                  >
+                    <FiTrash2 className="text-sm" />
+                  </button>
+                </div>
+              )))}
+            </div>
+          ) : (
+            <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center text-gray-500">
+              No memories uploaded yet for this trip.
+            </div>
+          )}
         </div>
-
-        {/* Folder chips */}
-        {folders.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {folders.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setActiveFolderId(f.id)}
-                className={`px-3 py-1.5 rounded-full border text-sm ${
-                  activeFolderId === f.id
-                    ? "bg-[#B749DB] text-white"
-                    : "bg-white"
-                }`}
-              >
-                {f.name}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* DROPZONE */}
         <div
           {...getRootProps()}
-          className={`rounded-2xl border-2 border-dashed border-[#B749DB] p-6 ${
-            isDragActive ? "bg-[#B749DB]/5" : "bg-white"
-          }`}
+          className={`rounded-2xl border-2 border-dashed border-[#B749DB] p-6 mb-8 ${isDragActive ? "bg-[#B749DB]/5" : "bg-white"
+            }`}
         >
           <input {...getInputProps()} />
 
@@ -223,7 +232,7 @@ const GalleryUpload = () => {
           {filtered.length > 0 ? (
             <div className="mb-6">
               <p className="text-sm text-gray-600 mb-3">
-                Selected:{" "}
+                Selected for upload:{" "}
                 <span className="font-semibold">{filtered.length}</span>
               </p>
 
@@ -240,13 +249,13 @@ const GalleryUpload = () => {
                     />
 
                     <button
-                      onClick={() => removeOne(f.id)}
+                      onClick={(e) => { e.stopPropagation(); removeOne(f.id); }}
                       className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/60 text-white text-xs px-2 py-1 rounded"
                     >
-                     <IoClose className="text-sm" />
+                      <IoClose className="text-sm" />
                     </button>
 
-                    <div className="p-2">
+                    <div className="p-2 bg-white">
                       <p className="text-xs truncate">{f.name}</p>
                     </div>
                   </div>
@@ -254,9 +263,11 @@ const GalleryUpload = () => {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-500 text-center mt-6">
-              No images selected yet.
-            </p>
+            <div className="text-center py-6">
+              <p className="text-sm text-gray-500">
+                Drag and drop images here to add to your Memory Book
+              </p>
+            </div>
           )}
 
           {/* dashed boxes */}
@@ -269,11 +280,12 @@ const GalleryUpload = () => {
           {/* upload button */}
           <div className="flex flex-col items-center gap-3">
             <button
+              disabled={isUploading}
               onClick={open}
-              className="flex items-center gap-2 px-8 py-4 rounded-full bg-[#D7B5F3] font-semibold"
+              className="flex items-center gap-2 px-8 py-4 rounded-full bg-[#D7B5F3] font-semibold hover:bg-[#c9a1eb] transition"
             >
               <FiUploadCloud className="text-xl" />
-              Choose a file or drag and drop it here
+              {isUploading ? "Uploading..." : "Choose a file or drag and drop it here"}
             </button>
 
             {files.length > 0 && (
@@ -286,6 +298,7 @@ const GalleryUpload = () => {
             )}
           </div>
         </div>
+        <ToastContainer position="bottom-right" />
       </div>
     </div>
   );
