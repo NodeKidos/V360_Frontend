@@ -19,6 +19,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthStore } from "../../store/useAuthStore";
 import { UserRole } from "../../types/auth.types";
+import { MemorySelectionGrid } from "../dashboard/Itinerary/MemorySelectionGrid";
 
 const ItinerarySummary = () => {
   const { itineraryId: paramId } = useParams<{ itineraryId: string }>(); // Get itinerary ID from URL params
@@ -109,8 +110,13 @@ const ItinerarySummary = () => {
   const prevStep = () => {
     if (step > 1) {
       setStep(step - 1);
-      setShowDetails(false);
+      setShowDetails(step - 1 >= 2);
     }
+  };
+
+  const goToMemoryBook = () => {
+    setStep(3);
+    setShowDetails(true);
   };
 
   const toggleDestination = (destination: string) => {
@@ -223,6 +229,28 @@ const ItinerarySummary = () => {
                   Itinerary Summary - {itinerary.itineraryNumber}
                 </h1>
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setStep(1)}
+                    className={`px-4 py-2 rounded-xl font-medium transition-all ${step === 1 ? 'bg-purple-600 text-white shadow-md' : 'text-purple-600 hover:bg-purple-50'}`}
+                  >
+                    Details
+                  </button>
+                  <button
+                    onClick={() => { setStep(2); setShowDetails(true); }}
+                    className={`px-4 py-2 rounded-xl font-medium transition-all ${step === 2 ? 'bg-purple-600 text-white shadow-md' : 'text-purple-600 hover:bg-purple-50'}`}
+                  >
+                    Planner
+                  </button>
+                  {(user?.role === UserRole.ADMIN || user?.role === UserRole.STAFF) && (
+                    <button
+                      onClick={goToMemoryBook}
+                      className={`px-4 py-2 rounded-xl font-medium transition-all ${step === 3 ? 'bg-purple-600 text-white shadow-md' : 'text-purple-600 hover:bg-purple-50'}`}
+                    >
+                      Memory Book
+                    </button>
+                  )}
+                  {/* Action Buttons */}
+                  <div className="h-8 w-px bg-gray-200 mx-2" />
                   <button
                     onClick={() => navigate(`/itinerary/${itineraryId}/edit`)}
                     className="text-[#B749DB] hover:text-[#9f37c9] font-poppins flex items-center gap-2"
@@ -570,6 +598,19 @@ const ItinerarySummary = () => {
                     </div>
                   )}
                 </>
+              )}
+
+              {/* Step 3 – Memory Book (Admin/Staff Only) */}
+              {step === 3 && (user?.role === UserRole.ADMIN || user?.role === UserRole.STAFF) && (
+                <div className="mt-6 lg:ml-5 lg:mr-5">
+                  <h2 className="text-2xl font-bold text-[#5B247A] mb-6 flex items-center gap-3">
+                    📸 Memory Book Curation
+                  </h2>
+                  <MemorySelectionGrid
+                    itineraryId={itinerary.id}
+                    itineraryNumber={itinerary.itineraryNumber}
+                  />
+                </div>
               )}
 
               {/* Step 2 – Destinations */}

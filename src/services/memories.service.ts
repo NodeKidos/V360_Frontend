@@ -13,6 +13,25 @@ export interface Memory {
     };
     itineraryId?: string;
     destinationId?: string;
+    selectedImages?: string[];
+}
+
+export interface ItineraryMemoryBook {
+    id: string;
+    itineraryId: string;
+    pdfUrl: string;
+    slideshowConfig: {
+        sequence: {
+            url: string;
+            caption?: string;
+            duration?: number;
+            transition?: string;
+        }[];
+        musicUrl?: string;
+        theme?: string;
+    };
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface CreateMemoryDto {
@@ -72,6 +91,21 @@ const memoriesService = {
 
     async delete(id: string): Promise<{ message: string }> {
         const response = await api.delete(`/memories/${id}`);
+        return response.data;
+    },
+
+    async updateSelection(id: string, selectedUrls: string[]): Promise<Memory> {
+        const response = await api.patch(`/memories/${id}/selection`, { selectedUrls });
+        return response.data;
+    },
+
+    async generateBook(itineraryId: string): Promise<ItineraryMemoryBook> {
+        const response = await api.post(`/memories/itinerary/${itineraryId}/generate-book`);
+        return response.data;
+    },
+
+    async getMemoryBook(itineraryId: string): Promise<ItineraryMemoryBook> {
+        const response = await api.get(`/memories/itinerary/${itineraryId}/book`);
         return response.data;
     },
 };
