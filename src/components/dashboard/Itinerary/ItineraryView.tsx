@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
-import { FiEye, FiTrash2, FiEdit, FiChevronDown } from "react-icons/fi";
+import { FiEye, FiTrash2, FiEdit, FiChevronDown, FiFileText } from "react-icons/fi";
 import { FaFilePdf, FaSlack } from "react-icons/fa";
 import { itineraryService } from "../../../services/itinerary.service";
 import slackService from "../../../services/slack.service";
@@ -217,17 +217,6 @@ const ItineraryManagement = () => {
       default:
         return "text-gray-600";
     }
-  };
-
-  // Get status badge
-  const getStatusBadge = (status: ItineraryStatus) => {
-    const color = getStatusColor(status);
-    const bgColor = color.replace("text-", "bg-").replace("-600", "-100").replace("-400", "-100");
-    return (
-      <span className={`${bgColor} ${color} px-3 py-1 rounded-full text-xs font-medium`}>
-        {status.replace(/_/g, " ").toUpperCase()}
-      </span>
-    );
   };
 
   return (
@@ -515,7 +504,7 @@ const ItineraryManagement = () => {
                             className="text-orange-500 cursor-pointer text-[18px] hover:text-orange-700 transition-colors bg-transparent border-none p-0 flex items-center"
                             title="View PDF"
                           >
-                            <FiEye />
+                            <FiFileText />
                           </button>
                           <FiEye
                             className="text-[#B749DB] cursor-pointer text-[18px] hover:text-purple-700 transition-colors"
