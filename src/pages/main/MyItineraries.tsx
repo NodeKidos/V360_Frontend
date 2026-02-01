@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useItineraryStore } from "../../store/useItineraryStore";
 import { useAuthStore } from "../../store/useAuthStore";
-import { ItineraryStatus } from "../../types/itinerary.types";
+import { ItineraryStatus, NegotiationType } from "../../types/itinerary.types";
 import Sidebar from "../../components/AdminSidebar";
 import TopBar from "../../components/Topbar";
-import { FaPlus, FaEye, FaEdit, FaTrash, FaPaperPlane, FaCheck, FaTimes } from "react-icons/fa";
+import { FaPlus, FaEye, FaEdit, FaTrash, FaPaperPlane, FaCheck, FaTimes, FaHandshake } from "react-icons/fa";
 import { itineraryService } from "../../services/itinerary.service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -53,6 +53,9 @@ export default function MyItineraries() {
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [dialogItineraryId, setDialogItineraryId] = useState<string | null>(null);
+  const [negotiateModalOpen, setNegotiateModalOpen] = useState(false);
+  const [negotiationNote, setNegotiationNote] = useState("");
+  const [negotiationPrice, setNegotiationPrice] = useState("");
 
   useEffect(() => {
     const handleResize = () => {
@@ -153,6 +156,39 @@ export default function MyItineraries() {
     }
   };
 
+  const handleNegotiateClick = (id: string) => {
+    setSelectedItineraryId(id);
+    setNegotiateModalOpen(true);
+    setNegotiationNote("");
+    setNegotiationPrice("");
+  };
+
+  const confirmNegotiation = async () => {
+    if (!selectedItineraryId) return;
+    if (!negotiationNote.trim()) {
+      toast.error("Please provide a note for your negotiation.");
+      return;
+    }
+
+    setActionLoading(selectedItineraryId);
+    try {
+      await itineraryService.addNegotiation(
+        selectedItineraryId,
+        NegotiationType.PRICE_REDUCTION,
+        negotiationNote,
+        negotiationPrice ? parseFloat(negotiationPrice) : undefined
+      );
+      toast.success("Negotiation request sent successfully!");
+      setNegotiateModalOpen(false);
+      await getMyItineraries();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to send negotiation request");
+    } finally {
+      setActionLoading(null);
+      setSelectedItineraryId(null);
+    }
+  };
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
       month: "short",
@@ -248,6 +284,18 @@ export default function MyItineraries() {
 
                   {/* Card Body */}
                   <div className="p-4 space-y-3">
+                    {/* Price Display for Quoted/Negotiating/Accepted */}
+                    {(itinerary.status === ItineraryStatus.QUOTED ||
+                      itinerary.status === ItineraryStatus.NEGOTIATING ||
+                      itinerary.status === ItineraryStatus.ACCEPTED) && itinerary.quote && (
+                        <div className="bg-purple-50 p-3 rounded-lg border border-purple-100 flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-gray-700">Quoted Price:</span>
+                          <span className="text-lg font-bold text-purple-700">
+                            {itinerary.quote.currency || '$'} {itinerary.quote.finalPrice?.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Start Date:</span>
                       <span className="font-medium">{formatDate(itinerary.startDate)}</span>
@@ -270,6 +318,17 @@ export default function MyItineraries() {
                         <p className="text-xs text-gray-600 mb-1">Special Requests:</p>
                         <p className="text-sm text-gray-800 line-clamp-2">{itinerary.specialRequests}</p>
                       </div>
+                    )}
+
+                    {itinerary.status === ItineraryStatus.QUOTED && (
+                      <button
+                        onClick={() => handleNegotiateClick(itinerary.id)}
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={actionLoading === itinerary.id}
+                        title="Negotiate Price"
+                      >
+                        <FaHandshake size={14} /> Negotiate
+                      </button>
                     )}
                   </div>
 
@@ -408,6 +467,80 @@ export default function MyItineraries() {
                       </>
                     ) : (
                       "Reject Quote"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Negotiation Modal */}
+        {negotiateModalOpen && (
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full animate-in zoom-in duration-200">
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4 text-orange-600">
+                  <FaHandshake size={24} />
+                  <h2 className="text-2xl font-bold text-gray-900">Negotiate Quote</h2>
+                </div>
+
+                <p className="text-gray-600 mb-4 text-sm">
+                  Propose a new price or request changes to the itinerary. Our team will review your request.
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Expected Price (Optional)</label>
+                    <input
+                      type="number"
+                      value={negotiationPrice}
+                      onChange={(e) => setNegotiationPrice(e.target.value)}
+                      placeholder="Enter amount"
+                      className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Your Note <span className="text-red-500">*</span></label>
+                    <textarea
+                      value={negotiationNote}
+                      onChange={(e) => setNegotiationNote(e.target.value)}
+                      placeholder="I would like to negotiate because..."
+                      className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      rows={4}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => {
+                      setNegotiateModalOpen(false);
+                      setSelectedItineraryId(null);
+                      setNegotiationNote("");
+                      setNegotiationPrice("");
+                    }}
+                    disabled={actionLoading !== null}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmNegotiation}
+                    disabled={actionLoading !== null || !negotiationNote.trim()}
+                    className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {actionLoading ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Request"
                     )}
                   </button>
                 </div>

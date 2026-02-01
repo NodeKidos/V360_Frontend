@@ -71,8 +71,9 @@ export const itineraryService = {
   },
 
   // Add negotiation message
-  addNegotiation: async (id: string, message: string, proposedPrice?: number): Promise<any> => {
+  addNegotiation: async (id: string, type: string, message: string, proposedPrice?: number): Promise<any> => {
     const response = await api.post(`/itineraries/${id}/negotiations`, {
+      type,
       message,
       proposedPrice,
     });

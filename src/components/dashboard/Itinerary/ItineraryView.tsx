@@ -16,6 +16,7 @@ import pdfService from "../../../services/pdf.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
 import { Loader } from "../../ui/Loader";
+import { FiInfo } from "react-icons/fi"; // Import FiInfo
 
 const ItineraryManagement = () => {
   const navigate = useNavigate();
@@ -446,6 +447,37 @@ const ItineraryManagement = () => {
                               🚗 {(itinerary as any).driver.name.split(' ')[0]}
                             </span>
                           )}
+
+
+                          {/* Negotiation Info Icon */}
+                          {itinerary.status === ItineraryStatus.NEGOTIATING && itinerary.negotiations && itinerary.negotiations.length > 0 && (
+                            (() => {
+                              // Find the latest negotiation from the user (lead)
+                              const latestUserNegotiation = [...itinerary.negotiations]
+                                .filter(n => !n.isFromAdmin)
+                                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+
+                              if (latestUserNegotiation) {
+                                return (
+                                  <div className="group relative">
+                                    <FiInfo className="text-orange-500 cursor-help" size={16} />
+                                    {/* Tooltip */}
+                                    <div className="absolute right-0 bottom-full mb-2 w-64 p-3 bg-white border border-gray-200 rounded-lg shadow-xl text-xs z-[1000] invisible group-hover:visible">
+                                      <div className="font-bold text-gray-800 mb-1">User Negotiation Request</div>
+                                      {latestUserNegotiation.proposedPrice && (
+                                        <div className="font-semibold text-green-600 mb-1">
+                                          Expected: {itinerary.quote?.currency || '$'} {latestUserNegotiation.proposedPrice.toLocaleString()}
+                                        </div>
+                                      )}
+                                      <div className="text-gray-600 italic">"{latestUserNegotiation.message}"</div>
+                                      <div className="text-gray-400 mt-1 pb-1 border-b border-gray-100">{formatDate(latestUserNegotiation.createdAt)}</div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()
+                          )}
                         </div>
 
                         {/* Status Dropdown - Using fixed positioning to escape table overflow */}
@@ -571,7 +603,7 @@ const ItineraryManagement = () => {
         cancelText="Cancel"
         isDeleting={isDeleting}
       />
-    </div>
+    </div >
   );
 };
 

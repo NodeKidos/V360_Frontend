@@ -17,6 +17,14 @@ export enum ItineraryStatus {
   CONVERTED = 'converted',
 }
 
+export enum NegotiationType {
+  PRICE_REDUCTION = 'price_reduction',
+  ITINERARY_CHANGE = 'itinerary_change',
+  TERMS_CHANGE = 'terms_change',
+  GENERAL = 'general',
+  ADMIN_RESPONSE = 'admin_response',
+}
+
 export type ItineraryDay = {
   id?: string;
   dayNumber: number;
