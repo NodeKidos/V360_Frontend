@@ -6,7 +6,7 @@ import { TiThLargeOutline } from 'react-icons/ti';
 import { FaUser, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList, FaMapMarkedAlt } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
-import { IoPricetagOutline } from 'react-icons/io5';
+import { IoGameController, IoPricetagOutline } from 'react-icons/io5';
 import logo from '../assets/favicon.png'; // Your logo
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { IoMdClose, IoMdSettings } from 'react-icons/io';
@@ -24,7 +24,7 @@ const sidebarMenuConfig = {
     { label: 'Driver', icon: <FaTruck />, link: '/driver' },
     { label: 'Staff', icon: <FaUsers />, link: '/staff' },
     { label: 'Activity Log', icon: <FaClipboardList />, link: '/activity-log' },
-    // { label: 'Trip', icon: <BiTrip />, link: '/trip' }, // Hidden
+    { label: 'Game', icon: <IoGameController />, link: '/admin/game' }, 
     { label: 'Reward', icon: <FaGift />, link: '/reward' },
     { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
   ],
@@ -50,6 +50,7 @@ const sidebarMenuConfig = {
     { label: 'My Plans', icon: <BiTrip />, link: '/user-plans' },
     { label: 'Rewards', icon: <FaGift />, link: '/reward' },
     { label: 'Memories', icon: <FaGift />, link: '/memories' },
+    { label: 'Game', icon: <IoGameController />, link: '/play' },
     { label: 'Profile', icon: <FaUser />, link: '/user-profile' }
   ]
 };
