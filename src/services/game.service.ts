@@ -83,7 +83,7 @@ const gameService = {
     },
 
     joinSession: async (pin: string, nickname: string) => {
-        const response = await axios.post('/v360/games/session/join', { pin, nickname });
+        const response = await axios.post('/games/session/join', { pin, nickname });
         return response.data;
     },
 
@@ -93,7 +93,7 @@ const gameService = {
     },
 
     getSessionState: async (pin: string) => {
-        const response = await axios.get(`/v360/games/session/${pin}`);
+        const response = await axios.get(`/games/session/${pin}`);
         return response.data;
     },
 };
