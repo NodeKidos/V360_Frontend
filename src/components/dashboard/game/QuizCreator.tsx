@@ -133,7 +133,7 @@ const QuizCreator = () => {
                 await gameService.createQuiz(quiz);
                 toast.success("Quiz created successfully");
             }
-            navigate("/admin/game");
+            navigate("/v360/game");
         } catch (error) {
             toast.error("Failed to save quiz");
         }
@@ -156,7 +156,7 @@ const QuizCreator = () => {
                     <div className="mt-6 flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">
                             <button
-                                onClick={() => navigate("/admin/game")}
+                                onClick={() => navigate("/v360/game")}
                                 className="p-2 bg-white rounded-xl shadow-sm hover:bg-slate-50 transition-colors"
                             >
                                 <IoMdArrowBack size={24} />

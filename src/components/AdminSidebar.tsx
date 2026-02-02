@@ -24,7 +24,7 @@ const sidebarMenuConfig = {
     { label: 'Driver', icon: <FaTruck />, link: '/driver' },
     { label: 'Staff', icon: <FaUsers />, link: '/staff' },
     { label: 'Activity Log', icon: <FaClipboardList />, link: '/activity-log' },
-    { label: 'Game', icon: <IoGameController />, link: '/admin/game' }, 
+    { label: 'Game', icon: <IoGameController />, link: '/v360/game' },
     { label: 'Reward', icon: <FaGift />, link: '/reward' },
     { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
   ],

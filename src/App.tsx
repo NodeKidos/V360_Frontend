@@ -359,33 +359,33 @@ export default function App() {
 
         {/* Game Management */}
         <Route
-          path="/admin/game"
+          path="/v360/game"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.DRIVER]}>
               <GameManagement />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/admin/game/create"
+          path="/v360/game/create"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <QuizCreator />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/admin/game/edit/:id"
+          path="/v360/game/edit/:id"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <QuizCreator />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/admin/game/host/:pin"
+          path="/v360/game/host/:pin"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.DRIVER]}>
               <GameHost />
             </ProtectedRoute>
           }

@@ -244,7 +244,7 @@ const GameHost = () => {
                         <p className="text-4xl font-bold opacity-60">with {players[0]?.score || 0} points</p>
                     </div>
                     <button
-                        onClick={() => navigate('/admin/game')}
+                        onClick={() => navigate('/v360/game')}
                         className="mt-12 bg-white text-[#46178F] px-12 py-4 rounded-2xl font-black text-2xl"
                     >
                         BACK TO DASHBOARD

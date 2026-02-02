@@ -42,7 +42,7 @@ const gameService = {
     },
 
     getAllQuizzesAdmin: async () => {
-        const response = await axios.get('/admin/games/quiz');
+        const response = await axios.get('/v360/games/quiz');
         return response.data;
     },
 
@@ -52,48 +52,48 @@ const gameService = {
     },
 
     createQuiz: async (data: Partial<Quiz>) => {
-        const response = await axios.post('/admin/games/quiz', data);
+        const response = await axios.post('/v360/games/quiz', data);
         return response.data;
     },
 
     updateQuiz: async (id: string, data: Partial<Quiz>) => {
-        const response = await axios.put(`/admin/games/quiz/${id}`, data);
+        const response = await axios.put(`/v360/games/quiz/${id}`, data);
         return response.data;
     },
 
     deleteQuiz: async (id: string) => {
-        const response = await axios.delete(`/admin/games/quiz/${id}`);
+        const response = await axios.delete(`/v360/games/quiz/${id}`);
         return response.data;
     },
 
     // --- Session Management ---
     createSession: async (quizId: string) => {
-        const response = await axios.post('/admin/games/session', { quizId });
+        const response = await axios.post('/v360/games/session', { quizId });
         return response.data;
     },
 
     startSession: async (sessionId: string) => {
-        const response = await axios.post(`/admin/games/session/${sessionId}/start`);
+        const response = await axios.post(`/v360/games/session/${sessionId}/start`);
         return response.data;
     },
 
     nextQuestion: async (sessionId: string) => {
-        const response = await axios.post(`/admin/games/session/${sessionId}/next`);
+        const response = await axios.post(`/v360/games/session/${sessionId}/next`);
         return response.data;
     },
 
     joinSession: async (pin: string, nickname: string) => {
-        const response = await axios.post('/games/session/join', { pin, nickname });
+        const response = await axios.post('/v360/games/session/join', { pin, nickname });
         return response.data;
     },
 
     findSessionByPin: async (pin: string) => {
-        const response = await axios.get(`/admin/games/session/${pin}`);
+        const response = await axios.get(`/v360/games/session/${pin}`);
         return response.data;
     },
 
     getSessionState: async (pin: string) => {
-        const response = await axios.get(`/games/session/${pin}`);
+        const response = await axios.get(`/v360/games/session/${pin}`);
         return response.data;
     },
 };

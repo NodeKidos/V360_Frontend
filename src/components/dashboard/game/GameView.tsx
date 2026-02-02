@@ -33,13 +33,13 @@ const GameManagement = () => {
     };
 
     const handleCreateQuiz = () => {
-        navigate("/admin/game/create");
+        navigate("/v360/game/create");
     };
 
     const handleHostGame = async (quizId: string) => {
         try {
             const session = await gameService.createSession(quizId);
-            navigate(`/admin/game/host/${session.pin}`);
+            navigate(`/v360/game/host/${session.pin}`);
         } catch (error) {
             toast.error("Failed to start game session");
         }
@@ -126,7 +126,7 @@ const GameManagement = () => {
                                             Host Live
                                         </button>
                                         <button
-                                            onClick={() => navigate(`/admin/game/edit/${quiz.id}`)}
+                                            onClick={() => navigate(`/v360/game/edit/${quiz.id}`)}
                                             className="px-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors"
                                         >
                                             Edit
