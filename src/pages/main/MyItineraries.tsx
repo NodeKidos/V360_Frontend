@@ -424,7 +424,7 @@ export default function MyItineraries() {
 
         {/* Reject Quote Modal */}
         {rejectModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-gray-500/30 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Reject Quote</h2>
@@ -477,7 +477,7 @@ export default function MyItineraries() {
 
         {/* Negotiation Modal */}
         {negotiateModalOpen && (
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-gray-500/30 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-md w-full animate-in zoom-in duration-200">
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-4 text-orange-600">
