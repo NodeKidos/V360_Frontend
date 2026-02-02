@@ -54,7 +54,7 @@ const JoinGame = () => {
                 className="w-full max-w-md bg-white rounded-[32px] p-8 shadow-2xl relative z-10"
             >
                 <div className="text-center mb-8">
-                    <img src="https://itineraries.lankavibes.lk/logo.png" className="h-12 mx-auto mb-4" alt="LankaVibes" />
+                    <img src="https://itineraries.lankavibes.lk/logo.png" className="h-12 mx-auto mb-4" alt="VibesLanka" />
                     <h1 className="text-3xl font-black text-slate-800">Adventure Quiz</h1>
                     <p className="text-slate-500 font-medium">Enter your code for rewards!</p>
                 </div>
@@ -95,7 +95,7 @@ const JoinGame = () => {
                 </div>
 
                 <div className="mt-8 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">
-                    Powered by LankaVibes
+                    Powered by VibesLanka
                 </div>
             </motion.div>
 

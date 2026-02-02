@@ -245,7 +245,7 @@ const PlayerScreen = () => {
             </div>
 
             <div className="mt-4 flex justify-between items-center opacity-40 px-4 py-2 border-t border-slate-200">
-                <span className="font-black text-xs">LANKAVIBES</span>
+                <span className="font-black text-xs">VIBESLANKA</span>
                 <span className="font-bold text-xs">PIN: {pin}</span>
             </div>
 

@@ -154,7 +154,7 @@ const GameHost = () => {
                         animate={{ y: 0, opacity: 1 }}
                         className="bg-white text-[#46178F] px-12 py-6 rounded-[32px] shadow-2xl mb-12 text-center"
                     >
-                        <p className="font-bold text-xl uppercase tracking-widest opacity-60 mb-2">Join at lankavibes.lk/play</p>
+                        <p className="font-bold text-xl uppercase tracking-widest opacity-60 mb-2">Join at vibeslanka.lk/play</p>
                         <h1 className="text-8xl font-black">{pin}</h1>
                     </motion.div>
 
@@ -196,7 +196,7 @@ const GameHost = () => {
 
                     <div className="mt-20 flex items-center gap-8 opacity-50 grayscale brightness-200">
                         {/* Tourism Icons */}
-                        <img src="https://itineraries.lankavibes.lk/logo.png" className="h-12" alt="LankaVibes" />
+                        <img src="https://itineraries.lankavibes.lk/logo.png" className="h-12" alt="VibesLanka" />
                     </div>
                 </div>
             )}
