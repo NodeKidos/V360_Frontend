@@ -415,15 +415,17 @@ const ItinerarySummary = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 text-[16px]">
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700">Name:</span>{" "}
-                          <span className="text-gray-900">{(itinerary as any).driver.name}</span>
+                          <span className="text-gray-900">
+                            {(itinerary as any).driver.user?.firstName} {(itinerary as any).driver.user?.lastName}
+                          </span>
                         </div>
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700">Contact:</span>{" "}
-                          <span className="text-gray-900">{(itinerary as any).driver.contact || (itinerary as any).driver.phone}</span>
+                          <span className="text-gray-900">{(itinerary as any).driver.user?.phone || 'N/A'}</span>
                         </div>
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700">Email:</span>{" "}
-                          <span className="text-gray-900">{(itinerary as any).driver.email}</span>
+                          <span className="text-gray-900">{(itinerary as any).driver.user?.email || 'N/A'}</span>
                         </div>
                         {(itinerary as any).driver.languages && (
                           <div className="mb-2">
