@@ -25,7 +25,6 @@ const EditItinerary = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     title: string;
@@ -616,36 +615,49 @@ const EditItinerary = () => {
   const handleCreateQuote = async () => {
     setSaving(true);
     try {
+      // Recalculate totals JIT to avoid race conditions with state updates
+      const totalCost =
+        (quoteData.accommodationCost || 0) +
+        (quoteData.excursionsCost || 0) +
+        (quoteData.transportCost || 0) +
+        (quoteData.guideCost || 0) +
+        (quoteData.otherCosts || 0) +
+        (quoteData.taxes || 0) +
+        (quoteData.serviceCharge || 0);
+
+      const finalPrice = totalCost - (quoteData.discount || 0);
+
       const quoteDto = {
-        totalCost: quoteData.totalCost,
+        totalCost,
         breakdown: {
-          accommodationCost: quoteData.accommodationCost,
-          excursionsCost: quoteData.excursionsCost,
-          transportCost: quoteData.transportCost,
-          guideCost: quoteData.guideCost,
-          otherCosts: quoteData.otherCosts,
-          taxes: quoteData.taxes,
-          serviceCharge: quoteData.serviceCharge,
+          accommodationCost: quoteData.accommodationCost || 0,
+          excursionsCost: quoteData.excursionsCost || 0,
+          transportCost: quoteData.transportCost || 0,
+          guideCost: quoteData.guideCost || 0,
+          otherCosts: quoteData.otherCosts || 0,
+          taxes: quoteData.taxes || 0,
+          serviceCharge: quoteData.serviceCharge || 0,
         },
-        discount: quoteData.discount || undefined,
-        discountReason: quoteData.discountReason || undefined,
-        finalPrice: quoteData.finalPrice,
-        termsAndConditions: quoteData.termsAndConditions || undefined,
-        internalNotes: quoteData.internalNotes || undefined,
+        discount: quoteData.discount ?? 0,
+        discountReason: quoteData.discountReason || "",
+        finalPrice,
+        termsAndConditions: quoteData.termsAndConditions || "",
+        internalNotes: quoteData.internalNotes || "",
         validUntil: quoteData.validUntil || undefined,
       };
 
       console.log('📤 Sending quote data:', quoteDto);
       const savedQuote = await itineraryService.createQuote(itineraryId!, quoteDto);
       console.log('✅ Quote saved, response:', savedQuote);
-      toast.success(itinerary?.quote ? "Quote updated successfully!" : "Quote created successfully!");
 
       // Refresh itinerary data
       const refreshedData = await itineraryService.getById(itineraryId!);
       console.log('🔄 Refreshed itinerary data:', refreshedData);
-      console.log('🔄 Refreshed quote data:', refreshedData.quote);
+
       setItinerary(refreshedData);
       setFormData(prev => ({ ...prev, status: refreshedData.status }));
+
+      toast.success("Quotation updated successfully!");
 
       // Update quote data state with refreshed values
       if (refreshedData.quote) {
@@ -833,7 +845,7 @@ const EditItinerary = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto md:px-2 md:py-4">
         <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
         <div className="p-4 md:p-6 lg:p-8">
@@ -1128,9 +1140,9 @@ const EditItinerary = () => {
                                 <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName} ` : 'Unknown'}</p>
                                 <p className="text-sm text-gray-600">{itinerary.driver.user?.email}</p>
                                 <p className="text-sm text-gray-600">{itinerary.driver.user?.contact || itinerary.driver.user?.phone}</p>
-                                {itinerary.assignedAt && (
+                                {itinerary?.assignedAt && (
                                   <p className="text-xs text-gray-500 mt-1">
-                                    Assigned: {new Date(itinerary.assignedAt).toLocaleDateString()}
+                                    Assigned: {new Date(itinerary.assignedAt as string).toLocaleDateString()}
                                   </p>
                                 )}
                               </div>
