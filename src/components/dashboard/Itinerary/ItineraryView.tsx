@@ -105,7 +105,7 @@ const ItineraryManagement = () => {
   const handleStatusChange = async (itineraryId: string, newStatus: ItineraryStatus) => {
     try {
       await itineraryService.updateStatus(itineraryId, newStatus);
-      toast.success("Status updated successfully!");
+      toast.success(`Itinerary status updated to ${newStatus.replace(/_/g, " ").toUpperCase()} successfully!`);
       // Update the itinerary in the list
       setItineraries(itineraries.map(it =>
         it.id === itineraryId ? { ...it, status: newStatus } : it

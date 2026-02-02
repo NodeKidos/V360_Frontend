@@ -638,7 +638,7 @@ const EditItinerary = () => {
       console.log('📤 Sending quote data:', quoteDto);
       const savedQuote = await itineraryService.createQuote(itineraryId!, quoteDto);
       console.log('✅ Quote saved, response:', savedQuote);
-      toast.success("Quote created successfully!");
+      toast.success(itinerary?.quote ? "Quote updated successfully!" : "Quote created successfully!");
 
       // Refresh itinerary data
       const refreshedData = await itineraryService.getById(itineraryId!);
@@ -858,7 +858,7 @@ const EditItinerary = () => {
                                 formData.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                                   formData.status === 'cancelled' ? 'bg-rose-100 text-rose-700' :
                                     'bg-gray-100 text-gray-700'
-                  }`}>
+                  } `}>
                   {formData.status?.toUpperCase().replace(/_/g, ' ')}
                 </span>
 
@@ -898,7 +898,7 @@ const EditItinerary = () => {
                   className={`px-4 py-2 font-medium transition-colors ${activeTab === "details"
                     ? "text-[#B749DB] border-b-2 border-[#B749DB]"
                     : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    } `}
                 >
                   Trip Details
                 </button>
@@ -907,7 +907,7 @@ const EditItinerary = () => {
                   className={`px-4 py-2 font-medium transition-colors ${activeTab === "destinations"
                     ? "text-[#B749DB] border-b-2 border-[#B749DB]"
                     : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    } `}
                 >
                   Destinations & Days
                 </button>
@@ -916,7 +916,7 @@ const EditItinerary = () => {
                   className={`px-4 py-2 font-medium transition-colors ${activeTab === "dayPlanner"
                     ? "text-[#B749DB] border-b-2 border-[#B749DB]"
                     : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    } `}
                 >
                   Day Planner
                 </button>
@@ -925,7 +925,7 @@ const EditItinerary = () => {
                   className={`px-4 py-2 font-medium transition-colors ${activeTab === "quote"
                     ? "text-[#B749DB] border-b-2 border-[#B749DB]"
                     : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    } `}
                 >
                   Quote & Pricing
                 </button>
@@ -934,7 +934,7 @@ const EditItinerary = () => {
                   className={`px-4 py-2 font-medium transition-colors ${activeTab === "management"
                     ? "text-[#B749DB] border-b-2 border-[#B749DB]"
                     : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    } `}
                 >
                   Trip Management
                 </button>
@@ -1125,7 +1125,7 @@ const EditItinerary = () => {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-gray-600 mb-1">Assigned Driver</p>
-                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName}` : 'Unknown'}</p>
+                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName} ` : 'Unknown'}</p>
                                 <p className="text-sm text-gray-600">{itinerary.driver.user?.email}</p>
                                 <p className="text-sm text-gray-600">{itinerary.driver.user?.contact || itinerary.driver.user?.phone}</p>
                                 {itinerary.assignedAt && (
@@ -1357,7 +1357,7 @@ const EditItinerary = () => {
                                 className={`cursor-pointer text-3xl transition ${i <= formData.hotelCategory
                                   ? "text-yellow-400"
                                   : "text-gray-300"
-                                  }`}
+                                  } `}
                               >
                                 ★
                               </span>
@@ -2195,7 +2195,7 @@ const EditItinerary = () => {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-gray-600 mb-1">Assigned Driver</p>
-                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName}` : 'Unknown'}</p>
+                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName} ` : 'Unknown'}</p>
                                 <p className="text-sm text-gray-600">{itinerary.driver.user?.email}</p>
                                 <p className="text-sm text-gray-600">{itinerary.driver.user?.contact || itinerary.driver.user?.phone}</p>
                                 {itinerary.assignedAt && (
