@@ -7,6 +7,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import gameService from '../../../services/game.service';
 import type { Quiz } from '../../../services/game.service';
 import { FaGamepad, FaTrophy, FaQuestionCircle } from 'react-icons/fa';
+import { useAuthStore } from '../../../store/useAuthStore';
+import { UserRole } from '../../../types/auth.types';
 
 const GameManagement = () => {
     const navigate = useNavigate();
@@ -15,6 +17,8 @@ const GameManagement = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [loading, setLoading] = useState(true);
+    const user = useAuthStore((state) => state.user);
+    const isDriver = user?.role === UserRole.DRIVER;
 
     useEffect(() => {
         fetchQuizzes();
@@ -77,13 +81,15 @@ const GameManagement = () => {
                             </h2>
                             <p className="text-slate-500 font-poppins">Manage real-time Kahoot-style games for Sri Lankan destinations</p>
                         </div>
-                        <button
-                            className="bg-game-green text-white rounded-xl px-6 py-3 font-semibold font-poppins flex items-center gap-2 hover:opacity-90 transition-all shadow-lg hover:shadow-game-green/20"
-                            onClick={handleCreateQuiz}
-                        >
-                            <IoMdAdd size={24} />
-                            Create Quiz
-                        </button>
+                        {!isDriver && (
+                            <button
+                                className="bg-game-green text-white rounded-xl px-6 py-3 font-semibold font-poppins flex items-center gap-2 hover:opacity-90 transition-all shadow-lg hover:shadow-game-green/20"
+                                onClick={handleCreateQuiz}
+                            >
+                                <IoMdAdd size={24} />
+                                Create Quiz
+                            </button>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -125,12 +131,14 @@ const GameManagement = () => {
                                             <IoMdPlay />
                                             Host Live
                                         </button>
-                                        <button
-                                            onClick={() => navigate(`/v360/game/edit/${quiz.id}`)}
-                                            className="px-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors"
-                                        >
-                                            Edit
-                                        </button>
+                                        {!isDriver && (
+                                            <button
+                                                onClick={() => navigate(`/v360/game/edit/${quiz.id}`)}
+                                                className="px-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors"
+                                            >
+                                                Edit
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -147,7 +155,7 @@ const GameManagement = () => {
                             <div className="col-span-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl py-20 flex flex-col items-center justify-center text-slate-400">
                                 <FaGamepad size={64} className="mb-4 opacity-20" />
                                 <p className="font-poppins font-medium">No quizzes found.</p>
-                                <button onClick={handleCreateQuiz} className="mt-4 text-game-green font-bold hover:underline">Create your first quiz</button>
+                                {!isDriver && <button onClick={handleCreateQuiz} className="mt-4 text-game-green font-bold hover:underline">Create your first quiz</button>}
                             </div>
                         )}
                     </div>
