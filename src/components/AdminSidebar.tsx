@@ -40,6 +40,7 @@ const sidebarMenuConfig = {
     { label: 'Itinerary', icon: <FaMapMarkedAlt />, link: '/itinerary-details' },
     { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
     { label: 'Vehicle', icon: <FaCarSide />, link: '/driver-vehicle' },
+    { label: 'Game', icon: <IoGameController />, link: '/v360/game' },
   ],
   user: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
