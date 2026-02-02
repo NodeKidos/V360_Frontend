@@ -70,6 +70,7 @@ const VehicleManagement = () => {
 
                 return {
                     id: v.id,
+                    image: v.images && v.images.length > 0 ? v.images[0] : null,
                     name: v.make || "Unknown",
                     type: v.type,
                     plate: v.registrationNumber,
@@ -351,7 +352,7 @@ const VehicleManagement = () => {
                             <table className="min-w-full bg-white">
                                 <thead>
                                     <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
-                                        {/* <th className="px-3 py-3 whitespace-nowrap">Vehicle Id</th> */}
+                                        <th className="px-3 py-3 whitespace-nowrap">Photo</th>
                                         <th className="px-3 py-3 whitespace-nowrap">V_Name</th>
                                         <th className="px-3 py-3 whitespace-nowrap">V_Type</th>
                                         <th className="px-3 py-3 whitespace-nowrap">V_No_Plate</th>
@@ -364,8 +365,19 @@ const VehicleManagement = () => {
 
                                 <tbody className="font-poppins">
                                     {currentVehicles.map((v) => (
-                                        <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                            {/* <td className="py-3 px-2 text-gray-600 whitespace-nowrap">{v.id}</td> */}
+                                        <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50 items-center">
+                                            <td className="py-2 px-2 text-gray-600 whitespace-nowrap flex justify-center items-center">
+                                                <div className="w-10 h-10 rounded-lg border border-purple-50 overflow-hidden bg-gray-50">
+                                                    <img
+                                                        src={v.image ? (v.image.startsWith('http') ? v.image : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}${v.image.startsWith('/') ? '' : '/'}${v.image}`) : 'https://via.placeholder.com/50?text=V'}
+                                                        alt={v.name}
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50?text=V';
+                                                        }}
+                                                    />
+                                                </div>
+                                            </td>
                                             <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
                                             <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.type}</td>
                                             <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>

@@ -13,6 +13,13 @@ export interface Vehicle {
   assignedDriver?: any;
   status?: string;
   insuranceExpiry?: string;
+  images?: string[];
+  color?: string;
+  fuelType?: string;
+  pricePerDay?: number;
+  mileage?: number;
+  lastMaintenanceDate?: string;
+  nextServiceDate?: string;
   createdAt?: string;
   updatedAt?: string;
 }

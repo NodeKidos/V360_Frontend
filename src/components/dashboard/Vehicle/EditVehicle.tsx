@@ -39,8 +39,9 @@ export default function EditVehicle() {
     insuranceExpiry: string;
     // Assignment
     assignDriver: string;
-    // Image
-    vehicleImage: File | null;
+    // Images
+    newVehicleImages: File[];
+    currentImages: string[];
   }>({
     vehicleName: "",
     vehicleType: "",
@@ -57,7 +58,8 @@ export default function EditVehicle() {
     nextServiceDate: "",
     insuranceExpiry: "",
     assignDriver: "",
-    vehicleImage: null,
+    newVehicleImages: [],
+    currentImages: [],
   });
 
   useEffect(() => {
@@ -124,8 +126,9 @@ export default function EditVehicle() {
           nextServiceDate: vehicle.nextServiceDate ? new Date(vehicle.nextServiceDate).toISOString().split('T')[0] : "",
           insuranceExpiry: vehicle.insuranceExpiry ? new Date(vehicle.insuranceExpiry).toISOString().split('T')[0] : "",
           assignDriver: assignedDriverId,
-          vehicleImage: null,
-        });
+          newVehicleImages: [],
+          currentImages: vehicle.images || [],
+        } as any);
       } catch (error: any) {
         toast.error(error?.response?.data?.message || "Failed to fetch vehicle data");
         navigate("/vehicle");
@@ -136,6 +139,26 @@ export default function EditVehicle() {
 
     fetchVehicle();
   }, [vehicleId, navigate]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setVehicleData({ ...vehicleData, newVehicleImages: [...vehicleData.newVehicleImages, ...Array.from(event.target.files)] });
+    }
+  };
+
+  const handleDeleteCurrentImage = (imagePath: string) => {
+    setVehicleData({
+      ...vehicleData,
+      currentImages: vehicleData.currentImages.filter(img => img !== imagePath)
+    });
+  };
+
+  const handleDeleteNewImage = (index: number) => {
+    setVehicleData({
+      ...vehicleData,
+      newVehicleImages: vehicleData.newVehicleImages.filter((_, i) => i !== index)
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setVehicleData({ ...vehicleData, [e.target.name]: e.target.value });
@@ -163,22 +186,42 @@ export default function EditVehicle() {
       let mappedType = vehicleData.vehicleType.toLowerCase();
       if (mappedType === "car") mappedType = "sedan";
 
-      await vehicleService.updateVehicle(vehicleId, {
-        registrationNumber: vehicleData.vehicleNoPlate,
-        type: mappedType,
-        make: vehicleData.vehicleName,
-        model: vehicleData.vehicleModel,
-        year: parseInt(vehicleData.year),
-        color: vehicleData.color,
-        seatingCapacity: parseInt(vehicleData.seatCount),
-        fuelType: vehicleData.fuelType,
-        pricePerDay: parseFloat(vehicleData.pricePerDay),
-        mileage: parseInt(vehicleData.mileage),
-        lastMaintenanceDate: vehicleData.lastMaintenanceDate || undefined,
-        nextServiceDate: vehicleData.nextServiceDate || undefined,
-        insuranceExpiry: vehicleData.insuranceExpiry || undefined,
-        status: mappedStatus,
+      // Prepare FormData for multipart upload
+      const formData = new FormData();
+      formData.append('registrationNumber', vehicleData.vehicleNoPlate);
+      formData.append('type', mappedType);
+      formData.append('make', vehicleData.vehicleName);
+      formData.append('model', vehicleData.vehicleModel);
+      formData.append('year', String(vehicleData.year));
+      formData.append('color', vehicleData.color);
+      formData.append('seatingCapacity', String(vehicleData.seatCount));
+      formData.append('fuelType', vehicleData.fuelType);
+      formData.append('pricePerDay', String(vehicleData.pricePerDay || 0));
+      formData.append('status', mappedStatus);
+      formData.append('mileage', String(vehicleData.mileage || 0));
+
+      if (vehicleData.lastMaintenanceDate) formData.append('lastMaintenanceDate', vehicleData.lastMaintenanceDate);
+      if (vehicleData.nextServiceDate) formData.append('nextServiceDate', vehicleData.nextServiceDate);
+      if (vehicleData.insuranceExpiry) formData.append('insuranceExpiry', vehicleData.insuranceExpiry);
+
+      // Append existing images that were kept
+      vehicleData.currentImages.forEach(img => {
+        formData.append('images', img);
       });
+
+      // Append new images
+      vehicleData.newVehicleImages.forEach(file => {
+        formData.append('newImages', file);
+      });
+
+      if (!vehicleId) throw new Error("Vehicle ID is missing");
+
+      console.log('Submitting Update with FormData:');
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      await vehicleService.updateVehicle(vehicleId, formData);
 
       // Handle driver assignment
       if (vehicleData.assignDriver && vehicleData.assignDriver !== "") {
@@ -188,7 +231,11 @@ export default function EditVehicle() {
       toast.success("Vehicle updated successfully!");
       setTimeout(() => navigate("/vehicle"), 2000);
     } catch (error: any) {
-      console.error("Update failed", error);
+      console.error("Update failed detailed:", error);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+      }
       const errorMessage = error?.response?.data?.message || "Failed to update vehicle";
       const displayMsg = Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage;
       toast.error(displayMsg);
@@ -346,8 +393,8 @@ export default function EditVehicle() {
                           name="year"
                           value={vehicleData.year}
                           onChange={handleChange}
-                          min="1900"
-                          max="2100"
+                          min="1990"
+                          max="2027"
                           required
                           className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
                         />
@@ -421,6 +468,7 @@ export default function EditVehicle() {
                         />
                       </div>
 
+                      {/* Status */}
                       <div>
                         <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">
                           Status<span className="text-red-500">*</span>
@@ -439,6 +487,77 @@ export default function EditVehicle() {
                             <span className="text-gray-700">Need Repair</span>
                           </label>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Vehicle Images Section */}
+                    <div className="md:col-span-2 mt-6">
+                      <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins font-semibold block mb-2">
+                        Vehicle Images
+                      </label>
+
+                      {/* Current Images Gallery */}
+                      {vehicleData.currentImages.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-[12px] text-gray-500 font-poppins mb-2">Current Images ({vehicleData.currentImages.length})</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                            {vehicleData.currentImages.map((img, index) => (
+                              <div key={index} className="relative group border border-purple-100 rounded-lg overflow-hidden h-24 shadow-sm">
+                                <img
+                                  src={img.startsWith('http') ? img : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}${img.startsWith('/') ? '' : '/'}${img}`}
+                                  alt={`Vehicle ${index}`}
+                                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=No+Image';
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteCurrentImage(img)}
+                                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* New Images Selection */}
+                      <div className="mt-4">
+                        <label className="text-[12px] text-gray-500 font-poppins block mb-2">Add New Images</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleFileChange}
+                          className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                        />
+
+                        {vehicleData.newVehicleImages.length > 0 && (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
+                            {vehicleData.newVehicleImages.map((file, index) => (
+                              <div key={index} className="relative group border border-purple-200 rounded-lg overflow-hidden h-24 shadow-sm">
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={`New Preview ${index}`}
+                                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteNewImage(index)}
+                                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md"
+                                >
+                                  ×
+                                </button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] py-0.5 px-1 truncate">
+                                  New
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -556,7 +675,7 @@ export default function EditVehicle() {
                 )}
 
                 {/* ACTION BUTTONS */}
-                <div className="flex flex-row sm:flex-row justify-end gap-3 md:gap-4 mt-8 pt-6 border-t border-gray-200">
+                <div className="flex justify-end gap-3 md:gap-4 mt-8 pt-6 border-t border-gray-200">
                   <button
                     type="button"
                     onClick={() => navigate("/vehicle")}

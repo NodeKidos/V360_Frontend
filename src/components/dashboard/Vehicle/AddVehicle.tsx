@@ -26,7 +26,11 @@ export default function AddVehicle() {
         nextServiceDate: string;
         assignDriver: string;
         status: string;
-        vehicleImage: File | null;
+        vehicleImages: File[];
+        year: string;
+        color: string;
+        pricePerDay: string;
+        mileage: string;
     }>({
         vehicleName: "",
         vehicleType: "",
@@ -37,7 +41,11 @@ export default function AddVehicle() {
         nextServiceDate: "",
         assignDriver: "",
         status: "Active",
-        vehicleImage: null,
+        vehicleImages: [],
+        year: new Date().getFullYear().toString(),
+        color: "White",
+        pricePerDay: "0",
+        mileage: "0",
     });
 
     useEffect(() => {
@@ -70,9 +78,9 @@ export default function AddVehicle() {
         fetchDrivers();
     }, []);
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            setVehicleData({ ...vehicleData, vehicleImage: event.target.files[0] });
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setVehicleData({ ...vehicleData, vehicleImages: Array.from(event.target.files) });
         }
     };
 
@@ -105,20 +113,30 @@ export default function AddVehicle() {
 
             const mappedType = vehicleData.vehicleType.toLowerCase();
 
-            // Create Vehicle
-            const newVehicle = await vehicleService.createVehicle({
-                registrationNumber: vehicleData.vehicleNoPlate,
-                type: mappedType,
-                make: vehicleData.vehicleName,
-                model: vehicleData.vehicleModel,
-                seatingCapacity: parseInt(vehicleData.seatCount),
-                fuelType: vehicleData.fuelType,
-                nextServiceDate: vehicleData.nextServiceDate || undefined,
-                status: mappedStatus,
-                pricePerDay: 0, // Default or add field if needed
-                year: new Date().getFullYear(), // Default
-                color: "White", // Default
+            // Prepare FormData for multipart upload
+            const formData = new FormData();
+            formData.append('registrationNumber', vehicleData.vehicleNoPlate);
+            formData.append('type', mappedType);
+            formData.append('make', vehicleData.vehicleName);
+            formData.append('model', vehicleData.vehicleModel);
+            formData.append('seatingCapacity', vehicleData.seatCount);
+            formData.append('fuelType', vehicleData.fuelType);
+            formData.append('status', mappedStatus);
+            formData.append('pricePerDay', vehicleData.pricePerDay);
+            formData.append('year', vehicleData.year);
+            formData.append('color', vehicleData.color);
+            formData.append('mileage', vehicleData.mileage);
+
+            if (vehicleData.nextServiceDate) {
+                formData.append('nextServiceDate', vehicleData.nextServiceDate);
+            }
+
+            vehicleData.vehicleImages.forEach((image) => {
+                formData.append('newImages', image);
             });
+
+            // Create Vehicle
+            const newVehicle = await vehicleService.createVehicle(formData);
 
             // Assign Driver if provided
             if (vehicleData.assignDriver && vehicleData.assignDriver !== "" && newVehicle.id) {
@@ -280,6 +298,101 @@ export default function AddVehicle() {
                                 </div>
                             </div>
 
+                            {/* Year + Color */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Year</label>
+                                    <input
+                                        type="number"
+                                        name="year"
+                                        min="1990"
+                                        max="2027"
+                                        value={vehicleData.year}
+                                        onChange={handleChange}
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        placeholder="Enter Year (1990-2027)"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Color</label>
+                                    <input
+                                        type="text"
+                                        name="color"
+                                        value={vehicleData.color}
+                                        onChange={handleChange}
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        placeholder="Enter Color (e.g. White)"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Price Per Day + Mileage */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Price Per Day (LKR)</label>
+                                    <input
+                                        type="number"
+                                        name="pricePerDay"
+                                        min="0"
+                                        step="0.01"
+                                        value={vehicleData.pricePerDay}
+                                        onChange={handleChange}
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        placeholder="Enter Price Per Day"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Mileage (km)</label>
+                                    <input
+                                        type="number"
+                                        name="mileage"
+                                        min="0"
+                                        value={vehicleData.mileage}
+                                        onChange={handleChange}
+                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        placeholder="Enter Current Mileage"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Vehicle Images */}
+                            <div>
+                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins font-semibold">Vehicle Images</label>
+                                <input
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                    multiple
+                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                />
+                                {vehicleData.vehicleImages.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-600 font-poppins">{vehicleData.vehicleImages.length} image(s) selected</p>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-2">
+                                            {vehicleData.vehicleImages.map((file, index) => (
+                                                <div key={index} className="relative border border-purple-200 rounded-lg p-1 group">
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt={`Preview ${index + 1}`}
+                                                        className="w-full h-24 object-cover rounded shadow-sm"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setVehicleData({
+                                                            ...vehicleData,
+                                                            vehicleImages: vehicleData.vehicleImages.filter((_, i) => i !== index)
+                                                        })}
+                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 shadow-md transition-colors"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Next Service Date + Assign Driver */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <div>
@@ -315,18 +428,6 @@ export default function AddVehicle() {
                                         </p>
                                     )}
                                 </div>
-                            </div>
-
-                            {/* Vehicle Image */}
-                            <div>
-                                <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Vehicle Image</label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                />
-                                {vehicleData.vehicleImage && <p className="text-gray-500 mt-2">{vehicleData.vehicleImage.name}</p>}
                             </div>
 
                             {/* Vehicle Status */}
@@ -389,7 +490,7 @@ export default function AddVehicle() {
                     </div>
                     <ToastContainer />
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
