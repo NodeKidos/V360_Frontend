@@ -9,6 +9,8 @@ import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
 import { PhoneInput } from "../../ui/PhoneInput";
 import { Loader } from "../../ui/Loader";
+import ImageModal from "../../ui/ImageModal";
+import { FaTrash, FaEye } from "react-icons/fa";
 
 interface DriverData {
     firstName: string;
@@ -26,7 +28,7 @@ interface DriverData {
     assignedVehicle: string;
     status: string;
     profileImage: File | null;
-    licenseInfo: File | null;
+    licenseInfo: File[];
     joinDate: string;
 }
 
@@ -54,8 +56,18 @@ export default function AddDriver() {
         assignedVehicle: "",
         status: "",
         profileImage: null,
-        licenseInfo: null,
+        licenseInfo: [],
         joinDate: "",
+    });
+
+    const [previews, setPreviews] = useState<{ profile: string; license: string[] }>({
+        profile: "",
+        license: []
+    });
+
+    const [modalConfig, setModalConfig] = useState<{ isOpen: boolean; url: string }>({
+        isOpen: false,
+        url: ""
     });
 
     useEffect(() => {
@@ -96,8 +108,41 @@ export default function AddDriver() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof DriverData) => {
         if (e.target.files && e.target.files.length > 0) {
-            setDriverData((prevData) => ({ ...prevData, [field]: e.target.files![0] }));
+            const newFiles = Array.from(e.target.files);
+
+            if (field === "profileImage") {
+                const file = newFiles[0];
+                setDriverData((prevData) => ({ ...prevData, [field]: file }));
+                const previewUrl = URL.createObjectURL(file);
+                setPreviews(prev => ({ ...prev, profile: previewUrl }));
+            } else if (field === "licenseInfo") {
+                setDriverData((prevData) => ({
+                    ...prevData,
+                    [field]: [...prevData.licenseInfo, ...newFiles]
+                }));
+
+                const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+                setPreviews(prev => ({
+                    ...prev,
+                    license: [...prev.license, ...newPreviews]
+                }));
+            }
         }
+    };
+
+    const removeLicenseImage = (index: number) => {
+        setDriverData(prev => ({
+            ...prev,
+            licenseInfo: prev.licenseInfo.filter((_, i) => i !== index)
+        }));
+        setPreviews(prev => ({
+            ...prev,
+            license: prev.license.filter((_, i) => i !== index)
+        }));
+    };
+
+    const openImageModal = (url: string) => {
+        setModalConfig({ isOpen: true, url });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -134,7 +179,7 @@ export default function AddDriver() {
                 status: driverData.status ? driverData.status as any : undefined,
                 joinDate: driverData.joinDate ? driverData.joinDate : undefined,
                 profileImage: driverData.profileImage || undefined,
-                licenseImage: driverData.licenseInfo || undefined,
+                licenseImage: driverData.licenseInfo.length > 0 ? driverData.licenseInfo : undefined,
             });
 
             toast.success("Driver added successfully!", {
@@ -275,12 +320,26 @@ export default function AddDriver() {
 
                                     <div>
                                         <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Profile Image</label>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, "profileImage")}
-                                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        />
+                                        <div className="flex items-center gap-4 mt-1">
+                                            {previews.profile && (
+                                                <div className="relative group w-16 h-16 rounded-full overflow-hidden border border-purple-200 cursor-pointer" onClick={() => openImageModal(previews.profile)}>
+                                                    <img
+                                                        src={previews.profile}
+                                                        alt="Profile Preview"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <FaEye className="text-white" size={14} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleFileChange(e, "profileImage")}
+                                                className="flex-1 border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -435,12 +494,49 @@ export default function AddDriver() {
                                 </div>
                                 {/* License Info */}
                                 <div>
-                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Info</label>
-                                    <input
-                                        type="file"
-                                        onChange={(e) => handleFileChange(e, "licenseInfo")}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    />
+                                    <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">License Documents</label>
+                                    <div className="mt-1 space-y-3">
+                                        <input
+                                            type="file"
+                                            accept="image/*,.pdf"
+                                            multiple
+                                            onChange={(e) => handleFileChange(e, "licenseInfo")}
+                                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                        />
+
+                                        {previews.license.length > 0 && (
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                                {previews.license.map((url, idx) => (
+                                                    <div key={idx} className="relative group aspect-square border-2 border-purple-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                                        <img
+                                                            src={url}
+                                                            alt={`License Document ${idx + 1}`}
+                                                            className="w-full h-full object-cover cursor-pointer"
+                                                            onClick={() => openImageModal(url)}
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity gap-3">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => openImageModal(url)}
+                                                                className="p-2 bg-white/20 hover:bg-white/40 rounded-full text-white transition-colors"
+                                                                title="View"
+                                                            >
+                                                                <FaEye size={16} />
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeLicenseImage(idx)}
+                                                                className="p-2 bg-red-500/80 hover:bg-red-600 rounded-full text-white transition-colors"
+                                                                title="Remove"
+                                                            >
+                                                                <FaTrash size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* ACTION BUTTONS */}
@@ -465,9 +561,15 @@ export default function AddDriver() {
                         )}
                         {/* FORM END */}
                     </div>
-                    <ToastContainer />
                 </div>
+                <ToastContainer />
             </div>
+
+            <ImageModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                imageUrl={modalConfig.url}
+            />
         </div>
     );
 }
