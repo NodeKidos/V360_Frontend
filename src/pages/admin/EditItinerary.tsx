@@ -204,8 +204,8 @@ const EditItinerary = () => {
           }
         });
 
-        console.log("✅ Extracted destData:", destData);
-        console.log("✅ Extracted cities:", cities);
+        console.log("  Extracted destData:", destData);
+        console.log("  Extracted cities:", cities);
 
         // Check if coming back from hotel/excursion selection (returnTab is set)
         const isReturningFromSelection = (location.state as any)?.returnTab;
@@ -334,7 +334,7 @@ const EditItinerary = () => {
         console.log('💰 Quote data:', data.quote);
 
         if (data.quote) {
-          console.log('✅ Quote exists, populating form...');
+          console.log('  Quote exists, populating form...');
           setQuoteData({
             totalCost: data.quote.totalCost || 0,
             accommodationCost: data.quote.breakdown?.accommodationCost || 0,
@@ -512,7 +512,7 @@ const EditItinerary = () => {
       }
     });
 
-    console.log("✅ Generated days:", newDays);
+    console.log("  Generated days:", newDays);
     return newDays;
   };
 
@@ -648,7 +648,7 @@ const EditItinerary = () => {
 
       console.log('📤 Sending quote data:', quoteDto);
       const savedQuote = await itineraryService.createQuote(itineraryId!, quoteDto);
-      console.log('✅ Quote saved, response:', savedQuote);
+      console.log('  Quote saved, response:', savedQuote);
 
       // Refresh itinerary data
       const refreshedData = await itineraryService.getById(itineraryId!);
@@ -661,7 +661,7 @@ const EditItinerary = () => {
 
       // Update quote data state with refreshed values
       if (refreshedData.quote) {
-        console.log('✅ Updating quote form with refreshed data');
+        console.log('  Updating quote form with refreshed data');
         setQuoteData({
           totalCost: refreshedData.quote.totalCost || 0,
           accommodationCost: refreshedData.quote.breakdown?.accommodationCost || 0,
@@ -1069,7 +1069,7 @@ const EditItinerary = () => {
                                 }}
                                 className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2"
                               >
-                                ✅ Mark Completed
+                                Mark Completed
                               </button>
                             </>
                           )}
@@ -2139,7 +2139,7 @@ const EditItinerary = () => {
                                 }}
                                 className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2"
                               >
-                                ✅ Mark Completed
+                                Mark Completed
                               </button>
                             </>
                           )}

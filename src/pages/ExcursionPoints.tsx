@@ -61,7 +61,7 @@ export default function ExcursionPoints() {
     fetchExcursions();
   }, [destinationId]);
 
-  // ✅ Function to handle sidebar navigation
+  //   Function to handle sidebar navigation
   const handleStepClick = (clickedStep: number) => {
     setStep(clickedStep);
 
@@ -184,7 +184,7 @@ export default function ExcursionPoints() {
                   x: 0,
                   transition: { delay: i * 0.1, duration: 0.4 },
                 }}
-                onClick={() => handleStepClick(i + 1)} // ✅ navigate on step click
+                onClick={() => handleStepClick(i + 1)} //   navigate on step click
                 className="relative flex items-start mb-12 cursor-pointer group"
               >
                 <div

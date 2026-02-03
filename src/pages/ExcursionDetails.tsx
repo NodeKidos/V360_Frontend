@@ -91,27 +91,27 @@ export default function ExcursionDetails() {
           className="bg-[#F8F2FB] border border-purple-200 rounded-2xl shadow-sm p-10 space-y-10 relative z-10"
         >
           {/* === Title Section === */}
-<div className="flex flex-col md:flex-row gap-10">
-  <div className="md:w-1/3">
-    <img
-      src={excursion?.img || lotus1}
-      alt={excursion?.name || "Excursion"}
-      className="rounded-lg shadow-md w-full sm:w-[300px] md:w-[350px] lg:w-[350px] lg:h-[350px] md:h-[350px] object-cover"
-    />
-  </div>
+          <div className="flex flex-col md:flex-row gap-10">
+            <div className="md:w-1/3">
+              <img
+                src={excursion?.img || lotus1}
+                alt={excursion?.name || "Excursion"}
+                className="rounded-lg shadow-md w-full sm:w-[300px] md:w-[350px] lg:w-[350px] lg:h-[350px] md:h-[350px] object-cover"
+              />
+            </div>
 
-  <div className="md:w-2/3 flex flex-col justify-center">
-    <h1 className="text-[36px] font-poppins font-semibold text-[#1E1E1E] mb-4">
-      {excursion?.name || "Lotus Tower"}
-    </h1>
-    <p className="text-[#382A59] font-roboto sm:text-[18px] md:text-[20px] lg:text-[22px] leading-relaxed">
-      The Lotus Tower, or “Nelum Kuluna,” is an iconic landmark in
-      Colombo, Sri Lanka. Rising to a height of 356 meters, it is the
-      tallest structure in South Asia and symbolizes Sri Lanka’s
-      growth and ambition.
-    </p>
-  </div>
-</div>
+            <div className="md:w-2/3 flex flex-col justify-center">
+              <h1 className="text-[36px] font-poppins font-semibold text-[#1E1E1E] mb-4">
+                {excursion?.name || "Lotus Tower"}
+              </h1>
+              <p className="text-[#382A59] font-roboto sm:text-[18px] md:text-[20px] lg:text-[22px] leading-relaxed">
+                The Lotus Tower, or “Nelum Kuluna,” is an iconic landmark in
+                Colombo, Sri Lanka. Rising to a height of 356 meters, it is the
+                tallest structure in South Asia and symbolizes Sri Lanka’s
+                growth and ambition.
+              </p>
+            </div>
+          </div>
 
           {/* === Icon Tags === */}
           <div className="flex gap-3 mt-6 lg:flex-wrap sm:flex-nowrap overflow-x-scroll pb-4">
@@ -221,7 +221,7 @@ export default function ExcursionDetails() {
           </div>
         </motion.div>
 
-        {/* ✅ Back Button to Excursion Points */}
+        {/*   Back Button to Excursion Points */}
         <div className="flex justify-start mt-8 relative z-10">
           <button
             onClick={() =>

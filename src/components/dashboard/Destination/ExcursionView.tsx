@@ -425,7 +425,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                         <p className="text-sm text-gray-500 mb-4">
                             {selectedExcursion?.isActive !== false
                                 ? '⚠️ Disabling will hide this excursion from customers. Use this for seasonal closures.'
-                                : '✅ Enabling will make this excursion visible to customers again.'}
+                                : '  Enabling will make this excursion visible to customers again.'}
                         </p>
 
                         <div className="mb-4">

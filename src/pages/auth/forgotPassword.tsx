@@ -18,7 +18,7 @@ export default function ForgotPassword() {
 
     // TODO: Replace with actual API call
     setTimeout(() => {
-      alert(`✅ Password reset link sent to ${data.email}`);
+      alert(`  Password reset link sent to ${data.email}`);
       navigate("/login");
       setIsLoading(false);
     }, 1500);

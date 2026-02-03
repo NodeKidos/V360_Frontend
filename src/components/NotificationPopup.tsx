@@ -58,7 +58,7 @@ export default function NotificationPopup({ isOpen, onClose }: NotificationPopup
             case 'warning':
                 return '⚠️';
             case 'success':
-                return '✅';
+                return ' ';
             default:
                 return 'ℹ️';
         }

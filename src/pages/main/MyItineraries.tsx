@@ -74,7 +74,7 @@ export default function MyItineraries() {
     }
     console.log("🔍 Fetching itineraries...");
     getMyItineraries().then(() => {
-      console.log("✅ Itineraries fetched");
+      console.log("  Itineraries fetched");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, navigate]);

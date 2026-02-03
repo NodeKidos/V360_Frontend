@@ -2,7 +2,7 @@ import { CiSearch } from "react-icons/ci";
 import Sidebar from "../AdminSidebar";
 import { useState, useEffect } from "react";
 import TopBar from "../Topbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
 
 import Colombo from "../../assets/PortCity.jpg";
@@ -20,6 +20,7 @@ const TripPhotos = () => {
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -37,6 +38,15 @@ const TripPhotos = () => {
           ['accepted', 'in_progress', 'completed'].includes(itn.status)
         );
         setItineraries(activeItineraries);
+
+        // Check if we returned from a gallery with a selected itinerary
+        const stateId = (location.state as any)?.selectedItineraryId;
+        if (stateId) {
+          const found = activeItineraries.find(itn => itn.id === stateId);
+          if (found) {
+            setSelectedItinerary(found);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch itineraries:", error);
       } finally {
@@ -44,7 +54,7 @@ const TripPhotos = () => {
       }
     };
     fetchItineraries();
-  }, []);
+  }, [location.state]);
 
   const filtered = itineraries.filter((itn) =>
     itn.itineraryNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||

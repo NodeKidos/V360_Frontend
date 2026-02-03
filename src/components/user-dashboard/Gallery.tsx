@@ -167,7 +167,7 @@ const GalleryUpload = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/memories")}
+              onClick={() => navigate("/memories", { state: { selectedItineraryId: itineraryId } })}
               className="p-2 rounded-lg hover:bg-gray-100"
             >
               <IoArrowBackOutline className="text-xl" />
@@ -228,7 +228,7 @@ const GalleryUpload = () => {
         >
           <input {...getInputProps()} />
 
-          {/* ✅ PREVIEW ON TOP */}
+          {/*   PREVIEW ON TOP */}
           {filtered.length > 0 ? (
             <div className="mb-6">
               <p className="text-sm text-gray-600 mb-3">

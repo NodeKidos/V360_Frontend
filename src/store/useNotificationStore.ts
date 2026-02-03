@@ -123,7 +123,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         });
 
         socket.on('connect', () => {
-            console.log('✅ Connected to notification WebSocket');
+            console.log('  Connected to notification WebSocket');
         });
 
         socket.on('notification', (notification: Notification) => {
