@@ -277,8 +277,8 @@ export default function EditMyItinerary() {
                     destinationId = destination.id;
 
                     const selectedDestData = formData.selectedDestinations?.[cityName];
-                    if (selectedDestData?.hotel) {
-                        hotelId = selectedDestData.hotel.id;
+                    if (selectedDestData?.hotels && selectedDestData.hotels.length > 0) {
+                        hotelId = selectedDestData.hotels[0].id;
                     }
 
                     if (selectedDestData?.excursions && selectedDestData.excursions.length > 0) {
@@ -837,7 +837,7 @@ export default function EditMyItinerary() {
                                                 {currentDestinations.map((d, i) => {
                                                     const isSelected = (formData.selectedCities || []).includes(d.name);
                                                     const destinationData = formData.selectedDestinations?.[d.name];
-                                                    const hasHotel = !!destinationData?.hotel;
+                                                    const hasHotel = !!destinationData?.hotels && destinationData.hotels.length > 0;
                                                     const excursionCount = destinationData?.excursions?.length || 0;
 
                                                     return (

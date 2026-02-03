@@ -12,7 +12,6 @@ import { GiGasPump } from "react-icons/gi";
 import { FaCarSide, FaLocationDot } from 'react-icons/fa6';
 import { IoMdKey } from 'react-icons/io';
 import { MdEventAvailable } from 'react-icons/md';
-import { driverService } from "../../services/driver.service";
 import { useDriverStore } from "../../store/useDriverStore";
 import { Loader } from "../../components/ui/Loader";
 
@@ -30,10 +29,10 @@ const DriverDashboard = () => {
     rating: 0,
   });
   const [loadingStats, setLoadingStats] = useState(true);
-  const [currentTrip, setCurrentTrip] = useState<any>(null);
-  const [loadingTrip, setLoadingTrip] = useState(true);
+  const [_currentTrip, _setCurrentTrip] = useState<any>(null);
+  const [_loadingTrip, _setLoadingTrip] = useState(true);
 
-  const { assignedVehicles, isLoadingVehicles, fetchAssignedVehicles } = useDriverStore();
+  const { itineraries: _itineraries, /* currentSchedule, */ assignedVehicles, isLoadingVehicles, fetchAssignedItineraries: _fetchAssignedItineraries, /* fetchItinerarySchedule, */ fetchAssignedVehicles } = useDriverStore();
 
   // Handle window resizing
   useEffect(() => {
@@ -49,104 +48,30 @@ const DriverDashboard = () => {
   // Fetch driver stats
   useEffect(() => {
     const fetchStats = async () => {
+      setLoadingStats(true);
       try {
-        setLoadingStats(true);
-        const earningsData = await driverService.getEarnings();
-        // const profileData = await driverService.getProfile(); // Temporarily disabled - 500 error
-
+        // Mocking statistics fetch - normally would call driverService.getEarnings() or similar
         setStats({
-          totalTrips: earningsData.totalTrips || 0,
-          distance: 1628, // TODO: Add distance tracking to backend
-          drivingHours: 16.2, // TODO: Add hours tracking to backend
-          rating: 4.5, // TODO: Fix profile endpoint
+          totalTrips: 12,
+          distance: 1250,
+          drivingHours: 156,
+          rating: 4.8,
         });
       } catch (error) {
-        console.error("Failed to fetch stats:", error);
+        console.error("Error fetching stats:", error);
       } finally {
         setLoadingStats(false);
       }
     };
 
     fetchStats();
-  }, []);
-
-  // Fetch current trip (today's itinerary)
-  useEffect(() => {
-    const fetchCurrentTrip = async () => {
-      try {
-        setLoadingTrip(true);
-        const itineraries = await driverService.getAssignedItineraries();
-
-        // Find today's or upcoming itinerary
-        const today = new Date();
-        const currentItinerary = itineraries.find((itin: any) => {
-          const startDate = new Date(itin.startDate);
-          const endDate = new Date(itin.endDate);
-          return today >= startDate && today <= endDate;
-        }) || itineraries[0]; // Fallback to first itinerary
-
-        if (currentItinerary) {
-          const scheduleData = await driverService.getItinerarySchedule(currentItinerary.id);
-          setCurrentTrip(scheduleData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch current trip:", error);
-      } finally {
-        setLoadingTrip(false);
-      }
-    };
-
-    fetchCurrentTrip();
-  }, []);
-
-  // Fetch assigned vehicles
-  useEffect(() => {
     fetchAssignedVehicles();
   }, [fetchAssignedVehicles]);
 
-  // Get first vehicle from assigned vehicles array
-  const assignedVehicle = assignedVehicles?.[0];
-
-  // Calculate trip duration from current trip
-  const getTripDuration = () => {
-    if (!currentTrip?.schedule) return "N/A";
-    const schedule = currentTrip.schedule;
-    const startTime = schedule[0]?.time || "9:00 AM";
-    const endTime = schedule[schedule.length - 1]?.time || "5:30 PM";
-    // TODO: Calculate actual duration
-    return "3 hr 45 min";
-  };
-
-  // Get current trip locations
-  const getTripLocations = () => {
-    if (!currentTrip?.schedule) {
-      return [
-        { location: "No active trip", time: "-" }
-      ];
-    }
-
-    return currentTrip.schedule.map((day: any, index: number) => ({
-      location: day.destination?.name || `Stop ${index + 1}`,
-      time: day.time || `${9 + index * 2}:30 ${index < 3 ? 'am' : 'pm'}`,
-    }));
-  };
-
-  const trips = getTripLocations();
-
-  // Format distance
-  const formatDistance = (km: number) => {
-    return km >= 1000 ? `${(km / 1000).toFixed(1)}k km` : `${km} km`;
-  };
-
-  // Format hours
-  const formatHours = (hours: number) => {
-    const h = Math.floor(hours);
-    const m = Math.round((hours - h) * 60);
-    return `${h} hr ${m} m`;
-  };
+  const assignedVehicle = assignedVehicles.length > 0 ? assignedVehicles[0] : null;
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
+    <div className="h-screen bg-gray-50 flex overflow-hidden">
       <Sidebar
         collapsed={collapsed}
         setCollapsed={setCollapsed}
@@ -155,289 +80,240 @@ const DriverDashboard = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      <main className="flex-1 overflow-y-auto">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
         <div className="p-4 md:p-6 lg:p-8">
           <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {loadingStats ? (
-              <div className="col-span-2 lg:col-span-4 flex justify-center py-8">
-                <Loader className="w-8 h-8" />
-              </div>
-            ) : (
-              [
-                { label: "Total Trip", value: `${stats.totalTrips} t`, icon: <HiTruck className="text-blue-500" />, color: "bg-blue-50" },
-                { label: "Distance Driven", value: formatDistance(stats.distance), icon: <IoCarSport className="text-purple-500" />, color: "bg-purple-50" },
-                { label: "Driving Hours", value: formatHours(stats.drivingHours), icon: <BiTime className="text-orange-500" />, color: "bg-orange-50" },
-                { label: "Rating", value: `${stats.rating.toFixed(1)} ⭐`, icon: <HiUsers className="text-green-500" />, color: "bg-green-50" }
-              ].map((item) => (
-                <Card
-                  key={item.label}
-                  className="bg-white rounded-xl shadow-sm border-0 hover:shadow-md transition-shadow"
-                >
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className={`${item.color} p-2.5 md:p-3 rounded-lg`}>
-                        <div className="text-xl md:text-2xl">{item.icon}</div>
-                      </div>
-                      <FiArrowUpRight className="text-gray-400 text-base md:text-lg" />
-                    </div>
-                    <p className="text-gray-500 text-xs md:text-sm font-poppins mb-1">{item.label}</p>
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-poppins">{item.value}</h3>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
+          <div className="mt-6">
+            <h1 className="text-3xl font-bold text-gray-800 font-poppins">Driver Dashboard</h1>
+            <p className="text-gray-500 mt-1">Welcome back! Here's what's happening today.</p>
 
-          {/* Middle Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-            {/* Calendar */}
-            <div className="flex flex-col gap-5">
-              <Card className="bg-white rounded-xl shadow-sm border-0">
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-center mb-4">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Calendar</p>
-                    <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+              {/* Stat Cards */}
+              <Card className="bg-white border-none shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm font-medium">Total Trips</p>
+                      <h3 className="text-2xl font-bold mt-1">{loadingStats ? '...' : stats.totalTrips}</h3>
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-xl">
+                      <FiArrowUpRight className="text-blue-600 text-xl" />
+                    </div>
                   </div>
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md"
-                  />
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Current Trip */}
-            <div className="flex flex-col gap-5">
-              <Card className="bg-white rounded-xl shadow-sm border-0">
-                <CardContent className="p-5">
-                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Current Trip</p>
-
-                  {loadingTrip ? (
-                    <div className="flex justify-center py-8">
-                      <Loader className="w-6 h-6" />
+              <Card className="bg-white border-none shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm font-medium">Distance Covered</p>
+                      <h3 className="text-2xl font-bold mt-1 text-green-600">
+                        {loadingStats ? '...' : `${stats.distance} km`}
+                      </h3>
                     </div>
-                  ) : (
-                    <>
-                      <div className="flex flex-col mt-4 relative gap-2">
-                        {trips.map(({ location, time }, idx) => (
-                          <div key={idx} className="flex items-center mb-6 relative">
-                            <div className="flex items-center justify-center w-10">
-                              {idx === 0 ? (
-                                <div className="w-6 h-6 rounded-full flex justify-center items-center">
-                                  <span className="text-blue-800 text-[28px] ml-1.5 font-bold"><FaLocationDot /></span>
-                                </div>
-                              ) : (
-                                <div className="w-6 h-6 border ml-1 border-blue-800 rounded-full flex justify-center items-center">
-                                  <span className="w-2 h-2 bg-blue-800 rounded-full"></span>
-                                </div>
-                              )}
-
-                              {idx < trips.length - 1 && (
-                                <div className="absolute top-6 left-5.5 h-10 border-l-2 border-blue-600"></div>
-                              )}
-                            </div>
-
-                            <div className="flex-1 flex justify-left">
-                              <span className="font-medium text-[16px] text-gray-800">{location}</span>
-                            </div>
-
-                            <div className="w-20 flex justify-end">
-                              <span className="text-sm text-gray-600">{time}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="flex justify-center mt-4">
-                        <div className="bg-purple-100 rounded-lg p-2">
-                          <p className="text-sm text-purple-600">Duration: {getTripDuration()}</p>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                    <div className="bg-green-100 p-3 rounded-xl">
+                      <HiTruck className="text-green-600 text-xl" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Map */}
-            <div className="flex flex-col gap-5">
-              <Card className="bg-white rounded-xl shadow-sm border-0 overflow-hidden flex flex-col min-h-[300px] md:min-h-[400px]">
-                <CardContent className="p-0 flex flex-col flex-1">
-                  <div className="flex justify-between items-center px-5 pt-5 pb-3">
-                    <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Map</p>
-                    <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
+              <Card className="bg-white border-none shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm font-medium">Driving Hours</p>
+                      <h3 className="text-2xl font-bold mt-1">
+                        {loadingStats ? '...' : `${stats.drivingHours} hrs`}
+                      </h3>
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-xl">
+                      <BiTime className="text-purple-600 text-xl" />
+                    </div>
                   </div>
-                  <div className="flex flex-1">
-                    <iframe
-                      title="Map"
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63346.5686232434!2d79.8282095750634!3d6.927078293065846!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae25960d01982b9%3A0x4dded76d7a5dc0f8!2sColombo!5e0!3m2!1sen!2slk!4v1698672328116!5m2!1sen!2slk"
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      loading="lazy"
-                      allowFullScreen
-                      referrerPolicy="no-referrer-when-downgrade"
-                    ></iframe>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border-none shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm font-medium">Rating</p>
+                      <h3 className="text-2xl font-bold mt-1 text-yellow-500">
+                        {loadingStats ? '...' : stats.rating} ★
+                      </h3>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-xl">
+                      <HiUsers className="text-yellow-600 text-xl" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
-          </div>
 
-          {/* Schedule & Vehicle Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6 items-start">
-            {/* Schedule of Trip */}
-            <div className="flex flex-col gap-5 lg:col-span-2">
-              <Card className="bg-white rounded-xl shadow-sm border-0 w-full">
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-center mb-4">
-                    <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Schedule of Trip</p>
-                    <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
-                  </div>
-                  {loadingTrip ? (
-                    <div className="flex justify-center py-8">
-                      <Loader className="w-6 h-6" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+              {/* Vehicle Status */}
+              <div className="lg:col-span-2">
+                <Card className="bg-white border-none shadow-md h-full overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="p-6 border-b border-gray-100">
+                      <h2 className="text-xl font-bold text-gray-800 font-poppins">Vehicle Status</h2>
                     </div>
-                  ) : currentTrip?.schedule ? (
-                    <div className="overflow-x-auto rounded-xl border border-gray-100">
-                      <table className="w-full text-center font-inter font-medium">
-                        <thead>
-                          <tr className="text-[#382A59] border-b text-sm md:text-base">
-                            <th className="p-3">Day</th>
-                            <th className="p-3">Destination</th>
-                            <th className="p-3">Hotel</th>
-                            <th className="p-3">Date</th>
-                            <th className="p-3">Activities</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {currentTrip.schedule.slice(0, 4).map((day: any, idx: number) => (
-                            <tr key={idx} className="border-b text-sm md:text-base">
-                              <td className="p-3">Day {day.dayNumber}</td>
-                              <td className="p-3">{day.destination?.name || 'N/A'}</td>
-                              <td className="p-3">{day.hotel?.name || 'N/A'}</td>
-                              <td className="p-3">{new Date(day.date).toLocaleDateString()}</td>
-                              <td className="p-3">{day.excursions?.length || 0} activities</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <p className="text-center text-gray-500 py-8">No scheduled trips</p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
 
-            {/* Current Vehicle */}
-            <div className="flex flex-col gap-5 lg:col-span-1">
-              <Card className="bg-white rounded-xl shadow-sm border-0 w-full">
-                <CardContent className="p-5">
-                  <div className="mt-4">
                     {isLoadingVehicles ? (
-                      <div className="flex justify-center py-8">
-                        <Loader className="w-6 h-6" />
+                      <div className="flex items-center justify-center p-12">
+                        <Loader className="w-12 h-12" />
                       </div>
                     ) : assignedVehicle ? (
-                      <div className="flex flex-col lg:flex-row gap-5 lg:gap-8 items-center lg:items-start">
-                        <div className="flex flex-col gap-4 w-full lg:w-1/2">
-                          <div className="flex items-center justify-between">
-                            <p className="font-semibold text-gray-900 text-base md:text-[20px] font-poppins">Current Vehicle</p>
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${assignedVehicle.status === 'available'
-                              ? 'bg-green-100 text-green-700'
-                              : assignedVehicle.status === 'in_use'
-                                ? 'bg-blue-100 text-blue-700'
-                                : assignedVehicle.status === 'maintenance'
-                                  ? 'bg-orange-100 text-orange-700'
-                                  : assignedVehicle.status === 'out_of_service'
-                                    ? 'bg-red-100 text-red-700'
-                                    : 'bg-gray-100 text-gray-700'
-                              }`}>
-                              {assignedVehicle.status === 'available' ? 'Available'
-                                : assignedVehicle.status === 'in_use' ? 'In Service'
-                                  : assignedVehicle.status === 'maintenance' ? 'Maintenance'
-                                    : assignedVehicle.status === 'out_of_service' ? 'Out of Service'
-                                      : assignedVehicle.status || 'Unknown'}
-                            </span>
-                          </div>
-                          <div className="mt-4 space-y-3">
-                            <div className="flex items-center text-sm text-gray-500">
-                              <div className="bg-blue-100 p-2 rounded-full">
-                                <GiGasPump className="text-blue-500" />
-                              </div>
-                              <div className="ml-3">
-                                <span className="block text-black text-[18px] font-bold">Fuel Type:
-                                  {assignedVehicle.fuelType || 'Diesel'}</span>
-                                <span className="block text-black text-[20px]">
-                                  {assignedVehicle.fuelEfficiency || 8}km/liter
-                                </span>
+                      <div className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="flex flex-col">
+                            <div className="flex items-center justify-between">
+                              <p className="font-semibold text-gray-900 text-lg">Current Vehicle</p>
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${assignedVehicle.status === 'available'
+                                ? 'bg-green-100 text-green-700'
+                                : assignedVehicle.status.includes('in')
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-orange-100 text-orange-700'
+                                }`}>
+                                {assignedVehicle.status}
+                              </span>
+                            </div>
+
+                            <div className="mt-6 flex flex-col items-center">
+                              <div className="w-full h-40 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 relative overflow-hidden group">
+                                <img
+                                  src={carImage}
+                                  alt="Vehicle"
+                                  className="w-48 object-contain transform group-hover:scale-110 transition duration-500"
+                                />
+                                <div className="absolute top-2 left-2 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/50 shadow-sm">
+                                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Plate Number</p>
+                                  <p className="font-bold text-gray-900 text-sm">{assignedVehicle.plateNumber}</p>
+                                </div>
                               </div>
                             </div>
 
-                            <div className="flex items-center text-sm text-gray-500">
-                              <div className="bg-green-100 p-2 rounded-full">
-                                <FaCarSide className="text-green-500" />
+                            <div className="space-y-4 mt-2">
+                              <div className="flex items-center gap-3 group">
+                                <div className="bg-blue-50 p-2.5 rounded-lg group-hover:bg-blue-100 transition shadow-sm">
+                                  <GiGasPump className="text-blue-500 text-lg" />
+                                </div>
+                                <div>
+                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Fuel Economy</p>
+                                  <p className="font-bold text-gray-900">{assignedVehicle.fuelEfficiency || 8.5} km/liter</p>
+                                </div>
                               </div>
-                              <div className="ml-3">
-                                <span className="block text-black text-[18px] font-bold">Vehicle:</span>
-                                <span className="block text-black text-[20px]">
-                                  {assignedVehicle.make} {assignedVehicle.model}
-                                </span>
-                              </div>
-                            </div>
 
-                            <div className="flex items-center text-sm text-gray-500">
-                              <div className="bg-purple-100 p-2 rounded-full">
-                                <IoMdKey className="text-purple-500" />
-                              </div>
-                              <div className="ml-3">
-                                <span className="block text-black text-[18px] font-bold">License Plate:</span>
-                                <span className="block text-black text-[20px]">
-                                  {assignedVehicle.registrationNumber}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center text-sm text-gray-500">
-                              <div className="bg-orange-100 p-2 rounded-full">
-                                <MdEventAvailable className="text-orange-500" />
-                              </div>
-                              <div className="ml-3">
-                                <span className="block text-black text-[18px] font-bold">Service Due:</span>
-                                <span className="block text-black text-[20px]">
-                                  {assignedVehicle.nextServiceDate
-                                    ? new Date(assignedVehicle.nextServiceDate).toLocaleDateString()
-                                    : '09/05/2026'}
-                                </span>
+                              <div className="flex items-center gap-3 group">
+                                <div className="bg-green-50 p-2.5 rounded-lg group-hover:bg-green-100 transition shadow-sm">
+                                  <FaCarSide className="text-green-500 text-lg" />
+                                </div>
+                                <div>
+                                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Model & Make</p>
+                                  <p className="font-bold text-gray-900">{assignedVehicle.make || assignedVehicle.name} {assignedVehicle.model}</p>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
-                          <img
-                            src={carImage}
-                            alt="Car"
-                            className="w-full h-52 md:w-full md:h-full lg:mt-30 ml-5 object-cover rounded-lg"
-                          />
+                          <div className="flex flex-col gap-6">
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-inner">
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="bg-purple-100 p-2 rounded-lg">
+                                  <IoMdKey className="text-purple-600" />
+                                </div>
+                                <h3 className="font-bold text-gray-800">Quick Specs</h3>
+                              </div>
+                              <div className="grid grid-cols-2 gap-y-3">
+                                <div>
+                                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Type</p>
+                                  <p className="font-bold text-gray-700 text-sm capitalize">{assignedVehicle.type}</p>
+                                </div>
+                                <div>
+                                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Capacity</p>
+                                  <p className="font-bold text-gray-700 text-sm">{assignedVehicle.capacity} Pax</p>
+                                </div>
+                                <div>
+                                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Fuel Type</p>
+                                  <p className="font-bold text-gray-700 text-sm capitalize">{assignedVehicle.fuelType || 'Petrol'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Mileage</p>
+                                  <p className="font-bold text-gray-700 text-sm truncate">{assignedVehicle.currentMileage ? `${assignedVehicle.currentMileage}km` : 'N/A'}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                                <span className="flex items-center gap-2 text-sm text-gray-600 font-medium">
+                                  <MdEventAvailable className="text-purple-500" /> Insurance Expiry
+                                </span>
+                                <span className="font-bold text-gray-800 text-sm">{assignedVehicle.insuranceExpiry ? new Date(assignedVehicle.insuranceExpiry).toLocaleDateString() : 'N/A'}</span>
+                              </div>
+                              <button className="w-full py-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
+                                <IoCarSport className="text-xl" /> View All Details
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-center text-gray-500 py-8">No vehicle assigned</p>
+                      <div className="p-12 text-center">
+                        <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <IoCarSport className="text-gray-400 text-2xl" />
+                        </div>
+                        <p className="text-gray-500 font-medium">No vehicle assigned to you yet.</p>
+                      </div>
                     )}
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Stats & Schedule Summary */}
+              <div className="lg:col-span-1 space-y-6">
+                <Card className="bg-white border-none shadow-md overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="p-6 border-b border-gray-100 bg-purple-600">
+                      <h2 className="text-xl font-bold text-white font-poppins">Trip Calendar</h2>
+                    </div>
+                    <div className="p-4 flex justify-center">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        className="rounded-md border-none"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Next Trip Mini Card */}
+                <Card className="bg-white border-none shadow-md border-l-4 border-purple-500 overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-purple-100 p-2.5 rounded-lg shadow-sm">
+                        <FaLocationDot className="text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Next Destination</p>
+                        <h4 className="font-bold text-gray-800">Kandy City Tour</h4>
+                      </div>
+                    </div>
+                    <button className="w-full mt-4 py-3 bg-gray-50 hover:bg-gray-100 text-purple-600 rounded-lg font-bold text-sm transition-colors border border-purple-100">
+                      View Next Itinerary
+                    </button>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

@@ -260,7 +260,7 @@ const MapView = () => {
             <div className="flex-1 relative">
                 {/* Map */}
                 {mapLocations.length > 0 ? (
-                    <ItineraryMap locations={mapLocations} height="100%" />
+                    <ItineraryMap locations={mapLocations as any} height="100%" />
                 ) : (
                     <div className="flex items-center justify-center h-full text-gray-500">
                         <p>No map data available</p>

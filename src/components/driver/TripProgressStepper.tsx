@@ -147,7 +147,7 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
             {locations && locations.length > 0 && (
                 <div className="relative pt-6 pb-4 overflow-x-auto">
                     <div className="flex justify-between items-start relative min-w-max px-4">
-                        {locations.map((location, index) => (
+                        {locations.map((location, _index) => (
                             <div key={location.id} className="flex flex-col items-center relative" style={{ flex: 1, minWidth: '100px' }}>
                                 {/* Marker Dot */}
                                 <div className={`

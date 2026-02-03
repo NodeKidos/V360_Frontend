@@ -6,7 +6,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import staffService from "../../../services/staff.service";
-import { CountrySelect } from "../../ui/CountrySelect";
+// import { CountrySelect } from "../../ui/CountrySelect";
 import { PhoneInput } from "../../ui/PhoneInput";
 
 export default function AddStaff() {
@@ -66,7 +66,7 @@ export default function AddStaff() {
                 gender: staffData.gender as "Male" | "Female",
                 age: parseInt(staffData.age),
                 accessLevel: staffData.accessLevel as "Staff" | "Admin" | "Manager",
-                status: staffData.status as "Block" | "Unblock",
+                status: staffData.status === "Unblock" ? "active" : "inactive",
             });
 
             toast.success("Staff added successfully!", {
@@ -87,7 +87,7 @@ export default function AddStaff() {
                 // Check multiple possible locations for error details
                 const errorData = error.response?.data || {};
                 const errorString = JSON.stringify(errorData).toLowerCase();
-                const errorDetail = errorData.detail || errorData.message || errorData.error || '';
+                // const errorDetail = errorData.detail || errorData.message || errorData.error || '';
 
                 // Check if it's a duplicate/unique constraint error
                 if (errorString.includes('duplicate') ||

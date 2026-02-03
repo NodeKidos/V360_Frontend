@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useDroppable } from '@dnd-kit/core';
 import { FaMapMarkerAlt, FaHotel, FaHiking, FaTimes } from 'react-icons/fa';
 

@@ -130,7 +130,7 @@ const ItineraryTimeline = ({ itineraryId }: ItineraryTimelineProps) => {
 
                 {/* Timeline items */}
                 <div className="space-y-4">
-                    {timeline.map((log, index) => (
+                    {timeline.map((log, _index) => (
                         <div key={log.id} className="relative flex gap-4">
                             {/* Icon */}
                             <div
@@ -163,14 +163,14 @@ const ItineraryTimeline = ({ itineraryId }: ItineraryTimelineProps) => {
                                     </div>
                                     <span
                                         className={`px-2 py-1 text-xs font-medium rounded-full ${log.action === 'CREATE'
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : log.action === 'UPDATE'
-                                                    ? 'bg-orange-100 text-orange-700'
-                                                    : log.action === 'DELETE'
-                                                        ? 'bg-red-100 text-red-700'
-                                                        : log.action === 'STATUS_CHANGE'
-                                                            ? 'bg-purple-100 text-purple-700'
-                                                            : 'bg-gray-100 text-gray-700'
+                                            ? 'bg-blue-100 text-blue-700'
+                                            : log.action === 'UPDATE'
+                                                ? 'bg-orange-100 text-orange-700'
+                                                : log.action === 'DELETE'
+                                                    ? 'bg-red-100 text-red-700'
+                                                    : log.action === 'STATUS_CHANGE'
+                                                        ? 'bg-purple-100 text-purple-700'
+                                                        : 'bg-gray-100 text-gray-700'
                                             }`}
                                     >
                                         {log.action.replace('_', ' ')}

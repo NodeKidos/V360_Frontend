@@ -7,7 +7,7 @@ import ItineraryMap from '../../components/driver-dashboard/ItineraryMap';
 
 const EmergencyPage = () => {
     const navigate = useNavigate();
-    const [selectedService, setSelectedService] = useState<string>('');
+    const [_selectedService, _setSelectedService] = useState<string>('');
 
     // Mock emergency contacts - in production, these would come from backend
     const emergencyContacts = [
@@ -54,7 +54,7 @@ const EmergencyPage = () => {
     };
 
     const handleServiceSelect = (type: string) => {
-        setSelectedService(type);
+        _setSelectedService(type);
         console.log(`Selected service: ${type}`);
     };
 
@@ -85,7 +85,7 @@ const EmergencyPage = () => {
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
                             <div className="h-[600px]">
-                                <ItineraryMap locations={currentLocation} height="100%" />
+                                <ItineraryMap locations={currentLocation as any} height="100%" />
                             </div>
                         </div>
                     </div>

@@ -56,11 +56,22 @@ export interface ItinerarySchedule {
 export interface Vehicle {
   id: string;
   name: string;
+  make?: string;
+  model: string;
+  year?: number;
   type: string;
   plateNumber: string;
+  registrationNumber?: string;
   capacity: number;
   status: string;
+  fuelType?: string;
+  fuelEfficiency?: number;
+  mileage?: number;
+  color?: string;
   insuranceExpiry?: string;
+  lastServiceDate?: string;
+  nextServiceDate?: string;
+  features?: string[];
   currentMileage?: number;
 }
 

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion"; // Import motion from Framer Motion
 import { FaStar } from "react-icons/fa"; // Star Icon for ratings
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import excursionService, { type Excursion } from "../../../services/excursion.service";
+import excursionService from "../../../services/excursion.service";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -64,7 +64,7 @@ export default function ExDetails() {
   if (loading) {
     return (
       <div className="h-screen bg-white flex overflow-hidden">
-        <Sidebar collapsed={false} setCollapsed={() => {}} isMobile={isMobile} sidebarOpen={false} setSidebarOpen={() => {}} />
+        <Sidebar collapsed={false} setCollapsed={() => { }} isMobile={isMobile} sidebarOpen={false} setSidebarOpen={() => { }} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500 text-lg">Loading excursion details...</p>
         </div>
@@ -75,7 +75,7 @@ export default function ExDetails() {
   if (!excursion) {
     return (
       <div className="h-screen bg-white flex overflow-hidden">
-        <Sidebar collapsed={false} setCollapsed={() => {}} isMobile={isMobile} sidebarOpen={false} setSidebarOpen={() => {}} />
+        <Sidebar collapsed={false} setCollapsed={() => { }} isMobile={isMobile} sidebarOpen={false} setSidebarOpen={() => { }} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500 text-lg">Excursion not found</p>
         </div>
@@ -85,19 +85,19 @@ export default function ExDetails() {
 
   return (
     <div className="h-screen bg-white flex overflow-hidden">
-      <Sidebar collapsed={false} setCollapsed={() => {}} isMobile={isMobile} sidebarOpen={false} setSidebarOpen={() => {}} />
+      <Sidebar collapsed={false} setCollapsed={() => { }} isMobile={isMobile} sidebarOpen={false} setSidebarOpen={() => { }} />
 
       {/* MAIN */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         <div className="p-4 md:p-6 lg:p-8">
-          <TopBar isMobile={isMobile} setSidebarOpen={() => {}} />
+          <TopBar isMobile={isMobile} setSidebarOpen={() => { }} />
 
           {/* Back Button */}
           <button
             onClick={() => navigate('/destination-hotel?tab=excursion')}
             className="flex items-center text-black text-[16px] font-poppins mt-4 mb-4 hover:text-[#B749DB]"
           >
-            <MdKeyboardArrowLeft/> Back to Excursions
+            <MdKeyboardArrowLeft /> Back to Excursions
           </button>
 
           {/* Card Container */}
@@ -180,8 +180,8 @@ export default function ExDetails() {
                         {excursion.minParticipants && excursion.maxParticipants
                           ? `${excursion.minParticipants} - ${excursion.maxParticipants}`
                           : excursion.minParticipants
-                          ? `Min: ${excursion.minParticipants}`
-                          : `Max: ${excursion.maxParticipants}`}
+                            ? `Min: ${excursion.minParticipants}`
+                            : `Max: ${excursion.maxParticipants}`}
                       </span>
                     </div>
                   )}

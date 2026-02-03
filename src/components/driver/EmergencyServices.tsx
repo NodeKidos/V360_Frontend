@@ -1,11 +1,11 @@
 import React from 'react';
-import { MdLocalPolice, MdLocalHospital, MdLocalFireDepartment, MdDirectionsCar } from 'react-icons/md';
+import { MdLocalPolice, /* MdLocalHospital, */ MdLocalFireDepartment, MdDirectionsCar } from 'react-icons/md';
 import { FaAmbulance } from 'react-icons/fa';
 
 interface EmergencyService {
     type: 'driver' | 'ambulance' | 'police' | 'firefighter';
     label: string;
-    icon: JSX.Element;
+    icon: React.ReactNode;
     color: string;
 }
 

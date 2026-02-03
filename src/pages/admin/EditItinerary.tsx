@@ -1137,12 +1137,12 @@ const EditItinerary = () => {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-gray-600 mb-1">Assigned Driver</p>
-                                <p className="font-semibold text-gray-900">{itinerary.driver.user ? `${itinerary.driver.user.firstName} ${itinerary.driver.user.lastName} ` : 'Unknown'}</p>
-                                <p className="text-sm text-gray-600">{itinerary.driver.user?.email}</p>
-                                <p className="text-sm text-gray-600">{itinerary.driver.user?.contact || itinerary.driver.user?.phone}</p>
+                                <p className="font-semibold text-gray-900">{itinerary?.driver?.user ? `${itinerary?.driver?.user?.firstName} ${itinerary?.driver?.user?.lastName} ` : 'Unknown'}</p>
+                                <p className="text-sm text-gray-600">{itinerary?.driver?.user?.email}</p>
+                                <p className="text-sm text-gray-600">{itinerary?.driver?.user?.contact || itinerary?.driver?.user?.phone}</p>
                                 {itinerary?.assignedAt && (
                                   <p className="text-xs text-gray-500 mt-1">
-                                    Assigned: {new Date(itinerary.assignedAt as string).toLocaleDateString()}
+                                    Assigned: {new Date(itinerary?.assignedAt as string).toLocaleDateString()}
                                   </p>
                                 )}
                               </div>
@@ -1488,14 +1488,14 @@ const EditItinerary = () => {
                       <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {destinations
                           .filter((d) => formData.selectedCities?.includes(d.name))
-                          .map((d, i) => {
+                          .map((d, _i) => {
                             const destinationData = formData.selectedDestinations?.[d.name];
                             const hasHotel = !!destinationData?.hotel;
                             const excursionCount = destinationData?.excursions?.length || 0;
 
                             return (
                               <div
-                                key={i}
+                                key={_i}
                                 className="relative rounded-xl overflow-hidden shadow-md ring-4 ring-[#B749DB]"
                               >
                                 <img
@@ -1620,9 +1620,9 @@ const EditItinerary = () => {
                                           <div className="ml-4">
                                             <span className="font-medium text-xs">Room Features:</span>
                                             <div className="flex flex-wrap gap-1 mt-1">
-                                              {day.hotel.features.map((feature: string, i: number) => (
+                                              {day.hotel.features.map((feature: string, _i: number) => (
                                                 <span
-                                                  key={i}
+                                                  key={_i}
                                                   className="px-2 py-1 bg-[#F8EDFC] border border-[#D9B7F2] text-[#5B247A] rounded-full text-xs"
                                                 >
                                                   {feature}
@@ -1637,8 +1637,8 @@ const EditItinerary = () => {
                                       <div>
                                         <span className="font-medium">Excursions:</span>
                                         <ul className="ml-4 list-disc">
-                                          {day.excursions.map((exc: any, i: number) => (
-                                            <li key={i}>{exc.name}</li>
+                                          {day.excursions.map((exc: any, _i: number) => (
+                                            <li key={_i}>{exc.name}</li>
                                           ))}
                                         </ul>
                                       </div>

@@ -1,9 +1,5 @@
-// TEMP FILE - Complete rewrite of DriverItineraryView to use backend location progress
-// This will replace the existing implementation
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaBell } from 'react-icons/fa';
 import Sidebar from '../../components/AdminSidebar';
 import TopBar from '../../components/Topbar';
 import CustomerInfoCard from '../../components/driver/CustomerInfoCard';

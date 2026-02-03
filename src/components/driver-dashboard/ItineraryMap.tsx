@@ -117,11 +117,11 @@ const ItineraryMap: React.FC<ItineraryMapProps> = ({
     const markers: L.Marker[] = [];
     const routeCoordinates: L.LatLngExpression[] = [];
 
-    locations.forEach((location, index) => {
+    locations.forEach((location, _index) => {
       const latLng: L.LatLngExpression = [location.lat, location.lng];
       routeCoordinates.push(latLng);
 
-      const marker = L.marker(latLng, { icon: getMarkerIcon(location.type) })
+      const marker = L.marker(latLng, { icon: getMarkerIcon(location.type as any) })
         .addTo(map)
         .bindPopup(`
           <div style="font-family: 'Poppins', sans-serif; padding: 8px; min-width: 200px;">

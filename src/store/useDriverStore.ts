@@ -9,8 +9,8 @@ interface DriverState {
     isLoadingItineraries: boolean;
     isLoadingSchedule: boolean;
 
-    // Vehicles (now supports multiple)
-    assignedVehicles: any[];
+    // Vehicles
+    assignedVehicles: Vehicle[];
     isLoadingVehicles: boolean;
 
     // Actions
@@ -56,7 +56,7 @@ export const useDriverStore = create<DriverState>((set) => ({
         }
     },
 
-    // Fetch assigned vehicles (now returns array)
+    // Fetch assigned vehicles
     fetchAssignedVehicles: async () => {
         set({ isLoadingVehicles: true });
         try {
@@ -84,7 +84,7 @@ export const useDriverStore = create<DriverState>((set) => ({
         } catch (error: any) {
             console.error('Failed to update status:', error);
             toast.error(error.response?.data?.message || 'Failed to update trip status');
-            throw error; // Re-throw so caller knows it failed
+            throw error;
         }
     },
 

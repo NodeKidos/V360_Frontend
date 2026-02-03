@@ -1,8 +1,7 @@
-import { useState, useEffect, type SetStateAction } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../AdminSidebar";
-import TopBar from "../Topbar"; // Import TopBar
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { motion } from "framer-motion";
+import TopBar from "../Topbar";
+// import { useNavigate } from "react-router-dom";
 import { CiSearch } from "react-icons/ci";
 
 // Import images from the src folder
@@ -11,8 +10,20 @@ import Img2 from "../../assets/vehicledetails/img2.png";
 import Img3 from "../../assets/vehicledetails/img3.png";
 import Img4 from "../../assets/vehicledetails/img4.png";
 
+interface Vehicle {
+  id: string;
+  name: string;
+  model: string;
+  type: string;
+  plate: string;
+  seatCount: number;
+  images: string[];
+  status: string;
+  note: string;
+}
+
 // Vehicle Details - Now includes two vehicles
-const vehicleDetails = [
+const vehicleDetails: Vehicle[] = [
   {
     id: "VI1001",
     name: "TOYOTA CAMRY",
@@ -20,9 +31,9 @@ const vehicleDetails = [
     type: "Car",
     plate: "NP QI-9504",
     seatCount: 3,
-    images: [Img1, Img2, Img3, Img4], // Added the images
-    status: "Active", // Default status is Active
-    note: "", // Note for the vehicle
+    images: [Img1, Img2, Img3, Img4],
+    status: "Active",
+    note: "",
   },
   {
     id: "VI1002",
@@ -31,27 +42,22 @@ const vehicleDetails = [
     type: "Car",
     plate: "NP QI-9505",
     seatCount: 5,
-    images: [Img1, Img2, Img3, Img4], // Reuse or add different images
-    status: "In Service", // Default status is In Service
-    note: "", // Note for the vehicle
+    images: [Img1, Img2, Img3, Img4],
+    status: "In Service",
+    note: "",
   },
 ];
 
 const VehicleDetails = () => {
-  const [step, setStep] = useState(1);
-  const [showDetails, setShowDetails] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [vehicles, setVehicles] = useState(vehicleDetails);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(vehicleDetails);
   const [showModal, setShowModal] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [note, setNote] = useState("");
-  const [modalType, setModalType] = useState(""); // To differentiate between "Need Repair" and "In Service"
-
-  const navigate = useNavigate(); // Initialize navigate function
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,37 +69,22 @@ const VehicleDetails = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const prevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      setShowDetails(false);
-    }
-  };
-
-  const handleButtonClick = (vehicleId: string, status: any) => {
-    // Update vehicle status
-    const updatedVehicles = vehicles.map((vehicle) =>
-      vehicle.id === vehicleId ? { ...vehicle, status } : vehicle
-    );
-    setVehicles(updatedVehicles);
-  };
-
-  const openModal = (vehicle: SetStateAction<null>, type: SetStateAction<string>) => {
-    // Only open the modal if the status is "Need Repair", "In Service", or "Active"
+  const openModal = (vehicle: Vehicle, type: string) => {
     if (type === "Need Repair" || type === "In Service" || type === "Active") {
       setSelectedVehicle(vehicle);
-      setModalType(type);
       setShowModal(true);
     }
   };
 
   const handleSaveNote = () => {
+    if (!selectedVehicle) return;
+
     const updatedVehicles = vehicles.map((vehicle) =>
       vehicle.id === selectedVehicle.id ? { ...vehicle, note } : vehicle
     );
     setVehicles(updatedVehicles);
     setShowModal(false);
-    setNote(""); // Reset note field
+    setNote("");
   };
 
   return (
@@ -117,13 +108,13 @@ const VehicleDetails = () => {
           />
           <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
             <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
-              Schedule of Trip
+              Vehicle Details
             </h2>
           </div>
           {/* TITLE - Mobile */}
           <div className="mb-4 mt-4 md:hidden">
             <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
-              Schedule of Trip
+              Vehicle Details
             </h2>
           </div>
 
@@ -145,10 +136,8 @@ const VehicleDetails = () => {
           {vehicles.map((vehicle) => (
             <div key={vehicle.id} className="mt-6 lg:ml-5 lg:mr-5 bg-[#B723F2]/5 border border-[#B723F2] p-4 rounded-[25px] font-poppins">
               <div className="flex justify-between items-start mb-4">
-                {/* Vehicle Information Heading */}
                 <h2 className="text-[20px] font-semibold">Vehicle Information</h2>
 
-                {/* Buttons for "Need Repair", "In Service", "Active" */}
                 <div className="flex space-x-4">
                   <button
                     className={`bg-white border border-[#B723F2] text-black p-3 rounded-[15px] font-roboto-condensed ${vehicle.status === "Need Repair" ? "bg-red-500" : ""}`}
@@ -171,7 +160,7 @@ const VehicleDetails = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 pl-15 text-[18px] font-roboto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 lg:pl-16 text-[18px] font-roboto text-gray-800">
                 <div className="mb-2">
                   <span className="font-semibold">Vehicle Id:</span> {vehicle.id}
                 </div>
@@ -195,7 +184,7 @@ const VehicleDetails = () => {
               {/* Vehicle Images */}
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 {vehicle.images.map((img, index) => (
-                  <img key={index} src={img} alt={`Vehicle Image ${index + 1}`} className="w-50 lg:w-full h-50 rounded-lg shadow-md" />
+                  <img key={index} src={img} alt={`Vehicle Image ${index + 1}`} className="w-full aspect-square object-cover rounded-lg shadow-md" />
                 ))}
               </div>
             </div>
@@ -206,8 +195,8 @@ const VehicleDetails = () => {
 
       {/* Modal for writing a note */}
       {showModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-gray-900/40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-96">
+        <div className="fixed inset-0 z-50 bg-black/40 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-96 shadow-xl">
             <h3 className="text-xl font-semibold mb-4">
               Add a Note for {selectedVehicle?.name}
             </h3>
@@ -217,28 +206,27 @@ const VehicleDetails = () => {
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full h-32 p-2 border border-gray-300 rounded-lg"
+              className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none"
               placeholder="Enter note here..."
             />
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-6 gap-3">
               <button
-                className="bg-blue-500 text-white p-2 rounded-lg mr-2"
-                onClick={handleSaveNote}
-              >
-                Submit
-              </button>
-              <button
-                className="bg-gray-500 text-white p-2 rounded-lg"
+                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
+              </button>
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                onClick={handleSaveNote}
+              >
+                Submit
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-
   );
 };
 

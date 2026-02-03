@@ -25,7 +25,7 @@ const DestinationTimeline: React.FC<DestinationTimelineProps> = ({ cityName, loc
 
                 {/* Timeline Items */}
                 <div className="space-y-6">
-                    {locations.map((location, index) => (
+                    {locations.map((location, _index) => (
                         <div key={location.id} className="relative flex items-center gap-4">
                             {/* Marker */}
                             <div className="absolute -left-8 flex items-center justify-center">
