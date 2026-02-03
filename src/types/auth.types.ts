@@ -32,6 +32,7 @@ export type User = {
   role: UserRole;
   status: UserStatus;
   emailVerified: boolean;
+  profileImage?: string;
   createdAt: string;
   updatedAt: string;
 }

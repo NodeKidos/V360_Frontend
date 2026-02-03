@@ -208,6 +208,21 @@ class UserService {
         const response = await api.put('/users/me/password', data);
         return response.data;
     }
+
+    /**
+     * Upload profile image
+     */
+    async uploadProfileImage(file: File): Promise<{ profileImage: string }> {
+        const formData = new FormData();
+        formData.append('profileImage', file);
+
+        const response = await api.post('/users/me/profile-image', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
 }
 
 export default new UserService();

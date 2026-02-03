@@ -22,6 +22,7 @@ interface AuthState {
   register: (data: any) => Promise<boolean>;
   logout: () => void;
   loadUserFromStorage: () => void;
+  updateUser: (updatedData: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -260,5 +261,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
 
     toast.info("Logged out successfully");
+  },
+
+  // Update user in state and storage
+  updateUser: (updatedData: Partial<User>) => {
+    const { user } = get();
+    if (user) {
+      const newUser = { ...user, ...updatedData };
+      localStorage.setItem("user", JSON.stringify(newUser));
+      set({ user: newUser });
+    }
   },
 }));

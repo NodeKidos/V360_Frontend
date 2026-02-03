@@ -81,6 +81,42 @@ export const adminDriverService = {
   },
 
   createDriver: async (data: any): Promise<any> => {
+    // Helper to check for files anywhere in the object/array
+    const containsFiles = (obj: any): boolean => {
+      if (obj instanceof File) return true;
+      if (Array.isArray(obj)) return obj.some(containsFiles);
+      if (typeof obj === 'object' && obj !== null) {
+        return Object.values(obj).some(containsFiles);
+      }
+      return false;
+    };
+
+    const hasFiles = containsFiles(data);
+
+    if (hasFiles) {
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        if (data[key] !== undefined && data[key] !== null) {
+          if (Array.isArray(data[key])) {
+            data[key].forEach((val: any) => {
+              // Use plain key for both files and strings, NestJS handles arrays automatically
+              formData.append(key, val);
+            });
+          } else {
+            formData.append(key, data[key]);
+          }
+        }
+      });
+
+      const response = await axios.post(`${API_URL}/drivers`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    }
+
     const response = await axios.post(`${API_URL}/drivers`, data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -90,6 +126,42 @@ export const adminDriverService = {
   },
 
   updateDriver: async (id: string, data: any): Promise<any> => {
+    // Helper to check for files anywhere in the object/array
+    const containsFiles = (obj: any): boolean => {
+      if (obj instanceof File) return true;
+      if (Array.isArray(obj)) return obj.some(containsFiles);
+      if (typeof obj === 'object' && obj !== null) {
+        return Object.values(obj).some(containsFiles);
+      }
+      return false;
+    };
+
+    const hasFiles = containsFiles(data);
+
+    if (hasFiles) {
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        if (data[key] !== undefined && data[key] !== null) {
+          if (Array.isArray(data[key])) {
+            data[key].forEach((val: any) => {
+              // Use plain key for both files and strings, NestJS handles arrays automatically
+              formData.append(key, val);
+            });
+          } else {
+            formData.append(key, data[key]);
+          }
+        }
+      });
+
+      const response = await axios.put(`${API_URL}/drivers/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    }
+
     const response = await axios.put(`${API_URL}/drivers/${id}`, data, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -102,6 +174,34 @@ export const adminDriverService = {
     const response = await axios.delete(`${API_URL}/drivers/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    return response.data;
+  },
+
+  uploadLicenseImage: async (driverId: string, file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('licenseImage', file);
+
+    const response = await axios.put(`${API_URL}/drivers/${driverId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  uploadLicenseDocuments: async (driverId: string, files: File[]): Promise<any> => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('licenseImage', file);
+    });
+
+    const response = await axios.put(`${API_URL}/drivers/${driverId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Content-Type': 'multipart/form-data',
       },
     });
     return response.data;
