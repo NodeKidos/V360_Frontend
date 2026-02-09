@@ -141,6 +141,15 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
         socket.on('connect_error', (error: any) => {
             console.error('❌ WebSocket connection error:', error);
+
+            // Handle token expiration or unauthorized errors from WebSocket
+            if (error?.message === 'TokenExpiredError' || error?.data?.code === 'UNAUTHORIZED' || error?.message?.includes('unauthorized') || error?.message?.includes('jwt expired')) {
+                console.warn('🔑 Session expired (WebSocket), logging out...');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
         });
 
         set({ socket });

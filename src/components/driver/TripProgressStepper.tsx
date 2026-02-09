@@ -12,6 +12,8 @@ interface Location {
 interface TripProgressStepperProps {
     dayNumber: number;
     date?: string;
+    title?: string;
+    description?: string;
     destination?: any;
     hotel?: any;
     excursions?: any[];
@@ -23,6 +25,8 @@ interface TripProgressStepperProps {
 const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
     dayNumber,
     date,
+    title,
+    description,
     destination,
     hotel,
     excursions = [],
@@ -31,6 +35,7 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
     status = 'not-started'
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const isPostponed = title === 'Schedule Adjustment';
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return '';
@@ -42,6 +47,7 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
     };
 
     const getStatusColor = () => {
+        if (isPostponed && locations.length === 0) return 'bg-amber-50 border-amber-500';
         switch (status) {
             case 'completed': return 'bg-green-100 border-green-500';
             case 'in-progress': return 'bg-blue-100 border-blue-500';
@@ -75,72 +81,92 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
                         <div className="flex items-baseline gap-3 mb-1">
                             <h4 className="text-xl font-bold text-gray-800 font-poppins">Day {dayNumber}</h4>
                             {date && <p className="text-sm text-gray-500">{formatDate(date)}</p>}
+                            {isPostponed && (
+                                <span className="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded-full ml-auto">
+                                    POSTPONED
+                                </span>
+                            )}
                         </div>
+
+                        {isPostponed && !destination && (
+                            <div className="mt-3 p-3 bg-white border border-amber-200 rounded-lg shadow-sm">
+                                <p className="text-amber-800 text-sm font-bold flex items-center gap-2">
+                                    ⚠️ Schedule Adjustment
+                                </p>
+                                <p className="text-amber-700 text-sm italic mt-1 font-medium">
+                                    {description || 'This day has been postponed.'}
+                                </p>
+                            </div>
+                        )}
 
                         {/* Destination & Hotel inline */}
-                        <div className="flex flex-wrap items-center gap-4 mt-2">
-                            {destination && (
-                                <div className="flex items-center gap-2">
-                                    <FaMapMarkerAlt className="text-purple-600" size={16} />
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase font-semibold">Destination</p>
-                                        <p className="text-sm font-bold text-gray-800">{destination.name}</p>
+                        {!isPostponed || destination ? (
+                            <div className="flex flex-wrap items-center gap-4 mt-2">
+                                {destination && (
+                                    <div className="flex items-center gap-2">
+                                        <FaMapMarkerAlt className="text-purple-600" size={16} />
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Destination</p>
+                                            <p className="text-sm font-bold text-gray-800">{destination.name}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {hotel && (
-                                <div className="flex items-center gap-2">
-                                    <FaHotel className="text-amber-600" size={16} />
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase font-semibold">Hotel</p>
-                                        <p className="text-sm font-bold text-gray-800">{hotel.name}</p>
+                                {hotel && (
+                                    <div className="flex items-center gap-2">
+                                        <FaHotel className="text-amber-600" size={16} />
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase font-semibold">Hotel</p>
+                                            <p className="text-sm font-bold text-gray-800">{hotel.name}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        ) : null}
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 flex-shrink-0">
-                    <button
-                        onClick={() => onStatusChange?.(locations[0]?.id, 'start')}
-                        disabled={status !== 'not-started'}
-                        className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'not-started'
-                            ? 'border-purple-600 text-purple-600 hover:bg-purple-50'
-                            : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
-                            }`}
-                    >
-                        Start
-                    </button>
-                    <button
-                        onClick={() => {
-                            // Find current location and mark as arrived
-                            const currentLoc = locations?.find(loc => loc.current);
-                            if (currentLoc) {
-                                onStatusChange?.(currentLoc.id, 'arrived');
-                            }
-                        }}
-                        disabled={status !== 'in-progress'}
-                        className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'in-progress'
-                            ? 'border-blue-600 text-blue-600 hover:bg-blue-50'
-                            : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
-                            }`}
-                    >
-                        Arrived
-                    </button>
-                    <button
-                        onClick={() => onStatusChange?.(locations[locations.length - 1]?.id, 'finished')}
-                        disabled={status !== 'in-progress'}
-                        className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'in-progress'
-                            ? 'border-purple-600 text-purple-600 hover:bg-purple-50'
-                            : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
-                            }`}
-                    >
-                        Finish Day
-                    </button>
-                </div>
+                {!isPostponed || destination ? (
+                    <div className="flex gap-3 flex-shrink-0">
+                        <button
+                            onClick={() => onStatusChange?.(locations[0]?.id, 'start')}
+                            disabled={status !== 'not-started'}
+                            className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'not-started'
+                                ? 'border-purple-600 text-purple-600 hover:bg-purple-50'
+                                : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
+                                }`}
+                        >
+                            Start
+                        </button>
+                        <button
+                            onClick={() => {
+                                // Find current location and mark as arrived
+                                const currentLoc = locations?.find(loc => loc.current);
+                                if (currentLoc) {
+                                    onStatusChange?.(currentLoc.id, 'arrived');
+                                }
+                            }}
+                            disabled={status !== 'in-progress'}
+                            className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'in-progress'
+                                ? 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                                : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
+                                }`}
+                        >
+                            Arrived
+                        </button>
+                        <button
+                            onClick={() => onStatusChange?.(locations[locations.length - 1]?.id, 'finished')}
+                            disabled={status !== 'in-progress'}
+                            className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'in-progress'
+                                ? 'border-purple-600 text-purple-600 hover:bg-purple-50'
+                                : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
+                                }`}
+                        >
+                            Finish Day
+                        </button>
+                    </div>
+                ) : null}
             </div>
 
             {/* Horizontal Progress Stepper */}

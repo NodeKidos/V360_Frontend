@@ -135,6 +135,12 @@ export const itineraryService = {
     const response = await api.patch<Itinerary>(`/itineraries/${id}/status`, { status });
     return response.data;
   },
+
+  // Reschedule a day plan (admin/staff)
+  rescheduleDay: async (id: string, dayNumber: number, reason: string): Promise<Itinerary> => {
+    const response = await api.patch<Itinerary>(`/itineraries/${id}/days/${dayNumber}/reschedule`, { reason });
+    return response.data;
+  },
 };
 
 export default itineraryService;

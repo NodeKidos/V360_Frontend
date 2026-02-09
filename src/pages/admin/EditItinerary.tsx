@@ -1680,6 +1680,8 @@ const EditItinerary = () => {
                         const daysUpdate = dayPlans.map((plan) => ({
                           dayNumber: plan.dayNumber,
                           date: plan.date,
+                          title: plan.title,
+                          description: plan.description,
                           destinationId: plan.destination?.id,
                           hotelId: plan.hotel?.id,
                           excursionIds: plan.excursions.map((ex) => ex.id),
@@ -1695,6 +1697,17 @@ const EditItinerary = () => {
                         setItinerary(updated);
                       } catch (error) {
                         console.error("Failed to save day plans:", error);
+                        throw error;
+                      }
+                    }}
+                    onReschedule={async (dayNumber, reason) => {
+                      try {
+                        await itineraryService.rescheduleDay(itinerary.id, dayNumber, reason);
+                        // Refresh itinerary data
+                        const updated = await itineraryService.getById(itinerary.id);
+                        setItinerary(updated);
+                      } catch (error) {
+                        console.error("Failed to reschedule day:", error);
                         throw error;
                       }
                     }}

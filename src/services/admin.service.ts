@@ -1,7 +1,4 @@
 import api from './api';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
 export interface DashboardStats {
   totalUsers: number;
@@ -60,122 +57,28 @@ export interface Driver {
 
 export const adminDriverService = {
   getAllDrivers: async (): Promise<{ drivers: Driver[] }> => {
-    const response = await axios.get(`${API_URL}/drivers`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const response = await api.get('/drivers');
     console.log('📥 Drivers API response:', response.data);
-    // Backend already returns { drivers: [...], total, page, limit, totalPages }
-    // Just return it as is
     return response.data;
   },
 
   getDriverById: async (id: string): Promise<any> => {
-    const response = await axios.get(`${API_URL}/drivers/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const response = await api.get(`/drivers/${id}`);
     return response.data;
   },
 
   createDriver: async (data: any): Promise<any> => {
-    // Helper to check for files anywhere in the object/array
-    const containsFiles = (obj: any): boolean => {
-      if (obj instanceof File) return true;
-      if (Array.isArray(obj)) return obj.some(containsFiles);
-      if (typeof obj === 'object' && obj !== null) {
-        return Object.values(obj).some(containsFiles);
-      }
-      return false;
-    };
-
-    const hasFiles = containsFiles(data);
-
-    if (hasFiles) {
-      const formData = new FormData();
-      Object.keys(data).forEach(key => {
-        if (data[key] !== undefined && data[key] !== null) {
-          if (Array.isArray(data[key])) {
-            data[key].forEach((val: any) => {
-              // Use plain key for both files and strings, NestJS handles arrays automatically
-              formData.append(key, val);
-            });
-          } else {
-            formData.append(key, data[key]);
-          }
-        }
-      });
-
-      const response = await axios.post(`${API_URL}/drivers`, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    }
-
-    const response = await axios.post(`${API_URL}/drivers`, data, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const response = await api.post('/drivers', data);
     return response.data;
   },
 
   updateDriver: async (id: string, data: any): Promise<any> => {
-    // Helper to check for files anywhere in the object/array
-    const containsFiles = (obj: any): boolean => {
-      if (obj instanceof File) return true;
-      if (Array.isArray(obj)) return obj.some(containsFiles);
-      if (typeof obj === 'object' && obj !== null) {
-        return Object.values(obj).some(containsFiles);
-      }
-      return false;
-    };
-
-    const hasFiles = containsFiles(data);
-
-    if (hasFiles) {
-      const formData = new FormData();
-      Object.keys(data).forEach(key => {
-        if (data[key] !== undefined && data[key] !== null) {
-          if (Array.isArray(data[key])) {
-            data[key].forEach((val: any) => {
-              // Use plain key for both files and strings, NestJS handles arrays automatically
-              formData.append(key, val);
-            });
-          } else {
-            formData.append(key, data[key]);
-          }
-        }
-      });
-
-      const response = await axios.put(`${API_URL}/drivers/${id}`, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    }
-
-    const response = await axios.put(`${API_URL}/drivers/${id}`, data, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const response = await api.put(`/drivers/${id}`, data);
     return response.data;
   },
 
   deleteDriver: async (id: string): Promise<any> => {
-    const response = await axios.delete(`${API_URL}/drivers/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
+    const response = await api.delete(`/drivers/${id}`);
     return response.data;
   },
 
@@ -183,12 +86,7 @@ export const adminDriverService = {
     const formData = new FormData();
     formData.append('licenseImage', file);
 
-    const response = await axios.put(`${API_URL}/drivers/${driverId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.put(`/drivers/${driverId}`, formData);
     return response.data;
   },
 
@@ -198,12 +96,7 @@ export const adminDriverService = {
       formData.append('licenseImage', file);
     });
 
-    const response = await axios.put(`${API_URL}/drivers/${driverId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.put(`/drivers/${driverId}`, formData);
     return response.data;
   },
 };

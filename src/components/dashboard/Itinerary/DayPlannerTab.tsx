@@ -7,6 +7,8 @@ import { DroppableDay } from './DroppableDay';
 interface DayPlan {
     dayNumber: number;
     date: string;
+    title?: string;
+    description?: string;
     destination?: {
         id: string;
         name: string;
@@ -26,11 +28,15 @@ interface DayPlan {
 interface DayPlannerTabProps {
     itinerary: any;
     onSave: (dayPlans: DayPlan[]) => Promise<void>;
+    onReschedule?: (dayNumber: number, reason: string) => Promise<void>;
 }
 
-export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
+export function DayPlannerTab({ itinerary, onSave, onReschedule }: DayPlannerTabProps) {
     const [dayPlans, setDayPlans] = useState<DayPlan[]>([]);
     const [saving, setSaving] = useState(false);
+    const [rescheduling, setRescheduling] = useState(false);
+
+    const isAdmin = true;
 
     // Initialize day plans from itinerary
     useEffect(() => {
@@ -41,7 +47,6 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
         const diffTime = Math.abs(end.getTime() - start.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-        // Create day plans from existing days or empty days
         const plans: DayPlan[] = [];
         for (let i = 0; i < diffDays; i++) {
             const currentDate = new Date(start);
@@ -52,6 +57,8 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
             plans.push({
                 dayNumber: i + 1,
                 date: currentDate.toISOString().split('T')[0],
+                title: existingDay?.title,
+                description: existingDay?.description,
                 destination: existingDay?.destination ? {
                     id: existingDay.destination.id,
                     name: existingDay.destination.name
@@ -72,11 +79,9 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
         setDayPlans(plans);
     }, [itinerary]);
 
-    // Get customer selections from itinerary metadata or formData
     const getCustomerSelections = () => {
         if (!itinerary) return { destinations: [], hotels: [], excursions: [] };
 
-        // Extract unique items from days
         const destinations = new Map();
         const hotels = new Map();
         const excursions = new Map();
@@ -113,7 +118,6 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
 
     const customerSelections = getCustomerSelections();
 
-    // Check if item is already assigned to any day
     const isItemAssigned = (type: 'destination' | 'hotel' | 'excursion', id: string) => {
         return dayPlans.some(plan => {
             if (type === 'destination') return plan.destination?.id === id;
@@ -123,10 +127,8 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
         });
     };
 
-    // Handle drag end
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-
         if (!over) return;
 
         const item = active.data.current;
@@ -134,12 +136,10 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
 
         const dayNumber = parseInt(over.id.toString().replace('day-', ''));
         const dayIndex = dayNumber - 1;
-
         if (dayIndex < 0 || dayIndex >= dayPlans.length) return;
 
         const currentPlan = dayPlans[dayIndex];
 
-        // Validation logic
         if (item.type === 'hotel') {
             if (!currentPlan.destination) {
                 toast.error('Please assign a destination to this day before adding a hotel');
@@ -171,7 +171,6 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
             return;
         }
 
-        // Update day plan
         setDayPlans(prevPlans => {
             const newPlans = [...prevPlans];
             const plan = newPlans[dayIndex];
@@ -183,11 +182,7 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
                 plan.hotel = { id: item.id, name: item.name, destination: item.destination };
                 toast.success(`${item.name} assigned to Day ${dayNumber}`);
             } else if (item.type === 'excursion') {
-                // Check against latest state to prevent duplicates from double-firing events
-                if (plan.excursions.some(ex => ex.id === item.id)) {
-                    console.log('Excursion already exists, skipping duplicate');
-                    return prevPlans; // Return unchanged state
-                }
+                if (plan.excursions.some(ex => ex.id === item.id)) return prevPlans;
                 plan.excursions.push({ id: item.id, name: item.name, destination: item.destination });
                 toast.success(`${item.name} added to Day ${dayNumber}`);
             }
@@ -196,14 +191,12 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
         });
     };
 
-    // Remove item from day
     const handleRemoveItem = (dayNumber: number, type: 'destination' | 'hotel' | 'excursion', id?: string) => {
         setDayPlans(prevPlans => {
             const newPlans = [...prevPlans];
             const plan = newPlans[dayNumber - 1];
 
             if (type === 'destination') {
-                // Clear destination and dependent items
                 const destName = plan.destination?.name;
                 plan.destination = undefined;
                 plan.hotel = undefined;
@@ -223,7 +216,6 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
         });
     };
 
-    // Save day plans
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -237,10 +229,23 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
         }
     };
 
+    const handleReschedule = async (dayNumber: number, reason: string) => {
+        if (!onReschedule) return;
+        setRescheduling(true);
+        try {
+            await onReschedule(dayNumber, reason);
+            toast.success(`Day ${dayNumber} rescheduled successfully`);
+        } catch (error) {
+            console.error('Failed to reschedule day:', error);
+            toast.error('Failed to reschedule day');
+        } finally {
+            setRescheduling(false);
+        }
+    };
+
     return (
         <DndContext onDragEnd={handleDragEnd}>
-            <div className="space-y-6">
-                {/* Header */}
+            <div className={`space-y-6 ${rescheduling ? 'opacity-50 pointer-events-none' : ''}`}>
                 <div className="flex justify-between items-center">
                     <div>
                         <h2 className="text-2xl font-bold text-[#5B247A]">Day-by-Day Planner</h2>
@@ -257,11 +262,8 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
                     </button>
                 </div>
 
-                {/* Main Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    {/* Left Panel - Available Items */}
                     <div className="lg:col-span-1 space-y-4">
-                        {/* Destinations */}
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                 📍 Destinations
@@ -277,13 +279,9 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
                                         isAssigned={isItemAssigned('destination', dest.id)}
                                     />
                                 ))}
-                                {customerSelections.destinations.length === 0 && (
-                                    <p className="text-sm text-gray-400 italic">No destinations selected</p>
-                                )}
                             </div>
                         </div>
 
-                        {/* Hotels */}
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                 🏨 Hotels
@@ -299,13 +297,9 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
                                         isAssigned={isItemAssigned('hotel', hotel.id)}
                                     />
                                 ))}
-                                {customerSelections.hotels.length === 0 && (
-                                    <p className="text-sm text-gray-400 italic">No hotels selected</p>
-                                )}
                             </div>
                         </div>
 
-                        {/* Excursions */}
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                 🎯 Excursions
@@ -321,14 +315,10 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
                                         isAssigned={isItemAssigned('excursion', excursion.id)}
                                     />
                                 ))}
-                                {customerSelections.excursions.length === 0 && (
-                                    <p className="text-sm text-gray-400 italic">No excursions selected</p>
-                                )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Panel - Day Schedule */}
                     <div className="lg:col-span-3">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {dayPlans.map((plan) => (
@@ -336,10 +326,14 @@ export function DayPlannerTab({ itinerary, onSave }: DayPlannerTabProps) {
                                     key={plan.dayNumber}
                                     dayNumber={plan.dayNumber}
                                     date={plan.date}
+                                    title={plan.title}
+                                    description={plan.description}
                                     destination={plan.destination ? { ...plan.destination, type: 'destination' as const } : undefined}
                                     hotel={plan.hotel ? { ...plan.hotel, type: 'hotel' as const } : undefined}
                                     excursions={plan.excursions.map(ex => ({ ...ex, type: 'excursion' as const }))}
                                     onRemoveItem={(type, id) => handleRemoveItem(plan.dayNumber, type, id)}
+                                    onReschedule={handleReschedule}
+                                    isAdmin={isAdmin}
                                 />
                             ))}
                         </div>

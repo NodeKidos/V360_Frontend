@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+import api from './api';
 
 export interface Notification {
     id: string;
@@ -16,53 +14,25 @@ export interface Notification {
 
 export const notificationService = {
     getAll: async (): Promise<Notification[]> => {
-        const response = await axios.get(`${API_URL}/notifications`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            },
-        });
+        const response = await api.get<Notification[]>('/notifications');
         return response.data;
     },
 
     getUnreadCount: async (): Promise<number> => {
-        const response = await axios.get(`${API_URL}/notifications/unread-count`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            },
-        });
+        const response = await api.get<{ count: number }>('/notifications/unread-count');
         return response.data.count;
     },
 
     markAsRead: async (id: string): Promise<Notification> => {
-        const response = await axios.patch(
-            `${API_URL}/notifications/${id}/read`,
-            {},
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
-            }
-        );
+        const response = await api.patch<Notification>(`/notifications/${id}/read`, {});
         return response.data;
     },
 
     markAllAsRead: async (): Promise<void> => {
-        await axios.patch(
-            `${API_URL}/notifications/read-all`,
-            {},
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
-            }
-        );
+        await api.patch('/notifications/read-all', {});
     },
 
     delete: async (id: string): Promise<void> => {
-        await axios.delete(`${API_URL}/notifications/${id}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            },
-        });
+        await api.delete(`/notifications/${id}`);
     },
 };

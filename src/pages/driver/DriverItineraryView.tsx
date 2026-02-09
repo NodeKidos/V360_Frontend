@@ -63,6 +63,8 @@ const DriverItineraryView = () => {
         return {
             dayNumber,
             date: day.date,
+            title: day.title,
+            description: day.description,
             destination: day.destination,
             hotel: day.hotel,
             excursions: day.excursions || [],
@@ -346,6 +348,8 @@ const DriverItineraryView = () => {
                                 key={day.dayNumber}
                                 dayNumber={day.dayNumber}
                                 date={day.date}
+                                title={day.title}
+                                description={day.description}
                                 destination={day.destination}
                                 hotel={day.hotel}
                                 excursions={day.excursions}
