@@ -41,8 +41,8 @@ const ActivityLogView = () => {
 
     const fetchItineraries = async () => {
         try {
-            const data = await itineraryService.getAll();
-            setItineraries(data);
+            const response = await itineraryService.getAll({ limit: 100 });
+            setItineraries(response.data);
         } catch (err) {
             console.error('Failed to fetch itineraries for filters', err);
         }

@@ -39,15 +39,32 @@ const ItineraryManagement = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState<string | null>(null);
 
+  const [totalItems, setTotalItems] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search query
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1); // Reset to page 1 on new search
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
   // Fetch itineraries from API
   useEffect(() => {
     const fetchItineraries = async () => {
       setLoading(true);
       try {
-        const data = await itineraryService.getAll(statusFilter as ItineraryStatus | undefined);
-        console.log("Itinery", data);
+        const response = await itineraryService.getAll({
+          status: statusFilter || undefined,
+          page,
+          limit: itemsPerPage,
+          search: debouncedSearch
+        });
 
-        setItineraries(data);
+        setItineraries(response.data);
+        setTotalItems(response.meta.total);
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Failed to fetch itineraries");
       } finally {
@@ -56,25 +73,10 @@ const ItineraryManagement = () => {
     };
 
     fetchItineraries();
-  }, [statusFilter]);
+  }, [statusFilter, page, itemsPerPage, debouncedSearch]);
 
-  // Filter itineraries based on search query and status
-  const filteredItineraries = itineraries.filter((itinerary) => {
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch =
-      itinerary.itineraryNumber.toLowerCase().includes(searchLower) ||
-      itinerary.lead?.firstName?.toLowerCase().includes(searchLower) ||
-      itinerary.lead?.lastName?.toLowerCase().includes(searchLower) ||
-      itinerary.lead?.email?.toLowerCase().includes(searchLower) ||
-      itinerary.lead?.phone?.toLowerCase().includes(searchLower) ||
-      itinerary.status.toLowerCase().includes(searchLower);
-
-    return matchesSearch;
-  });
-
-  const indexOfLastItem = page * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItineraries = filteredItineraries.slice(indexOfFirstItem, indexOfLastItem);
+  // Data is already filtered and paginated from server
+  const currentItineraries = itineraries;
 
   useEffect(() => {
     const handleResize = () => {
@@ -86,10 +88,10 @@ const ItineraryManagement = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Reset to page 1 when search query or filters change
+  // Reset to page 1 when status filter changes
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, statusFilter]);
+  }, [statusFilter]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -400,14 +402,14 @@ const ItineraryManagement = () => {
           )}
 
           {/* Empty State */}
-          {!loading && filteredItineraries.length === 0 && (
+          {!loading && itineraries.length === 0 && (
             <div className="flex flex-col items-center justify-center py-10">
               <p className="text-gray-500 text-lg font-poppins">No itineraries found</p>
             </div>
           )}
 
           {/* TABLE - Both Desktop and Mobile (Horizontally Scrollable) */}
-          {!loading && filteredItineraries.length > 0 && (
+          {!loading && itineraries.length > 0 && (
             <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
               <table className="min-w-full bg-white">
                 <thead>
@@ -639,11 +641,11 @@ const ItineraryManagement = () => {
           )}
 
           {/* PAGINATION */}
-          {!loading && filteredItineraries.length > 0 && (
+          {!loading && itineraries.length > 0 && (
             <div className="mt-4">
               <Pagination
                 currentPage={page}
-                totalItems={filteredItineraries.length}
+                totalItems={totalItems}
                 itemsPerPage={itemsPerPage}
                 onPageChange={setPage}
                 onItemsPerPageChange={setItemsPerPage}

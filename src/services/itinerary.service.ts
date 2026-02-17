@@ -57,10 +57,14 @@ export const itineraryService = {
     return response.data;
   },
 
-  // Get all itineraries (admin)
-  getAll: async (status?: ItineraryStatus): Promise<Itinerary[]> => {
-    const params = status ? { status } : {};
-    const response = await api.get<Itinerary[]>('/itineraries', { params });
+  // Get all itineraries (admin) - Paginated & Searched
+  getAll: async (params?: {
+    status?: ItineraryStatus | string;
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<{ data: Itinerary[]; meta: { total: number; page: number; limit: number; totalPages: number } }> => {
+    const response = await api.get<{ data: Itinerary[]; meta: { total: number; page: number; limit: number; totalPages: number } }>('/itineraries', { params });
     return response.data;
   },
 

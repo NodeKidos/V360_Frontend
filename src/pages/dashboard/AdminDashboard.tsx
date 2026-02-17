@@ -133,11 +133,11 @@ const AdminDashboard = () => {
     const fetchItineraries = async () => {
       setLoadingItineraries(true);
       try {
-        const data = await itineraryService.getAll();
+        const response = await itineraryService.getAll({ limit: 100 });
         // Store all itineraries for calendar
-        setAllItineraries(data);
+        setAllItineraries(response.data);
         // Get only the 5 most recent itineraries for the table
-        setItineraries(data.slice(0, 5));
+        setItineraries(response.data.slice(0, 5));
       } catch (error) {
         console.error("Failed to fetch itineraries:", error);
       } finally {

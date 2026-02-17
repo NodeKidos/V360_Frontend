@@ -58,7 +58,7 @@ const Pagination: React.FC<PaginationProps> = ({
             ]}
             value={itemsPerPage.toString()}
             onChange={(value) => onItemsPerPageChange(Number(value))}
-            className="h-10 text-white [&>div]:bg-[#B749DB] [&>div]:border-none [&>div]:text-white [&_svg]:text-white"
+            className="h-10 text-white bg-[#B749DB] border-none [&_svg]:text-white"
           />
         </div>
       </div>
