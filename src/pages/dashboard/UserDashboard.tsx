@@ -8,12 +8,14 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Calendar } from "../../components/ui/calendar";
 import TopBar from "../../components/Topbar";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import userService, { type CustomerDashboardStats } from "../../services/user.service";
 import { useItineraryStore } from "../../store/useItineraryStore";
 import { ItineraryStatus } from "../../types/itinerary.types";
 import { toast } from "react-toastify";
 
 const UserDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -62,6 +64,33 @@ const UserDashboard = () => {
       month: "short",
       year: "numeric",
     });
+  };
+
+  const getStatusDisplay = (status: ItineraryStatus) => {
+    switch (status) {
+      case ItineraryStatus.DRAFT:
+        return t('dashboard.status.draft');
+      case ItineraryStatus.PENDING_QUOTE:
+        return t('dashboard.status.pending');
+      case ItineraryStatus.QUOTED:
+        return t('dashboard.status.quoted');
+      case ItineraryStatus.NEGOTIATING:
+        return t('dashboard.status.negotiating');
+      case ItineraryStatus.ACCEPTED:
+        return t('dashboard.status.accepted');
+      case ItineraryStatus.REJECTED:
+        return t('dashboard.status.rejected');
+      case ItineraryStatus.CANCELLED:
+        return t('dashboard.status.cancelled');
+      case ItineraryStatus.CONVERTED:
+        return t('dashboard.status.converted');
+      case ItineraryStatus.IN_PROGRESS:
+        return t('dashboard.status.inProgress');
+      case ItineraryStatus.COMPLETED:
+        return t('dashboard.status.completed');
+      default:
+        return status;
+    }
   };
 
   useEffect(() => {
@@ -128,28 +157,28 @@ const UserDashboard = () => {
             ) : (
               [
                 {
-                  label: "Total Itineraries",
+                  label: t('dashboard.stats.totalItineraries'),
                   value: dashboardStats?.totalItineraries || itineraries.length,
                   icon: <FaRoute className="text-blue-500" />,
                   color: "bg-blue-50",
                   onClick: () => navigate('/my-itineraries')
                 },
                 {
-                  label: "Accepted Trips",
+                  label: t('dashboard.stats.acceptedTrips'),
                   value: dashboardStats?.acceptedItineraries || itineraries.filter(i => i.status === ItineraryStatus.ACCEPTED).length,
                   icon: <FaCheckCircle className="text-green-500" />,
                   color: "bg-green-50",
                   onClick: () => navigate('/my-itineraries')
                 },
                 {
-                  label: "Pending Quotes",
+                  label: t('dashboard.stats.pendingQuotes'),
                   value: dashboardStats?.pendingQuotes || itineraries.filter(i => i.status === ItineraryStatus.PENDING_QUOTE || i.status === ItineraryStatus.QUOTED).length,
                   icon: <FaClock className="text-orange-500" />,
                   color: "bg-orange-50",
                   onClick: () => navigate('/my-itineraries')
                 },
                 {
-                  label: "Loyalty Points",
+                  label: t('dashboard.stats.loyaltyPoints'),
                   value: dashboardStats?.loyaltyPoints || 0,
                   icon: <FaGift className="text-purple-500" />,
                   color: "bg-purple-50",
@@ -186,7 +215,7 @@ const UserDashboard = () => {
               <Card className="bg-white rounded-xl shadow-sm border-0">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-4">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Calendar</p>
+                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">{t('dashboard.headings.calendar')}</p>
                     <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
                   </div>
                   <Calendar
@@ -204,7 +233,7 @@ const UserDashboard = () => {
                   {date && selectedDateItineraries.length > 0 && (
                     <div className="mt-4 p-3 bg-[#F8EDFC] rounded-lg border border-[#E5D4EF]">
                       <p className="text-sm font-medium text-[#5B247A] mb-2">
-                        {selectedDateItineraries.length} itinerary/ies on {formatDate(date.toISOString())}
+                        {selectedDateItineraries.length} {t('dashboard.headings.tripsOn', { date: formatDate(date.toISOString()) })}
                       </p>
                     </div>
                   )}
@@ -216,7 +245,7 @@ const UserDashboard = () => {
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
                     <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">
-                      {date ? `Trips on ${formatDate(date.toISOString())}` : "Select a Date"}
+                      {date ? t('dashboard.headings.tripsOn', { date: formatDate(date.toISOString()) }) : t('dashboard.headings.selectADate')}
                     </p>
                     <FiArrowUpRight className="text-gray-400" />
                   </div>
@@ -236,18 +265,18 @@ const UserDashboard = () => {
                                 {itinerary.itineraryNumber}
                               </p>
                               <p className="text-xs text-gray-600">
-                                {itinerary.numberOfParticipants}  participants
+                                {itinerary.numberOfParticipants} {t('dashboard.table.participants')}
                               </p>
                             </div>
                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${itinerary.status === ItineraryStatus.DRAFT ? 'bg-gray-100 text-gray-700' :
-                                itinerary.status === ItineraryStatus.PENDING_QUOTE ? 'bg-yellow-100 text-yellow-700' :
-                                  itinerary.status === ItineraryStatus.QUOTED ? 'bg-blue-100 text-blue-700' :
-                                    itinerary.status === ItineraryStatus.ACCEPTED ? 'bg-green-100 text-green-700' :
-                                      itinerary.status === ItineraryStatus.IN_PROGRESS ? 'bg-purple-100 text-purple-700' :
-                                        itinerary.status === ItineraryStatus.COMPLETED ? 'bg-emerald-100 text-emerald-700' :
-                                          'bg-gray-100 text-gray-700'
+                              itinerary.status === ItineraryStatus.PENDING_QUOTE ? 'bg-yellow-100 text-yellow-700' :
+                                itinerary.status === ItineraryStatus.QUOTED ? 'bg-blue-100 text-blue-700' :
+                                  itinerary.status === ItineraryStatus.ACCEPTED ? 'bg-green-100 text-green-700' :
+                                    itinerary.status === ItineraryStatus.IN_PROGRESS ? 'bg-purple-100 text-purple-700' :
+                                      itinerary.status === ItineraryStatus.COMPLETED ? 'bg-emerald-100 text-emerald-700' :
+                                        'bg-gray-100 text-gray-700'
                               }`}>
-                              {itinerary.status.replace('_', ' ')}
+                              {getStatusDisplay(itinerary.status)}
                             </span>
                           </div>
                         </div>
@@ -255,7 +284,7 @@ const UserDashboard = () => {
                     </div>
                   ) : (
                     <p className="text-sm text-gray-500 py-4 text-center">
-                      No itineraries scheduled for this date
+                      {t('dashboard.common.noItinerariesScheduled')}
                     </p>
                   )}
                 </CardContent>
@@ -265,7 +294,7 @@ const UserDashboard = () => {
               <Card className="bg-white rounded-xl shadow-sm border-0 cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/my-itineraries')}>
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Upcoming Trips</p>
+                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">{t('dashboard.headings.upcomingTrips')}</p>
                     <FiArrowUpRight className="text-gray-400" />
                   </div>
                   {loading ? (
@@ -286,14 +315,14 @@ const UserDashboard = () => {
               <CardContent className="p-5 flex flex-col justify-start">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Recent Itineraries</p>
+                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">{t('dashboard.headings.recentItineraries')}</p>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate('/my-itineraries')}
                     className="text-purple-600 text-sm h-8 px-3 hover:bg-purple-50"
                   >
-                    View All
+                    {t('dashboard.common.viewAll')}
                   </Button>
                 </div>
 
@@ -308,23 +337,23 @@ const UserDashboard = () => {
                   ) : itineraries.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
                       <BiTrip className="mx-auto text-4xl mb-2 text-gray-300" />
-                      <p className="text-sm">No itineraries yet</p>
+                      <p className="text-sm">{t('dashboard.common.noData')}</p>
                       <Button
                         onClick={() => navigate('/itinerary')}
                         className="mt-3 bg-purple-600 hover:bg-purple-700 text-white"
                         size="sm"
                       >
-                        Create Your First Itinerary
+                        {t('dashboard.common.createFirstItinerary')}
                       </Button>
                     </div>
                   ) : (
                     <table className="min-w-full text-center font-inter font-medium">
                       <thead>
                         <tr className="text-[#382A59] border-b text-sm md:text-base">
-                          <th className="p-3 whitespace-nowrap">Itinerary #</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3">Start Date</th>
-                          <th className="p-3">Participants</th>
+                          <th className="p-3 whitespace-nowrap">{t('dashboard.table.itineraryNo')}</th>
+                          <th className="p-3">{t('dashboard.table.status')}</th>
+                          <th className="p-3">{t('dashboard.table.startDate')}</th>
+                          <th className="p-3">{t('dashboard.table.participants')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -337,12 +366,12 @@ const UserDashboard = () => {
                             <td className="p-3">{itinerary.itineraryNumber}</td>
                             <td className="p-3">
                               <span className={`px-2 py-1 rounded-full text-xs ${itinerary.status === ItineraryStatus.ACCEPTED ? 'bg-green-100 text-green-800' :
-                                  itinerary.status === ItineraryStatus.QUOTED ? 'bg-blue-100 text-blue-800' :
-                                    itinerary.status === ItineraryStatus.PENDING_QUOTE ? 'bg-yellow-100 text-yellow-800' :
-                                      itinerary.status === ItineraryStatus.DRAFT ? 'bg-gray-100 text-gray-800' :
-                                        'bg-purple-100 text-purple-800'
+                                itinerary.status === ItineraryStatus.QUOTED ? 'bg-blue-100 text-blue-800' :
+                                  itinerary.status === ItineraryStatus.PENDING_QUOTE ? 'bg-yellow-100 text-yellow-800' :
+                                    itinerary.status === ItineraryStatus.DRAFT ? 'bg-gray-100 text-gray-800' :
+                                      'bg-purple-100 text-purple-800'
                                 }`}>
-                                {itinerary.status.replace('_', ' ')}
+                                {getStatusDisplay(itinerary.status)}
                               </span>
                             </td>
                             <td className="p-3 whitespace-nowrap">
@@ -363,7 +392,7 @@ const UserDashboard = () => {
               <CardContent className="p-0 flex flex-col flex-1">
                 {/* Header */}
                 <div className="flex justify-between items-center px-5 pt-5 pb-3">
-                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Map</p>
+                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">{t('dashboard.headings.map')}</p>
                   <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
 
@@ -392,7 +421,7 @@ const UserDashboard = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
                   <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">
-                    My Itineraries
+                    {t('dashboard.headings.myItineraries')}
                   </p>
                   <Button
                     variant="ghost"
@@ -400,7 +429,7 @@ const UserDashboard = () => {
                     onClick={() => navigate('/my-itineraries')}
                     className="text-purple-600 text-sm h-8 px-3 hover:bg-purple-50"
                   >
-                    View All
+                    {t('dashboard.common.viewAll')}
                   </Button>
                 </div>
 
@@ -415,25 +444,25 @@ const UserDashboard = () => {
                   ) : itineraries.length === 0 ? (
                     <div className="p-12 text-center text-gray-500">
                       <FaRoute className="mx-auto text-5xl mb-3 text-gray-300" />
-                      <p className="text-base font-medium mb-2">No itineraries yet</p>
-                      <p className="text-sm text-gray-400 mb-4">Start planning your dream vacation!</p>
+                      <p className="text-base font-medium mb-2">{t('dashboard.common.noData')}</p>
+                      <p className="text-sm text-gray-400 mb-4">{t('dashboard.common.planAdventure')}</p>
                       <Button
                         onClick={() => navigate('/itinerary')}
                         className="bg-purple-600 hover:bg-purple-700 text-white"
                       >
                         <BiTrip className="mr-2" />
-                        Create Itinerary
+                        {t('dashboard.common.createNewItinerary')}
                       </Button>
                     </div>
                   ) : (
                     <table className="w-full text-center font-inter font-medium">
                       <thead>
                         <tr className="text-[#382A59] border-b text-sm md:text-base">
-                          <th className="p-3">Itinerary #</th>
-                          <th className="p-3">Type</th>
-                          <th className="p-3">Start Date</th>
-                          <th className="p-3">Duration</th>
-                          <th className="p-3">Status</th>
+                          <th className="p-3">{t('dashboard.table.itineraryNo')}</th>
+                          <th className="p-3">{t('dashboard.table.type')}</th>
+                          <th className="p-3">{t('dashboard.table.startDate')}</th>
+                          <th className="p-3">{t('dashboard.table.duration')}</th>
+                          <th className="p-3">{t('dashboard.table.status')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -453,16 +482,16 @@ const UserDashboard = () => {
                               <td className="p-3 whitespace-nowrap">
                                 <div>{startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
                               </td>
-                              <td className="p-3">{duration} {duration === 1 ? 'day' : 'days'}</td>
+                              <td className="p-3">{duration} {duration === 1 ? t('dashboard.common.day') : t('dashboard.common.days')}</td>
                               <td className="p-3">
                                 <span className={`px-2 py-1 rounded-full text-xs ${itinerary.status === ItineraryStatus.ACCEPTED ? 'bg-green-100 text-green-800' :
-                                    itinerary.status === ItineraryStatus.QUOTED ? 'bg-blue-100 text-blue-800' :
-                                      itinerary.status === ItineraryStatus.PENDING_QUOTE ? 'bg-yellow-100 text-yellow-800' :
-                                        itinerary.status === ItineraryStatus.DRAFT ? 'bg-gray-100 text-gray-800' :
-                                          itinerary.status === ItineraryStatus.COMPLETED ? 'bg-emerald-100 text-emerald-800' :
-                                            'bg-purple-100 text-purple-800'
+                                  itinerary.status === ItineraryStatus.QUOTED ? 'bg-blue-100 text-blue-800' :
+                                    itinerary.status === ItineraryStatus.PENDING_QUOTE ? 'bg-yellow-100 text-yellow-800' :
+                                      itinerary.status === ItineraryStatus.DRAFT ? 'bg-gray-100 text-gray-800' :
+                                        itinerary.status === ItineraryStatus.COMPLETED ? 'bg-emerald-100 text-emerald-800' :
+                                          'bg-purple-100 text-purple-800'
                                   }`}>
-                                  {itinerary.status.replace('_', ' ')}
+                                  {getStatusDisplay(itinerary.status)}
                                 </span>
                               </td>
                             </tr>
@@ -480,7 +509,7 @@ const UserDashboard = () => {
               <CardContent className="p-5">
                 <div className="flex justify-between items-center mb-4">
                   <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">
-                    Quick Actions
+                    {t('dashboard.headings.quickActions')}
                   </p>
                 </div>
 
@@ -495,10 +524,10 @@ const UserDashboard = () => {
                     </div>
                     <div>
                       <p className="font-medium text-sm md:text-base leading-tight">
-                        Create New Itinerary
+                        {t('dashboard.common.createNewItinerary')}
                       </p>
                       <p className="text-xs text-gray-500">
-                        Plan your next adventure
+                        {t('dashboard.common.planAdventure')}
                       </p>
                     </div>
                   </div>
@@ -512,10 +541,10 @@ const UserDashboard = () => {
                     </div>
                     <div>
                       <p className="font-medium text-sm md:text-base leading-tight">
-                        View My Itineraries
+                        {t('dashboard.common.viewMyItineraries')}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {itineraries.length} itineraries
+                        {itineraries.length} {t('dashboard.common.itineraries')}
                       </p>
                     </div>
                   </div>
@@ -529,10 +558,10 @@ const UserDashboard = () => {
                     </div>
                     <div>
                       <p className="font-medium text-sm md:text-base leading-tight">
-                        My Rewards
+                        {t('dashboard.common.myRewards')}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {dashboardStats?.loyaltyPoints || 0} points
+                        {dashboardStats?.loyaltyPoints || 0} {t('dashboard.common.points')}
                       </p>
                     </div>
                   </div>
@@ -546,10 +575,10 @@ const UserDashboard = () => {
                     </div>
                     <div>
                       <p className="font-medium text-sm md:text-base leading-tight">
-                        My Profile
+                        {t('dashboard.common.myProfile')}
                       </p>
                       <p className="text-xs text-gray-500">
-                        View & edit profile
+                        {t('dashboard.common.viewEditProfile')}
                       </p>
                     </div>
                   </div>

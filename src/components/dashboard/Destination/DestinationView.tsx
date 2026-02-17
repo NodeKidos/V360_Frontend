@@ -17,9 +17,11 @@ import Excursion from "./ExcursionView";
 import destinationService from "../../../services/destination.service";
 import hotelService from "../../../services/hotel.service";
 import excursionService from "../../../services/excursion.service";
+import { useTranslation } from "react-i18next";
 import { Loader } from "../../ui/Loader";
 
 const DestinationHotelManagement = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate(); // Initialize the navigation function
     const [searchParams] = useSearchParams();
 
@@ -91,7 +93,7 @@ const DestinationHotelManagement = () => {
                 setExcursions(excursionsData);
             } catch (error) {
                 console.error("Failed to fetch data:", error);
-                toast.error("Failed to load data from database", {
+                toast.error(t('management.destination.messages.fetchFailed'), {
                     position: "top-right",
                     autoClose: 3000,
                 });
@@ -143,13 +145,13 @@ const DestinationHotelManagement = () => {
             setDestination(destinations.filter((destination) => destination.id !== selectedDestinationId));
             setDeleteConfirmationVisible(false);
 
-            toast.success("Destination deleted successfully!", {
+            toast.success(t('management.destination.messages.deleteSuccess'), {
                 position: "top-right",
                 autoClose: 2000,
             });
         } catch (error: any) {
             console.error("Failed to delete destination:", error);
-            const message = error.response?.data?.message || "Failed to delete destination";
+            const message = error.response?.data?.message || t('management.destination.messages.deleteFailed');
             setErrorMessage(message);
             toast.error(message);
         }
@@ -191,7 +193,7 @@ const DestinationHotelManagement = () => {
                     {/* TITLE - Desktop with Add button */}
                     <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
                         <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
-                            Destination & Hotel Management
+                            {t('management.destination.title')}
                         </h2>
                         <button
                             className="bg-[#B749DB] text-white rounded-lg px-4 py-2 text-[14px] font-poppins flex items-center gap-2 hover:bg-[#9f37c9] cursor-pointer"
@@ -200,14 +202,14 @@ const DestinationHotelManagement = () => {
                                 else if (activeTab === "hotel") handleAddHotelClick();
                                 else if (activeTab === "excursion") handleAddExcursionClick();
                             }}>
-                            Add  <IoMdAdd className="text-[18px]" />
+                            {t('management.customer.buttons.add')}  <IoMdAdd className="text-[18px]" />
                         </button>
                     </div>
 
                     {/* TITLE - Mobile */}
                     <div className="mb-4 mt-4 md:hidden">
                         <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
-                            Destination & Hotel Management
+                            {t('management.destination.title')}
                         </h2>
                     </div>
 
@@ -217,7 +219,7 @@ const DestinationHotelManagement = () => {
                             <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
                             <input
                                 type="text"
-                                placeholder="Search here"
+                                placeholder={t('dashboard.common.searchHere')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
@@ -227,14 +229,14 @@ const DestinationHotelManagement = () => {
 
                     {/* Tabs Component */}
                     {loading ? (
-                        <Loader src="/loaders/travelloading.lottie" message="Loading data..." size={250} />
+                        <Loader src="/loaders/travelloading.lottie" message={t('common.loading')} size={250} />
                     ) : (
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
                             <div className="flex justify-center">
                                 <TabsList>
-                                    <TabsTrigger value="destination">Destination</TabsTrigger>
-                                    <TabsTrigger value="hotel">Hotel</TabsTrigger>
-                                    <TabsTrigger value="excursion">Excursion</TabsTrigger>
+                                    <TabsTrigger value="destination">{t('management.destination.tabs.destination')}</TabsTrigger>
+                                    <TabsTrigger value="hotel">{t('management.destination.tabs.hotel')}</TabsTrigger>
+                                    <TabsTrigger value="excursion">{t('management.destination.tabs.excursion')}</TabsTrigger>
                                 </TabsList>
                             </div>
 
@@ -244,7 +246,7 @@ const DestinationHotelManagement = () => {
                                     <div className="flex justify-between items-center p-2">
                                         {/* LEFT: Title */}
                                         <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                                            View & manage Destination Details
+                                            {t('management.destination.subtitle')}
                                         </h4>
 
                                         {/* RIGHT: Filters */}
@@ -254,7 +256,7 @@ const DestinationHotelManagement = () => {
                                                 value={locationFilter}
                                                 onChange={(e) => setLocationFilter(e.target.value)}
                                             >
-                                                <option value="">Location</option>
+                                                <option value="">{t('management.destination.filters.location')}</option>
                                                 <option value="Matale">Matale</option>
                                                 <option value="Matara">Matara</option>
                                                 <option value="Galle">Galle</option>
@@ -267,7 +269,7 @@ const DestinationHotelManagement = () => {
                                                 value={destinationFilter}
                                                 onChange={(e) => setDestinationFilter(e.target.value)}
                                             >
-                                                <option value="">Destination</option>
+                                                <option value="">{t('management.destination.tabs.destination')}</option>
                                                 <option value="Sigiriya Rock Fortress">Sigiriya Rock Fortress</option>
                                                 <option value="Mirissa Beach">Mirissa Beach</option>
                                                 <option value="Adam's Peak">Adam's Peak</option>
@@ -283,7 +285,7 @@ const DestinationHotelManagement = () => {
                                                     setSearchQuery("");
                                                     setDestinationFilter("");
                                                 }}
-                                                title="Clear all filters"
+                                                title={t('management.itinerary.filters.clearFilters')}
                                             >
                                                 <LuListFilter className="text-[18px]" />
                                             </button>
@@ -296,7 +298,7 @@ const DestinationHotelManagement = () => {
                                     <div className="flex justify-between items-center mb-4">
                                         {/* LEFT: Title */}
                                         <h4 className="font-poppins font-medium text-black text-[16px] sm:text-[16px]">
-                                            View & manage Destination Details
+                                            {t('management.destination.subtitle')}
                                         </h4>
 
                                         {/* RIGHT: Add button */}
@@ -317,7 +319,7 @@ const DestinationHotelManagement = () => {
                                                 value={locationFilter}
                                                 onChange={(e) => setLocationFilter(e.target.value)}
                                             >
-                                                <option value="">Location</option>
+                                                <option value="">{t('management.destination.filters.location')}</option>
                                                 <option value="Colombo">Colombo</option>
                                                 <option value="Kandy">Kandy</option>
                                                 <option value="Galle">Galle</option>
@@ -330,7 +332,7 @@ const DestinationHotelManagement = () => {
                                                 value={destinationFilter}
                                                 onChange={(e) => setDestinationFilter(e.target.value)}
                                             >
-                                                <option value="">Destination</option>
+                                                <option value="">{t('management.destination.tabs.destination')}</option>
                                                 <option value="Sigiriya Rock Fortress">Sigiriya Rock Fortress</option>
                                                 <option value="Mirissa Beach">Mirissa Beach</option>
                                                 <option value="Adam's Peak">Adam's Peak</option>
@@ -347,7 +349,7 @@ const DestinationHotelManagement = () => {
                                                 setSearchQuery("");
                                                 setDestinationFilter("")
                                             }}
-                                            title="Clear all filters"
+                                            title={t('management.itinerary.filters.clearFilters')}
                                         >
                                             <LuListFilter className="text-[18px]" />
                                         </button>
@@ -360,12 +362,12 @@ const DestinationHotelManagement = () => {
                                         <thead>
                                             <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
                                                 {/* <th className="px-3 py-4 whitespace-nowrap">ID</th> */}
-                                                <th className="px-3 py-3 whitespace-nowrap">Destination Name</th>
-                                                <th className="px-3 py-3 whitespace-nowrap">Image</th>
-                                                <th className="px-3 py-3 whitespace-nowrap">Location</th>
-                                                <th className="px-3 py-3 whitespace-nowrap">Category</th>
-                                                <th className="px-3 py-3 whitespace-nowrap">Best Time to Visit</th>
-                                                <th className="px-3 py-3 whitespace-nowrap">Review</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.destinationName')}</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.image')}</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.location')}</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.category')}</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.bestTime')}</th>
+                                                <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.review')}</th>
                                                 <th className="px-3 py-3 whitespace-nowrap"></th>
                                             </tr>
                                         </thead>
@@ -384,13 +386,13 @@ const DestinationHotelManagement = () => {
                                                             />
                                                         ) : (
                                                             <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center mx-auto text-gray-400 text-xs text-center px-1">
-                                                                No Image
+                                                                {t('management.destination.table.noImage')}
                                                             </div>
                                                         )}
                                                     </td>
                                                     <td className="px-3 py-1 text-center">{d.location}</td>
                                                     <td className="px-3 py-1 text-center">{d.category}</td>
-                                                    <td className="px-3 py-1 text-center">{d.bestTimeToVisit || "N/A"}</td>
+                                                    <td className="px-3 py-1 text-center">{d.bestTimeToVisit || t('common.noData')}</td>
                                                     <td className="px-5 py-1 whitespace-nowrap">
                                                         <div className="flex gap-2 justify-center">
                                                             <CiEdit
@@ -452,7 +454,7 @@ const DestinationHotelManagement = () => {
                                 </div>
 
                                 <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
-                                    Are you sure you want to delete this?
+                                    {t('management.destination.modals.deleteConfirm')}
                                 </h3>
 
                                 {errorMessage && (
@@ -467,14 +469,14 @@ const DestinationHotelManagement = () => {
                                         className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"
                                         onClick={cancelDelete}
                                     >
-                                        Cancel
+                                        {t('management.customer.modals.cancel')}
                                     </button>
 
                                     <button
                                         className="bg-[#B749DB] font-medium font-inter text-white px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#9f37c9] text-[14px] md:text-[16px]"
                                         onClick={confirmDelete}
                                     >
-                                        Delete
+                                        {t('management.customer.modals.confirm')}
                                     </button>
                                 </div>
 

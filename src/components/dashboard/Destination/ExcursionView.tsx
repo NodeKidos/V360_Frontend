@@ -8,6 +8,7 @@ import deleteicon from "../../../assets/delete.png"; // Import delete icon image
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import excursionService from "../../../services/excursion.service";
+import { useTranslation } from "react-i18next";
 
 // Function to render stars based on rating
 const renderStars = (rating: number) => {
@@ -28,6 +29,7 @@ const renderStars = (rating: number) => {
 };
 
 const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, setExcursions, onAdd, onEdit }: any) => {
+    const { t } = useTranslation();
     const navigate = useNavigate(); // Use navigate from react-router-dom
 
     // Function to navigate to Excursion Details page
@@ -91,13 +93,13 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
             setExcursions(excursionsArray.filter((e: any) => e.id !== selectedExcursionId));
             setDeleteConfirmationVisible(false);
 
-            toast.success("Excursion deleted successfully!", {
+            toast.success(t('management.destination.messages.excursionDeleteSuccess'), {
                 position: "top-right",
                 autoClose: 2000,
             });
         } catch (error: any) {
             console.error("Failed to delete excursion:", error);
-            const message = error.response?.data?.message || "Failed to delete excursion";
+            const message = error.response?.data?.message || t('management.destination.messages.excursionDeleteFailed');
             setErrorMessage(message);
             toast.error(message);
         }
@@ -137,7 +139,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
 
             setToggleModalVisible(false);
             toast.success(
-                `Excursion ${newStatus ? 'enabled' : 'disabled'} successfully!`,
+                t('management.destination.messages.toggleVisibilitySuccess', { status: newStatus ? t('management.destination.status.active').toLowerCase() : t('management.destination.status.inactive').toLowerCase() }),
                 {
                     position: "top-right",
                     autoClose: 2000,
@@ -145,7 +147,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
             );
         } catch (error: any) {
             console.error("Failed to toggle excursion:", error);
-            toast.error(error.response?.data?.message || "Failed to toggle excursion", {
+            toast.error(error.response?.data?.message || t('management.destination.messages.toggleVisibilityFailed'), {
                 position: "top-right",
                 autoClose: 3000,
             });
@@ -159,7 +161,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                 <div className="flex justify-between items-center p-2">
                     {/* LEFT: Title */}
                     <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                        View & manage Excursion Details
+                        {t('management.destination.subtitle')}
                     </h4>
 
                     {/* RIGHT: Filters */}
@@ -169,7 +171,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                             value={excursionFilter}
                             onChange={(e) => setExcursionFilter(e.target.value)}
                         >
-                            <option value="">Excursion </option>
+                            <option value="">{t('management.destination.filters.excursion')} </option>
                             <option value="Sigiriya Guided Climb">Sigiriya Guided Climb</option>
                             <option value="Mirissa Whale Watching Tour">Mirissa Whale Watching Tour</option>
                             <option value="Adam's Peak Sunrise Hike">Adam's Peak Sunrise Hike</option>
@@ -180,7 +182,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
                         >
-                            <option value="">Catogory</option>
+                            <option value="">{t('management.destination.filters.category')}</option>
                             <option value="Wildlife & Nature" >Wildlife & Nature</option>
                             <option value=" Adventure & Cultural"> Adventure & Cultural</option>
                             <option value="Wildlife & Nature">Wildlife & Nature</option>
@@ -195,7 +197,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 setSearchQuery("");
                                 setCategoryFilter("")
                             }}
-                            title="Clear all filters"
+                            title={t('management.itinerary.filters.clearFilters')}
                         >
                             <LuListFilter className="text-[18px]" />
                         </button>
@@ -208,7 +210,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                 <div className="flex justify-between items-center mb-4">
                     {/* LEFT: Title */}
                     <h4 className="font-poppins font-medium text-black text-[16px] sm:text-[16px]">
-                        View & manage Excursion Details
+                        {t('management.destination.subtitle')}
                     </h4>
 
                     {/* RIGHT: Add button */}
@@ -230,7 +232,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                             value={excursionFilter}
                             onChange={(e) => setExcursionFilter(e.target.value)}
                         >
-                            <option value="">Excursion</option>
+                            <option value="">{t('management.destination.filters.excursion')}</option>
                             <option value="Sigiriya Guided Climb">Sigiriya Guided Climb</option>
                             <option value="Mirissa Whale Watching Tour">Mirissa Whale Watching Tour</option>
                             <option value="Adam's Peak Sunrise Hike">Adam's Peak Sunrise Hike</option>
@@ -241,7 +243,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
                         >
-                            <option value="">Category</option>
+                            <option value="">{t('management.destination.filters.category')}</option>
                             <option value="Wildlife & Nature">Wildlife & Nature</option>
                             <option value="Adventure & Cultural">Adventure & Cultural</option>
                             <option value="Nature & Adventure">Nature & Adventure</option>
@@ -257,7 +259,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                             setSearchQuery("");
                             setCategoryFilter("")
                         }}
-                        title="Clear all filters"
+                        title={t('management.itinerary.filters.clearFilters')}
                     >
                         <LuListFilter className="text-[18px]" />
                     </button>
@@ -270,16 +272,16 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                     <thead>
                         <tr className="bg-gray-50 text-[#382A59] text-center font-semibold text-[14px] sm:text-[15px] md:text-[16px] font-poppins">
                             {/* <th className="px-3 py-4 whitespace-nowrap">Excursion Id</th> */}
-                            <th className="px-3 py-3 whitespace-nowrap ">Excursion Point</th>
-                            <th className="px-3 py-3">Image</th>
-                            <th className="px-3 py-3">Location</th>
-                            <th className="px-3 py-3">Category</th>
-                            <th className="px-3 py-3 whitespace-nowrap">Best Time</th>
-                            <th className="px-3 py-3 ">Duration</th>
-                            <th className="px-3 py-3 ">Rating</th>
-                            <th className="px-3 py-3 text-center whitespace-nowrap">Destination</th>
-                            <th className="px-3 py-3 whitespace-nowrap">Status</th>
-                            <th className="px-3 py-3 text-center whitespace-nowrap">Actions</th>
+                            <th className="px-3 py-3 whitespace-nowrap ">{t('management.destination.table.excursionPoint')}</th>
+                            <th className="px-3 py-3">{t('management.destination.table.image')}</th>
+                            <th className="px-3 py-3">{t('management.destination.table.location')}</th>
+                            <th className="px-3 py-3">{t('management.destination.table.category')}</th>
+                            <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.bestTime')}</th>
+                            <th className="px-3 py-3 ">{t('management.destination.table.duration')}</th>
+                            <th className="px-3 py-3 ">{t('management.destination.table.rating')}</th>
+                            <th className="px-3 py-3 text-center whitespace-nowrap">{t('management.destination.table.destination')}</th>
+                            <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.status')}</th>
+                            <th className="px-3 py-3 text-center whitespace-nowrap">{t('management.destination.table.actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="font-poppins">
@@ -288,26 +290,26 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 {/* <td className="py-3 px-2" onClick={() => handleViewDetailsClick(e.id)}>
                                     <span className="text-blue-500 cursor-pointer">{e.id}</span>
                                 </td> */}
-                                <td className="py-3 px-2 cursor-pointer text-blue-500" onClick={() => handleViewDetailsClick(e.id)}>{e.name || 'N/A'}</td>
+                                <td className="py-3 px-2 cursor-pointer text-blue-500" onClick={() => handleViewDetailsClick(e.id)}>{e.name || t('common.noData')}</td>
                                 <td className="px-2 py-3">
                                     <img src={e.images?.[0] || e.images} alt={e.name} className="w-16 h-16 object-cover"
                                     />
                                 </td>
                                 <td className="px-2 py-3 whitespace-nowrap">{e.meetingPoint || 'N/A'}</td>
-                                <td className="px-2 py-3 whitespace-nowrap">{e.difficulty || e.category || 'N/A'}</td>
-                                <td className="px-2 py-3">{e.bestTime || 'N/A'}</td>
-                                <td className="px-2 py-3">{e.duration ? `${e.duration} hours` : 'N/A'}</td>
-                                <td className="px-2 py-3 whitespace-nowrap">{e.rating ? renderStars(Number(e.rating)) : 'N/A'}</td>
-                                <td className="px-2 py-3">{e.destination?.name || 'N/A'}</td>
+                                <td className="px-2 py-3 whitespace-nowrap">{e.difficulty || e.category || t('common.noData')}</td>
+                                <td className="px-2 py-3">{e.bestTime || t('common.noData')}</td>
+                                <td className="px-2 py-3">{e.duration ? `${e.duration} ${t('management.destination.table.duration').toLowerCase()}` : t('common.noData')}</td>
+                                <td className="px-2 py-3 whitespace-nowrap">{e.status === 'Active' ? t('management.destination.status.active') : e.rating ? renderStars(Number(e.rating)) : t('common.noData')}</td>
+                                <td className="px-2 py-3">{e.destination?.name || t('common.noData')}</td>
                                 <td className="px-2 py-3 text-center">
                                     <div className="flex flex-col items-center gap-1">
                                         {e.isActive !== false ? (
                                             <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                                                Active
+                                                {t('management.destination.status.active')}
                                             </span>
                                         ) : (
                                             <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                                                Inactive
+                                                {t('management.destination.status.inactive')}
                                             </span>
                                         )}
                                         {e.seasonalNote && (
@@ -319,13 +321,13 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 </td>
                                 <td className="px-2 py-1">
                                     <div className="flex gap-2 justify-center items-center">
-                                        <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(e.id)} title="Edit" />
+                                        <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(e.id)} title={t('dashboard.common.edit')} />
                                         {e.isActive !== false ? (
-                                            <MdToggleOn className="text-green-600 cursor-pointer text-[24px]" onClick={() => handleToggleClick(e)} title="Disable Excursion" />
+                                            <MdToggleOn className="text-green-600 cursor-pointer text-[24px]" onClick={() => handleToggleClick(e)} title={t('management.destination.modals.toggleTitle', { action: t('management.destination.status.inactive') })} />
                                         ) : (
-                                            <MdToggleOff className="text-gray-400 cursor-pointer text-[24px]" onClick={() => handleToggleClick(e)} title="Enable Excursion" />
+                                            <MdToggleOff className="text-gray-400 cursor-pointer text-[24px]" onClick={() => handleToggleClick(e)} title={t('management.destination.modals.toggleTitle', { action: t('management.destination.status.active') })} />
                                         )}
-                                        <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(e.id)} title="Delete" />
+                                        <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(e.id)} title={t('dashboard.common.delete')} />
                                     </div>
                                 </td>
                             </tr>
@@ -366,7 +368,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                         </div>
 
                         <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
-                            Are you sure you want to delete this?
+                            {t('management.destination.modals.deleteConfirm')}
                         </h3>
 
                         {errorMessage && (
@@ -381,14 +383,14 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"
                                 onClick={cancelDelete}
                             >
-                                Cancel
+                                {t('management.customer.modals.cancel')}
                             </button>
 
                             <button
                                 className="bg-[#B749DB] font-medium font-inter text-white px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#9f37c9] text-[14px] md:text-[16px]"
                                 onClick={confirmDelete}
                             >
-                                Delete
+                                {t('management.customer.modals.confirm')}
                             </button>
                         </div>
 
@@ -414,29 +416,29 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 <MdToggleOn className="text-green-600 text-3xl" />
                             )}
                             <h3 className="text-[18px] md:text-[20px] font-semibold font-inter">
-                                {selectedExcursion?.isActive !== false ? 'Disable' : 'Enable'} Excursion
+                                {t('management.destination.modals.toggleTitle', { action: selectedExcursion?.isActive !== false ? t('management.destination.status.inactive') : t('management.destination.status.active') })}
                             </h3>
                         </div>
 
                         <p className="text-gray-600 text-sm mb-4">
-                            Excursion: <span className="font-semibold">{selectedExcursion?.name}</span>
+                            {t('management.destination.table.excursionPoint')}: <span className="font-semibold">{selectedExcursion?.name}</span>
                         </p>
 
                         <p className="text-sm text-gray-500 mb-4">
                             {selectedExcursion?.isActive !== false
-                                ? '⚠️ Disabling will hide this excursion from customers. Use this for seasonal closures.'
-                                : '  Enabling will make this excursion visible to customers again.'}
+                                ? t('management.destination.modals.toggleWarningDisable')
+                                : t('management.destination.modals.toggleWarningEnable')}
                         </p>
 
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Seasonal Note (Optional)
+                                {t('management.destination.modals.seasonalNote')}
                             </label>
                             <input
                                 type="text"
                                 value={seasonalNote}
                                 onChange={(e) => setSeasonalNote(e.target.value)}
-                                placeholder="E.g., Available June-September, Monsoon season closure..."
+                                placeholder={t('dashboard.common.searchHere')}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B749DB]"
                             />
                         </div>
@@ -446,7 +448,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                 className="bg-gray-200 font-medium font-inter text-black px-6 py-2 rounded-lg hover:bg-gray-300 text-[14px] md:text-[16px]"
                                 onClick={() => setToggleModalVisible(false)}
                             >
-                                Cancel
+                                {t('management.customer.modals.cancel')}
                             </button>
 
                             <button
@@ -456,7 +458,7 @@ const Excursion = ({ excursions, page, itemsPerPage, setPage, setItemsPerPage, s
                                     }`}
                                 onClick={confirmToggle}
                             >
-                                {selectedExcursion?.isActive !== false ? 'Disable' : 'Enable'}
+                                {selectedExcursion?.isActive !== false ? t('management.destination.status.inactive') : t('management.destination.status.active')}
                             </button>
                         </div>
                     </div>

@@ -8,6 +8,7 @@ import { IoMdAdd } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
 import deleteicon from "../../../assets/delete.png"; // Import delete icon image
 import hotelService from "../../../services/hotel.service";
+import { useTranslation } from "react-i18next";
 
 // Function to render star ratings
 const renderStars = (rating: number) => {
@@ -28,6 +29,7 @@ const renderStars = (rating: number) => {
 };
 
 const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels, onAdd, onEdit }: any) => {
+  const { t } = useTranslation();
   const [hotelFilter, setHotelFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [hotelTypeFilter, setHotelTypeFilter] = useState("");
@@ -93,13 +95,13 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
       setHotels(hotelsArray.filter((h: any) => h.id !== selectedHotelId));
       setDeleteConfirmationVisible(false);
 
-      toast.success("Hotel deleted successfully!", {
+      toast.success(t('management.destination.messages.hotelDeleteSuccess'), {
         position: "top-right",
         autoClose: 2000,
       });
     } catch (error: any) {
       console.error("Failed to delete hotel:", error);
-      const message = error.response?.data?.message || "Failed to delete hotel";
+      const message = error.response?.data?.message || t('management.destination.messages.hotelDeleteFailed');
       setErrorMessage(message);
       toast.error(message);
     }
@@ -124,7 +126,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
     if (!selectedHotelForFlag) return;
 
     if (!flagReason.trim()) {
-      toast.error("Please provide a reason for flagging this hotel", {
+      toast.error(t('management.destination.modals.flagRequirement'), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -132,7 +134,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
     }
 
     if (!flagStartDate || !flagEndDate) {
-      toast.error("Please select both start and end dates", {
+      toast.error(t('management.destination.modals.dateRequirement'), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -156,13 +158,13 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
       ));
 
       setFlagModalVisible(false);
-      toast.success("Hotel flagged successfully! Affected customers and staff have been notified.", {
+      toast.success(t('management.destination.messages.flagSuccess'), {
         position: "top-right",
         autoClose: 3000,
       });
     } catch (error: any) {
       console.error("Failed to flag hotel:", error);
-      toast.error(error.response?.data?.message || "Failed to flag hotel", {
+      toast.error(error.response?.data?.message || t('management.destination.messages.flagFailed'), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -181,13 +183,13 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
           : h
       ));
 
-      toast.success("Hotel unflagged successfully!", {
+      toast.success(t('management.destination.messages.unflagSuccess'), {
         position: "top-right",
         autoClose: 2000,
       });
     } catch (error: any) {
       console.error("Failed to unflag hotel:", error);
-      toast.error(error.response?.data?.message || "Failed to unflag hotel", {
+      toast.error(error.response?.data?.message || t('management.destination.messages.unflagFailed'), {
         position: "top-right",
         autoClose: 3000,
       });
@@ -201,7 +203,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
         <div className="flex justify-between items-center p-2">
           {/* LEFT: Title */}
           <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-            View & manage Hotel Details
+            {t('management.destination.subtitle') /* Reusing subtitle as it fits the context */}
           </h4>
 
           {/* RIGHT: Filters */}
@@ -211,7 +213,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               value={hotelFilter}
               onChange={(e) => setHotelFilter(e.target.value)}
             >
-              <option value="">Hotel</option>
+              <option value="">{t('management.destination.filters.hotel')}</option>
               <option value="Shangri-La Colombo">Shangri-La Colombo</option>
               <option value="Cinnamon Red Colombo">Cinnamon Red Colombo</option>
               <option value="The Kingsbury Colombo">The Kingsbury Colombo</option>
@@ -223,7 +225,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               value={hotelTypeFilter}
               onChange={(e) => setHotelTypeFilter(e.target.value)}
             >
-              <option value="">Hotel Type</option>
+              <option value="">{t('management.destination.filters.hotelType')}</option>
               <option value="Luxury">Luxury</option>
               <option value="Heritage">Heritage</option>
               <option value="Standard">Standard</option>
@@ -239,7 +241,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
                 setSearchQuery("");
                 setHotelTypeFilter("");
               }}
-              title="Clear all filters"
+              title={t('management.itinerary.filters.clearFilters')}
             >
               <LuListFilter className="text-[18px]" />
             </button>
@@ -252,7 +254,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
         <div className="flex justify-between items-center mb-4">
           {/* LEFT: Title */}
           <h4 className="font-poppins font-medium text-black text-[16px] sm:text-[16px]">
-            View & manage Hotel Details
+            {t('management.destination.subtitle')}
           </h4>
 
           {/* RIGHT: Add button */}
@@ -274,7 +276,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               value={hotelFilter}
               onChange={(e) => setHotelFilter(e.target.value)}
             >
-              <option value="">Hotel</option>
+              <option value="">{t('management.destination.filters.hotel')}</option>
               <option value="Shangri-La Colombo">Shangri-La Colombo</option>
               <option value="Cinnamon Red Colombo">Cinnamon Red Colombo</option>
               <option value="The Kingsbury Colombo">The Kingsbury Colombo</option>
@@ -286,7 +288,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               value={hotelTypeFilter}
               onChange={(e) => setHotelTypeFilter(e.target.value)}
             >
-              <option value="">Hotel Type</option>
+              <option value="">{t('management.destination.filters.hotelType')}</option>
               <option value="Luxury">Luxury</option>
               <option value="Heritage">Heritage</option>
               <option value="Standard">Standard</option>
@@ -303,7 +305,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               setHotelTypeFilter("");
               setSearchQuery("");
             }}
-            title="Clear all filters"
+            title={t('management.itinerary.filters.clearFilters')}
           >
             <LuListFilter className="text-[18px]" />
           </button>
@@ -316,15 +318,15 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
           <thead>
             <tr className="bg-gray-50 text-[#382A59] font-semibold text-[14px] sm:text-[15px] md:text-[16px] text-center font-poppins">
               {/* <th className="px-3 py-4 whitespace-nowrap">Hotel Id</th> */}
-              <th className="px-3 py-3 whitespace-nowrap">Hotel Name</th>
-              <th className="px-3 py-3 whitespace-nowrap">Hotel Type</th>
-              <th className="px-3 py-3 whitespace-nowrap">Image</th>
-              <th className="px-3 py-3 whitespace-nowrap">Star Rating</th>
-              <th className="px-3 py-3 whitespace-nowrap">Contact No</th>
-              <th className="px-3 py-3 whitespace-nowrap">Location</th>
-              <th className="px-3 py-3 whitespace-nowrap">Review</th>
-              <th className="px-3 py-3 whitespace-nowrap">Status</th>
-              <th className="px-3 py-3 text-center whitespace-nowrap">Actions</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.hotelName')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.hotelType')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.image')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.starRating')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.contactNo')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.location')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.review')}</th>
+              <th className="px-3 py-3 whitespace-nowrap">{t('management.destination.table.status')}</th>
+              <th className="px-3 py-3 text-center whitespace-nowrap">{t('management.destination.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="font-poppins">
@@ -332,35 +334,35 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
                 {/* <td className="py-1 px-3">{h.id}</td> */}
                 <td className="py-1 px-3 ">{h.name}</td>
-                <td className="px-3 py-1 ">{h.type || 'N/A'}</td>
+                <td className="px-3 py-1 ">{h.type || t('common.noData')}</td>
                 <td className="px-5 py-1 text-center">
                   <img src={h.images?.[0] || h.images} alt={h.name} className="w-16 h-16 object-cover " />
                 </td>
                 <td className="px-3 py-1 text-center">{renderStars(Number(h.starRating || 0))}</td>
-                <td className="px-3 py-1 text-center">{h.contactNumber || 'N/A'}</td>
-                <td className="px-3 py-1 text-center">{h.address || h.destination?.location || 'N/A'}</td>
-                <td className="px-3 py-1 text-center">{h.reviewCount ? `${h.reviewCount} reviews` : 'No reviews'}</td>
+                <td className="px-3 py-1 text-center">{h.contactNumber || t('common.noData')}</td>
+                <td className="px-3 py-1 text-center">{h.address || h.destination?.location || t('common.noData')}</td>
+                <td className="px-3 py-1 text-center">{h.reviewCount ? `${h.reviewCount} ${t('management.destination.table.review').toLowerCase()}` : t('management.itinerary.table.noReviews')}</td>
                 <td className="px-3 py-1 text-center">
                   {h.isFlagged ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium" title={h.flagReason}>
                       <MdFlag className="text-sm" />
-                      Unavailable
+                      {t('management.destination.status.unavailable')}
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                      Available
+                      {t('management.destination.status.available')}
                     </span>
                   )}
                 </td>
                 <td className="px-3 py-1 whitespace-nowrap">
                   <div className="flex gap-2 justify-center items-center">
-                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} title="Edit" />
+                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} title={t('dashboard.common.edit')} />
                     {h.isFlagged ? (
-                      <MdOutlineFlag className="text-green-600 cursor-pointer text-[20px]" onClick={() => handleUnflagClick(h)} title="Unflag Hotel" />
+                      <MdOutlineFlag className="text-green-600 cursor-pointer text-[20px]" onClick={() => handleUnflagClick(h)} title={t('management.destination.modals.flagButton')} />
                     ) : (
-                      <MdFlag className="text-orange-500 cursor-pointer text-[20px]" onClick={() => handleFlagClick(h)} title="Flag as Unavailable" />
+                      <MdFlag className="text-orange-500 cursor-pointer text-[20px]" onClick={() => handleFlagClick(h)} title={t('management.destination.modals.flagTitle')} />
                     )}
-                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(h.id)} title="Delete" />
+                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(h.id)} title={t('dashboard.common.delete')} />
                   </div>
                 </td>
               </tr>
@@ -399,7 +401,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               />
             </div>
             <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
-              Are you sure you want to delete this?
+              {t('management.destination.modals.deleteConfirm')}
             </h3>
 
             {errorMessage && (
@@ -414,14 +416,14 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
                 className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"
                 onClick={cancelDelete}
               >
-                Cancel
+                {t('management.customer.modals.cancel')}
               </button>
 
               <button
                 className="bg-[#B749DB] font-medium font-inter text-white px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#9f37c9] text-[14px] md:text-[16px]"
                 onClick={confirmDelete}
               >
-                Delete
+                {t('management.customer.modals.confirm')}
               </button>
             </div>
           </div>
@@ -443,18 +445,18 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
             <div className="mb-4 flex items-center justify-center gap-2">
               <MdFlag className="text-orange-500 text-3xl" />
               <h3 className="text-[18px] md:text-[20px] font-semibold font-inter">
-                Flag Hotel as Unavailable
+                {t('management.destination.modals.flagTitle')}
               </h3>
             </div>
 
             <p className="text-gray-600 text-sm mb-4">
-              Hotel: <span className="font-semibold">{selectedHotelForFlag?.name}</span>
+              {t('dashboard.common.hotel')}: <span className="font-semibold">{selectedHotelForFlag?.name}</span>
             </p>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date <span className="text-red-500">*</span>
+                  {t('management.destination.modals.flagStartDate')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -466,7 +468,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date <span className="text-red-500">*</span>
+                  {t('management.destination.modals.flagEndDate')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -480,7 +482,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Reason for flagging <span className="text-red-500">*</span>
+                {t('management.destination.modals.flagReason')} <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={flagReason}
@@ -491,7 +493,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
             </div>
 
             <p className="text-xs text-gray-500 mb-4">
-              ⚠️ Customers with itineraries using this hotel during the selected dates and all staff members will be notified immediately.
+              {t('management.destination.modals.flagWarning')}
             </p>
 
             {/* Buttons */}
@@ -500,14 +502,14 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
                 className="bg-gray-200 font-medium font-inter text-black px-6 py-2 rounded-lg hover:bg-gray-300 text-[14px] md:text-[16px]"
                 onClick={() => setFlagModalVisible(false)}
               >
-                Cancel
+                {t('management.customer.modals.cancel')}
               </button>
 
               <button
                 className="bg-orange-500 font-medium font-inter text-white px-6 py-2 rounded-lg hover:bg-orange-600 text-[14px] md:text-[16px]"
                 onClick={confirmFlag}
               >
-                Flag Hotel
+                {t('management.destination.modals.flagButton')}
               </button>
             </div>
           </div>

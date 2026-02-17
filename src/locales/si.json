@@ -98,5 +98,341 @@
         "select": "තෝරන්න",
         "deselect": "නොතෝරන්න",
         "pinnedLocation": "පින් කරන ලද ස්ථානය"
+    },
+    "dashboard": {
+        "menu": {
+            "dashboard": "දර්ශක පුවරුව",
+            "itineraries": "ගමන් විස්තර",
+            "user": "පරිශීලක",
+            "hotelDestination": "හෝටල් සහ ගමනාන්ත",
+            "vehicle": "වාහන",
+            "driver": "රියදුරු",
+            "staff": "කාර්ය මණ්ඩලය",
+            "activityLog": "ක්‍රියාකාරකම් සටහන",
+            "game": "ක්‍රීඩාව",
+            "reward": "ත්‍යාග",
+            "settings": "සැකසුම්",
+            "profile": "පැතිකඩ",
+            "myTrips": "මගේ සංචාර",
+            "myItineraries": "මගේ ගමන් විස්තර",
+            "createItinerary": "ගමන් විස්තර සාදන්න",
+            "packagePricing": "පැකේජ මිල",
+            "memories": "මතකයන්",
+            "trip": "සංචාරය",
+            "logOut": "පිටවන්න"
+        },
+        "stats": {
+            "totalCustomer": "මුළු පාරිභෝගිකයින්",
+            "totalVehicle": "මුළු වාහන",
+            "totalDriver": "මුළු රියදුරන්",
+            "totalItineraries": "මුළු ගමන් විස්තර",
+            "totalHotels": "මුළු හෝටල්",
+            "acceptedTrips": "පිළිගත් සංචාර",
+            "pendingQuotes": "අපේක්ෂිත මිල ගණන්",
+            "loyaltyPoints": "විසුවාස ලකුණු",
+            "totalTrips": "මුළු සංචාර",
+            "distanceCovered": "ගමන් කළ දුර",
+            "drivingHours": "ධාවන පැය",
+            "rating": "ශ්‍රේණිගත කිරීම",
+            "upcomingTrips": "ඉදිරි සංචාර"
+        },
+        "headings": {
+            "calendar": "දින දර්ශනය",
+            "rewardDetails": "ත්‍යාග විස්තර",
+            "map": "සිතියම",
+            "recentItineraries": "මෑත කාලීන ගමන් විස්තර",
+            "bestDestination": "හොඳම ගමනාන්තය",
+            "quickActions": "ඉක්මන් ක්‍රියා",
+            "vehicleStatus": "වාහන තත්ත්වය",
+            "tripCalendar": "සංචාර දින දර්ශනය",
+            "nextDestination": "මීළඟ ගමනාන්තය",
+            "tripsOn": "{{date}} දින සංචාර",
+            "selectADate": "දිනයක් තෝරන්න"
+        },
+        "table": {
+            "itineraryNo": "ගමන් විස්තර අංකය",
+            "name": "නම",
+            "phone": "දුරකථන",
+            "startDate": "ආරම්භක දිනය",
+            "status": "තත්ත්වය",
+            "participants": "සහභාගිවන්නන්",
+            "type": "වර්ගය",
+            "duration": "කාලසීමාව",
+            "rewardId": "ත්‍යාග හැඳුනුම්පත",
+            "rewardType": "ත්‍යාග වර්ගය",
+            "date": "දිනය",
+            "customerId": "පාරිභෝගික හැඳුනුම්පත",
+            "itineraryHash": "ගමන් විස්තර අංකය"
+        },
+        "common": {
+            "searchHere": "මෙහි සොයන්න...",
+            "viewAll": "සියල්ල බලන්න",
+            "welcomeBack": "නැවත සාදරයෙන් පිළිගනිමු! අද සිදුවන දේ මෙන්න.",
+            "noData": "දත්ත නොමැත",
+            "noItinerariesFound": "ගමන් විස්තර කිසිවක් හමු නොවීය",
+            "noItinerariesScheduled": "මෙම දිනය සඳහා ගමන් විස්තර කිසිවක් සැලසුම් කර නොමැත",
+            "filters": "පෙරහන්",
+            "createNewItinerary": "නව ගමන් විස්තරයක් සාදන්න",
+            "createFirstItinerary": "ඔබේ පළමු ගමන් විස්තරය සාදන්න",
+            "planAdventure": "ඔබේ මීළඟ වික්‍රමය සැලසුම් කරන්න",
+            "viewMyItineraries": "මගේ ගමන් විස්තර බලන්න",
+            "myRewards": "මගේ ප්‍රතිලාභ",
+            "myProfile": "මගේ පැතිකඩ",
+            "viewEditProfile": "පැතිකඩ බලන්න සහ සංස්කරණය කරන්න",
+            "points": "ලකුණු",
+            "day": "දිනය",
+            "days": "දින",
+            "itineraries": "ගමන් විස්තර",
+            "nextTrip": "මීළඟ සංචාරය",
+            "plateNumber": "ලියාපදිංචි අංකය",
+            "fuelEconomy": "ඉන්ධන පිරිමැස්ම",
+            "modelMake": "මොඩලය සහ නිෂ්පාදනය",
+            "quickSpecs": "ඉක්මන් පිරිවිතර",
+            "capacity": "ධාරිතාව",
+            "fuelType": "ඉන්ධන වර්ගය",
+            "mileage": "ධාවන දුර",
+            "insuranceExpiry": "රක්ෂණ කල් ඉකුත්වීම",
+            "viewAllDetails": "සියලු විස්තර බලන්න",
+            "viewNextItinerary": "මීළඟ ගමන් විස්තරය බලන්න",
+            "currentVehicle": "වර්තමාන වාහනය",
+            "noVehicleAssigned": "ඔබට තවමත් කිසිදු වාහනයක් පවරා දී නොමැත."
+        },
+        "status": {
+            "draft": "කෙටුම්පත",
+            "pending": "අපේක්ෂිත",
+            "quoted": "මිල ගණන් ලබා දී ඇත",
+            "negotiating": "සාකච්ඡා කරමින් පවතී",
+            "accepted": "පිළිගන්නා ලදී",
+            "rejected": "ප්‍රතික්ෂේප කරන ලදී",
+            "cancelled": "අවලංගු කරන ලදී",
+            "converted": "පරිවර්තනය කරන ලදී",
+            "inProgress": "සිදුවෙමින් පවතී",
+            "completed": "සම්පූර්ණයි"
+        }
+    },
+    "management": {
+        "itinerary": {
+            "title": "Itinerary Management",
+            "subtitle": "View & manage itinerary details",
+            "table": {
+                "itineraryNo": "Itinerary No",
+                "customerName": "Customer Name",
+                "phone": "Phone",
+                "email": "Email",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "participants": "Participants",
+                "status": "Status",
+                "createdAt": "Created At",
+                "action": "Action"
+            },
+            "status": {
+                "draft": "Draft",
+                "pending_quote": "Pending Quote",
+                "quoted": "Quoted",
+                "negotiating": "Negotiating",
+                "accepted": "Accepted",
+                "rejected": "Rejected",
+                "cancelled": "Cancelled",
+                "converted": "Converted",
+                "in_progress": "In Progress",
+                "on_hold": "On Hold",
+                "completed": "Completed"
+            },
+            "filters": {
+                "allStatus": "All Status",
+                "clearFilters": "Clear all filters"
+            },
+            "messages": {
+                "fetchFailed": "Failed to fetch itineraries",
+                "statusUpdated": "Itinerary status updated successfully!",
+                "deleteSuccess": "Itinerary deleted successfully!",
+                "deleteFailed": "Failed to delete itinerary",
+                "slackSuccess": "Slack channel created successfully!",
+                "slackFailed": "Failed to create Slack channel. Check bot configuration.",
+                "pdfFailed": "Failed to download PDF. Please try again.",
+                "pdfViewFailed": "Failed to view PDF. Please try again."
+            },
+            "modals": {
+                "deleteTitle": "Delete Itinerary",
+                "deleteDescription": "Are you sure you want to delete itinerary {{itineraryNumber}}? This action cannot be undone.",
+                "confirm": "Delete",
+                "cancel": "Cancel"
+            },
+            "tooltips": {
+                "downloadPdf": "Download PDF",
+                "viewPdf": "View PDF",
+                "viewDetails": "View Details",
+                "editItinerary": "Edit Itinerary",
+                "deleteItinerary": "Delete Itinerary",
+                "slackLinked": "Slack Channel Linked",
+                "createSlack": "Create Slack Channel",
+                "dateMismatch": "Date-destination mismatch - needs review",
+                "hotelUnavailable": "Hotel Unavailable",
+                "actionRequired": "Action Required"
+            },
+            "warnings": {
+                "userNegotiation": "User Negotiation Request",
+                "expected": "Expected"
+            },
+            "emptyState": "No itineraries found"
+        },
+        "customer": {
+            "title": "Customer Management",
+            "subtitle": "View & manage Customer Details",
+            "buttons": {
+                "add": "Add"
+            },
+            "table": {
+                "customerName": "Customer Name",
+                "email": "Email",
+                "gender": "Gender",
+                "contactNo": "Contact No",
+                "country": "Country",
+                "passportNo": "Passport No",
+                "age": "Age",
+                "status": "Status"
+            },
+            "filters": {
+                "country": "Country",
+                "gender": "Gender",
+                "status": "Status",
+                "activeOnly": "Active",
+                "unblock": "Unblock",
+                "block": "Block"
+            },
+            "gender": {
+                "male": "Male",
+                "female": "Female"
+            },
+            "messages": {
+                "fetchFailed": "Failed to load users",
+                "deleteSuccess": "Customer deleted successfully!",
+                "deleteFailed": "Failed to delete user"
+            },
+            "modals": {
+                "deleteWarning": "Warning: Sensitive Data!",
+                "deleteDependency": "This customer has {{itineraries}} itineraries and {{bookings}} bookings. Deleting them will permanently remove all associated records.",
+                "deleteConfirm": "Are you sure you want to delete this?",
+                "confirm": "Delete",
+                "cancel": "Cancel"
+            }
+        },
+        "vehicle": {
+            "title": "Vehicle Management",
+            "subtitle": "View & manage vehicle Details",
+            "table": {
+                "photo": "Photo",
+                "name": "V_Name",
+                "type": "V_Type",
+                "plate": "V_No_Plate",
+                "model": "V_Model",
+                "seats": "Seat_Count",
+                "driver": "Assign Driver",
+                "status": "Active"
+            },
+            "filters": {
+                "seatCount": "Seat Count",
+                "vType": "V_Type",
+                "status": "Status"
+            },
+            "types": {
+                "car": "Car",
+                "van": "Van",
+                "suv": "SUV"
+            },
+            "statusList": {
+                "active": "Active",
+                "inService": "In Service",
+                "needRepair": "Need Repair",
+                "unassigned": "Unassigned"
+            },
+            "messages": {
+                "fetchFailed": "Failed to load vehicles",
+                "deleteSuccess": "Vehicle deleted successfully!",
+                "deleteFailed": "Failed to delete vehicle"
+            }
+        },
+        "destination": {
+            "title": "Destination & Hotel Management",
+            "subtitle": "View & manage Destination Details",
+            "tabs": {
+                "destination": "Destination",
+                "hotel": "Hotel",
+                "excursion": "Excursion"
+            },
+            "buttons": {
+                "add": "Add"
+            },
+            "table": {
+                "destinationName": "Destination Name",
+                "name": "Destination Name",
+                "image": "Image",
+                "location": "Location",
+                "category": "Category",
+                "bestTime": "Best Time to Visit",
+                "review": "Review",
+                "noImage": "No Image",
+                "hotelName": "Hotel Name",
+                "hotelType": "Hotel Type",
+                "starRating": "Star Rating",
+                "contactNo": "Contact No",
+                "actions": "Actions",
+                "excursionPoint": "Excursion Point",
+                "duration": "Duration",
+                "rating": "Rating",
+                "destination": "Destination",
+                "status": "Status",
+                "photo": "Photo"
+            },
+            "filters": {
+                "location": "Location",
+                "hotel": "Hotel",
+                "hotelType": "Hotel Type",
+                "excursion": "Excursion",
+                "category": "Category"
+            },
+            "management": {
+                "destination": "View & manage Destination Details",
+                "hotel": "View & manage Hotel Details",
+                "excursion": "View & manage Excursion Details"
+            },
+            "messages": {
+                "fetchFailed": "Failed to load data from database",
+                "deleteSuccess": "Destination deleted successfully!",
+                "deleteFailed": "Failed to delete destination",
+                "hotelDeleteSuccess": "Hotel deleted successfully!",
+                "hotelDeleteFailed": "Failed to delete hotel",
+                "excursionDeleteSuccess": "Excursion deleted successfully!",
+                "excursionDeleteFailed": "Failed to delete excursion",
+                "toggleVisibilitySuccess": "Excursion {{status}} successfully!",
+                "toggleVisibilityFailed": "Failed to toggle excursion",
+                "flagSuccess": "Hotel flagged successfully! Affected customers and staff have been notified.",
+                "flagFailed": "Failed to flag hotel",
+                "unflagSuccess": "Hotel unflagged successfully!",
+                "unflagFailed": "Failed to unflag hotel"
+            },
+            "modals": {
+                "deleteConfirm": "Are you sure you want to delete this?",
+                "flagTitle": "Flag Hotel as Unavailable",
+                "flagReason": "Reason for flagging",
+                "flagStartDate": "Start Date",
+                "flagEndDate": "End Date",
+                "flagWarning": "⚠️ Customers with itineraries using this hotel during the selected dates and all staff members will be notified immediately.",
+                "toggleTitle": "{{action}} Excursion",
+                "toggleWarningDisable": "⚠️ Disabling will hide this excursion from customers. Use this for seasonal closures.",
+                "toggleWarningEnable": "Enabling will make this excursion visible to customers again.",
+                "seasonalNote": "Seasonal Note (Optional)",
+                "flagButton": "Flag Hotel",
+                "flagRequirement": "Please provide a reason for flagging this hotel",
+                "dateRequirement": "Please select both start and end dates"
+            },
+            "status": {
+                "available": "Available",
+                "unavailable": "Unavailable",
+                "active": "Active",
+                "inactive": "Inactive"
+            }
+        }
     }
 }

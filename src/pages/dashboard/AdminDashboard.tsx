@@ -9,6 +9,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Calendar } from "../../components/ui/calendar";
 import TopBar from "../../components/Topbar";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { itineraryService } from "../../services/itinerary.service";
 import type { Itinerary } from "../../types/itinerary.types";
 import { ItineraryStatus } from "../../types/itinerary.types";
@@ -90,6 +91,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, color }) => {
 };
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -184,21 +186,21 @@ const AdminDashboard = () => {
   const getStatusDisplay = (status: ItineraryStatus) => {
     switch (status) {
       case ItineraryStatus.DRAFT:
-        return "Draft";
+        return t('dashboard.status.draft');
       case ItineraryStatus.PENDING_QUOTE:
-        return "Pending";
+        return t('dashboard.status.pending');
       case ItineraryStatus.QUOTED:
-        return "Quoted";
+        return t('dashboard.status.quoted');
       case ItineraryStatus.NEGOTIATING:
-        return "Negotiating";
+        return t('dashboard.status.negotiating');
       case ItineraryStatus.ACCEPTED:
-        return "Accepted";
+        return t('dashboard.status.accepted');
       case ItineraryStatus.REJECTED:
-        return "Rejected";
+        return t('dashboard.status.rejected');
       case ItineraryStatus.CANCELLED:
-        return "Cancelled";
+        return t('dashboard.status.cancelled');
       case ItineraryStatus.CONVERTED:
-        return "Converted";
+        return t('dashboard.status.converted');
       default:
         return status;
     }
@@ -258,31 +260,31 @@ const AdminDashboard = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
               <StatCard
-                label="Total Customer"
+                label={t('dashboard.stats.totalCustomer')}
                 value={dashboardStats?.totalCustomers || 0}
                 icon={<HiUsers className="text-blue-500" />}
                 color="bg-blue-50"
               />
               <StatCard
-                label="Total Vehicle"
+                label={t('dashboard.stats.totalVehicle')}
                 value={dashboardStats?.totalVehicles || 0}
                 icon={<IoCarSport className="text-purple-500" />}
                 color="bg-purple-50"
               />
               <StatCard
-                label="Total Driver"
+                label={t('dashboard.stats.totalDriver')}
                 value={dashboardStats?.totalDrivers || 0}
                 icon={<HiTruck className="text-green-500" />}
                 color="bg-green-50"
               />
               <StatCard
-                label="Total Itineraries"
+                label={t('dashboard.stats.totalItineraries')}
                 value={dashboardStats?.totalItineraries || 0}
                 icon={<BiTime className="text-orange-500" />}
                 color="bg-orange-50"
               />
               <StatCard
-                label="Total Hotels"
+                label={t('dashboard.stats.totalHotels')}
                 value={dashboardStats?.totalHotels || 0}
                 icon={<BiTime className="text-pink-500" />}
                 color="bg-pink-50"
@@ -298,7 +300,7 @@ const AdminDashboard = () => {
               <Card className="bg-white rounded-xl shadow-sm border-0">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-4">
-                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">Calendar</p>
+                    <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">{t('dashboard.headings.calendar')}</p>
                     <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
                   </div>
                   <Calendar
@@ -316,7 +318,7 @@ const AdminDashboard = () => {
                   {date && selectedDateItineraries.length > 0 && (
                     <div className="mt-4 p-3 bg-[#F8EDFC] rounded-lg border border-[#E5D4EF]">
                       <p className="text-sm font-medium text-[#5B247A] mb-2">
-                        {selectedDateItineraries.length} itinerary/ies on {formatDate(date.toISOString())}
+                        {selectedDateItineraries.length} {t('dashboard.headings.tripsOn', { date: formatDate(date.toISOString()) })}
                       </p>
                     </div>
                   )}
@@ -328,7 +330,7 @@ const AdminDashboard = () => {
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
                     <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">
-                      {date ? `Trips on ${formatDate(date.toISOString())}` : "Select a Date"}
+                      {date ? t('dashboard.headings.tripsOn', { date: formatDate(date.toISOString()) }) : t('dashboard.headings.selectADate')}
                     </p>
                     <FiArrowUpRight className="text-gray-400" />
                   </div>
@@ -369,7 +371,7 @@ const AdminDashboard = () => {
                     </div>
                   ) : (
                     <p className="text-sm text-gray-500 py-4 text-center">
-                      No itineraries scheduled for this date
+                      {t('dashboard.common.noItinerariesScheduled')}
                     </p>
                   )}
                 </CardContent>
@@ -381,7 +383,7 @@ const AdminDashboard = () => {
               <CardContent className="p-5 flex flex-col justify-start">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Reward Details</p>
+                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">{t('dashboard.headings.rewardDetails')}</p>
                   <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
 
@@ -390,10 +392,10 @@ const AdminDashboard = () => {
                   <table className="min-w-full text-center font-inter font-medium">
                     <thead>
                       <tr className="text-[#382A59] border-b text-sm md:text-base">
-                        <th className="p-3 whitespace-nowrap">Reward Id</th>
-                        <th className="p-3 whitespace-nowrap">Reward Type</th>
-                        <th className="p-3">Date</th>
-                        <th className="p-3 whitespace-nowrap">Customer Id</th>
+                        <th className="p-3 whitespace-nowrap">{t('dashboard.table.rewardId')}</th>
+                        <th className="p-3 whitespace-nowrap">{t('dashboard.table.rewardType')}</th>
+                        <th className="p-3">{t('dashboard.table.date')}</th>
+                        <th className="p-3 whitespace-nowrap">{t('dashboard.table.customerId')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -421,7 +423,7 @@ const AdminDashboard = () => {
               <CardContent className="p-0 flex flex-col flex-1">
                 {/* Header */}
                 <div className="flex justify-between items-center px-5 pt-5 pb-3">
-                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">Map</p>
+                  <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">{t('dashboard.headings.map')}</p>
                   <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
 
@@ -450,12 +452,12 @@ const AdminDashboard = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
                   <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">
-                    Recent Itineraries
+                    {t('dashboard.headings.recentItineraries')}
                   </p>
                   <FiArrowUpRight
                     className="text-gray-400 cursor-pointer hover:text-gray-600"
                     onClick={handleViewAllItineraries}
-                    title="View All Itineraries"
+                    title={t('dashboard.common.viewAll')}
                   />
                 </div>
 
@@ -469,7 +471,7 @@ const AdminDashboard = () => {
                 {/* Empty State */}
                 {!loadingItineraries && itineraries.length === 0 && (
                   <div className="flex flex-col items-center justify-center py-10">
-                    <p className="text-gray-500 text-sm font-poppins">No itineraries found</p>
+                    <p className="text-gray-500 text-sm font-poppins">{t('dashboard.common.noItinerariesFound')}</p>
                   </div>
                 )}
 
@@ -479,11 +481,11 @@ const AdminDashboard = () => {
                     <table className="w-full text-center font-inter font-medium">
                       <thead>
                         <tr className="text-[#382A59] border-b text-sm md:text-base">
-                          <th className="p-3">Itinerary No</th>
-                          <th className="p-3">Name</th>
-                          <th className="p-3">Phone</th>
-                          <th className="p-3">Start Date</th>
-                          <th className="p-3">Status</th>
+                          <th className="p-3">{t('dashboard.table.itineraryNo')}</th>
+                          <th className="p-3">{t('dashboard.table.name')}</th>
+                          <th className="p-3">{t('dashboard.table.phone')}</th>
+                          <th className="p-3">{t('dashboard.table.startDate')}</th>
+                          <th className="p-3">{t('dashboard.table.status')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -529,14 +531,14 @@ const AdminDashboard = () => {
               <CardContent className="p-5">
                 <div className="flex justify-between items-center mb-4">
                   <p className="font-semibold text-gray-900 text-base md:text-lg font-poppins">
-                    Best Destination
+                    {t('dashboard.headings.bestDestination')}
                   </p>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="text-gray-600 text-sm h-8 px-3 hover:bg-gray-100"
                   >
-                    <FiFilter className="mr-1.5" /> Filters
+                    <FiFilter className="mr-1.5" /> {t('dashboard.common.filters')}
                   </Button>
                 </div>
 
@@ -550,7 +552,7 @@ const AdminDashboard = () => {
                 {/* Empty State */}
                 {!loadingStats && (!dashboardStats?.destinations || dashboardStats.destinations.length === 0) && (
                   <div className="flex flex-col items-center justify-center py-10">
-                    <p className="text-gray-500 text-sm font-poppins">No destinations found</p>
+                    <p className="text-gray-500 text-sm font-poppins">{t('dashboard.common.noData')}</p>
                   </div>
                 )}
 

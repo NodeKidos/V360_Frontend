@@ -17,9 +17,11 @@ import pdfService from "../../../services/pdf.service";
 import type { Itinerary } from "../../../types/itinerary.types";
 import { ItineraryStatus } from "../../../types/itinerary.types";
 import { Loader } from "../../ui/Loader";
+import { useTranslation } from "react-i18next";
 import { FiInfo } from "react-icons/fi"; // Import FiInfo
 
 const ItineraryManagement = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
@@ -66,7 +68,7 @@ const ItineraryManagement = () => {
         setItineraries(response.data);
         setTotalItems(response.meta.total);
       } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to fetch itineraries");
+        toast.error(error.response?.data?.message || t('management.itinerary.messages.fetchFailed'));
       } finally {
         setLoading(false);
       }
@@ -108,14 +110,14 @@ const ItineraryManagement = () => {
   const handleStatusChange = async (itineraryId: string, newStatus: ItineraryStatus) => {
     try {
       await itineraryService.updateStatus(itineraryId, newStatus);
-      toast.success(`Itinerary status updated to ${newStatus.replace(/_/g, " ").toUpperCase()} successfully!`);
+      toast.success(t('management.itinerary.messages.statusUpdated'));
       // Update the itinerary in the list
       setItineraries(itineraries.map(it =>
         it.id === itineraryId ? { ...it, status: newStatus } : it
       ));
       setStatusDropdownOpen(null);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update status");
+      toast.error(error.response?.data?.message || t('management.itinerary.messages.statusFailed'));
     }
   };
 
@@ -133,12 +135,12 @@ const ItineraryManagement = () => {
     setIsDeleting(true);
     try {
       await itineraryService.delete(deleteModal.itineraryId);
-      toast.success("Itinerary deleted successfully!");
+      toast.success(t('management.itinerary.messages.deleteSuccess'));
       // Refresh the list
       setItineraries(itineraries.filter(it => it.id !== deleteModal.itineraryId));
       setDeleteModal({ isOpen: false, itineraryId: "", itineraryNumber: "" });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete itinerary");
+      toast.error(error.response?.data?.message || t('management.itinerary.messages.deleteFailed'));
     } finally {
       setIsDeleting(false);
     }
@@ -148,13 +150,13 @@ const ItineraryManagement = () => {
   const handleCreateSlackChannel = async (itineraryId: string) => {
     try {
       const response = await slackService.createChannel(itineraryId);
-      toast.success(response.message || "Slack channel created successfully!");
+      toast.success(response.message || t('management.itinerary.messages.slackSuccess'));
       // Update the itinerary in the list
       setItineraries(itineraries.map(it =>
         it.id === itineraryId ? { ...it, slackChannelId: response.channelId } : it
       ));
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to create Slack channel. Check bot configuration.");
+      toast.error(error.response?.data?.message || t('management.itinerary.messages.slackFailed'));
     }
   };
 
@@ -291,14 +293,14 @@ const ItineraryManagement = () => {
           {/* TITLE - Desktop */}
           <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
             <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
-              Itinerary Management
+              {t('management.itinerary.title')}
             </h2>
           </div>
 
           {/* TITLE - Mobile */}
           <div className="mb-4 mt-4 md:hidden">
             <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
-              Itinerary Management
+              {t('management.itinerary.title')}
             </h2>
           </div>
 
@@ -308,7 +310,7 @@ const ItineraryManagement = () => {
               <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
               <input
                 type="text"
-                placeholder="Search here"
+                placeholder={t('dashboard.common.searchHere')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
@@ -321,7 +323,7 @@ const ItineraryManagement = () => {
             <div className="flex justify-between items-center p-2">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                View & manage itinerary details
+                {t('management.itinerary.subtitle')}
               </h4>
 
               {/* RIGHT: Filters */}
@@ -331,15 +333,15 @@ const ItineraryManagement = () => {
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
-                  <option value="">All Status</option>
-                  <option value={ItineraryStatus.DRAFT}>Draft</option>
-                  <option value={ItineraryStatus.PENDING_QUOTE}>Pending Quote</option>
-                  <option value={ItineraryStatus.QUOTED}>Quoted</option>
-                  <option value={ItineraryStatus.NEGOTIATING}>Negotiating</option>
-                  <option value={ItineraryStatus.ACCEPTED}>Accepted</option>
-                  <option value={ItineraryStatus.REJECTED}>Rejected</option>
-                  <option value={ItineraryStatus.CANCELLED}>Cancelled</option>
-                  <option value={ItineraryStatus.CONVERTED}>Converted</option>
+                  <option value="">{t('management.itinerary.filters.allStatus')}</option>
+                  <option value={ItineraryStatus.DRAFT}>{t('management.itinerary.status.draft')}</option>
+                  <option value={ItineraryStatus.PENDING_QUOTE}>{t('management.itinerary.status.pendingQuote')}</option>
+                  <option value={ItineraryStatus.QUOTED}>{t('management.itinerary.status.quoted')}</option>
+                  <option value={ItineraryStatus.NEGOTIATING}>{t('management.itinerary.status.negotiating')}</option>
+                  <option value={ItineraryStatus.ACCEPTED}>{t('management.itinerary.status.accepted')}</option>
+                  <option value={ItineraryStatus.REJECTED}>{t('management.itinerary.status.rejected')}</option>
+                  <option value={ItineraryStatus.CANCELLED}>{t('management.itinerary.status.cancelled')}</option>
+                  <option value={ItineraryStatus.CONVERTED}>{t('management.itinerary.status.converted')}</option>
                 </select>
 
                 <button
@@ -348,7 +350,7 @@ const ItineraryManagement = () => {
                     setStatusFilter("");
                     setSearchQuery("");
                   }}
-                  title="Clear all filters"
+                  title={t('management.itinerary.filters.clearFilters')}
                 >
                   <LuListFilter className="text-[18px]" />
                 </button>
@@ -361,7 +363,7 @@ const ItineraryManagement = () => {
             <div className="flex justify-between items-center mb-4">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px]">
-                View & manage itinerary details
+                {t('management.itinerary.subtitle')}
               </h4>
             </div>
 
@@ -372,15 +374,15 @@ const ItineraryManagement = () => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="">All Status</option>
-                <option value={ItineraryStatus.DRAFT}>Draft</option>
-                <option value={ItineraryStatus.PENDING_QUOTE}>Pending Quote</option>
-                <option value={ItineraryStatus.QUOTED}>Quoted</option>
-                <option value={ItineraryStatus.NEGOTIATING}>Negotiating</option>
-                <option value={ItineraryStatus.ACCEPTED}>Accepted</option>
-                <option value={ItineraryStatus.REJECTED}>Rejected</option>
-                <option value={ItineraryStatus.CANCELLED}>Cancelled</option>
-                <option value={ItineraryStatus.CONVERTED}>Converted</option>
+                <option value="">{t('management.itinerary.filters.allStatus')}</option>
+                <option value={ItineraryStatus.DRAFT}>{t('management.itinerary.status.draft')}</option>
+                <option value={ItineraryStatus.PENDING_QUOTE}>{t('management.itinerary.status.pendingQuote')}</option>
+                <option value={ItineraryStatus.QUOTED}>{t('management.itinerary.status.quoted')}</option>
+                <option value={ItineraryStatus.NEGOTIATING}>{t('management.itinerary.status.negotiating')}</option>
+                <option value={ItineraryStatus.ACCEPTED}>{t('management.itinerary.status.accepted')}</option>
+                <option value={ItineraryStatus.REJECTED}>{t('management.itinerary.status.rejected')}</option>
+                <option value={ItineraryStatus.CANCELLED}>{t('management.itinerary.status.cancelled')}</option>
+                <option value={ItineraryStatus.CONVERTED}>{t('management.itinerary.status.converted')}</option>
               </select>
 
               <button
@@ -389,7 +391,7 @@ const ItineraryManagement = () => {
                   setStatusFilter("");
                   setSearchQuery("");
                 }}
-                title="Clear all filters"
+                title={t('management.itinerary.filters.clearFilters')}
               >
                 <LuListFilter className="text-[18px]" />
               </button>
@@ -398,13 +400,13 @@ const ItineraryManagement = () => {
 
           {/* Loading State */}
           {loading && (
-            <Loader message="Loading itineraries..." size={250} />
+            <Loader message={t('common.loading')} size={250} />
           )}
 
           {/* Empty State */}
           {!loading && itineraries.length === 0 && (
             <div className="flex flex-col items-center justify-center py-10">
-              <p className="text-gray-500 text-lg font-poppins">No itineraries found</p>
+              <p className="text-gray-500 text-lg font-poppins">{t('management.itinerary.emptyState')}</p>
             </div>
           )}
 
@@ -414,16 +416,16 @@ const ItineraryManagement = () => {
               <table className="min-w-full bg-white">
                 <thead>
                   <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
-                    <th className="px-4 py-4 whitespace-nowrap">Itinerary No</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Customer Name</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Phone</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Email</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Start Date</th>
-                    <th className="px-4 py-4 whitespace-nowrap">End Date</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Participants</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Status</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Created At</th>
-                    <th className="px-4 py-4 text-center whitespace-nowrap">Action</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.itineraryNo')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.customerName')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.phone')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.email')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.startDate')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.endDate')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.participants')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.status')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.itinerary.table.createdAt')}</th>
+                    <th className="px-4 py-4 text-center whitespace-nowrap">{t('management.itinerary.table.action')}</th>
                   </tr>
                 </thead>
 
@@ -474,14 +476,14 @@ const ItineraryManagement = () => {
                               }}
                               className={`${getStatusColor(itinerary.status).replace("text-", "bg-").replace("-600", "-100").replace("-400", "-100")} ${getStatusColor(itinerary.status)} px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer`}
                             >
-                              {itinerary.status.replace(/_/g, " ").toUpperCase()}
+                              {t(`management.itinerary.status.${itinerary.status}`).toUpperCase()}
                               <FiChevronDown size={12} />
                             </button>
                           </div>
 
                           {/* Date-Destination Mismatch Warning Badge */}
                           {checkDateMismatch(itinerary) && (
-                            <span className="px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-300" title="Date-destination mismatch - needs review">
+                            <span className="px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-300" title={t('management.itinerary.tooltips.dateMismatch')}>
                               ⚠️
                             </span>
                           )}
@@ -493,10 +495,10 @@ const ItineraryManagement = () => {
                               return (
                                 <span
                                   className="px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700 border border-red-300 flex items-center gap-1 animate-pulse"
-                                  title={`Hotel Unavailable: ${hotelName} - ${reason}`}
+                                  title={`${t('management.itinerary.tooltips.hotelUnavailable')}: ${hotelName} - ${reason}`}
                                 >
                                   <MdFlag className="text-sm" />
-                                  Action Required
+                                  {t('management.itinerary.tooltips.actionRequired')}
                                 </span>
                               );
                             }
@@ -528,10 +530,10 @@ const ItineraryManagement = () => {
                                     <FiInfo className="text-orange-500 cursor-help" size={16} />
                                     {/* Tooltip */}
                                     <div className="absolute right-0 bottom-full mb-2 w-64 p-3 bg-white border border-gray-200 rounded-lg shadow-xl text-xs z-[1000] invisible group-hover:visible">
-                                      <div className="font-bold text-gray-800 mb-1">User Negotiation Request</div>
+                                      <div className="font-bold text-gray-800 mb-1">{t('management.itinerary.warnings.userNegotiation')}</div>
                                       {latestUserNegotiation.proposedPrice && (
                                         <div className="font-semibold text-green-600 mb-1">
-                                          Expected: {itinerary.quote?.currency || '$'} {latestUserNegotiation.proposedPrice.toLocaleString()}
+                                          {t('management.itinerary.warnings.expected')}: {itinerary.quote?.currency || '$'} {latestUserNegotiation.proposedPrice.toLocaleString()}
                                         </div>
                                       )}
                                       <div className="text-gray-600 italic">"{latestUserNegotiation.message}"</div>
@@ -565,7 +567,7 @@ const ItineraryManagement = () => {
                                 className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors block ${itinerary.status === status ? 'bg-purple-50 font-semibold' : ''
                                   }`}
                               >
-                                {status.replace(/_/g, " ").toUpperCase()}
+                                {t(`management.itinerary.status.${status}`).toUpperCase()}
                               </button>
                             ))}
                           </div>
@@ -585,39 +587,39 @@ const ItineraryManagement = () => {
                               try {
                                 await pdfService.downloadPDF(itinerary.id, itinerary.itineraryNumber);
                               } catch (error) {
-                                toast.error("Failed to download PDF. Please try again.");
+                                toast.error(t('management.itinerary.messages.pdfFailed'));
                               }
                             }}
-                            title="Download PDF"
+                            title={t('management.itinerary.tooltips.downloadPdf')}
                           />
                           <button
                             onClick={async () => {
                               try {
                                 await pdfService.previewPDF(itinerary.id);
                               } catch (error) {
-                                toast.error("Failed to view PDF. Please try again.");
+                                toast.error(t('management.itinerary.messages.pdfViewFailed'));
                               }
                             }}
                             className="text-orange-500 cursor-pointer text-[18px] hover:text-orange-700 transition-colors bg-transparent border-none p-0 flex items-center"
-                            title="View PDF"
+                            title={t('management.itinerary.tooltips.viewPdf')}
                           >
                             <FiFileText />
                           </button>
                           <FiEye
                             className="text-[#B749DB] cursor-pointer text-[18px] hover:text-purple-700 transition-colors"
                             onClick={() => handleViewClick(itinerary.id)}
-                            title="View Details"
+                            title={t('management.itinerary.tooltips.viewDetails')}
                           />
                           <FiEdit
                             className="text-blue-600 cursor-pointer text-[18px] hover:text-blue-800 transition-colors"
                             onClick={() => navigate(`/itinerary/${itinerary.id}/edit`)}
-                            title="Edit Itinerary"
+                            title={t('management.itinerary.tooltips.editItinerary')}
                           />
                           {(itinerary.status === ItineraryStatus.DRAFT || itinerary.status === ItineraryStatus.REJECTED) && (
                             <FiTrash2
                               className="text-red-500 cursor-pointer text-[18px] hover:text-red-700 transition-colors"
                               onClick={() => handleDeleteClick(itinerary.id, itinerary.itineraryNumber)}
-                              title="Delete Itinerary"
+                              title={t('management.itinerary.tooltips.deleteItinerary')}
                             />
                           )}
                           <FaSlack
@@ -629,7 +631,7 @@ const ItineraryManagement = () => {
                                 toast.info(`Slack Channel ID: ${itinerary.slackChannelId}`);
                               }
                             }}
-                            title={itinerary.slackChannelId ? "Slack Channel Linked" : "Create Slack Channel"}
+                            title={itinerary.slackChannelId ? t('management.itinerary.tooltips.slackLinked') : t('management.itinerary.tooltips.createSlack')}
                           />
                         </div>
                       </td>
@@ -662,10 +664,10 @@ const ItineraryManagement = () => {
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, itineraryId: "", itineraryNumber: "" })}
         onConfirm={handleConfirmDelete}
-        title="Delete Itinerary"
-        description={`Are you sure you want to delete itinerary ${deleteModal.itineraryNumber}? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('management.itinerary.modals.deleteTitle')}
+        description={t('management.itinerary.modals.deleteDescription', { itineraryNumber: deleteModal.itineraryNumber })}
+        confirmText={t('management.itinerary.modals.confirm')}
+        cancelText={t('management.itinerary.modals.cancel')}
         isDeleting={isDeleting}
       />
     </div >

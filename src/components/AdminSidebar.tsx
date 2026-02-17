@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './ui/Tooltip';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TiThLargeOutline } from 'react-icons/ti';
 import { FaUser, FaHotel, FaCarSide, FaTruck, FaUsers, FaGift, FaRoute, FaClipboardList, FaMapMarkedAlt } from 'react-icons/fa';
 import { BiTrip } from 'react-icons/bi';
@@ -15,43 +16,42 @@ import { useAuthStore } from '../store/useAuthStore';
 // Define the menu configuration for each role
 const sidebarMenuConfig = {
   admin: [
-    { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/admin-dashboard' },
-    { label: 'Itineraries', icon: <FaRoute />, link: '/itineraries' },
-    { label: 'User', icon: <FaUser />, link: '/user' },
-    // { label: 'Tour', icon: <FaMapMarkedAlt />, link: '/tour' }, // Hidden
-    { label: 'Hotel & Destination', icon: <FaHotel />, link: '/destination-hotel' },
-    { label: 'Vehicle', icon: <FaCarSide />, link: '/vehicle' },
-    { label: 'Driver', icon: <FaTruck />, link: '/driver' },
-    { label: 'Staff', icon: <FaUsers />, link: '/staff' },
-    { label: 'Activity Log', icon: <FaClipboardList />, link: '/activity-log' },
-    { label: 'Game', icon: <IoGameController />, link: '/v360/game' },
-    { label: 'Reward', icon: <FaGift />, link: '/reward' },
-    { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
+    { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/admin-dashboard' },
+    { label: 'dashboard.menu.itineraries', icon: <FaRoute />, link: '/itineraries' },
+    { label: 'dashboard.menu.user', icon: <FaUser />, link: '/user' },
+    { label: 'dashboard.menu.hotelDestination', icon: <FaHotel />, link: '/destination-hotel' },
+    { label: 'dashboard.menu.vehicle', icon: <FaCarSide />, link: '/vehicle' },
+    { label: 'dashboard.menu.driver', icon: <FaTruck />, link: '/driver' },
+    { label: 'dashboard.menu.staff', icon: <FaUsers />, link: '/staff' },
+    { label: 'dashboard.menu.activityLog', icon: <FaClipboardList />, link: '/activity-log' },
+    { label: 'dashboard.menu.game', icon: <IoGameController />, link: '/v360/game' },
+    { label: 'dashboard.menu.reward', icon: <FaGift />, link: '/reward' },
+    { label: 'dashboard.menu.settings', icon: <IoMdSettings />, link: '/setting' }
   ],
   staff: [
-    { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
-    { label: 'Itineraries', icon: <FaRoute />, link: '/itineraries' },
-    { label: 'Trip', icon: <BiTrip />, link: '/trip' },
-    { label: 'Driver', icon: <FaTruck />, link: '/driver' },
-    { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
+    { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
+    { label: 'dashboard.menu.itineraries', icon: <FaRoute />, link: '/itineraries' },
+    { label: 'dashboard.menu.trip', icon: <BiTrip />, link: '/trip' },
+    { label: 'dashboard.menu.driver', icon: <FaTruck />, link: '/driver' },
+    { label: 'dashboard.menu.settings', icon: <IoMdSettings />, link: '/setting' }
   ],
   driver: [
-    { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
-    { label: 'My Trip', icon: <BiTrip />, link: '/driver-trips' },
-    { label: 'Itinerary', icon: <FaMapMarkedAlt />, link: '/itinerary-details' },
-    { label: 'Profile', icon: <FaUser />, link: '/driver-profile' },
-    { label: 'Vehicle', icon: <FaCarSide />, link: '/driver-vehicle' },
-    { label: 'Game', icon: <IoGameController />, link: '/v360/game' },
+    { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
+    { label: 'dashboard.menu.myTrips', icon: <BiTrip />, link: '/driver-trips' },
+    { label: 'dashboard.menu.itineraries', icon: <FaMapMarkedAlt />, link: '/itinerary-details' },
+    { label: 'dashboard.menu.profile', icon: <FaUser />, link: '/driver-profile' },
+    { label: 'dashboard.menu.vehicle', icon: <FaCarSide />, link: '/driver-vehicle' },
+    { label: 'dashboard.menu.game', icon: <IoGameController />, link: '/v360/game' },
   ],
   user: [
-    { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
-    { label: 'My Itineraries', icon: <FaRoute />, link: '/my-itineraries' },
-    { label: 'Create Itinerary', icon: <BiTrip />, link: '/itinerary' },
-    { label: 'Package Pricing', icon: <IoPricetagOutline />, link: '/package-price' },
-    { label: 'Rewards', icon: <FaGift />, link: '/reward' },
-    { label: 'Memories', icon: <FaGift />, link: '/memories' },
-    { label: 'Game', icon: <IoGameController />, link: '/play' },
-    { label: 'Profile', icon: <FaUser />, link: '/user-profile' }
+    { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
+    { label: 'dashboard.menu.myItineraries', icon: <FaRoute />, link: '/my-itineraries' },
+    { label: 'dashboard.menu.createItinerary', icon: <BiTrip />, link: '/itinerary' },
+    { label: 'dashboard.menu.packagePricing', icon: <IoPricetagOutline />, link: '/package-price' },
+    { label: 'dashboard.menu.reward', icon: <FaGift />, link: '/reward' },
+    { label: 'dashboard.menu.memories', icon: <FaGift />, link: '/memories' },
+    { label: 'dashboard.menu.game', icon: <IoGameController />, link: '/play' },
+    { label: 'dashboard.menu.profile', icon: <FaUser />, link: '/user-profile' }
   ]
 };
 
@@ -70,6 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   sidebarOpen,
   setSidebarOpen
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [role, setRole] = useState<keyof typeof sidebarMenuConfig>('user'); // Default to 'user'
@@ -157,6 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <nav className="space-y-2">
                 {menuItems.map((item) => {
                   const active = isActive(item.link);
+                  const translatedLabel = t(item.label);
                   return (
                     <Tooltip key={item.label}>
                       <TooltipTrigger asChild>
@@ -172,12 +174,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                         >
                           <span className="text-base">{item.icon}</span>
                           {(!collapsed || isMobile) && (
-                            <span className="text-sm font-roboto font-medium">{item.label}</span>
+                            <span className="text-sm font-roboto font-medium">{translatedLabel}</span>
                           )}
                         </Button>
                       </TooltipTrigger>
                       {collapsed && !isMobile && (
-                        <TooltipContent side="right">{item.label}</TooltipContent>
+                        <TooltipContent side="right">{translatedLabel}</TooltipContent>
                       )}
                     </Tooltip>
                   );
@@ -202,10 +204,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                       ${collapsed && !isMobile ? "justify-center px-2" : "justify-start pl-3"}`}
                   >
                     <FiLogOut className="text-base" />
-                    {(!collapsed || isMobile) && <span className="text-sm">Log Out</span>}
+                    {(!collapsed || isMobile) && <span className="text-sm">{t('dashboard.menu.logOut')}</span>}
                   </Button>
                 </TooltipTrigger>
-                {collapsed && !isMobile && <TooltipContent>Log Out</TooltipContent>}
+                {collapsed && !isMobile && <TooltipContent>{t('dashboard.menu.logOut')}</TooltipContent>}
               </Tooltip>
             </TooltipProvider>
 

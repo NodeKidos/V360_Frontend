@@ -13,9 +13,11 @@ import { CiSearch } from "react-icons/ci"; // Import search icon
 import { IoMdAdd } from "react-icons/io"; // Import add icon
 import userService from "../../../services/user.service";
 import type { User } from "../../../services/user.service";
+import { useTranslation } from "react-i18next";
 import { Loader } from "../../ui/Loader";
 
 const CustomerManagement = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate(); // Initialize the navigation function
 
   const [customers, setCustomers] = useState<User[]>([]);
@@ -45,7 +47,7 @@ const CustomerManagement = () => {
       setCustomers(userList);
     } catch (error) {
       console.error("Failed to fetch users", error);
-      toast.error("Failed to load users");
+      toast.error(t('management.customer.messages.fetchFailed'));
     } finally {
       setLoading(false);
     }
@@ -148,13 +150,13 @@ const CustomerManagement = () => {
     try {
       await userService.deleteUser(selectedCustomerId);
       setCustomers(customers.filter((customer) => customer.id !== selectedCustomerId));
-      toast.success("Customer deleted successfully!", {
+      toast.success(t('management.customer.messages.deleteSuccess'), {
         position: "top-right",
         autoClose: 2000,
       });
     } catch (error) {
       console.error("Failed to delete user", error);
-      toast.error("Failed to delete user");
+      toast.error(t('management.customer.messages.deleteFailed'));
     } finally {
       setDeleteConfirmationVisible(false);
       setSelectedCustomerId(null);
@@ -196,13 +198,13 @@ const CustomerManagement = () => {
           {/* TITLE - Desktop with Add button */}
           <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
             <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
-              Customer Management
+              {t('management.customer.title')}
             </h2>
             <button
               className="bg-[#B749DB] text-white rounded-lg px-4 py-2 text-[14px] font-poppins flex items-center gap-2 hover:bg-[#9f37c9] cursor-pointer"
               onClick={handleAddCustomerClick}
             >
-              Add
+              {t('management.customer.buttons.add')}
               <IoMdAdd className="text-[18px]" />
             </button>
           </div>
@@ -210,7 +212,7 @@ const CustomerManagement = () => {
           {/* TITLE - Mobile */}
           <div className="mb-4 mt-4 md:hidden">
             <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
-              Customer Management
+              {t('management.customer.title')}
             </h2>
           </div>
 
@@ -220,7 +222,7 @@ const CustomerManagement = () => {
               <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-[20px]" />
               <input
                 type="text"
-                placeholder="Search here"
+                placeholder={t('dashboard.common.searchHere')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#F5F0FF] border-none rounded-xl pl-12 pr-4 py-3 text-[14px] md:text-[16px] font-poppins focus:outline-none focus:ring-2 focus:ring-[#B749DB]/20"
@@ -233,7 +235,7 @@ const CustomerManagement = () => {
             <div className="flex justify-between items-center p-2">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px] lg:text-[18px]">
-                View & manage Customer Details
+                {t('management.customer.subtitle')}
               </h4>
 
               {/* RIGHT: Filters */}
@@ -243,7 +245,7 @@ const CustomerManagement = () => {
                   value={countryFilter}
                   onChange={(e) => setCountryFilter(e.target.value)}
                 >
-                  <option value="">Country</option>
+                  <option value="">{t('management.customer.filters.country')}</option>
                   <option value="Singapore">Singapore</option>
                   <option value="Australia">Australia</option>
                   <option value="Canada">Canada</option>
@@ -254,9 +256,9 @@ const CustomerManagement = () => {
                   value={genderFilter}
                   onChange={(e) => setGenderFilter(e.target.value)}
                 >
-                  <option value="">Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+                  <option value="">{t('management.customer.filters.gender')}</option>
+                  <option value="Male">{t('management.customer.gender.male')}</option>
+                  <option value="Female">{t('management.customer.gender.female')}</option>
                 </select>
 
                 <select
@@ -264,19 +266,20 @@ const CustomerManagement = () => {
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
-                  <option value="">Active</option>
-                  <option value="Unblock">Unblock</option>
-                  <option value="Block">Block</option>
+                  <option value="">{t('management.customer.filters.status')}</option>
+                  <option value="Unblock">{t('management.customer.filters.unblock')}</option>
+                  <option value="Block">{t('management.customer.filters.block')}</option>
                 </select>
 
                 <button
                   className="border border-[#B749DB] text-[#B749DB] rounded-md px-3 py-1 hover:bg-purple-50 cursor-pointer"
                   onClick={() => {
+                    setCountryFilter("");
                     setGenderFilter("");
                     setStatusFilter("");
                     setSearchQuery("");
                   }}
-                  title="Clear all filters"
+                  title={t('management.itinerary.filters.clearFilters')}
                 >
                   <LuListFilter className="text-[18px]" />
                 </button>
@@ -289,7 +292,7 @@ const CustomerManagement = () => {
             <div className="flex justify-between items-center mb-4">
               {/* LEFT: Title */}
               <h4 className="font-poppins font-medium text-black text-[14px] sm:text-[16px]">
-                View & manage Customer Details
+                {t('management.customer.subtitle')}
               </h4>
 
               {/* RIGHT: Add button */}
@@ -308,7 +311,7 @@ const CustomerManagement = () => {
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
               >
-                <option value="">Country</option>
+                <option value="">{t('management.customer.filters.country')}</option>
                 <option value="Singapore">Singapore</option>
                 <option value="Australia">Australia</option>
                 <option value="Canada">Canada</option>
@@ -318,9 +321,9 @@ const CustomerManagement = () => {
                 value={genderFilter}
                 onChange={(e) => setGenderFilter(e.target.value)}
               >
-                <option value="">Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+                <option value="">{t('management.customer.filters.gender')}</option>
+                <option value="Male">{t('management.customer.gender.male')}</option>
+                <option value="Female">{t('management.customer.gender.female')}</option>
               </select>
 
               <select
@@ -328,19 +331,20 @@ const CustomerManagement = () => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="">Status</option>
-                <option value="Unblock">Unblock</option>
-                <option value="Block">Block</option>
+                <option value="">{t('management.customer.filters.status')}</option>
+                <option value="Unblock">{t('management.customer.filters.unblock')}</option>
+                <option value="Block">{t('management.customer.filters.block')}</option>
               </select>
 
               <button
                 className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 hover:bg-purple-50 cursor-pointer"
                 onClick={() => {
+                  setCountryFilter("");
                   setGenderFilter("");
                   setStatusFilter("");
                   setSearchQuery("");
                 }}
-                title="Clear all filters"
+                title={t('management.itinerary.filters.clearFilters')}
               >
                 <LuListFilter className="text-[18px]" />
               </button>
@@ -349,21 +353,21 @@ const CustomerManagement = () => {
 
           {/* TABLE - Both Desktop and Mobile (Horizontally Scrollable) */}
           {loading ? (
-            <Loader src="/loaders/travelloading.lottie" message="Loading customers..." size={250} />
+            <Loader src="/loaders/travelloading.lottie" message={t('common.loading')} size={250} />
           ) : (
             <div className="mb-6 overflow-x-auto rounded-lg border border-gray-200" style={{ scrollbarWidth: "thin" }}>
               <table className="min-w-full bg-white">
                 <thead>
                   <tr className="bg-gray-50 text-[#382A59] font-semibold text-[13px] sm:text-[14px] md:text-[15px] text-left font-poppins">
                     {/* <th className="px-4 py-4 whitespace-nowrap">Customer Id</th> */}
-                    <th className="px-4 py-4 whitespace-nowrap">Customer Name</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Email</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Gender</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Contact No</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Country</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Passport No</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Age</th>
-                    <th className="px-4 py-4 whitespace-nowrap">Status</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.customerName')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.email')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.gender')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.contactNo')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.country')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.passportNo')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.age')}</th>
+                    <th className="px-4 py-4 whitespace-nowrap">{t('management.customer.table.status')}</th>
                     <th className="px-4 py-4 text-center whitespace-nowrap"></th>
                   </tr>
                 </thead>
@@ -389,14 +393,14 @@ const CustomerManagement = () => {
                         </td>
 
                         <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender || "N/A"}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || "N/A"}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || "N/A"}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || "N/A"}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || "N/A"}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender ? t(`management.customer.gender.${customerGender.toLowerCase()}`) : t('common.noData')}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || t('common.noData')}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || t('common.noData')}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || t('common.noData')}</td>
+                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || t('common.noData')}</td>
 
                         <td className={`px-4 py-4 font-medium whitespace-nowrap ${(c.status || "").toLowerCase() === "active" ? "text-green-600" : "text-red-600"}`}>
-                          {(c.status || "").toLowerCase() === "active" ? "Unblock" : "Block"}
+                          {(c.status || "").toLowerCase() === "active" ? t('management.customer.filters.unblock') : t('management.customer.filters.block')}
                         </td>
 
                         <td className="px-4 py-4 whitespace-nowrap">
@@ -454,14 +458,13 @@ const CustomerManagement = () => {
                 <h3 className="text-[16px] md:text-[18px] lg:text-[20px] text-center font-semibold font-inter mb-4">
                   {dependencies && (dependencies.itineraries > 0 || dependencies.bookings > 0) ? (
                     <div className="text-red-600">
-                      <p className="mb-2">⚠️ Warning: Sensitive Data!</p>
+                      <p className="mb-2">{t('management.customer.modals.deleteWarning')}</p>
                       <p className="text-[14px] md:text-[16px] font-normal text-gray-700">
-                        This customer has <span className="font-bold">{dependencies.itineraries} itineraries</span> and <span className="font-bold">{dependencies.bookings} bookings</span>.
-                        Deleting them will permanently remove all associated records.
+                        {t('management.customer.modals.deleteDependency', { itineraries: dependencies.itineraries, bookings: dependencies.bookings })}
                       </p>
                     </div>
                   ) : (
-                    "Are you sure you want to delete this?"
+                    t('management.customer.modals.deleteConfirm')
                   )}
                 </h3>
 
@@ -471,14 +474,14 @@ const CustomerManagement = () => {
                     className="bg-[#E5E5E5] font-medium font-inter text-black px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#D5D5D5] text-[14px] md:text-[16px]"
                     onClick={cancelDelete}
                   >
-                    Cancel
+                    {t('management.customer.modals.cancel')}
                   </button>
 
                   <button
                     className="bg-[#B749DB] font-medium font-inter text-white px-4 md:px-6 py-2 rounded-lg flex-1 md:flex-none md:w-[120px] hover:bg-[#9f37c9] text-[14px] md:text-[16px]"
                     onClick={confirmDelete}
                   >
-                    Delete
+                    {t('management.customer.modals.confirm')}
                   </button>
                 </div>
 

@@ -97,5 +97,332 @@
         "select": "Sélectionner",
         "deselect": "Désélectionner",
         "pinnedLocation": "Emplacement épinglé"
+    },
+    "dashboard": {
+        "menu": {
+            "dashboard": "Tableau de Bord",
+            "itineraries": "Itinéraires",
+            "user": "Utilisateur",
+            "hotelDestination": "Hôtel & Destination",
+            "vehicle": "Véhicule",
+            "driver": "Chauffeur",
+            "staff": "Personnel",
+            "activityLog": "Journal d'activité",
+            "game": "Jeu",
+            "reward": "Récompense",
+            "settings": "Paramètres",
+            "profile": "Profil",
+            "myTrips": "Mes Voyages",
+            "myItineraries": "Mes Itinéraires",
+            "createItinerary": "Créer un Itinéraire",
+            "packagePricing": "Tarification des Forfaits",
+            "memories": "Souvenirs",
+            "trip": "Voyage",
+            "logOut": "Déconnexion"
+        },
+        "stats": {
+            "totalCustomer": "Total Clients",
+            "totalVehicle": "Total Véhicules",
+            "totalDriver": "Total Chauffeurs",
+            "totalItineraries": "Total Itinéraires",
+            "totalHotels": "Total Hôtels",
+            "acceptedTrips": "Voyages Acceptés",
+            "pendingQuotes": "Devis en Attente",
+            "loyaltyPoints": "Points de Fidélité",
+            "totalTrips": "Total des voyages",
+            "distanceCovered": "Distance Parcourue",
+            "drivingHours": "Heures de Conduite",
+            "rating": "Note",
+            "upcomingTrips": "Voyages à venir"
+        },
+        "headings": {
+            "calendar": "Calendrier",
+            "rewardDetails": "Détails des Récompenses",
+            "map": "Carte",
+            "recentItineraries": "Itinéraires Récents",
+            "bestDestination": "Meilleure Destination",
+            "quickActions": "Actions Rapides",
+            "vehicleStatus": "État du Véhicule",
+            "tripCalendar": "Calendrier des Voyages",
+            "nextDestination": "Prochaine Destination",
+            "tripsOn": "Voyages le {{date}}",
+            "selectADate": "Sélectionner une date"
+        },
+        "table": {
+            "itineraryNo": "N° Itinéraire",
+            "name": "Nom",
+            "phone": "Téléphone",
+            "startDate": "Date de début",
+            "status": "Statut",
+            "rewardId": "ID Récompense",
+            "rewardType": "Type de Récompense",
+            "date": "Date",
+            "customerId": "ID Client",
+            "participants": "Participants",
+            "type": "Type",
+            "duration": "Durée",
+            "itineraryHash": "Itinéraire #"
+        },
+        "common": {
+            "viewAll": "Voir Tout",
+            "searchHere": "Chercher ici...",
+            "welcomeBack": "Bon retour ! Voici ce qui se passe aujourd'hui.",
+            "noItinerariesFound": "Aucun itinéraire trouvé",
+            "noItinerariesScheduled": "Aucun itinéraire prévu pour cette date",
+            "filters": "Filtres",
+            "nextTrip": "Prochain Voyage",
+            "plateNumber": "Numéro de Plaque",
+            "fuelEconomy": "Économie de Carburant",
+            "modelMake": "Modèle & Marque",
+            "quickSpecs": "Spécifications Rapides",
+            "capacity": "Capacité",
+            "fuelType": "Type de Carburant",
+            "mileage": "Kilométrage",
+            "insuranceExpiry": "Expiration de l'Assurance",
+            "viewAllDetails": "Voir Tous les Détails",
+            "viewNextItinerary": "Voir l'Itinéraire Suivant",
+            "currentVehicle": "Véhicule actuel",
+            "noVehicleAssigned": "Aucun véhicule ne vous a encore été attribué.",
+            "createFirstItinerary": "Créez votre premier itinéraire",
+            "points": "Points",
+            "viewEditProfile": "Voir et modifier le profil"
+        },
+        "status": {
+            "draft": "Brouillon",
+            "pending": "En attente",
+            "quoted": "Devis envoyé",
+            "negotiating": "Négociation",
+            "accepted": "Accepté",
+            "rejected": "Refusé",
+            "cancelled": "Annulé",
+            "converted": "Converti",
+            "inProgress": "En cours",
+            "completed": "Terminé"
+        }
+    },
+    "management": {
+        "itinerary": {
+            "title": "Itinerary Management",
+            "subtitle": "View & manage itinerary details",
+            "table": {
+                "itineraryNo": "Itinerary No",
+                "customerName": "Customer Name",
+                "phone": "Phone",
+                "email": "Email",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "participants": "Participants",
+                "status": "Status",
+                "createdAt": "Created At",
+                "action": "Action"
+            },
+            "status": {
+                "draft": "Draft",
+                "pending_quote": "Pending Quote",
+                "quoted": "Quoted",
+                "negotiating": "Negotiating",
+                "accepted": "Accepted",
+                "rejected": "Rejected",
+                "cancelled": "Cancelled",
+                "converted": "Converted",
+                "in_progress": "In Progress",
+                "on_hold": "On Hold",
+                "completed": "Completed"
+            },
+            "filters": {
+                "allStatus": "All Status",
+                "clearFilters": "Clear all filters"
+            },
+            "messages": {
+                "fetchFailed": "Failed to fetch itineraries",
+                "statusUpdated": "Itinerary status updated successfully!",
+                "deleteSuccess": "Itinerary deleted successfully!",
+                "deleteFailed": "Failed to delete itinerary",
+                "slackSuccess": "Slack channel created successfully!",
+                "slackFailed": "Failed to create Slack channel. Check bot configuration.",
+                "pdfFailed": "Failed to download PDF. Please try again.",
+                "pdfViewFailed": "Failed to view PDF. Please try again."
+            },
+            "modals": {
+                "deleteTitle": "Delete Itinerary",
+                "deleteDescription": "Are you sure you want to delete itinerary {{itineraryNumber}}? This action cannot be undone.",
+                "confirm": "Delete",
+                "cancel": "Cancel"
+            },
+            "tooltips": {
+                "downloadPdf": "Download PDF",
+                "viewPdf": "View PDF",
+                "viewDetails": "View Details",
+                "editItinerary": "Edit Itinerary",
+                "deleteItinerary": "Delete Itinerary",
+                "slackLinked": "Slack Channel Linked",
+                "createSlack": "Create Slack Channel",
+                "dateMismatch": "Date-destination mismatch - needs review",
+                "hotelUnavailable": "Hotel Unavailable",
+                "actionRequired": "Action Required"
+            },
+            "warnings": {
+                "userNegotiation": "User Negotiation Request",
+                "expected": "Expected"
+            },
+            "emptyState": "No itineraries found"
+        },
+        "customer": {
+            "title": "Customer Management",
+            "subtitle": "View & manage Customer Details",
+            "buttons": {
+                "add": "Add"
+            },
+            "table": {
+                "customerName": "Customer Name",
+                "email": "Email",
+                "gender": "Gender",
+                "contactNo": "Contact No",
+                "country": "Country",
+                "passportNo": "Passport No",
+                "age": "Age",
+                "status": "Status"
+            },
+            "filters": {
+                "country": "Country",
+                "gender": "Gender",
+                "status": "Status",
+                "activeOnly": "Active",
+                "unblock": "Unblock",
+                "block": "Block"
+            },
+            "gender": {
+                "male": "Male",
+                "female": "Female"
+            },
+            "messages": {
+                "fetchFailed": "Failed to load users",
+                "deleteSuccess": "Customer deleted successfully!",
+                "deleteFailed": "Failed to delete user"
+            },
+            "modals": {
+                "deleteWarning": "Warning: Sensitive Data!",
+                "deleteDependency": "This customer has {{itineraries}} itineraries and {{bookings}} bookings. Deleting them will permanently remove all associated records.",
+                "deleteConfirm": "Are you sure you want to delete this?",
+                "confirm": "Delete",
+                "cancel": "Cancel"
+            }
+        },
+        "vehicle": {
+            "title": "Vehicle Management",
+            "subtitle": "View & manage vehicle Details",
+            "table": {
+                "photo": "Photo",
+                "name": "V_Name",
+                "type": "V_Type",
+                "plate": "V_No_Plate",
+                "model": "V_Model",
+                "seats": "Seat_Count",
+                "driver": "Assign Driver",
+                "status": "Active"
+            },
+            "filters": {
+                "seatCount": "Seat Count",
+                "vType": "V_Type",
+                "status": "Status"
+            },
+            "types": {
+                "car": "Car",
+                "van": "Van",
+                "suv": "SUV"
+            },
+            "statusList": {
+                "active": "Active",
+                "inService": "In Service",
+                "needRepair": "Need Repair",
+                "unassigned": "Unassigned"
+            },
+            "messages": {
+                "fetchFailed": "Failed to load vehicles",
+                "deleteSuccess": "Vehicle deleted successfully!",
+                "deleteFailed": "Failed to delete vehicle"
+            }
+        },
+        "destination": {
+            "title": "Destination & Hotel Management",
+            "subtitle": "View & manage Destination Details",
+            "tabs": {
+                "destination": "Destination",
+                "hotel": "Hotel",
+                "excursion": "Excursion"
+            },
+            "buttons": {
+                "add": "Add"
+            },
+            "table": {
+                "destinationName": "Destination Name",
+                "name": "Destination Name",
+                "image": "Image",
+                "location": "Location",
+                "category": "Category",
+                "bestTime": "Best Time to Visit",
+                "review": "Review",
+                "noImage": "No Image",
+                "hotelName": "Hotel Name",
+                "hotelType": "Hotel Type",
+                "starRating": "Star Rating",
+                "contactNo": "Contact No",
+                "actions": "Actions",
+                "excursionPoint": "Excursion Point",
+                "duration": "Duration",
+                "rating": "Rating",
+                "destination": "Destination",
+                "status": "Status",
+                "photo": "Photo"
+            },
+            "filters": {
+                "location": "Location",
+                "hotel": "Hotel",
+                "hotelType": "Hotel Type",
+                "excursion": "Excursion",
+                "category": "Category"
+            },
+            "management": {
+                "destination": "View & manage Destination Details",
+                "hotel": "View & manage Hotel Details",
+                "excursion": "View & manage Excursion Details"
+            },
+            "messages": {
+                "fetchFailed": "Failed to load data from database",
+                "deleteSuccess": "Destination deleted successfully!",
+                "deleteFailed": "Failed to delete destination",
+                "hotelDeleteSuccess": "Hotel deleted successfully!",
+                "hotelDeleteFailed": "Failed to delete hotel",
+                "excursionDeleteSuccess": "Excursion deleted successfully!",
+                "excursionDeleteFailed": "Failed to delete excursion",
+                "toggleVisibilitySuccess": "Excursion {{status}} successfully!",
+                "toggleVisibilityFailed": "Failed to toggle excursion",
+                "flagSuccess": "Hotel flagged successfully! Affected customers and staff have been notified.",
+                "flagFailed": "Failed to flag hotel",
+                "unflagSuccess": "Hotel unflagged successfully!",
+                "unflagFailed": "Failed to unflag hotel"
+            },
+            "modals": {
+                "deleteConfirm": "Are you sure you want to delete this?",
+                "flagTitle": "Flag Hotel as Unavailable",
+                "flagReason": "Reason for flagging",
+                "flagStartDate": "Start Date",
+                "flagEndDate": "End Date",
+                "flagWarning": "⚠️ Customers with itineraries using this hotel during the selected dates and all staff members will be notified immediately.",
+                "toggleTitle": "{{action}} Excursion",
+                "toggleWarningDisable": "⚠️ Disabling will hide this excursion from customers. Use this for seasonal closures.",
+                "toggleWarningEnable": "Enabling will make this excursion visible to customers again.",
+                "seasonalNote": "Seasonal Note (Optional)",
+                "flagButton": "Flag Hotel",
+                "flagRequirement": "Please provide a reason for flagging this hotel",
+                "dateRequirement": "Please select both start and end dates"
+            },
+            "status": {
+                "available": "Available",
+                "unavailable": "Unavailable",
+                "active": "Active",
+                "inactive": "Inactive"
+            }
+        }
     }
 }
