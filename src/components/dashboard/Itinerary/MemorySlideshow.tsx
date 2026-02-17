@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiChevronLeft, FiChevronRight, FiMaximize2, FiMinimize2 } from "react-icons/fi";
 import type { ItineraryMemoryBook } from "../../../services/memories.service";
+import ShinyText from "../../ui/ShinyText";
+import AntigravityBackground from "../../ui/AntigravityBackground";
 
 interface Props {
     memoryBook: ItineraryMemoryBook;
@@ -71,13 +73,14 @@ export const MemorySlideshow = ({ memoryBook, onClose }: Props) => {
                     <motion.div
                         key={`bg-${currentIndex}`}
                         className="absolute inset-0 bg-cover bg-center blur-3xl scale-110"
-                        style={{ backgroundImage: currentItem ? `url(${currentItem.url})` : 'none' }}
+                        style={{ backgroundImage: currentItem && currentItem.type !== 'video' ? `url(${currentItem.url})` : 'none' }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 2 }}
                     />
                 </AnimatePresence>
+                <AntigravityBackground />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
             </div>
 
@@ -101,7 +104,9 @@ export const MemorySlideshow = ({ memoryBook, onClose }: Props) => {
                             >
                                 Vibes Lanka Presents
                             </motion.span>
-                            <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight">Our Sri Lankan Journey</h1>
+                            <div className="text-4xl md:text-7xl font-bold tracking-tight">
+                                <ShinyText text="Our Sri Lankan Journey" speed={3} className="text-white" />
+                            </div>
                             <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-indigo-500 mx-auto rounded-full" />
                             <p className="text-white/60 text-lg font-light tracking-wide max-w-lg mx-auto italic">
                                 "Every journey has a secret destination of which the traveler is unaware."
@@ -122,27 +127,41 @@ export const MemorySlideshow = ({ memoryBook, onClose }: Props) => {
                                 animate={{ y: 0 }}
                                 transition={{ duration: 1 }}
                             >
-                                <img
-                                    src={currentItem?.url}
-                                    alt={currentItem?.caption}
-                                    className="max-w-full max-h-[75vh] object-contain shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] rounded-2xl border border-white/10"
-                                />
-                                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 group-hover:ring-white/40 transition-all duration-500" />
+                                {currentItem?.type === 'video' ? (
+                                    <video
+                                        src={currentItem?.url}
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                        className="h-[75vh] w-auto max-w-full object-contain shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] rounded-2xl border border-white/10"
+                                    />
+                                ) : (
+                                    <img
+                                        src={currentItem?.url}
+                                        alt={currentItem?.caption}
+                                        className="h-[75vh] w-auto max-w-full object-contain shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] rounded-2xl border border-white/10"
+                                    />
+                                )}
+                                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20 group-hover:ring-white/40 transition-all duration-500 pointer-events-none" />
                             </motion.div>
 
-                            {/* Caption & Animated Quote */}
-                            <div className="mt-8 text-center space-y-4 max-w-2xl px-4">
-                                <motion.h4
-                                    className="text-2xl md:text-4xl font-bold text-white leading-tight"
-                                    initial={{ opacity: 0, y: 20 }}
+                            {/* Caption & Animated Quote - Moved closer to content */}
+                            <div className="absolute bottom-4 left-0 right-0 z-30 text-center space-y-2 px-4 pointer-events-none">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
                                 >
-                                    {currentItem?.caption}
-                                </motion.h4>
+                                    <ShinyText
+                                        text={currentItem?.caption || "Trip Memory"}
+                                        speed={4}
+                                        className="text-xl md:text-2xl font-bold drop-shadow-lg"
+                                    />
+                                </motion.div>
 
                                 <motion.p
-                                    className="text-purple-300/80 font-medium italic md:text-lg"
+                                    className="text-purple-300/90 font-medium italic text-sm md:text-base drop-shadow-md"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.7 }}
@@ -155,8 +174,8 @@ export const MemorySlideshow = ({ memoryBook, onClose }: Props) => {
                 </AnimatePresence>
             </div>
 
-            {/* Premium Controls */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 px-6 py-3 bg-black/40 backdrop-blur-2xl rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 group">
+            {/* Premium Controls - Moved to top right or static position? Let's keep bottom but ensure z-index and spacing */}
+            <div className="absolute bottom-8 z-50 flex items-center gap-4 px-6 py-3 bg-black/40 backdrop-blur-2xl rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 group hover:bg-black/60">
                 <button onClick={prevSlide} className="text-white/40 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10">
                     <FiChevronLeft size={24} />
                 </button>

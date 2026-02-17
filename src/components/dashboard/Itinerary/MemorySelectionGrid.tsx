@@ -48,32 +48,42 @@ export const MemorySelectionGrid = ({ itineraryId, itineraryNumber }: Props) => 
         }
     };
 
-    const toggleImageSelection = async (memoryId: string, url: string) => {
+    const toggleMediaSelection = async (memoryId: string, url: string, type: 'image' | 'video') => {
         const memory = memories.find(m => m.id === memoryId);
         if (!memory) return;
 
-        const currentSelection = memory.selectedImages || [];
-        const isSelected = currentSelection.includes(url);
+        if (type === 'image') {
+            const currentSelection = memory.selectedImages || [];
+            const isSelected = currentSelection.includes(url);
+            const newSelection = isSelected ? currentSelection.filter(u => u !== url) : [...currentSelection, url];
 
-        let newSelection;
-        if (isSelected) {
-            newSelection = currentSelection.filter(u => u !== url);
+            try {
+                await memoriesService.updateSelection(memoryId, { selectedImages: newSelection });
+                setMemories(memories.map(m => m.id === memoryId ? { ...m, selectedImages: newSelection } : m));
+            } catch (error) {
+                toast.error("Failed to update image selection");
+            }
         } else {
-            newSelection = [...currentSelection, url];
-        }
+            const currentSelection = memory.selectedVideos || [];
+            const isSelected = currentSelection.includes(url);
+            const newSelection = isSelected ? currentSelection.filter(u => u !== url) : [...currentSelection, url];
 
-        try {
-            await memoriesService.updateSelection(memoryId, newSelection);
-            setMemories(memories.map(m => m.id === memoryId ? { ...m, selectedImages: newSelection } : m));
-        } catch (error) {
-            toast.error("Failed to update selection");
+            try {
+                await memoriesService.updateSelection(memoryId, { selectedVideos: newSelection });
+                setMemories(memories.map(m => m.id === memoryId ? { ...m, selectedVideos: newSelection } : m));
+            } catch (error) {
+                toast.error("Failed to update video selection");
+            }
         }
     };
 
     const handleGenerate = async () => {
-        const hasSelection = memories.some(m => m.selectedImages && m.selectedImages.length > 0);
+        const hasSelection = memories.some(m =>
+            (m.selectedImages && m.selectedImages.length > 0) ||
+            (m.selectedVideos && m.selectedVideos.length > 0)
+        );
         if (!hasSelection) {
-            toast.warning("Please select at least one photo first");
+            toast.warning("Please select at least one photo or video first");
             return;
         }
 
@@ -91,17 +101,17 @@ export const MemorySelectionGrid = ({ itineraryId, itineraryNumber }: Props) => 
 
     if (loading) return <Loader message="Loading memories..." size={100} />;
 
-    const totalSelected = memories.reduce((acc, m) => acc + (m.selectedImages?.length || 0), 0);
+    const totalSelected = memories.reduce((acc, m) => acc + (m.selectedImages?.length || 0) + (m.selectedVideos?.length || 0), 0);
 
     return (
         <div className="space-y-8 font-poppins">
             <div className="flex justify-between items-center bg-purple-50 p-6 rounded-2xl border border-purple-100">
                 <div>
                     <h3 className="text-xl font-bold text-purple-900">Curation Tools - {itineraryNumber}</h3>
-                    <p className="text-purple-700 text-sm">Select photos from customer uploads to include in the book.</p>
+                    <p className="text-purple-700 text-sm">Select photos and videos from customer uploads to include in the book.</p>
                     <div className="mt-2 flex items-center gap-4">
                         <span className="bg-purple-200 text-purple-800 px-3 py-1 rounded-full text-xs font-semibold">
-                            {totalSelected} Photos Selected
+                            {totalSelected} Items Selected
                         </span>
                     </div>
                 </div>
@@ -133,7 +143,7 @@ export const MemorySelectionGrid = ({ itineraryId, itineraryNumber }: Props) => 
             {memories.length === 0 ? (
                 <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
                     <FiImage className="mx-auto text-4xl text-gray-300 mb-4" />
-                    <p className="text-gray-500">No photos have been uploaded for this trip yet.</p>
+                    <p className="text-gray-500">No memories have been uploaded for this trip yet.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -145,23 +155,43 @@ export const MemorySelectionGrid = ({ itineraryId, itineraryNumber }: Props) => 
                                     <p className="text-xs text-gray-500">{new Date(memory.date).toLocaleDateString()}</p>
                                 </div>
                                 <span className="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">
-                                    {memory.images.length} Photos
+                                    {(memory.images?.length || 0) + (memory.videos?.length || 0)} Items
                                 </span>
                             </div>
                             <div className="grid grid-cols-2 gap-1 p-1">
-                                {memory.images.map((url, idx) => {
-                                    const isSelected = memory.selectedImages?.includes(url);
+                                {[
+                                    ...(memory.images || []).map(url => ({ url, type: 'image' as const })),
+                                    ...(memory.videos || []).map(url => ({ url, type: 'video' as const }))
+                                ].map((item, idx) => {
+                                    const isSelected = item.type === 'image'
+                                        ? memory.selectedImages?.includes(item.url)
+                                        : memory.selectedVideos?.includes(item.url);
+
                                     return (
                                         <div
                                             key={idx}
                                             className="relative aspect-square cursor-pointer group"
-                                            onClick={() => toggleImageSelection(memory.id, url)}
+                                            onClick={() => toggleMediaSelection(memory.id, item.url, item.type)}
                                         >
-                                            <img
-                                                src={url}
-                                                alt={`Trip photo ${idx}`}
-                                                className={`w-full h-full object-cover transition-all ${isSelected ? "brightness-50" : "group-hover:brightness-90"}`}
-                                            />
+                                            {item.type === 'image' ? (
+                                                <img
+                                                    src={item.url}
+                                                    alt={`Trip photo ${idx}`}
+                                                    className={`w-full h-full object-cover transition-all ${isSelected ? "brightness-50" : "group-hover:brightness-90"}`}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full relative">
+                                                    <video
+                                                        src={item.url}
+                                                        className={`w-full h-full object-cover transition-all ${isSelected ? "brightness-50" : "group-hover:brightness-90"}`}
+                                                    />
+                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                        <div className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center">
+                                                            <FiPlay className="text-purple-600 ml-0.5" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                             {isSelected && (
                                                 <div className="absolute inset-0 flex items-center justify-center">
                                                     <div className="bg-purple-600 text-white p-2 rounded-full shadow-lg">

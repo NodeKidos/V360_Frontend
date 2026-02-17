@@ -18,6 +18,9 @@ type FileItem = {
   file: File;
   name: string;
   preview: string;
+  type: 'image' | 'video';
+  progress?: number;
+  status?: 'pending' | 'uploading' | 'completed' | 'error';
 };
 
 const GalleryUpload = () => {
@@ -65,13 +68,18 @@ const GalleryUpload = () => {
   /* ---------- FILE HANDLING ---------- */
   const addFiles = (acceptedFiles: File[]) => {
     const mapped: FileItem[] = acceptedFiles
-      .filter((f) => f.type.startsWith("image/"))
-      .map((f) => ({
-        id: crypto.randomUUID(),
-        file: f,
-        name: f.name,
-        preview: URL.createObjectURL(f),
-      }));
+      .map((f) => {
+        const isVideo = f.type.startsWith("video/");
+        return {
+          id: crypto.randomUUID(),
+          file: f,
+          name: f.name,
+          preview: URL.createObjectURL(f),
+          type: isVideo ? 'video' : 'image',
+          status: 'pending',
+          progress: 0
+        };
+      });
 
     setFiles((prev) => [...mapped, ...prev]); // newest first
   };
@@ -80,7 +88,10 @@ const GalleryUpload = () => {
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: {
+      "image/*": [],
+      "video/*": [".mp4", ".webm", ".mov"]
+    },
     multiple: true,
     noClick: true,
   });
@@ -120,28 +131,67 @@ const GalleryUpload = () => {
     if (!itineraryId) return;
 
     setIsUploading(true);
+    const uploadedImages: string[] = [];
+    const uploadedVideos: string[] = [];
+
     try {
-      // 1. Upload files to S3
-      const fileObjects = files.map(f => f.file);
-      const { urls } = await memoriesService.uploadItineraryImages(itineraryId, fileObjects);
+      // Upload files one by one to track progress
+      for (const fileItem of files) {
+        if (fileItem.status === 'completed') continue;
 
-      // 2. Create memory records for each or group them
-      // For now, let's create one memory record with all images
-      await memoriesService.create({
-        title: `Memories from ${destinationName}`,
-        description: `Uploaded on ${new Date().toLocaleDateString()}`,
-        images: urls,
-        date: new Date(),
-        itineraryId,
-        destinationId,
-      });
+        setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'uploading' } : f));
 
-      toast.success("Memories uploaded successfully!");
-      setFiles([]);
-      fetchMemories();
+        try {
+          let url = '';
+          if (fileItem.type === 'video' || fileItem.file.size > 2 * 1024 * 1024) {
+            // Use chunked upload for videos or large images (> 2MB)
+            url = await memoriesService.uploadLargeFile(
+              fileItem.file,
+              { itineraryId },
+              (progress) => {
+                setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, progress } : f));
+              }
+            );
+          } else {
+            // Small images use multi-part form (existing endpoint)
+            const { urls } = await memoriesService.uploadItineraryImages(itineraryId, [fileItem.file]);
+            url = urls[0];
+            setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, progress: 100 } : f));
+          }
+
+          if (fileItem.type === 'video') {
+            uploadedVideos.push(url);
+          } else {
+            uploadedImages.push(url);
+          }
+
+          setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'completed' } : f));
+        } catch (error) {
+          console.error(`Upload failed for ${fileItem.name}:`, error);
+          setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'error' } : f));
+          toast.error(`Failed to upload ${fileItem.name}`);
+        }
+      }
+
+      // 2. Create memory records if any files were uploaded successfully
+      if (uploadedImages.length > 0 || uploadedVideos.length > 0) {
+        await memoriesService.create({
+          title: `Memories from ${destinationName}`,
+          description: `Uploaded on ${new Date().toLocaleDateString()}`,
+          images: uploadedImages,
+          videos: uploadedVideos,
+          date: new Date(),
+          itineraryId,
+          destinationId,
+        });
+
+        toast.success("Memories uploaded successfully!");
+        setFiles([]);
+        fetchMemories();
+      }
     } catch (error) {
-      console.error("Upload failed:", error);
-      toast.error("Failed to upload memories");
+      console.error("General upload error:", error);
+      toast.error("An error occurred during upload");
     } finally {
       setIsUploading(false);
     }
@@ -200,18 +250,32 @@ const GalleryUpload = () => {
             <Loader size={100} />
           ) : itineraryMemories.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {itineraryMemories.flatMap(m => m.images.map(imgUrl => (
-                <div key={imgUrl} className="group relative rounded-xl overflow-hidden shadow-sm border h-40">
-                  <img src={imgUrl} className="w-full h-full object-cover" alt="Memory" />
+              {itineraryMemories.flatMap(m => [
+                ...(m.images || []).map(imgUrl => ({ url: imgUrl, type: 'image', memoryId: m.id })),
+                ...(m.videos || []).map(vidUrl => ({ url: vidUrl, type: 'video', memoryId: m.id }))
+              ]).map((item, idx) => (
+                <div key={`${item.url}-${idx}`} className="group relative rounded-xl overflow-hidden shadow-sm border h-40 bg-gray-100">
+                  {item.type === 'image' ? (
+                    <img src={item.url} className="w-full h-full object-cover" alt="Memory" />
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <video src={item.url} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-10 h-10 rounded-full bg-white/80 flex items-center justify-center">
+                          <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-[#B749DB] border-b-[6px] border-b-transparent ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <button
-                    onClick={() => removeOne(m.id, true)}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-600/80 text-white p-1.5 rounded-full transition"
+                    onClick={() => removeOne(item.memoryId, true)}
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-600/80 text-white p-1.5 rounded-full transition z-10"
                     title="Delete Memory"
                   >
                     <FiTrash2 className="text-sm" />
                   </button>
                 </div>
-              )))}
+              ))}
             </div>
           ) : (
             <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center text-gray-500">
@@ -240,17 +304,55 @@ const GalleryUpload = () => {
                 {filtered.map((f) => (
                   <div
                     key={f.id}
-                    className="group relative rounded-xl overflow-hidden border"
+                    className="group relative rounded-xl overflow-hidden border bg-gray-50"
                   >
-                    <img
-                      src={f.preview}
-                      alt={f.name}
-                      className="w-full h-28 object-cover"
-                    />
+                    {f.type === 'image' ? (
+                      <img
+                        src={f.preview}
+                        alt={f.name}
+                        className="w-full h-28 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-28 flex items-center justify-center bg-gray-200">
+                        <video src={f.preview} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                          <span className="bg-black/50 text-white text-[10px] px-2 py-1 rounded">VIDEO</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Progress Overlay */}
+                    {f.status === 'uploading' && (
+                      <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-2">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                          <div
+                            className="bg-[#B749DB] h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${f.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] text-white font-bold">{f.progress}%</span>
+                      </div>
+                    )}
+
+                    {f.status === 'completed' && (
+                      <div className="absolute inset-0 bg-green-500/40 flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center shadow-md">
+                          ✓
+                        </div>
+                      </div>
+                    )}
+
+                    {f.status === 'error' && (
+                      <div className="absolute inset-0 bg-red-500/40 flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-md">
+                          !
+                        </div>
+                      </div>
+                    )}
 
                     <button
                       onClick={(e) => { e.stopPropagation(); removeOne(f.id); }}
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/60 text-white text-xs px-2 py-1 rounded"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/60 text-white text-xs px-2 py-1 rounded z-10"
                     >
                       <IoClose className="text-sm" />
                     </button>

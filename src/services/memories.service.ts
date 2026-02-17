@@ -5,6 +5,7 @@ export interface Memory {
     title: string;
     description: string;
     images: string[];
+    videos?: string[];
     date: string;
     isPublic: boolean;
     booking?: {
@@ -14,6 +15,7 @@ export interface Memory {
     itineraryId?: string;
     destinationId?: string;
     selectedImages?: string[];
+    selectedVideos?: string[];
 }
 
 export interface ItineraryMemoryBook {
@@ -23,6 +25,7 @@ export interface ItineraryMemoryBook {
     slideshowConfig: {
         sequence: {
             url: string;
+            type?: 'image' | 'video';
             caption?: string;
             duration?: number;
             transition?: string;
@@ -38,6 +41,7 @@ export interface CreateMemoryDto {
     title: string;
     description?: string;
     images: string[];
+    videos?: string[];
     date: Date;
     bookingId?: string;
     itineraryId?: string;
@@ -70,6 +74,64 @@ const memoriesService = {
         return response.data;
     },
 
+    async uploadLargeFile(
+        file: File,
+        target: { itineraryId?: string; bookingId?: string },
+        onProgress: (progress: number) => void
+    ): Promise<string> {
+        const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+        // 1. Init
+        const initResp = await api.post("/memories/upload/init", {
+            fileName: file.name,
+            mimetype: file.type,
+            ...target
+        });
+        const { uploadId, key } = initResp.data;
+
+        const parts: { ETag: string; PartNumber: number }[] = [];
+
+        // 2. Upload chunks
+        for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+
+            const formData = new FormData();
+            formData.append("chunk", chunk);
+            formData.append("uploadId", uploadId);
+            formData.append("key", key);
+            formData.append("partNumber", (i + 1).toString());
+
+            let retries = 3;
+            let success = false;
+            while (retries > 0 && !success) {
+                try {
+                    const chunkResp = await api.post("/memories/upload/chunk", formData, {
+                        headers: { "Content-Type": "multipart/form-data" }
+                    });
+                    parts.push(chunkResp.data);
+                    success = true;
+                    onProgress(Math.round(((i + 1) / totalChunks) * 100));
+                } catch (error) {
+                    retries--;
+                    if (retries === 0) throw error;
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s before retry
+                }
+            }
+        }
+
+        // 3. Complete
+        const completeResp = await api.post("/memories/upload/complete", {
+            uploadId,
+            key,
+            parts
+        });
+
+        return completeResp.data.url;
+    },
+
     async getByBooking(bookingId: string, destinationId?: string): Promise<Memory[]> {
         const response = await api.get(`/memories/booking/${bookingId}`, {
             params: { destinationId }
@@ -94,8 +156,8 @@ const memoriesService = {
         return response.data;
     },
 
-    async updateSelection(id: string, selectedUrls: string[]): Promise<Memory> {
-        const response = await api.patch(`/memories/${id}/selection`, { selectedUrls });
+    async updateSelection(id: string, selection: { selectedImages?: string[]; selectedVideos?: string[] }): Promise<Memory> {
+        const response = await api.patch(`/memories/${id}/selection`, selection);
         return response.data;
     },
 
