@@ -1,48 +1,32 @@
 import { motion } from "framer-motion";
 import bgImage from "../../assets/bg.jpg"; // Background image
-import soloVibes from "../../assets/packages/family.png";
-import familyPackage from "../../assets/packages/family.png";
-
-const packages = [
-  {
-    title: "Solo Vibes",
-    description:
-      "Perfect for solo travelers seeking peace, reflection, and adventure.",
-    image: soloVibes,
-  },
-  {
-    title: "Family Packages",
-    description:
-      "Create lasting memories with fun-filled activities for all ages.",
-    image: familyPackage,
-  },
-  {
-    title: "Adventure Escapes",
-    description:
-      "Thrilling experiences like hiking, diving, and jungle safaris await you.",
-    image: familyPackage,
-  },
-  {
-    title: "Honeymoon Getaway",
-    description:
-      "Romantic retreats for couples who want unforgettable experiences together.",
-    image: familyPackage,
-  },
-  {
-    title: "Cultural Discoveries",
-    description:
-      "Immerse yourself in Sri Lanka’s rich traditions, food, and festivals.",
-    image: familyPackage,
-  },
-  {
-    title: "Luxury Retreats",
-    description:
-      "Relax in the finest resorts with world-class amenities and stunning views.",
-    image: familyPackage,
-  },
-];
+import { useState, useEffect } from "react";
+import { packageService } from "../../services/package.service";
+import type { Package } from "../../services/package.service";
+import { useTranslation } from "react-i18next";
 
 export default function ExplorePackages() {
+  const { t } = useTranslation();
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const data = await packageService.getAll(true); // Fetch only active packages
+        setPackages(data);
+      } catch (error) {
+        console.error("Failed to fetch packages:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPackages();
+  }, []);
+
+  if (loading) return null; // Or a skeleton
+  if (packages.length === 0) return null;
+
   return (
     <div
       className="relative bg-cover bg-center text-white py-24 overflow-hidden"
@@ -63,7 +47,7 @@ export default function ExplorePackages() {
             transition={{ duration: 1, ease: "easeOut" }}
             viewport={{ once: true }}
           >
-            Explore Our Packages
+            {t('home.explorePackages')}
           </motion.h2>
 
           {/* Animated Paragraph */}
@@ -74,10 +58,7 @@ export default function ExplorePackages() {
             transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
             viewport={{ once: true }}
           >
-            Embark on a thrilling journey through the wilderness with activities
-            like trekking, zip-lining, and wildlife safaris. These packages are
-            designed for those who crave adventure, relaxation, or a spiritual
-            connection with nature.
+            {t('home.exploreDescription')}
           </motion.p>
         </div>
 
@@ -94,20 +75,22 @@ export default function ExplorePackages() {
           >
             {[...packages, ...packages].map((pkg, index) => (
               <motion.div
-                key={index}
+                key={`${pkg.id}-${index}`}
                 className="bg-white text-black rounded-2xl overflow-hidden shadow-xl w-[260px] h-[400px] shrink-0 hover:scale-105 transition-transform duration-300"
                 whileHover={{ y: -10 }}
               >
-                <img
-                  src={pkg.image}
-                  alt={pkg.title}
-                  className="w-full h-[250px] object-cover"
-                />
+                {pkg.image && (
+                  <img
+                    src={pkg.image}
+                    alt={pkg.title}
+                    className="w-full h-[250px] object-cover"
+                  />
+                )}
                 <div className="p-5">
                   <h3 className="text-[20px] font-semibold mb-2 font-roboto-condensed">
                     {pkg.title}
                   </h3>
-                  <p className="text-[15px] text-gray-700 font-roboto-condensed">
+                  <p className="text-[15px] text-gray-700 font-roboto-condensed line-clamp-3">
                     {pkg.description}
                   </p>
                 </div>

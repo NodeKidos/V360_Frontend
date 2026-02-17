@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { TbWorld } from "react-icons/tb";
@@ -7,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import logo from "../../assets/favicon.png";
 
 const Navbar = () => {
+  const { t, i18n } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -46,17 +48,17 @@ const Navbar = () => {
         <ul className="flex space-x-6 text-lg">
           <li>
             <Link to="/home" className="text-gray-700 hover:text-purple-600">
-              Home
+              {t('home.navHome')}
             </Link>
           </li>
           <li>
             <Link to="/itinerary" className="text-gray-700 hover:text-purple-600">
-              Itinerary
+              {t('home.navItinerary')}
             </Link>
           </li>
           <li>
             <Link to="/about-us" className="text-gray-700 hover:text-purple-600">
-              About Us
+              {t('home.navAboutUs')}
             </Link>
           </li>
         </ul>
@@ -65,15 +67,43 @@ const Navbar = () => {
           to="/login"
           className="text-lg font-semibold text-white bg-[#B749DB] py-2 px-6 rounded-md hover:bg-purple-700 transition"
         >
-          Login
+          {t('home.navLogin')}
         </Link>
 
         <span className="text-lg font-bold text-gray-700">LKR</span>
 
         <div className="flex items-center space-x-3">
-          <button className="text-gray-700 hover:text-purple-600">
-            <TbWorld size={22} />
-          </button>
+          <div className="relative group/lang">
+            <button className="text-gray-700 hover:text-purple-600 flex items-center gap-1 py-2">
+              <TbWorld size={22} />
+            </button>
+            <div className="absolute right-0 top-full mt-0 w-48 bg-white shadow-xl rounded-xl border border-purple-50 opacity-0 invisible group-hover/lang:opacity-100 group-hover/lang:visible transition-all duration-200 z-50 py-2">
+              <div className="px-4 py-2 border-b border-gray-50 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                {t('home.selectLanguage')}
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {[
+                  { code: 'en', name: 'English' },
+                  { code: 'si', name: 'Sinhala' },
+                  { code: 'ta', name: 'Tamil' },
+                  { code: 'zh', name: 'Chinese' },
+                  { code: 'nl', name: 'Dutch' },
+                  { code: 'hi', name: 'Hindi' },
+                  { code: 'fr', name: 'French' }
+                ].map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => i18n.changeLanguage(lang.code)}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 transition-colors flex items-center justify-between ${i18n.language === lang.code ? 'text-purple-600 font-bold bg-purple-50/50' : 'text-gray-700'
+                      }`}
+                  >
+                    {lang.name}
+                    {i18n.language === lang.code && <div className="w-1.5 h-1.5 rounded-full bg-purple-600" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
           <button className="text-gray-700 hover:text-purple-600">
             <IoMdInformationCircleOutline size={22} />
           </button>
@@ -120,7 +150,7 @@ const Navbar = () => {
                     className="hover:text-purple-600"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Home
+                    {t('home.navHome')}
                   </Link>
                 </li>
                 <li>
@@ -129,7 +159,7 @@ const Navbar = () => {
                     className="hover:text-purple-600"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Itinerary
+                    {t('home.navItinerary')}
                   </Link>
                 </li>
                 <li>
@@ -138,7 +168,7 @@ const Navbar = () => {
                     className="hover:text-purple-600"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    About Us
+                    {t('home.navAboutUs')}
                   </Link>
                 </li>
                 <li>
@@ -147,20 +177,38 @@ const Navbar = () => {
                     className="text-white bg-purple-600 px-4 py-2 rounded-md block text-center hover:bg-purple-700"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login
+                    {t('home.navLogin')}
                   </Link>
                 </li>
               </ul>
 
               {/* Bottom Section */}
-              <div className="flex items-center space-x-4 pt-4 border-t">
-                <IoMdInformationCircleOutline
-                  size={25}
-                  className="text-gray-700 hover:text-purple-600"
-                />
-                <TbWorld size={25} className="text-gray-700 hover:text-purple-600" />
-                
-                <span className="font-semibold text-gray-800">LKR</span>
+              <div className="pt-4 border-t space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {['en', 'si', 'ta', 'zh', 'nl', 'hi', 'fr'].map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        i18n.changeLanguage(lang);
+                        setIsMenuOpen(false);
+                      }}
+                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase border transition-all ${i18n.language === lang
+                        ? "bg-purple-600 border-purple-600 text-white"
+                        : "border-gray-200 text-gray-500 hover:border-purple-300"
+                        }`}
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center space-x-4">
+                  <IoMdInformationCircleOutline
+                    size={25}
+                    className="text-gray-700 hover:text-purple-600"
+                  />
+                  <TbWorld size={25} className="text-gray-700 hover:text-purple-600" />
+                  <span className="font-semibold text-gray-800">LKR</span>
+                </div>
               </div>
             </motion.div>
           </>

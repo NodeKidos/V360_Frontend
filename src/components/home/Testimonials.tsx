@@ -1,4 +1,5 @@
 import { FaStar } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import profilePic from "../../assets/travel.jpg"; // replace with your actual image
 
 const testimonials = [
@@ -29,11 +30,12 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
+  const { t } = useTranslation();
   return (
     <section className="py-16 bg-white">
       {/* Heading */}
       <h2 className="text-3xl font-bold font-roboto-condensed text-gray-900 mb-10 px-10">
-        Hear what our customers say,
+        {t('home.testimonialsTitle')}
       </h2>
 
       {/* Cards */}

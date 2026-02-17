@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { IoPlayCircleOutline } from "react-icons/io5"; // For play icon
 import { motion } from "framer-motion"; // Importing motion from framer-motion
+import { useTranslation } from "react-i18next";
 
 // Import the background video
 import heroVideo from "../../assets/hero/bgvedio.mp4"; // Make sure to provide the correct video path
 
 const HeroSection = () => {
+  const { t } = useTranslation();
   return (
     <motion.div
       className="relative h-screen bg-cover bg-center overflow-hidden"
@@ -42,7 +44,7 @@ const HeroSection = () => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            Discover the Timeless Charms of Sri Lanka
+            {t('home.heroTitle')}
           </motion.h1>
 
           {/* Subtext */}
@@ -52,7 +54,7 @@ const HeroSection = () => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 1.2 }}
           >
-            Step into a world where nature and culture weave unforgettable tales.
+            {t('home.heroSubtitle')}
           </motion.p>
 
           {/* Button */}
@@ -63,7 +65,7 @@ const HeroSection = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1.5 }}
             >
-              Explore Our Packages
+              {t('home.heroCTA')}
             </motion.button>
           </Link>
         </div>

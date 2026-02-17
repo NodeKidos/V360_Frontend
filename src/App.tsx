@@ -21,6 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 // Admin Dashboard
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import SettingsView from "./components/dashboard/Settings/SettingsView";
 import CustomerManagement from "./components/dashboard/User/UserView";
 import AddCustomer from "./components/dashboard/User/AddUser";
 import EditCustomer from "./components/dashboard/User/EditUser";
@@ -503,6 +504,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.DRIVER]}>
               <DriverDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/setting"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <SettingsView />
             </ProtectedRoute>
           }
         />

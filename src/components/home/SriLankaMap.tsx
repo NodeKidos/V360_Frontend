@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
+import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -119,6 +120,7 @@ export default function SriLankaMap({
   destinations = [],
   currentLocation,
 }: SriLankaMapProps) {
+  const { t } = useTranslation();
   const [mapKey, setMapKey] = useState(0);
 
   // Force a small delay on map mount to fix Leaflet's grey tile/layout issue
@@ -197,7 +199,7 @@ export default function SriLankaMap({
                       : "bg-[#B749DB] hover:bg-[#8B2BB9]"
                       }`}
                   >
-                    {isSelected ? "Deselect" : "Select"}
+                    {isSelected ? t('common.deselect') : t('common.select')}
                   </button>
                 </div>
               </Popup>
@@ -212,7 +214,7 @@ export default function SriLankaMap({
           >
             <Popup>
               <div className="text-center p-2">
-                <p className="font-bold text-[#B749DB]">Pinned Location</p>
+                <p className="font-bold text-[#B749DB]">{t('common.pinnedLocation')}</p>
                 <p className="text-xs text-gray-500 mt-1">
                   Lat: {currentLocation.lat.toFixed(4)}<br />
                   Lng: {currentLocation.lng.toFixed(4)}

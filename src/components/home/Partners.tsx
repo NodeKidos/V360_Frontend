@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 
@@ -55,6 +56,7 @@ const partners = [
 ];
 
 export default function Partners() {
+  const { t } = useTranslation();
   // Variants for smooth staggered horizontal entry
   interface CardVariants {
     [key: string]: any;
@@ -89,13 +91,12 @@ export default function Partners() {
     <div className="py-5 bg-white overflow-hidden">
       {/* Heading */}
       <h2 className="text-[48px] font-semibold mb-8 text-left pl-16 pr-16 font-roboto-condensed">
-        Our Trusted Partners
+        {t('home.partnersTitle')}
       </h2>
 
       {/* Paragraph */}
       <p className="text-[25px] font-normal text-gray-700 mb-12 text-left pl-16 pr-16 font-roboto-condensed">
-        Discover Sri Lanka's magic with Vibes Lanka Travel and Tours. Where our
-        packages suit every vibe – from romance to family adventure and beyond.
+        {t('home.whatWeDoDescription')}
       </p>
 
       {/* Horizontal Scroll Section */}

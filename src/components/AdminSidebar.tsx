@@ -32,7 +32,8 @@ const sidebarMenuConfig = {
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
     { label: 'Itineraries', icon: <FaRoute />, link: '/itineraries' },
     { label: 'Trip', icon: <BiTrip />, link: '/trip' },
-    { label: 'Driver', icon: <FaTruck />, link: '/driver' }
+    { label: 'Driver', icon: <FaTruck />, link: '/driver' },
+    { label: 'Settings', icon: <IoMdSettings />, link: '/setting' }
   ],
   driver: [
     { label: 'Dashboard', icon: <TiThLargeOutline />, link: '/driver-dashboard' },
