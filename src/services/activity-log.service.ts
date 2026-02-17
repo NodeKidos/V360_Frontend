@@ -3,6 +3,8 @@ import { api } from './api';
 export interface ActivityLog {
     id: string;
     action: string;
+    entityType: string;
+    entityId: string;
     description: string;
     details: Record<string, any>;
     timestamp: string;

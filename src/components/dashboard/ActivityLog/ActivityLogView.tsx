@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { activityLogService, type ActivityLogResponse, type ActivityLogFilters } from '../../../services/activity-log.service';
+import { itineraryService } from '../../../services/itinerary.service';
 import { Loader } from '../../ui/Loader';
 import Sidebar from '../../AdminSidebar';
 import TopBar from '../../Topbar';
 import Pagination from '../../ui/Pagination';
+import SearchableSelect from '../../ui/SearchableSelect';
 import { FiClock, FiUser, FiFilter } from 'react-icons/fi';
 import { BsCheck2Circle, BsPencilSquare, BsTrash, BsEye, BsX } from 'react-icons/bs';
 import { IoMdRefresh } from 'react-icons/io';
 import { toast } from 'react-toastify';
+import type { Itinerary } from '../../../types/itinerary.types';
 
 const ActivityLogView = () => {
     const [logs, setLogs] = useState<ActivityLogResponse | null>(null);
@@ -18,6 +21,7 @@ const ActivityLogView = () => {
     const [page, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(20);
     const [showFilters, setShowFilters] = useState(false);
+    const [itineraries, setItineraries] = useState<Itinerary[]>([]);
 
     // Filters 
     const [filters, setFilters] = useState<ActivityLogFilters>({});
@@ -35,6 +39,15 @@ const ActivityLogView = () => {
         }
     };
 
+    const fetchItineraries = async () => {
+        try {
+            const data = await itineraryService.getAll();
+            setItineraries(data);
+        } catch (err) {
+            console.error('Failed to fetch itineraries for filters', err);
+        }
+    };
+
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         handleResize();
@@ -45,6 +58,10 @@ const ActivityLogView = () => {
     useEffect(() => {
         fetchLogs();
     }, [page, itemsPerPage, filters]);
+
+    useEffect(() => {
+        fetchItineraries();
+    }, []);
 
     const getActionIcon = (action: string) => {
         switch (action) {
@@ -147,13 +164,13 @@ const ActivityLogView = () => {
                     {/* Filters Panel */}
                     {showFilters && (
                         <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
+                            <div className="flex flex-wrap items-end gap-4">
+                                <div className="min-w-[200px] flex-1">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Entity Type</label>
                                     <select
-                                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                        className="w-full h-[42px] border border-gray-300 rounded-lg px-3 py-2 bg-white"
                                         value={tempFilters.entityType || ''}
-                                        onChange={(e) => setTempFilters({ ...tempFilters, entityType: e.target.value || undefined })}
+                                        onChange={(e) => setTempFilters({ ...tempFilters, entityType: e.target.value || undefined, entityId: undefined })}
                                     >
                                         <option value="">All</option>
                                         <option value="USER">User</option>
@@ -164,10 +181,27 @@ const ActivityLogView = () => {
                                         <option value="BOOKING">Booking</option>
                                     </select>
                                 </div>
-                                <div>
+
+                                {tempFilters.entityType === 'ITINERARY' && (
+                                    <div className="min-w-[200px] flex-1">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Itinerary</label>
+                                        <SearchableSelect
+                                            options={itineraries.map(itn => ({
+                                                label: itn.itineraryNumber,
+                                                value: itn.id
+                                            }))}
+                                            value={tempFilters.entityId}
+                                            onChange={(val) => setTempFilters({ ...tempFilters, entityId: val })}
+                                            placeholder="Search Itinerary..."
+                                            className="w-full h-[42px]"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="min-w-[200px] flex-1">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
                                     <select
-                                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                        className="w-full h-[42px] border border-gray-300 rounded-lg px-3 py-2 bg-white"
                                         value={tempFilters.action || ''}
                                         onChange={(e) => setTempFilters({ ...tempFilters, action: e.target.value || undefined })}
                                     >
@@ -179,18 +213,20 @@ const ActivityLogView = () => {
                                         <option value="QUOTE_SENT">Quote Sent</option>
                                     </select>
                                 </div>
-                                <div className="flex items-end gap-2">
+
+                                <div className="flex gap-2">
                                     <button
                                         onClick={applyFilters}
-                                        className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                                        className="bg-purple-600 text-white px-8 h-[42px] rounded-lg hover:bg-purple-700 font-medium transition-colors"
                                     >
                                         Apply
                                     </button>
                                     <button
                                         onClick={clearFilters}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                        className="px-3 h-[42px] border border-gray-300 rounded-lg hover:bg-gray-50 bg-white transition-colors"
+                                        title="Clear Filters"
                                     >
-                                        <BsX className="text-xl" />
+                                        <BsX className="text-2xl text-gray-500" />
                                     </button>
                                 </div>
                             </div>
@@ -237,7 +273,7 @@ const ActivityLogView = () => {
                                                         </span>
                                                     </td>
                                                     <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
-                                                        Entity Type Here
+                                                        {log.entityType || 'SYSTEM'}
                                                     </td>
                                                     <td className="px-4 py-4 text-sm">
                                                         {log.user ? (
