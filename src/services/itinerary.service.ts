@@ -145,6 +145,12 @@ export const itineraryService = {
     const response = await api.patch<Itinerary>(`/itineraries/${id}/days/${dayNumber}/reschedule`, { reason });
     return response.data;
   },
+
+  // Get itinerary progress
+  getProgress: async (id: string): Promise<any[]> => {
+    const response = await api.get<any[]>(`/itineraries/${id}/progress`);
+    return response.data;
+  },
 };
 
 export default itineraryService;

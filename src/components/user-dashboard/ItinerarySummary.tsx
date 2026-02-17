@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuthStore } from "../../store/useAuthStore";
 import { UserRole } from "../../types/auth.types";
 import { MemorySelectionGrid } from "../dashboard/Itinerary/MemorySelectionGrid";
+import { TripTimeline } from "./TripTimeline";
 
 const ItinerarySummary = () => {
   const { itineraryId: paramId } = useParams<{ itineraryId: string }>(); // Get itinerary ID from URL params
@@ -47,6 +48,7 @@ const ItinerarySummary = () => {
   const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [locationProgress, setLocationProgress] = useState<any[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,6 +73,16 @@ const ItinerarySummary = () => {
       try {
         const data = await itineraryService.getById(itineraryId);
         setItinerary(data);
+
+        // Fetch progress if itinerary is active
+        if (['in_progress', 'completed', 'accepted'].includes(data.status)) {
+          try {
+            const progress = await itineraryService.getProgress(data.id);
+            setLocationProgress(progress);
+          } catch (err) {
+            console.error("Failed to load progress", err);
+          }
+        }
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Failed to fetch itinerary");
         navigate("/my-itineraries");
@@ -618,8 +630,13 @@ const ItinerarySummary = () => {
               {/* Step 2 – Destinations */}
               {step === 2 && showDetails && (
                 <section id="destination-section" className="container mx-auto">
+                  {/* Trip Timeline */}
+                  <div className="mb-8 px-5">
+                    <TripTimeline itinerary={itinerary} locationProgress={locationProgress} />
+                  </div>
+
                   <div className="p-5 font-poppins">
-                    <h2 className="text-xl font-semibold mb-2">Itinerary Days</h2>
+                    <h2 className="text-xl font-semibold mb-2">Detailed Itinerary</h2>
                     {itinerary.days && itinerary.days.length > 0 ? (
                       <div className="space-y-4">
                         {itinerary.days

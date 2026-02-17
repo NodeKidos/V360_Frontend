@@ -57,8 +57,10 @@ const DriverItineraryView = () => {
     };
 
     // Group schedule by DAY instead of city
-    const dayGroups = currentSchedule?.schedule.map((day: any, index: number) => {
-        const dayNumber = index + 1;
+    const sortedSchedule = currentSchedule?.schedule?.slice().sort((a: any, b: any) => a.dayNumber - b.dayNumber) || [];
+
+    const dayGroups = sortedSchedule.map((day: any, index: number) => {
+        const dayNumber = day.dayNumber || index + 1;
 
         return {
             dayNumber,
@@ -90,7 +92,7 @@ const DriverItineraryView = () => {
                 }] : []),
             ]
         };
-    }) || [];
+    });
 
     // Get status for a specific day
     const getDayStatus = (dayLocations: any[]): 'not-started' | 'in-progress' | 'completed' => {
@@ -141,6 +143,7 @@ const DriverItineraryView = () => {
 
             return {
                 ...loc,
+                status: status,
                 visited: isCompleted,
                 current: isCurrent,
             };
@@ -159,17 +162,22 @@ const DriverItineraryView = () => {
             const originalLocationId = (location as any)?.originalId || locationId;
 
             if (status === 'start') {
+                // Mark day as in progress if not already
+                if (getDayStatus(locations) === 'not-started') {
+                    await updateTripStatus(id, 'start');
+                }
                 // Mark first location as started
                 await driverService.updateLocationProgress(id, originalLocationId, 'started');
-                await updateTripStatus(id, 'start');
             } else if (status === 'arrived') {
+                // Mark current location as arrived
+                await driverService.updateLocationProgress(id, originalLocationId, 'arrived');
+            } else if (status === 'completed') {
                 // Mark current location as completed
                 await driverService.updateLocationProgress(id, originalLocationId, 'completed');
 
-                // Find next location
+                // Find next location to start automatically
                 const currentIndex = locations.findIndex(loc => loc.id === locationId);
                 if (currentIndex < locations.length - 1) {
-                    // Start next location automatically
                     const nextLocation = locations[currentIndex + 1];
                     const nextOriginalId = (nextLocation as any)?.originalId || nextLocation.id;
                     await driverService.updateLocationProgress(id, nextOriginalId, 'started');
@@ -203,40 +211,41 @@ const DriverItineraryView = () => {
     };
 
     // Prepare map locations
-    const mapLocations = currentSchedule?.schedule?.flatMap((day: any) => {
-        const locs: any[] = [];
+    const mapLocations = (currentSchedule?.schedule?.slice().sort((a: any, b: any) => a.dayNumber - b.dayNumber) || [])
+        .flatMap((day: any) => {
+            const locs: any[] = [];
 
-        if (day.destination?.coordinates) {
-            locs.push({
-                lat: day.destination.coordinates.lat,
-                lng: day.destination.coordinates.lng,
-                name: day.destination.name,
-                type: 'destination',
-            });
-        }
-
-        day.excursions?.forEach((exc: any) => {
-            if (exc.coordinates) {
+            if (day.destination?.coordinates) {
                 locs.push({
-                    lat: exc.coordinates.lat,
-                    lng: exc.coordinates.lng,
-                    name: exc.name,
-                    type: 'excursion',
+                    lat: day.destination.coordinates.lat,
+                    lng: day.destination.coordinates.lng,
+                    name: day.destination.name,
+                    type: 'destination',
                 });
             }
-        });
 
-        if (day.hotel?.coordinates) {
-            locs.push({
-                lat: day.hotel.coordinates.lat,
-                lng: day.hotel.coordinates.lng,
-                name: day.hotel.name,
-                type: 'hotel',
+            day.excursions?.forEach((exc: any) => {
+                if (exc.coordinates) {
+                    locs.push({
+                        lat: exc.coordinates.lat,
+                        lng: exc.coordinates.lng,
+                        name: exc.name,
+                        type: 'excursion',
+                    });
+                }
             });
-        }
 
-        return locs;
-    }) || [];
+            if (day.hotel?.coordinates) {
+                locs.push({
+                    lat: day.hotel.coordinates.lat,
+                    lng: day.hotel.coordinates.lng,
+                    name: day.hotel.name,
+                    type: 'hotel',
+                });
+            }
+
+            return locs;
+        }) || [];
 
     if (isLoadingSchedule || isLoadingProgress) {
         return (
@@ -355,7 +364,7 @@ const DriverItineraryView = () => {
                                 excursions={day.excursions}
                                 locations={getLocationsWithProgress(day.locations)}
                                 status={getDayStatus(day.locations)}
-                                onStatusChange={(locationId, status) => handleStatusChange(day.dayNumber, locationId, status)}
+                                onStatusChange={(locationId, status) => handleStatusChange(day.dayNumber, locationId, status as any)}
                             />
                         ))}
                     </div>

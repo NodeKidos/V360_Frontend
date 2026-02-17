@@ -5,6 +5,7 @@ interface Location {
     id: string;
     name: string;
     type?: string;
+    status?: string;
     visited?: boolean;
     current?: boolean;
 }
@@ -18,7 +19,7 @@ interface TripProgressStepperProps {
     hotel?: any;
     excursions?: any[];
     locations?: Location[];
-    onStatusChange?: (locationId: string, status: 'start' | 'arrived' | 'finished') => void;
+    onStatusChange?: (locationId: string, status: 'start' | 'arrived' | 'completed' | 'finished') => void;
     status?: 'not-started' | 'in-progress' | 'completed';
 }
 
@@ -127,44 +128,62 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                {!isPostponed || destination ? (
+                {(!isPostponed || destination) && onStatusChange ? (
                     <div className="flex gap-3 flex-shrink-0">
-                        <button
-                            onClick={() => onStatusChange?.(locations[0]?.id, 'start')}
-                            disabled={status !== 'not-started'}
-                            className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'not-started'
-                                ? 'border-purple-600 text-purple-600 hover:bg-purple-50'
-                                : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
-                                }`}
-                        >
-                            Start
-                        </button>
-                        <button
-                            onClick={() => {
-                                // Find current location and mark as arrived
-                                const currentLoc = locations?.find(loc => loc.current);
-                                if (currentLoc) {
-                                    onStatusChange?.(currentLoc.id, 'arrived');
-                                }
-                            }}
-                            disabled={status !== 'in-progress'}
-                            className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'in-progress'
-                                ? 'border-blue-600 text-blue-600 hover:bg-blue-50'
-                                : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
-                                }`}
-                        >
-                            Arrived
-                        </button>
-                        <button
-                            onClick={() => onStatusChange?.(locations[locations.length - 1]?.id, 'finished')}
-                            disabled={status !== 'in-progress'}
-                            className={`px-4 py-2 rounded-lg border-2 font-semibold transition text-sm ${status === 'in-progress'
-                                ? 'border-purple-600 text-purple-600 hover:bg-purple-50'
-                                : 'border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50'
-                                }`}
-                        >
-                            Finish Day
-                        </button>
+                        {status === 'not-started' && (
+                            <button
+                                onClick={() => onStatusChange?.(locations[0]?.id, 'start')}
+                                className="px-4 py-2 rounded-lg border-2 border-purple-600 text-purple-600 font-semibold hover:bg-purple-50 transition text-sm shadow-sm"
+                            >
+                                Start Day
+                            </button>
+                        )}
+
+                        {status === 'in-progress' && (
+                            <>
+                                {(() => {
+                                    const currentLoc = locations?.find(loc => loc.current);
+                                    if (!currentLoc) return null;
+
+                                    if (currentLoc.status === 'started') {
+                                        return (
+                                            <button
+                                                onClick={() => onStatusChange?.(currentLoc.id, 'arrived')}
+                                                className="px-4 py-2 rounded-lg border-2 border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition text-sm shadow-sm"
+                                            >
+                                                Arrived at {currentLoc.name}
+                                            </button>
+                                        );
+                                    }
+
+                                    if (currentLoc.status === 'arrived') {
+                                        return (
+                                            <button
+                                                onClick={() => onStatusChange?.(currentLoc.id, 'completed')}
+                                                className="px-4 py-2 rounded-lg border-2 border-green-600 text-green-600 font-semibold hover:bg-green-50 transition text-sm shadow-sm"
+                                            >
+                                                Complete {currentLoc.name}
+                                            </button>
+                                        );
+                                    }
+
+                                    return null;
+                                })()}
+
+                                <button
+                                    onClick={() => onStatusChange?.(locations[locations.length - 1]?.id, 'finished')}
+                                    className="px-4 py-2 rounded-lg border-2 border-purple-600 text-purple-600 font-semibold hover:bg-purple-50 transition text-sm shadow-sm"
+                                >
+                                    Finish Day
+                                </button>
+                            </>
+                        )}
+
+                        {status === 'completed' && (
+                            <span className="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-bold text-sm border border-green-200">
+                                ✓ Day Completed
+                            </span>
+                        )}
                     </div>
                 ) : null}
             </div>
@@ -282,17 +301,47 @@ const TripProgressStepper: React.FC<TripProgressStepperProps> = ({
                                             {exc.name}
                                         </p>
 
-                                        {/* Status Badge */}
-                                        {isCompleted && (
-                                            <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full font-bold">
-                                                ✓ Done
-                                            </span>
-                                        )}
-                                        {isCurrent && (
-                                            <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full font-bold">
-                                                → Current
-                                            </span>
-                                        )}
+                                        {/* Status Badge & Actions */}
+                                        <div className="flex items-center gap-2">
+                                            {isCompleted && (
+                                                <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full font-bold">
+                                                    ✓ Done
+                                                </span>
+                                            )}
+                                            {isCurrent && (
+                                                <>
+                                                    <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full font-bold">
+                                                        → Current
+                                                    </span>
+                                                    {onStatusChange && (
+                                                        <>
+                                                            {excLocation?.status === 'started' && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        onStatusChange(exc.id, 'arrived');
+                                                                    }}
+                                                                    className="text-xs bg-white border-2 border-blue-600 text-blue-600 px-2 py-1 rounded-full font-bold hover:bg-blue-50 transition shadow-sm"
+                                                                >
+                                                                    Arrived
+                                                                </button>
+                                                            )}
+                                                            {excLocation?.status === 'arrived' && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        onStatusChange(exc.id, 'completed');
+                                                                    }}
+                                                                    className="text-xs bg-white border-2 border-green-600 text-green-600 px-2 py-1 rounded-full font-bold hover:bg-green-50 transition shadow-sm"
+                                                                >
+                                                                    Complete
+                                                                </button>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 );
                             })}
