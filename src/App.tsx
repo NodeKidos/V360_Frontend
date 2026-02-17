@@ -102,35 +102,41 @@ export default function App() {
         {/* Default redirect */}
         <Route path="/" element={<Navigate to="/home" replace />} />
 
-        {/* Core Pages */}
+        {/* Public Core Pages */}
         <Route path="/home" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp" element={<OtpVerification />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
-
-        {/* Public Game Play Routes */}
-        <Route path="/play" element={<JoinGame />} />
-        <Route path="/play/lobby/:pin" element={<GameLobby />} />
-        <Route path="/play/game/:pin" element={<PlayerScreen />} />
-
-        {/* Informational & Feature Pages */}
         <Route path="/about-us" element={<AboutUs />} />
+
+        {/* Public Informational & Feature Pages */}
         <Route path="/itinerary" element={<Itinerary />} />
-        <Route
-          path="/my-itineraries"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
-              <MyItineraries />
-            </ProtectedRoute>
-          }
-        />
         <Route path="/excursion-points" element={<ExcursionPoints />} />
         <Route path="/hotel-list" element={<HotelList />} />
         <Route path="/excursion-details" element={<ExcursionDetails />} />
 
-        {/* User Dashboard Routes */}
+        {/* Public Game Play Routes (No auth required to join) */}
+        <Route path="/play" element={<JoinGame />} />
+        <Route path="/play/lobby/:pin" element={<GameLobby />} />
+        <Route path="/play/game/:pin" element={<PlayerScreen />} />
+
+        {/* ==========================================================
+            PROTECTED ROUTES
+            ========================================================== */}
+
+        {/* COMMON / PROFILE ROUTES */}
+        <Route
+          path="/user-profile"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.CUSTOMER]}>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* CUSTOMER ROUTES */}
         <Route
           path="/user-dashboard"
           element={
@@ -139,7 +145,14 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/itinerary-summary" element={<ItinerarySummary />} />
+        <Route
+          path="/my-itineraries"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <MyItineraries />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/edit-my-itinerary/:id"
           element={
@@ -148,8 +161,48 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/itinerary-summary"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <ItinerarySummary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/package-price"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <PackagePrice />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reward"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <Reward />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/memories"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <TripPhotos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/memories/:place"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.CUSTOMER]}>
+              <Gallery />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Protected Admin Dashboard Routes */}
+        {/* ADMIN & STAFF SHARED ROUTES */}
         <Route
           path="/admin-dashboard"
           element={
@@ -158,19 +211,13 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* User Management */}
         <Route
           path="/user"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <CustomerManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/edit/:id"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
-              <EditCustomer />
             </ProtectedRoute>
           }
         />
@@ -183,7 +230,7 @@ export default function App() {
           }
         />
         <Route
-          path="/user/edit/:customerId"
+          path="/user/edit/:id"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <EditCustomer />
@@ -191,6 +238,7 @@ export default function App() {
           }
         />
 
+        {/* Vehicle Management */}
         <Route
           path="/vehicle"
           element={
@@ -216,6 +264,7 @@ export default function App() {
           }
         />
 
+        {/* Tour Management */}
         <Route
           path="/tour"
           element={
@@ -233,6 +282,7 @@ export default function App() {
           }
         />
 
+        {/* Destination & Hotel Management */}
         <Route
           path="/destination-hotel"
           element={
@@ -250,22 +300,6 @@ export default function App() {
           }
         />
         <Route
-          path="/hotel/add"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
-              <AddHotel />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/excursion/add"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
-              <AddExcursion />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/destination/edit/:destinationId"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
@@ -274,10 +308,26 @@ export default function App() {
           }
         />
         <Route
+          path="/hotel/add"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <AddHotel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/hotel/edit/:hotelId"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <EditHotel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/excursion/add"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <AddExcursion />
             </ProtectedRoute>
           }
         />
@@ -298,6 +348,7 @@ export default function App() {
           }
         />
 
+        {/* Driver Management (Admin/Staff view) */}
         <Route
           path="/driver"
           element={
@@ -315,14 +366,6 @@ export default function App() {
           }
         />
         <Route
-          path="/driver/edit/:driverId"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.DRIVER]}>
-              <EditDriver />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/driver/:driverId"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
@@ -330,29 +373,38 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-
         <Route
-          path="/staff"
+          path="/driver/edit/:driverId"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-              <StaffManagement />
+            // Driver can also edit their own profile
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.DRIVER]}>
+              <EditDriver />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Itinerary Management (Admin/Staff view) */}
+        <Route
+          path="/itineraries"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <ItineraryManagement />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/staff/add"
+          path="/itinerary/:itineraryId"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-              <AddStaff />
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <ItinerarySummary />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/staff/edit/:staffId"
+          path="/itinerary/:itineraryId/edit"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-              <EditStaff />
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
+              <EditItinerary />
             </ProtectedRoute>
           }
         />
@@ -391,17 +443,7 @@ export default function App() {
           }
         />
 
-        {/* User Routes */}
-        <Route path="/user-dashboard" element={<UserDashboard />} />
-        <Route path="/itinerary-summary" element={<ItinerarySummary />} />
-        <Route path="/package-price" element={<PackagePrice />} />
-        <Route path="/reward" element={<Reward />} />
-        <Route path="/user-profile" element={<UserProfile />} />
-        <Route path="/memories" element={<TripPhotos />} />
-        <Route path="/memories/:place" element={<Gallery />} />
-
-
-        {/* Activity Log Route */}
+        {/* Activity Log */}
         <Route
           path="/activity-log"
           element={
@@ -411,9 +453,9 @@ export default function App() {
           }
         />
 
-        {/* Reward Management Routes */}
+        {/* Reward Settings */}
         <Route
-          path="/reward"
+          path="/reward/management"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <RewardManagement />
@@ -421,7 +463,7 @@ export default function App() {
           }
         />
         <Route
-          path="/reward/add"
+          path="/reward/add-template"
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
               <AddReward />
@@ -429,45 +471,33 @@ export default function App() {
           }
         />
 
-        {/* Itinerary Management Routes */}
+        {/* ADMIN ONLY ROUTES */}
         <Route
-          path="/itineraries"
+          path="/staff"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
-              <ItineraryManagement />
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <StaffManagement />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/itinerary/:itineraryId"
+          path="/staff/add"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
-              <ItinerarySummary />
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AddStaff />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/itinerary/:itineraryId/edit"
+          path="/staff/edit/:staffId"
           element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF]}>
-              <EditItinerary />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Package and User Routes */}
-        <Route path="/package-price" element={<PackagePrice />} />
-        <Route path="/user-reward" element={<Reward />} />
-        <Route
-          path="/user-profile"
-          element={
-            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.STAFF, UserRole.CUSTOMER]}>
-              <UserProfile />
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <EditStaff />
             </ProtectedRoute>
           }
         />
 
-        {/* Driver Dashboard Routes */}
+        {/* DRIVER SPECIFIC ROUTES */}
         <Route
           path="/driver-dashboard"
           element={

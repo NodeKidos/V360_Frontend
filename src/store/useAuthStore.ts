@@ -50,13 +50,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         useNotificationStore.getState().connectWebSocket(accessToken);
         useNotificationStore.getState().fetchUnreadCount();
       } catch (error) {
-        localStorage.removeItem("user");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("userRole");
+        get().logout();
         set({ isInitialized: true });
       }
     } else {
+      // If tokens exist but are expired, clear them to prevent stale state
+      if (accessToken) {
+        get().logout();
+      }
       set({ isInitialized: true });
     }
   },
