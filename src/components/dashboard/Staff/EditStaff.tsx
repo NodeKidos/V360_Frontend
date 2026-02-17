@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import staffService from "../../../services/staff.service";
 import { Loader } from "../../ui/Loader";
 import { PhoneInput } from "../../ui/PhoneInput";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function EditStaff() {
   const navigate = useNavigate();
@@ -300,17 +301,13 @@ export default function EditStaff() {
                         {/* Access Level*/}
                         <div>
                           <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Access Level</label>
-                          <select
-                            name="accessLevel"
+                          <SearchableSelect
+                            options={["Staff", "Admin", "Manager"]}
                             value={staffData.accessLevel}
-                            onChange={handleInputChange}
-                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                          >
-                            <option value="">Select</option>
-                            <option value="Staff">Staff</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Manager">Manager</option>
-                          </select>
+                            onChange={(value) => setStaffData({ ...staffData, accessLevel: value as any })}
+                            placeholder="Select"
+                            className="w-full mt-1"
+                          />
                         </div>
                       </div>
                       {/* Country + Gender */}
@@ -328,16 +325,13 @@ export default function EditStaff() {
 
                         <div>
                           <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Gender</label>
-                          <select
-                            name="gender"
+                          <SearchableSelect
+                            options={["Male", "Female"]}
                             value={staffData.gender}
-                            onChange={handleInputChange}
-                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                          >
-                            <option value="">Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                          </select>
+                            onChange={(value) => setStaffData({ ...staffData, gender: value as any })}
+                            placeholder="Select"
+                            className="w-full mt-1"
+                          />
                         </div>
                       </div>
 
@@ -345,16 +339,13 @@ export default function EditStaff() {
                         {/* Status */}
                         <div>
                           <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
-                          <select
-                            name="status"
+                          <SearchableSelect
+                            options={["active", "inactive"]}
                             value={staffData.status}
-                            onChange={handleInputChange}
-                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                          >
-                            <option value="">Select</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                          </select>
+                            onChange={(value) => setStaffData({ ...staffData, status: value as any })}
+                            placeholder="Select"
+                            className="w-full mt-1"
+                          />
                         </div>
                         <div>
                           <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">NIC</label>

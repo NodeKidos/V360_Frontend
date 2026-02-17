@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useAuthStore } from '../../store/useAuthStore';
 import { adminDriverService } from '../../services/admin.service';
 import ImageModal from '../ui/ImageModal';
+import { SearchableSelect } from '../ui/SearchableSelect';
+import { CountrySelect } from '../ui/CountrySelect';
 
 interface UserData {
   id: string;
@@ -471,12 +473,14 @@ const UserProfile = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                      <select name="gender" value={formData.gender} onChange={handleInputChange} disabled={!editMode} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-600">
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </select>
+                      <SearchableSelect
+                        options={["male", "female", "other"]}
+                        value={formData.gender}
+                        onChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+                        disabled={!editMode}
+                        placeholder="Select Gender"
+                        className="w-full"
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
@@ -500,7 +504,13 @@ const UserProfile = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                      <input type="text" name="country" value={formData.country} onChange={handleInputChange} disabled={!editMode} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 disabled:text-gray-600" />
+                      <CountrySelect
+                        value={formData.country}
+                        onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                        disabled={!editMode}
+                        placeholder="Select Country"
+                        className="w-full"
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>

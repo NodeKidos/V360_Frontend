@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import staffService from "../../../services/staff.service";
 // import { CountrySelect } from "../../ui/CountrySelect";
 import { PhoneInput } from "../../ui/PhoneInput";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function AddStaff() {
     const navigate = useNavigate();
@@ -212,17 +213,13 @@ export default function AddStaff() {
                                 {/* Access Level */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Access Level</label>
-                                    <select
-                                        name="accessLevel"
+                                    <SearchableSelect
+                                        options={["Admin", "Staff", "Manager"]}
                                         value={staffData.accessLevel}
-                                        onChange={handleInputChange}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="Admin">Admin</option>
-                                        <option value="Staff">Staff</option>
-                                        <option value="Manager">Manager</option>
-                                    </select>
+                                        onChange={(value) => setStaffData(prev => ({ ...prev, accessLevel: value as any }))}
+                                        placeholder="Select"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -241,32 +238,26 @@ export default function AddStaff() {
                                 {/* Gender */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Gender</label>
-                                    <select
-                                        name="gender"
+                                    <SearchableSelect
+                                        options={["Male", "Female"]}
                                         value={staffData.gender}
-                                        onChange={handleInputChange}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
+                                        onChange={(value) => setStaffData(prev => ({ ...prev, gender: value as any }))}
+                                        placeholder="Select"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 {/* Status */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
-                                    <select
-                                        name="status"
+                                    <SearchableSelect
+                                        options={["Block", "Unblock"]}
                                         value={staffData.status}
-                                        onChange={handleInputChange}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="Block">Block</option>
-                                        <option value="Unblock">Unblock</option>
-                                    </select>
+                                        onChange={(value) => setStaffData(prev => ({ ...prev, status: value as any }))}
+                                        placeholder="Select"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
                                 {/* NIC */}
                                 <div>

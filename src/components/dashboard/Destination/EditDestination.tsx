@@ -6,6 +6,7 @@ import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import SriLankaMap, { sriLankaCities } from "../../home/SriLankaMap";
 import destinationService from "../../../services/destination.service";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function EditDestination() {
     const navigate = useNavigate();
@@ -241,21 +242,22 @@ export default function EditDestination() {
 
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Category</label>
-                                    <select
+                                    <SearchableSelect
+                                        options={[
+                                            { label: "Historical & Cultural", value: "historical_cultural" },
+                                            { label: "Beach & Nature", value: "beach_nature" },
+                                            { label: "Hiking & Spiritual", value: "hiking_spiritual" },
+                                            { label: "Wildlife", value: "wildlife" },
+                                            { label: "Adventure", value: "adventure" },
+                                            { label: "Cultural", value: "cultural" },
+                                            { label: "Relaxation", value: "relaxation" },
+                                            { label: "Urban", value: "urban" }
+                                        ]}
                                         value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="">Select Category</option>
-                                        <option value="historical_cultural">Historical & Cultural</option>
-                                        <option value="beach_nature">Beach & Nature</option>
-                                        <option value="hiking_spiritual">Hiking & Spiritual</option>
-                                        <option value="wildlife">Wildlife</option>
-                                        <option value="adventure">Adventure</option>
-                                        <option value="cultural">Cultural</option>
-                                        <option value="relaxation">Relaxation</option>
-                                        <option value="urban">Urban</option>
-                                    </select>
+                                        onChange={(value) => setCategory(value)}
+                                        placeholder="Select Category"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
 
                                 <div>

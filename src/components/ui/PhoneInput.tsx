@@ -1,4 +1,5 @@
 import { forwardRef, useState } from "react";
+import { SearchableSelect } from "./SearchableSelect";
 
 interface PhoneInputProps {
     value?: string;
@@ -87,8 +88,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
         const [countryCode, setCountryCode] = useState(initialCode);
         const [phoneNumber, setPhoneNumber] = useState(initialNumber);
 
-        const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-            const newCode = e.target.value;
+        const handleCodeChange = (newCode: string) => {
             setCountryCode(newCode);
             const fullNumber = phoneNumber ? `${newCode}${phoneNumber}` : newCode;
             onChange?.(fullNumber);
@@ -103,18 +103,18 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
 
         return (
             <div className="flex gap-2">
-                <select 
-                    value={countryCode}
-                    onChange={handleCodeChange}
-                    disabled={disabled}
-                    className="w-20 md:px-1 py-3 text-base border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
-                >
-                    {countryCodes.map((cc) => (
-                        <option key={cc.code} value={cc.code}>
-                            {cc.flag} {cc.code}
-                        </option>
-                    ))}
-                </select>
+                <div className="w-24">
+                    <SearchableSelect
+                        options={countryCodes.map((cc) => ({
+                            label: `${cc.flag} ${cc.code}`,
+                            value: cc.code
+                        }))}
+                        value={countryCode}
+                        onChange={handleCodeChange}
+                        disabled={disabled}
+                        className="h-[46px]"
+                    />
+                </div>
                 <input
                     ref={ref}
                     id={id}

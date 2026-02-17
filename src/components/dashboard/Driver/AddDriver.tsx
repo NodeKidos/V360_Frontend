@@ -11,6 +11,7 @@ import { PhoneInput } from "../../ui/PhoneInput";
 import { Loader } from "../../ui/Loader";
 import ImageModal from "../../ui/ImageModal";
 import { FaTrash, FaEye } from "react-icons/fa";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 interface DriverData {
     firstName: string;
@@ -385,22 +386,13 @@ export default function AddDriver() {
 
                                     <div>
                                         <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Blood Group</label>
-                                        <select
-                                            name="bloodGroup"
+                                        <SearchableSelect
+                                            options={["A+", "B+", "O+", "AB-", "A-", "B-", "O-", "AB+"]}
                                             value={driverData.bloodGroup}
-                                            onChange={handleInputChange}
-                                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        >
-                                            <option value="">Select Blood Group</option>
-                                            <option>A+</option>
-                                            <option>B+</option>
-                                            <option>O+</option>
-                                            <option>AB-</option>
-                                            <option>A-</option>
-                                            <option>B-</option>
-                                            <option>O-</option>
-                                            <option>AB+</option>
-                                        </select>
+                                            onChange={(value) => setDriverData(prev => ({ ...prev, bloodGroup: value }))}
+                                            placeholder="Select Blood Group"
+                                            className="w-full mt-1"
+                                        />
                                     </div>
                                 </div>
                                 {/* NIC */}
@@ -419,22 +411,17 @@ export default function AddDriver() {
                                     {/* Assigned Vehicle */}
                                     <div>
                                         <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Assigned Vehicle</label>
-                                        <select
-                                            name="assignedVehicle"
+                                        <SearchableSelect
+                                            options={vehicles.map((v) => ({
+                                                label: `${v.registrationNumber} - ${v.make} ${v.model}`,
+                                                value: v.id
+                                            }))}
                                             value={driverData.assignedVehicle}
-                                            onChange={handleInputChange}
-                                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
+                                            onChange={(value) => setDriverData(prev => ({ ...prev, assignedVehicle: value }))}
+                                            placeholder={vehiclesLoading ? "Loading vehicles..." : "Select Vehicle"}
                                             disabled={vehiclesLoading}
-                                        >
-                                            <option value="">
-                                                {vehiclesLoading ? "Loading vehicles..." : "Select Vehicle"}
-                                            </option>
-                                            {vehicles.map((vehicle) => (
-                                                <option key={vehicle.id} value={vehicle.id}>
-                                                    {vehicle.registrationNumber} - {vehicle.make} {vehicle.model}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            className="w-full mt-1"
+                                        />
                                     </div>
                                 </div>
                                 {/* Languages & Experience Years */}
@@ -469,16 +456,13 @@ export default function AddDriver() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div>
                                         <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
-                                        <select
-                                            name="status"
+                                        <SearchableSelect
+                                            options={["active", "inactive"]}
                                             value={driverData.status}
-                                            onChange={handleInputChange}
-                                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                        >
-                                            <option value="">Select Status</option>
-                                            <option value="active">Active</option>
-                                            <option value="inactive">Inactive</option>
-                                        </select>
+                                            onChange={(value) => setDriverData(prev => ({ ...prev, status: value }))}
+                                            placeholder="Select Status"
+                                            className="w-full mt-1"
+                                        />
                                     </div>
 
                                     <div>

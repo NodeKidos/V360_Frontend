@@ -6,6 +6,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import rewardService from "../../../services/reward.service";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function AddReward() {
     const navigate = useNavigate();
@@ -167,16 +168,13 @@ export default function AddReward() {
                                 {/* Status */}
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Status</label>
-                                    <select
-                                        name="status"
+                                    <SearchableSelect
+                                        options={["Active", "Inactive"]}
                                         value={rewardData.status}
-                                        onChange={handleInputChange}
-                                        className="w-full border border-purple-300 rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option>Select</option>
-                                        <option>Active</option>
-                                        <option>Inactive</option>
-                                    </select>
+                                        onChange={(value) => setRewardData((prev) => ({ ...prev, status: value }))}
+                                        placeholder="Select"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
                             </div>
 

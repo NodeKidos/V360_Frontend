@@ -1,14 +1,14 @@
 import { forwardRef } from "react";
+import { SearchableSelect } from "./SearchableSelect";
 
 interface CountrySelectProps {
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-    onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
     name?: string;
-    id?: string;
     disabled?: boolean;
     className?: string;
     placeholder?: string;
+    id?: string;
 }
 
 const countries = [
@@ -39,28 +39,24 @@ const countries = [
     "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
 ];
 
-export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
-    ({ value, onChange, onBlur, name, id, disabled, className, placeholder = "Select your country" }, ref) => {
+export const CountrySelect = forwardRef<HTMLDivElement, CountrySelectProps>(
+    ({ value, onChange, name, disabled, className, placeholder = "Select your country", id }, ref) => {
         return (
-            <select
+            <SearchableSelect
                 ref={ref}
-                id={id}
-                name={name}
+                options={countries}
                 value={value}
-                onChange={onChange}
-                onBlur={onBlur}
+                onChange={(val) => {
+                    if (onChange) {
+                        // Simulate a standard change event for compatibility
+                        onChange({ target: { value: val, name } } as React.ChangeEvent<HTMLSelectElement>);
+                    }
+                }}
                 disabled={disabled}
-                className={className || "w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"}
-            >
-                <option value="" disabled>
-                    {placeholder}
-                </option>
-                {countries.map((country) => (
-                    <option key={country} value={country}>
-                        {country}
-                    </option>
-                ))}
-            </select>
+                placeholder={placeholder}
+                className={className}
+                id={id}
+            />
         );
     }
 );

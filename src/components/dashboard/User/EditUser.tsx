@@ -8,6 +8,7 @@ import userService from "../../../services/user.service";
 import { Loader } from "../../ui/Loader";
 import { CountrySelect } from "../../ui/CountrySelect";
 import { PhoneInput } from "../../ui/PhoneInput";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function EditCustomer() {
   const navigate = useNavigate();
@@ -297,15 +298,13 @@ export default function EditCustomer() {
 
                         <div>
                           <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Gender</label>
-                          <select
+                          <SearchableSelect
+                            options={["Male", "Female"]}
                             value={customerData.gender}
-                            onChange={(e) => setCustomerData({ ...customerData, gender: e.target.value })}
-                            className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                          >
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                          </select>
+                            onChange={(value) => setCustomerData({ ...customerData, gender: value })}
+                            placeholder="Select Gender"
+                            className="w-full mt-1"
+                          />
                         </div>
                       </div>
 

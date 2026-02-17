@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import userService from "../../../services/user.service";
 import { CountrySelect } from "../../ui/CountrySelect";
 import { PhoneInput } from "../../ui/PhoneInput";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function AddCustomer() {
   const navigate = useNavigate();
@@ -210,16 +211,13 @@ export default function AddCustomer() {
 
                 <div>
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Gender</label>
-                  <select
-                    name="gender"
+                  <SearchableSelect
+                    options={["Male", "Female"]}
                     value={formData.gender}
-                    onChange={handleInputChange}
-                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  >
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
+                    onChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+                    placeholder="Select"
+                    className="w-full mt-1"
+                  />
                 </div>
               </div>
 

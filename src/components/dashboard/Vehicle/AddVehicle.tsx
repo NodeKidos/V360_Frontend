@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import vehicleService from "../../../services/vehicle.service";
 import { adminDriverService, type Driver } from "../../../services/admin.service";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function AddVehicle() {
     const navigate = useNavigate();
@@ -223,20 +224,20 @@ export default function AddVehicle() {
 
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Vehicle Type</label>
-                                    <select
-                                        name="vehicleType"
+                                    <SearchableSelect
+                                        options={[
+                                            { label: "Sedan", value: "sedan" },
+                                            { label: "SUV", value: "suv" },
+                                            { label: "Van", value: "van" },
+                                            { label: "Minibus", value: "minibus" },
+                                            { label: "Bus", value: "bus" },
+                                            { label: "Luxury", value: "luxury" }
+                                        ]}
                                         value={vehicleData.vehicleType}
-                                        onChange={handleChange}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="">Select Type</option>
-                                        <option value="sedan">Sedan</option>
-                                        <option value="suv">SUV</option>
-                                        <option value="van">Van</option>
-                                        <option value="minibus">Minibus</option>
-                                        <option value="bus">Bus</option>
-                                        <option value="luxury">Luxury</option>
-                                    </select>
+                                        onChange={(value) => setVehicleData(prev => ({ ...prev, vehicleType: value }))}
+                                        placeholder="Select Type"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
                             </div>
 
@@ -284,17 +285,18 @@ export default function AddVehicle() {
                                 </div>
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Fuel Type</label>
-                                    <select
-                                        name="fuelType"
+                                    <SearchableSelect
+                                        options={[
+                                            { label: "Diesel", value: "diesel" },
+                                            { label: "Petrol", value: "petrol" },
+                                            { label: "Electric", value: "electric" },
+                                            { label: "Hybrid", value: "hybrid" }
+                                        ]}
                                         value={vehicleData.fuelType}
-                                        onChange={handleChange}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="diesel">Diesel</option>
-                                        <option value="petrol">Petrol</option>
-                                        <option value="electric">Electric</option>
-                                        <option value="hybrid">Hybrid</option>
-                                    </select>
+                                        onChange={(value) => setVehicleData(prev => ({ ...prev, fuelType: value }))}
+                                        placeholder="Select Fuel Type"
+                                        className="w-full mt-1"
+                                    />
                                 </div>
                             </div>
 
@@ -407,21 +409,17 @@ export default function AddVehicle() {
                                 </div>
                                 <div>
                                     <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Assign Driver</label>
-                                    <select
-                                        name="assignDriver"
+                                    <SearchableSelect
+                                        options={drivers.map((driver) => ({
+                                            label: driver.name || `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Unknown Driver',
+                                            value: driver.id
+                                        }))}
                                         value={vehicleData.assignDriver}
-                                        onChange={handleChange}
-                                        className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB]  rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                                    >
-                                        <option value="">
-                                            {drivers.length === 0 ? "No drivers available" : "Select a driver (optional)"}
-                                        </option>
-                                        {drivers.map((driver) => (
-                                            <option key={driver.id} value={driver.id}>
-                                                {driver.name || `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Unknown Driver'}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={(value) => setVehicleData(prev => ({ ...prev, assignDriver: value }))}
+                                        placeholder={drivers.length === 0 ? "No drivers available" : "Select a driver (optional)"}
+                                        disabled={drivers.length === 0}
+                                        className="w-full mt-1"
+                                    />
                                     {drivers.length === 0 && (
                                         <p className="text-gray-500 text-[12px] mt-1">
                                             No drivers found. Please add drivers first.

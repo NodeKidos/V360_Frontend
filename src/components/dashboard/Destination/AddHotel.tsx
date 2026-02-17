@@ -8,6 +8,7 @@ import TopBar from "../../Topbar";
 import StarRating from "../../ui/StarRating";
 import hotelService from "../../../services/hotel.service";
 import destinationService from "../../../services/destination.service";
+import { SearchableSelect } from "../../ui/SearchableSelect";
 
 export default function AddHotel() {
   const navigate = useNavigate();
@@ -153,37 +154,38 @@ export default function AddHotel() {
                 {/* Destination */}
                 <div>
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Select Destination</label>
-                  <select
+                  <SearchableSelect
+                    options={destinations.map((d) => ({
+                      label: d.name,
+                      value: d.id
+                    }))}
                     value={destinationId}
-                    onChange={(e) => setDestinationId(e.target.value)}
-                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  >
-                    <option value="">Select Destination</option>
-                    {destinations.map((d) => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                    ))}
-                  </select>
+                    onChange={(value) => setDestinationId(value)}
+                    placeholder="Select Destination"
+                    className="w-full mt-1"
+                  />
                 </div>
 
                 {/* Hotel Type */}
                 <div>
                   <label className="text-gray-700 text-[13px] md:text-[14px] lg:text-[15px] font-poppins">Hotel Type</label>
-                  <select
+                  <SearchableSelect
+                    options={[
+                      { label: "Luxury", value: "luxury" },
+                      { label: "Heritage", value: "heritage" },
+                      { label: "Standard", value: "standard" },
+                      { label: "Premium", value: "premium" },
+                      { label: "Mid Range", value: "mid_range" },
+                      { label: "Boutique", value: "boutique" },
+                      { label: "Budget", value: "budget" },
+                      { label: "Resort", value: "resort" },
+                      { label: "Guesthouse", value: "guesthouse" }
+                    ]}
                     value={hotelType}
-                    onChange={(e) => setHotelType(e.target.value)}
-                    className="w-full border border-purple-300 focus:ring-2 focus:ring-[#B749DB] rounded-xl mt-1 px-3 md:px-4 py-2 md:py-3 outline-none text-[14px] md:text-[16px] font-poppins"
-                  >
-                    <option value="">Select Hotel Type</option>
-                    <option value="luxury">Luxury</option>
-                    <option value="heritage">Heritage</option>
-                    <option value="standard">Standard</option>
-                    <option value="premium">Premium</option>
-                    <option value="mid_range">Mid Range</option>
-                    <option value="boutique">Boutique</option>
-                    <option value="budget">Budget</option>
-                    <option value="resort">Resort</option>
-                    <option value="guesthouse">Guesthouse</option>
-                  </select>
+                    onChange={(value) => setHotelType(value)}
+                    placeholder="Select Hotel Type"
+                    className="w-full mt-1"
+                  />
                 </div>
 
                 {/* Contact Number */}

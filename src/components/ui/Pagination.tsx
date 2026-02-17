@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "../../components/ui/button";
+import { SearchableSelect } from "./SearchableSelect";
 
 interface PaginationProps {
   currentPage: number;
@@ -28,8 +29,6 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const handlePageClick = (page: number) => onPageChange(page);
 
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
-    onItemsPerPageChange(Number(e.target.value));
 
   // Generate limited desktop range
   const pageNumbers = [];
@@ -49,16 +48,19 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Show items per page */}
       <div className="flex items-center">
-        <span className="text-gray-700 hidden sm:block">Show:</span>
-        <select
-          className="border rounded-[10px] px-3 py-2 ml-2 bg-[#B749DB] text-white cursor-pointer"
-          onChange={handleItemsPerPageChange}
-          value={itemsPerPage}
-        >
-          <option value={3}>3</option>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-        </select>
+        <span className="text-gray-700 hidden sm:block mr-2">Show:</span>
+        <div className="w-20">
+          <SearchableSelect
+            options={[
+              { label: "3", value: "3" },
+              { label: "5", value: "5" },
+              { label: "10", value: "10" }
+            ]}
+            value={itemsPerPage.toString()}
+            onChange={(value) => onItemsPerPageChange(Number(value))}
+            className="h-10 text-white [&>div]:bg-[#B749DB] [&>div]:border-none [&>div]:text-white [&_svg]:text-white"
+          />
+        </div>
       </div>
 
       {/* Pagination */}
@@ -86,8 +88,8 @@ const Pagination: React.FC<PaginationProps> = ({
                 key={idx}
                 onClick={() => handlePageClick(Number(p))}
                 className={`rounded-lg px-4 py-2 border ${currentPage === p
-                    ? "bg-[#B749DB] text-white"
-                    : "bg-white text-[#B749DB] border-[#B749DB]"
+                  ? "bg-[#B749DB] text-white"
+                  : "bg-white text-[#B749DB] border-[#B749DB]"
                   }`}
               >
                 {p}

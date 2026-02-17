@@ -18,6 +18,7 @@ import CustomPagination from "../../components/CustomPagination";
 import { Loader } from "../../components/ui/Loader";
 import { CountrySelect } from "../../components/ui/CountrySelect";
 import { PhoneInput } from "../../components/ui/PhoneInput";
+import { SearchableSelect } from "../../components/ui/SearchableSelect";
 
 export default function Itinerary() {
     const [step, setStep] = useState(1);
@@ -268,14 +269,13 @@ export default function Itinerary() {
                                                     className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition"
                                                 />
                                             ) : field.type === "select" ? (
-                                                <select
+                                                <SearchableSelect
+                                                    options={field.options?.filter((opt: string) => !opt.toLowerCase().includes("choose")) || []}
                                                     value={(formData as any)[field.fieldName || ""] || ""}
-                                                    onChange={(e) => updateFormData({ [field.fieldName || ""]: e.target.value })}
-                                                    className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px] h-12 border border-[#E5D4EF]  rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
-                                                    {field.options?.map((opt: string, idx: number) => (
-                                                        <option key={idx}>{opt}</option>
-                                                    ))}
-                                                </select>
+                                                    onChange={(value) => updateFormData({ [field.fieldName || ""]: value })}
+                                                    placeholder={field.options?.[0]}
+                                                    className="w-full max-w-full sm:max-w-[400px] md:max-w-[270px] lg:max-w-[420px]"
+                                                />
                                             ) : (
                                                 <input
                                                     type={field.type}
@@ -294,15 +294,13 @@ export default function Itinerary() {
                                     {/* Traveler Type */}
                                     <div className="flex flex-col gap-2 flex-1">
                                         <label className="text-[16px] sm:text-[18px] font-medium">Traveler Type</label>
-                                        <select
+                                        <SearchableSelect
+                                            options={["Solo", "Couple", "Group"]}
                                             value={formData.travelerType || ""}
-                                            onChange={(e) => updateFormData({ travelerType: e.target.value })}
-                                            className="w-full h-12 border border-[#E5D4EF] rounded-lg px-4 py-2 outline-none focus:border-[#B749DB] focus:ring-2 focus:ring-[#B749DB]/30 transition">
-                                            <option value="">Select traveler type</option>
-                                            <option value="Solo">Solo</option>
-                                            <option value="Couple">Couple</option>
-                                            <option value="Group">Group</option>
-                                        </select>
+                                            onChange={(value) => updateFormData({ travelerType: value })}
+                                            placeholder="Select traveler type"
+                                            className="w-full h-12"
+                                        />
                                     </div>
 
                                     {/* Total Participants Info */}
