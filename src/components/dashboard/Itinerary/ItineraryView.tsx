@@ -10,6 +10,7 @@ import { LuListFilter } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
 import { FiEye, FiTrash2, FiEdit, FiChevronDown, FiFileText } from "react-icons/fi";
 import { FaFilePdf, FaSlack } from "react-icons/fa";
+import { MdFlag } from "react-icons/md";
 import { itineraryService } from "../../../services/itinerary.service";
 import slackService from "../../../services/slack.service";
 import pdfService from "../../../services/pdf.service";
@@ -194,6 +195,51 @@ const ItineraryManagement = () => {
     );
 
     return uniqueDestinations.size > dateDays;
+  };
+
+  // Check if itinerary uses a flagged hotel during the unavailability period
+  const checkHotelUnavailability = (itinerary: Itinerary): { isImpacted: boolean; hotelName?: string; reason?: string } => {
+    // Skip if itinerary is completed, accepted, rejected, cancelled, or converted
+    const excludedStatuses = [
+      ItineraryStatus.COMPLETED,
+      ItineraryStatus.ACCEPTED,
+      ItineraryStatus.REJECTED,
+      ItineraryStatus.CANCELLED,
+      ItineraryStatus.CONVERTED
+    ];
+
+    if (excludedStatuses.includes(itinerary.status)) {
+      return { isImpacted: false };
+    }
+
+    if (!itinerary.days) return { isImpacted: false };
+
+    for (const day of itinerary.days) {
+      // Check if day has a hotel and if that hotel is flagged
+      const hotel = day.hotel;
+
+      if (hotel && hotel.isFlagged && hotel.unavailabilityStart && hotel.unavailabilityEnd) {
+        // Check if itinerary date overlaps with unavailability period
+        const itineraryDate = new Date(day.date);
+        const unavailableStart = new Date(hotel.unavailabilityStart);
+        const unavailableEnd = new Date(hotel.unavailabilityEnd);
+
+        // Reset times for accurate date comparison
+        itineraryDate.setHours(0, 0, 0, 0);
+        unavailableStart.setHours(0, 0, 0, 0);
+        unavailableEnd.setHours(0, 0, 0, 0);
+
+        if (itineraryDate >= unavailableStart && itineraryDate <= unavailableEnd) {
+          return {
+            isImpacted: true,
+            hotelName: hotel.name,
+            reason: hotel.flagReason
+          };
+        }
+      }
+    }
+
+    return { isImpacted: false };
   };
 
   // Get status color
@@ -437,6 +483,23 @@ const ItineraryManagement = () => {
                               ⚠️
                             </span>
                           )}
+
+                          {/* Hotel Unavailability Warning Badge */}
+                          {(() => {
+                            const { isImpacted, hotelName, reason } = checkHotelUnavailability(itinerary);
+                            if (isImpacted) {
+                              return (
+                                <span
+                                  className="px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700 border border-red-300 flex items-center gap-1 animate-pulse"
+                                  title={`Hotel Unavailable: ${hotelName} - ${reason}`}
+                                >
+                                  <MdFlag className="text-sm" />
+                                  Action Required
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
 
                           {/* Driver Assignment Indicator */}
                           {(itinerary as any).driver && (itinerary as any).driver.name && (itinerary.status === 'accepted' || itinerary.status === 'in_progress' || itinerary.status === 'on_hold') && (

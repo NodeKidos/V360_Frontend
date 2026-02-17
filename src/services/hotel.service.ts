@@ -26,6 +26,8 @@ export interface Hotel {
   isActive?: boolean;
   isFlagged?: boolean;
   flagReason?: string;
+  unavailabilityStart?: string;
+  unavailabilityEnd?: string;
   flaggedAt?: string;
   flaggedBy?: {
     id: string;
@@ -57,8 +59,8 @@ export const hotelService = {
     return response.data;
   },
 
-  flagHotel: async (id: string, reason: string): Promise<Hotel> => {
-    const response = await api.patch<Hotel>(`/hotels/${id}/flag`, { reason });
+  flagHotel: async (id: string, reason: string, startDate?: string, endDate?: string): Promise<Hotel> => {
+    const response = await api.patch<Hotel>(`/hotels/${id}/flag`, { reason, startDate, endDate });
     return response.data;
   },
 

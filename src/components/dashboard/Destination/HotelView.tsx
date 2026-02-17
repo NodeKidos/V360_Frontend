@@ -38,6 +38,8 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
 
   const [flagModalVisible, setFlagModalVisible] = useState(false);
   const [flagReason, setFlagReason] = useState("");
+  const [flagStartDate, setFlagStartDate] = useState("");
+  const [flagEndDate, setFlagEndDate] = useState("");
   const [selectedHotelForFlag, setSelectedHotelForFlag] = useState<any>(null);
 
   // Ensure hotels is always an array
@@ -112,6 +114,8 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
   const handleFlagClick = (hotel: any) => {
     setSelectedHotelForFlag(hotel);
     setFlagReason("");
+    setFlagStartDate("");
+    setFlagEndDate("");
     setFlagModalVisible(true);
   };
 
@@ -127,13 +131,27 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
       return;
     }
 
+    if (!flagStartDate || !flagEndDate) {
+      toast.error("Please select both start and end dates", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
     try {
-      await hotelService.flagHotel(selectedHotelForFlag.id, flagReason);
+      await hotelService.flagHotel(selectedHotelForFlag.id, flagReason, flagStartDate, flagEndDate);
 
       // Update local state
       setHotels(hotelsArray.map((h: any) =>
         h.id === selectedHotelForFlag.id
-          ? { ...h, isFlagged: true, flagReason: flagReason }
+          ? {
+            ...h,
+            isFlagged: true,
+            flagReason: flagReason,
+            unavailabilityStart: flagStartDate,
+            unavailabilityEnd: flagEndDate
+          }
           : h
       ));
 
@@ -433,6 +451,33 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
               Hotel: <span className="font-semibold">{selectedHotelForFlag?.name}</span>
             </p>
 
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={flagStartDate}
+                  onChange={(e) => setFlagStartDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B749DB]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={flagEndDate}
+                  onChange={(e) => setFlagEndDate(e.target.value)}
+                  min={flagStartDate || new Date().toISOString().split('T')[0]}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B749DB]"
+                />
+              </div>
+            </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Reason for flagging <span className="text-red-500">*</span>
@@ -446,7 +491,7 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
             </div>
 
             <p className="text-xs text-gray-500 mb-4">
-              ⚠️ Customers with accepted itineraries using this hotel and all staff members will be notified immediately.
+              ⚠️ Customers with itineraries using this hotel during the selected dates and all staff members will be notified immediately.
             </p>
 
             {/* Buttons */}
