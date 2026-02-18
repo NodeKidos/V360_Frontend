@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowRight, FaGlobe, FaHeart, FaStarOfLife, FaCoins, FaPlane } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import hero from "../../assets/Swing.jpg";
@@ -52,11 +52,17 @@ export default function AboutUs() {
   // Array of images for the slideshow
   const images = [hero, hero2, hero3, hero4];
 
-  // Function to change background image every 5 seconds
+  // Function to change background image every 5 seconds and preload images
   useEffect(() => {
+    // Preload images
+    images.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+
     const interval = setInterval(() => {
       setBackgroundIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000); // Change every 3 seconds
+    }, 4000); // Increased slightly for better viewing
 
     return () => clearInterval(interval); // Clear interval on component unmount
   }, []);
@@ -71,7 +77,7 @@ export default function AboutUs() {
       {images.map((img, index) => (
         <motion.div
           key={index}
-          className="absolute w-3/5 h-3/4 rounded-xl shadow-2xl overflow-hidden bg-gray-200 border-4 border-white "
+          className="absolute w-3/5 h-3/4 rounded-xl shadow-2xl overflow-hidden bg-gray-200 border-4 border-white will-change-transform"
           initial={{ opacity: 0, x: -100, rotate: rotate ? (index % 2 === 0 ? -10 : 10) : 0 }}  // Initially hidden (off-screen)
           whileInView={{ opacity: 1, x: 0, rotate: rotate ? (index % 2 === 0 ? -15 : 10) : 0, transition: { duration: 0.8, delay: index * 0.15 } }}  // Reveals images with slide animation
           viewport={{ once: true, amount: 0.4 }}  // Only trigger when images are in view
@@ -137,29 +143,31 @@ export default function AboutUs() {
 
       {/* --- 1. Hero / Welcome Section (Image Background - Full Screen) --- */}
       <motion.div
-        className="relative h-screen bg-cover bg-center overflow-hidden"
+        className="relative h-screen bg-cover bg-center overflow-hidden bg-black"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
         {/* Background Image Slideshow */}
-        <motion.div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${images[backgroundIndex]})`, // Dynamically change background image
-          }}
-          key={backgroundIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{
-            duration: 1,
-            ease: "easeInOut",
-          }}
-        >
-          {/* Overlay for contrast */}
-          <div className="absolute inset-0 bg-linear-to-bl from-white/90 via-black/10 to-transparent"></div>
-        </motion.div>
+        <AnimatePresence>
+          <motion.div
+            className="absolute inset-0 w-full h-full bg-cover bg-center will-change-opacity"
+            style={{
+              backgroundImage: `url(${images[backgroundIndex]})`, // Dynamically change background image
+            }}
+            key={backgroundIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: 1.5,
+              ease: "easeInOut",
+            }}
+          >
+            {/* Overlay for contrast */}
+            <div className="absolute inset-0 bg-linear-to-bl from-white/90 via-black/10 to-transparent"></div>
+          </motion.div>
+        </AnimatePresence>
 
 
         {/* Text Content */}
@@ -233,7 +241,7 @@ export default function AboutUs() {
             {/* Vision Card */}
             <motion.div
               variants={cardItem}
-              className="relative p-12 h-96 rounded-3xl overflow-hidden shadow-2xl group"
+              className="relative p-12 h-96 rounded-3xl overflow-hidden shadow-2xl group will-change-transform"
             >
               <div className="absolute inset-0 bg-linear-to-bl from-purple-950/70 via-purple-300/30 to-transparent"></div>
               <div className="relative text-Black h-full flex flex-col justify-end">
@@ -247,7 +255,7 @@ export default function AboutUs() {
             {/* Mission Card */}
             <motion.div
               variants={cardItem}
-              className="relative p-12 h-96 rounded-3xl overflow-hidden shadow-2xl group"
+              className="relative p-12 h-96 rounded-3xl overflow-hidden shadow-2xl group will-change-transform"
             >
               <div className="absolute inset-0 bg-linear-to-bl from-purple-950/70 via-purple-300/30 to-transparent"></div>
               <div className="relative text-Black  h-full flex flex-col justify-end">
@@ -314,7 +322,7 @@ export default function AboutUs() {
               <motion.div
                 key={index}
                 variants={cardItem}
-                className="p-8 bg-white rounded-xl shadow-lg border border-gray-200 transition duration-300 hover:shadow-2xl hover:border-[#B749DB] cursor-pointer"
+                className="p-8 bg-white rounded-xl shadow-lg border border-gray-200 transition duration-300 hover:shadow-2xl hover:border-[#B749DB] cursor-pointer will-change-transform"
               >
                 <div className="flex items-center space-x-3 mb-3">
                   <item.icon className="h-8 w-8" style={{ color: lightPurple }} />
@@ -361,7 +369,7 @@ export default function AboutUs() {
               <ImageCollage images={sustainabilityImages} rotate={true} className="translate-x-12" />
             </motion.div>
             <motion.div
-              className="w-full lg:w-1/2 space-y-6 mt-12 lg:mt-0 lg:text-left text-center"
+              className="w-full lg:w-1/2 space-y-6 mt-12 lg:mt-0 lg:text-left text-center will-change-transform"
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"

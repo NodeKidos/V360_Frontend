@@ -9,7 +9,7 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"; // Import useNavigate, useParams, and useSearchParams
 import hotelImg from "../../assets/hotels/cityof dream.jpg";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { CiSearch } from "react-icons/ci";
 import { itineraryService } from "../../services/itinerary.service";
 import type { Itinerary } from "../../types/itinerary.types";
