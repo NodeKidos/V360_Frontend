@@ -367,43 +367,54 @@ const VehicleManagement = () => {
                                 </thead>
 
                                 <tbody className="font-poppins">
-                                    {currentVehicles.map((v) => (
-                                        <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50 items-center">
-                                            <td className="py-2 px-2 text-gray-600 whitespace-nowrap flex justify-center items-center">
-                                                <div className="w-10 h-10 rounded-lg border border-purple-50 overflow-hidden bg-gray-50">
-                                                    <img
-                                                        src={v.image ? (v.image.startsWith('http') ? v.image : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}${v.image.startsWith('/') ? '' : '/'}${v.image}`) : 'https://via.placeholder.com/50?text=V'}
-                                                        alt={v.name}
-                                                        className="w-full h-full object-cover"
-                                                        onError={(e) => {
-                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50?text=V';
-                                                        }}
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
-                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{t(`management.vehicle.types.${v.type.toLowerCase()}`)}</td>
-                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>
-                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.model}</td>
-                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.seats}</td>
-                                            <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.driver === 'unassigned' ? t('management.vehicle.statusList.unassigned') : v.driver}</td>
-                                            <td className={`px-2 py-3 font-medium whitespace-nowrap ${v.status === "active" ? "text-green-600" : v.status === "inService" ? "text-[#FF8D28]" : "text-red-600"}`}>
-                                                {t(`management.vehicle.statusList.${v.status}`)}
-                                            </td>
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <div className="flex gap-3 justify-center">
-                                                    <CiEdit
-                                                        className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                        onClick={() => handleEditClick(v.id)}
-                                                    />
-                                                    <MdDeleteOutline
-                                                        className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                        onClick={() => handleDeleteClick(v.id)}
-                                                    />
+                                    {currentVehicles.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={9} className="py-10 text-center text-gray-500 font-poppins">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    <CiSearch className="text-4xl mb-2 text-gray-300" />
+                                                    <p>{t('dashboard.common.noData')}</p>
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        currentVehicles.map((v) => (
+                                            <tr key={v.id} className="border-b border-gray-100 text-center text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50 items-center">
+                                                <td className="py-2 px-2 text-gray-600 whitespace-nowrap flex justify-center items-center">
+                                                    <div className="w-10 h-10 rounded-lg border border-purple-50 overflow-hidden bg-gray-50">
+                                                        <img
+                                                            src={v.image ? (v.image.startsWith('http') ? v.image : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'}${v.image.startsWith('/') ? '' : '/'}${v.image}`) : 'https://via.placeholder.com/50?text=V'}
+                                                            alt={v.name}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50?text=V';
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-2 text-gray-600 whitespace-nowrap ">{v.name}</td>
+                                                <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{t(`management.vehicle.types.${v.type.toLowerCase()}`)}</td>
+                                                <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.plate}</td>
+                                                <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.model}</td>
+                                                <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.seats}</td>
+                                                <td className="px-2 py-3 text-gray-600 whitespace-nowrap">{v.driver === 'unassigned' ? t('management.vehicle.statusList.unassigned') : v.driver}</td>
+                                                <td className={`px-2 py-3 font-medium whitespace-nowrap ${v.status === "active" ? "text-green-600" : v.status === "inService" ? "text-[#FF8D28]" : "text-red-600"}`}>
+                                                    {t(`management.vehicle.statusList.${v.status}`)}
+                                                </td>
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <div className="flex gap-3 justify-center">
+                                                        <CiEdit
+                                                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                            onClick={() => handleEditClick(v.id)}
+                                                        />
+                                                        <MdDeleteOutline
+                                                            className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                            onClick={() => handleDeleteClick(v.id)}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>

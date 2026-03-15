@@ -14,6 +14,7 @@ import { itineraryService } from "../../services/itinerary.service";
 import type { Itinerary } from "../../types/itinerary.types";
 import { ItineraryStatus } from "../../types/itinerary.types";
 import { adminService, type DashboardStats } from "../../services/admin.service";
+import { rewardService } from "../../services/reward.service";
 import { Loader } from "../../components/ui/Loader";
 
 // Custom hook for counting animation
@@ -102,6 +103,8 @@ const AdminDashboard = () => {
   const [loadingItineraries, setLoadingItineraries] = useState(false);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [rewardTransactions, setRewardTransactions] = useState<any[]>([]);
+  const [loadingRewards, setLoadingRewards] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -148,6 +151,23 @@ const AdminDashboard = () => {
     };
 
     fetchItineraries();
+  }, []);
+
+  // Fetch reward transactions
+  useEffect(() => {
+    const fetchRewards = async () => {
+      setLoadingRewards(true);
+      try {
+        const data = await rewardService.getAllTransactions();
+        setRewardTransactions(data);
+      } catch (error) {
+        console.error("Failed to fetch reward transactions:", error);
+      } finally {
+        setLoadingRewards(false);
+      }
+    };
+
+    fetchRewards();
   }, []);
 
   // Format date
@@ -293,28 +313,30 @@ const AdminDashboard = () => {
           )}
 
           {/* Middle Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
             {/* Calendar + Trip */}
             <div className="flex flex-col gap-5">
               {/* Calendar */}
-              <Card className="bg-white rounded-xl shadow-sm border-0">
+              <Card className="bg-white rounded-xl shadow-sm border-0 h-full">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-4">
                     <p className="text-gray-900 font-semibold text-base md:text-lg font-poppins">{t('dashboard.headings.calendar')}</p>
                     <FiArrowUpRight className="text-gray-400 cursor-pointer hover:text-gray-600" />
                   </div>
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md"
-                    modifiers={{
-                      hasItinerary: (day) => hasItinerariesOnDate(day)
-                    }}
-                    modifiersClassNames={{
-                      hasItinerary: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-[#B749DB] after:rounded-full"
-                    }}
-                  />
+                  <div className="flex justify-center 2xl:block overflow-hidden w-full">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      className="rounded-md border-0 w-full max-w-full flex justify-center"
+                      modifiers={{
+                        hasItinerary: (day) => hasItinerariesOnDate(day)
+                      }}
+                      modifiersClassNames={{
+                        hasItinerary: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-[#B749DB] after:rounded-full"
+                      }}
+                    />
+                  </div>
                   {date && selectedDateItineraries.length > 0 && (
                     <div className="mt-4 p-3 bg-[#F8EDFC] rounded-lg border border-[#E5D4EF]">
                       <p className="text-sm font-medium text-[#5B247A] mb-2">
@@ -389,31 +411,36 @@ const AdminDashboard = () => {
 
                 {/* Table */}
                 <div className="overflow-x-auto rounded-xl border border-gray-100" style={{ scrollbarWidth: "thin" }}>
-                  <table className="min-w-full text-center font-inter font-medium">
-                    <thead>
-                      <tr className="text-[#382A59] border-b text-sm md:text-base">
-                        <th className="p-3 whitespace-nowrap">{t('dashboard.table.rewardId')}</th>
-                        <th className="p-3 whitespace-nowrap">{t('dashboard.table.rewardType')}</th>
-                        <th className="p-3">{t('dashboard.table.date')}</th>
-                        <th className="p-3 whitespace-nowrap">{t('dashboard.table.customerId')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        ["RI001", "Referring a Friend", "03.04.2025", "CI001"],
-                        ["RI002", "Birthdays", "03.04.2025", "CI002"],
-                        ["RI003", "Review", "03.04.2025", "CI001"],
-                        ["RI004", "Active Participation", "03.04.2025", "CI003"],
-                      ].map(([id, type, date, cid]) => (
-                        <tr key={id} className="border-b hover:bg-gray-50 text-xs md:text-sm">
-                          <td className="p-3">{id}</td>
-                          <td className="p-3">{type}</td>
-                          <td className="p-3">{date}</td>
-                          <td className="p-3">{cid}</td>
+                  {loadingRewards ? (
+                    <div className="flex justify-center items-center py-10">
+                      <Loader className="w-10 h-10" />
+                    </div>
+                  ) : rewardTransactions.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <p className="text-gray-500 text-sm font-poppins">{t('dashboard.common.noData')}</p>
+                    </div>
+                  ) : (
+                    <table className="min-w-full text-center font-inter font-medium">
+                      <thead>
+                        <tr className="text-[#382A59] border-b text-sm md:text-base">
+                          <th className="p-3 whitespace-nowrap">{t('dashboard.table.rewardId')}</th>
+                          <th className="p-3 whitespace-nowrap">{t('dashboard.table.rewardType')}</th>
+                          <th className="p-3">{t('dashboard.table.date')}</th>
+                          <th className="p-3 whitespace-nowrap">{t('dashboard.table.customerId')}</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {rewardTransactions.slice(0, 5).map((tx) => (
+                          <tr key={tx.id} className="border-b hover:bg-gray-50 text-xs md:text-sm">
+                            <td className="p-3">#{tx.id.slice(-5).toUpperCase()}</td>
+                            <td className="p-3">{tx.type}</td>
+                            <td className="p-3">{formatDate(tx.createdAt)}</td>
+                            <td className="p-3">{tx.customer?.id?.slice(-5).toUpperCase() || tx.customerId?.slice(-5).toUpperCase() || "N/A"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -11,11 +11,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { LuListFilter } from "react-icons/lu"; // Filter icon
 import { CiSearch } from "react-icons/ci"; // Search icon
 import { IoMdAdd } from "react-icons/io"; // Add icon
+import { useTranslation } from "react-i18next";
 import staffService, { type Staff } from "../../../services/staff.service";
 import authService from "../../../services/auth.service";
 import { Loader } from "../../ui/Loader";
 
 const StaffManagement = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate(); // Initialize the navigation function
 
   const [staff, setStaff] = useState<Staff[]>([]);
@@ -304,8 +306,11 @@ const StaffManagement = () => {
                 <tbody className="font-poppins">
                   {staff.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="py-8 text-center text-gray-500">
-                        No staff found
+                      <td colSpan={10} className="py-10 text-center text-gray-500 font-poppins">
+                        <div className="flex flex-col items-center justify-center">
+                          <CiSearch className="text-4xl mb-2 text-gray-300" />
+                          <p>{t('dashboard.common.noData')}</p>
+                        </div>
                       </td>
                     </tr>
                   ) : (

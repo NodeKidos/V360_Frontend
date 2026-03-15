@@ -373,40 +373,51 @@ const DestinationHotelManagement = () => {
                                         </thead>
 
                                         <tbody className="font-poppins">
-                                            {currentDestinations.map((d) => (
-                                                <tr key={d.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                                                    {/* <td className="py-1 px-3">{d.id}</td> */}
-                                                    <td className="py-1 px-3">{d.name}</td>
-                                                    <td className="px-5 py-1 text-center">
-                                                        {d.images && d.images.length > 0 ? (
-                                                            <img
-                                                                src={d.images[0].startsWith('/') ? `http://localhost:3000${d.images[0]}` : d.images[0]}
-                                                                alt={d.name}
-                                                                className="w-16 h-16 object-cover rounded-md mx-auto"
-                                                            />
-                                                        ) : (
-                                                            <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center mx-auto text-gray-400 text-xs text-center px-1">
-                                                                {t('management.destination.table.noImage')}
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-3 py-1 text-center">{d.location}</td>
-                                                    <td className="px-3 py-1 text-center">{d.category}</td>
-                                                    <td className="px-3 py-1 text-center">{d.bestTimeToVisit || t('common.noData')}</td>
-                                                    <td className="px-5 py-1 whitespace-nowrap">
-                                                        <div className="flex gap-2 justify-center">
-                                                            <CiEdit
-                                                                className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                                onClick={() => handleEditDestinationClick(d.id)}
-                                                            />
-                                                            <MdDeleteOutline
-                                                                className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                                                                onClick={() => handleDeleteClick(d.id)}
-                                                            />
+                                            {currentDestinations.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={7} className="py-10 text-center text-gray-500 font-poppins">
+                                                        <div className="flex flex-col items-center justify-center">
+                                                            <CiSearch className="text-4xl mb-2 text-gray-300" />
+                                                            <p>{t('dashboard.common.noData')}</p>
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            ))}
+                                            ) : (
+                                                currentDestinations.map((d) => (
+                                                    <tr key={d.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                                                        {/* <td className="py-1 px-3">{d.id}</td> */}
+                                                        <td className="py-1 px-3">{d.name}</td>
+                                                        <td className="px-5 py-1 text-center">
+                                                            {d.images && d.images.length > 0 ? (
+                                                                <img
+                                                                    src={d.images[0].startsWith('/') ? `http://localhost:3000${d.images[0]}` : d.images[0]}
+                                                                    alt={d.name}
+                                                                    className="w-16 h-16 object-cover rounded-md mx-auto"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center mx-auto text-gray-400 text-xs text-center px-1">
+                                                                    {t('management.destination.table.noImage')}
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-3 py-1 text-center">{d.location}</td>
+                                                        <td className="px-3 py-1 text-center">{d.category}</td>
+                                                        <td className="px-3 py-1 text-center">{d.bestTimeToVisit || t('common.noData')}</td>
+                                                        <td className="px-5 py-1 whitespace-nowrap">
+                                                            <div className="flex gap-2 justify-center">
+                                                                <CiEdit
+                                                                    className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                                    onClick={() => handleEditDestinationClick(d.id)}
+                                                                />
+                                                                <MdDeleteOutline
+                                                                    className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                                                    onClick={() => handleDeleteClick(d.id)}
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>

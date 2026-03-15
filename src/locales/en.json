@@ -168,6 +168,7 @@
             "viewAll": "View All",
             "searchHere": "Search Here...",
             "welcomeBack": "Welcome back!",
+            "noData": "No data found",
             "noItinerariesFound": "No itineraries found",
             "noItinerariesScheduled": "No itineraries scheduled for this date",
             "filters": "Filters",

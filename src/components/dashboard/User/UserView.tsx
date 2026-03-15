@@ -373,51 +373,62 @@ const CustomerManagement = () => {
                 </thead>
 
                 <tbody className="font-poppins">
-                  {currentCustomers.map((c) => {
-                    // Get customer data from customer relation or fallback to legacy fields
-                    const customerGender = c.customer?.gender || c.gender;
-                    const customerContact = c.phone || c.contact;
-                    const customerCountry = c.customer?.country || c.country;
-                    const customerPassport = c.customer?.passportNumber || c.passportNumber;
-                    const customerAge = c.customer?.dateOfBirth ? calculateAge(c.customer.dateOfBirth) : c.age;
+                  {currentCustomers.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="py-10 text-center text-gray-500 font-poppins">
+                        <div className="flex flex-col items-center justify-center">
+                          <CiSearch className="text-4xl mb-2 text-gray-300" />
+                          <p>{t('dashboard.common.noData')}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    currentCustomers.map((c) => {
+                      // Get customer data from customer relation or fallback to legacy fields
+                      const customerGender = c.customer?.gender || c.gender;
+                      const customerContact = c.phone || c.contact;
+                      const customerCountry = c.customer?.country || c.country;
+                      const customerPassport = c.customer?.passportNumber || c.passportNumber;
+                      const customerAge = c.customer?.dateOfBirth ? calculateAge(c.customer.dateOfBirth) : c.age;
 
-                    return (
-                      <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
-                        {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td> */}
+                      return (
+                        <tr key={c.id} className="border-b border-gray-100 text-left text-[12px] sm:text-[13px] md:text-[14px] hover:bg-gray-50">
+                          {/* <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{c.id}</td> */}
 
-                        <td className="py-4 px-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
-                            <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
-                          </div>
-                        </td>
+                          <td className="py-4 px-4 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <img src="https://i.pravatar.cc/40" className="w-8 h-8 md:w-9 md:h-9 rounded-full" alt={c.firstName} />
+                              <span className="font-medium text-gray-800">{c.firstName} {c.lastName}</span>
+                            </div>
+                          </td>
 
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender ? t(`management.customer.gender.${customerGender.toLowerCase()}`) : t('common.noData')}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || t('common.noData')}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || t('common.noData')}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || t('common.noData')}</td>
-                        <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || t('common.noData')}</td>
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{c.email}</td>
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerGender ? t(`management.customer.gender.${customerGender.toLowerCase()}`) : t('dashboard.common.noData')}</td>
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerContact || t('dashboard.common.noData')}</td>
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerCountry || t('dashboard.common.noData')}</td>
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerPassport || t('dashboard.common.noData')}</td>
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">{customerAge || t('dashboard.common.noData')}</td>
 
-                        <td className={`px-4 py-4 font-medium whitespace-nowrap ${(c.status || "").toLowerCase() === "active" ? "text-green-600" : "text-red-600"}`}>
-                          {(c.status || "").toLowerCase() === "active" ? t('management.customer.filters.unblock') : t('management.customer.filters.block')}
-                        </td>
+                          <td className={`px-4 py-4 font-medium whitespace-nowrap ${(c.status || "").toLowerCase() === "active" ? "text-green-600" : "text-red-600"}`}>
+                            {(c.status || "").toLowerCase() === "active" ? t('management.customer.filters.unblock') : t('management.customer.filters.block')}
+                          </td>
 
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="flex gap-3 justify-center">
-                            <CiEdit
-                              className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                              onClick={() => handleEditClick(c.id)}
-                            />
-                            <MdDeleteOutline
-                              className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
-                              onClick={() => handleDeleteClick(c.id)}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <div className="flex gap-3 justify-center">
+                              <CiEdit
+                                className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                onClick={() => handleEditClick(c.id)}
+                              />
+                              <MdDeleteOutline
+                                className="text-[#B749DB] cursor-pointer text-[20px] hover:text-purple-700"
+                                onClick={() => handleDeleteClick(c.id)}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>

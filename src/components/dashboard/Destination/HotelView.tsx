@@ -330,43 +330,54 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
             </tr>
           </thead>
           <tbody className="font-poppins">
-            {currentHotels.map((h: any) => (
-              <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
-                {/* <td className="py-1 px-3">{h.id}</td> */}
-                <td className="py-1 px-3 ">{h.name}</td>
-                <td className="px-3 py-1 ">{h.type || t('common.noData')}</td>
-                <td className="px-5 py-1 text-center">
-                  <img src={h.images?.[0] || h.images} alt={h.name} className="w-16 h-16 object-cover " />
-                </td>
-                <td className="px-3 py-1 text-center">{renderStars(Number(h.starRating || 0))}</td>
-                <td className="px-3 py-1 text-center">{h.contactNumber || t('common.noData')}</td>
-                <td className="px-3 py-1 text-center">{h.address || h.destination?.location || t('common.noData')}</td>
-                <td className="px-3 py-1 text-center">{h.reviewCount ? `${h.reviewCount} ${t('management.destination.table.review').toLowerCase()}` : t('management.itinerary.table.noReviews')}</td>
-                <td className="px-3 py-1 text-center">
-                  {h.isFlagged ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium" title={h.flagReason}>
-                      <MdFlag className="text-sm" />
-                      {t('management.destination.status.unavailable')}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                      {t('management.destination.status.available')}
-                    </span>
-                  )}
-                </td>
-                <td className="px-3 py-1 whitespace-nowrap">
-                  <div className="flex gap-2 justify-center items-center">
-                    <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} title={t('dashboard.common.edit')} />
-                    {h.isFlagged ? (
-                      <MdOutlineFlag className="text-green-600 cursor-pointer text-[20px]" onClick={() => handleUnflagClick(h)} title={t('management.destination.modals.flagButton')} />
-                    ) : (
-                      <MdFlag className="text-orange-500 cursor-pointer text-[20px]" onClick={() => handleFlagClick(h)} title={t('management.destination.modals.flagTitle')} />
-                    )}
-                    <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(h.id)} title={t('dashboard.common.delete')} />
+            {currentHotels.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="py-10 text-center text-gray-500 font-poppins">
+                  <div className="flex flex-col items-center justify-center">
+                    <LuListFilter className="text-4xl mb-2 text-gray-300" />
+                    <p>{t('dashboard.common.noData')}</p>
                   </div>
                 </td>
               </tr>
-            ))}
+            ) : (
+              currentHotels.map((h: any) => (
+                <tr key={h.id} className="border-b border-gray-100 text-center text-gray-600 text-[13px] sm:text-[14px] md:text-[15px] hover:bg-gray-50">
+                  {/* <td className="py-1 px-3">{h.id}</td> */}
+                  <td className="py-1 px-3 ">{h.name}</td>
+                  <td className="px-3 py-1 ">{h.type || t('common.noData')}</td>
+                  <td className="px-5 py-1 text-center">
+                    <img src={h.images?.[0] || h.images} alt={h.name} className="w-16 h-16 object-cover " />
+                  </td>
+                  <td className="px-3 py-1 text-center">{renderStars(Number(h.starRating || 0))}</td>
+                  <td className="px-3 py-1 text-center">{h.contactNumber || t('common.noData')}</td>
+                  <td className="px-3 py-1 text-center">{h.address || h.destination?.location || t('common.noData')}</td>
+                  <td className="px-3 py-1 text-center">{h.reviewCount ? `${h.reviewCount} ${t('management.destination.table.review').toLowerCase()}` : t('management.itinerary.table.noReviews')}</td>
+                  <td className="px-3 py-1 text-center">
+                    {h.isFlagged ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium" title={h.flagReason}>
+                        <MdFlag className="text-sm" />
+                        {t('management.destination.status.unavailable')}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        {t('management.destination.status.available')}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 py-1 whitespace-nowrap">
+                    <div className="flex gap-2 justify-center items-center">
+                      <CiEdit className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => onEdit(h.id)} title={t('dashboard.common.edit')} />
+                      {h.isFlagged ? (
+                        <MdOutlineFlag className="text-green-600 cursor-pointer text-[20px]" onClick={() => handleUnflagClick(h)} title={t('management.destination.modals.flagButton')} />
+                      ) : (
+                        <MdFlag className="text-orange-500 cursor-pointer text-[20px]" onClick={() => handleFlagClick(h)} title={t('management.destination.modals.flagTitle')} />
+                      )}
+                      <MdDeleteOutline className="text-[#B749DB] cursor-pointer text-[20px]" onClick={() => handleDeleteClick(h.id)} title={t('dashboard.common.delete')} />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
