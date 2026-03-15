@@ -123,7 +123,7 @@ export default function AboutUs() {
     visible: {
       transition: {
         staggerChildren: 0.15,
-        delayChildren: 0.3,
+        delayChildren: 0.8,
       },
     },
   };
@@ -245,8 +245,8 @@ export default function AboutUs() {
             >
               <div className="absolute inset-0 bg-linear-to-bl from-purple-950/70 via-purple-300/30 to-transparent"></div>
               <div className="relative text-Black h-full flex flex-col justify-end">
-                <h3 className="text-5xl font-extrabold mb-4" >{t('about.visionTitle')}</h3>
-                <p className="text-lg leading-relaxed">
+                <h3 className="text-5xl font-albertsans font-extrabold mb-4" >{t('about.visionTitle')}</h3>
+                <p className="text-lg font-albertsans leading-relaxed">
                   {t('about.visionText')}
                 </p>
               </div>
@@ -259,8 +259,8 @@ export default function AboutUs() {
             >
               <div className="absolute inset-0 bg-linear-to-bl from-purple-950/70 via-purple-300/30 to-transparent"></div>
               <div className="relative text-Black  h-full flex flex-col justify-end">
-                <h3 className="text-5xl font-extrabold mb-4">{t('about.missionTitle')}</h3>
-                <p className="text-lg leading-relaxed">
+                <h3 className="text-5xl font-albertsans font-extrabold mb-4">{t('about.missionTitle')}</h3>
+                <p className="text-lg font-albertsans leading-relaxed">
                   {t('about.missionText')}
                 </p>
               </div>
@@ -282,11 +282,11 @@ export default function AboutUs() {
                 className="p-8 bg-gray-50 rounded-xl shadow-lg border-t-4 transition duration-300 hover:shadow-xl hover:border-t-4"
                 style={{ borderTopColor: lightPurple }}
               >
-                <h3 className="text-5xl font-extrabold mb-1" style={{ color: darkPurple }}>
+                <h3 className="text-5xl font-roboto font-extrabold mb-1" style={{ color: darkPurple }}>
                   {item.num}
                   {/* No suffix property, so nothing to render here */}
                 </h3>
-                <p className="text-gray-600 text-lg font-semibold">{item.label}</p>
+                <p className="text-gray-600 font-nunito text-lg font-semibold">{item.label}</p>
               </motion.div>
             ))}
           </motion.div>
