@@ -335,7 +335,7 @@ const ItineraryManagement = () => {
                 >
                   <option value="">{t('management.itinerary.filters.allStatus')}</option>
                   <option value={ItineraryStatus.DRAFT}>{t('management.itinerary.status.draft')}</option>
-                  <option value={ItineraryStatus.PENDING_QUOTE}>{t('management.itinerary.status.pendingQuote')}</option>
+                  <option value={ItineraryStatus.PENDING_QUOTE}>{t('management.itinerary.status.pending_quote')}</option>
                   <option value={ItineraryStatus.QUOTED}>{t('management.itinerary.status.quoted')}</option>
                   <option value={ItineraryStatus.NEGOTIATING}>{t('management.itinerary.status.negotiating')}</option>
                   <option value={ItineraryStatus.ACCEPTED}>{t('management.itinerary.status.accepted')}</option>
@@ -376,7 +376,7 @@ const ItineraryManagement = () => {
               >
                 <option value="">{t('management.itinerary.filters.allStatus')}</option>
                 <option value={ItineraryStatus.DRAFT}>{t('management.itinerary.status.draft')}</option>
-                <option value={ItineraryStatus.PENDING_QUOTE}>{t('management.itinerary.status.pendingQuote')}</option>
+                <option value={ItineraryStatus.PENDING_QUOTE}>{t('management.itinerary.status.pending_quote')}</option>
                 <option value={ItineraryStatus.QUOTED}>{t('management.itinerary.status.quoted')}</option>
                 <option value={ItineraryStatus.NEGOTIATING}>{t('management.itinerary.status.negotiating')}</option>
                 <option value={ItineraryStatus.ACCEPTED}>{t('management.itinerary.status.accepted')}</option>
