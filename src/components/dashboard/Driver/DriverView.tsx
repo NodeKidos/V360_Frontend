@@ -158,7 +158,7 @@ const DriverManagement = () => {
 
                     {/* TITLE - Desktop with Add button */}
                     <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
-                        <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+                        <h2 className="font-poppins font-bold text-black text-[20px] sm:text-[24px] md:text-[32px] lg:text-[40px] xl:text-[48px]">
                             Driver Management
                         </h2>
                         <button
@@ -267,7 +267,7 @@ const DriverManagement = () => {
                         </div>
 
                         {/* FILTERS - Mobile */}
-                        <div className="flex items-center gap-2 justify-start">
+                        <div className="flex flex-wrap items-center gap-2 justify-start">
                             <select
                                 className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
                                 value={bloodGroupFilter}

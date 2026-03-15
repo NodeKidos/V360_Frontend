@@ -194,7 +194,7 @@ const StaffManagement = () => {
 
           {/* TITLE - Desktop with Add button */}
           <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
-            <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+            <h2 className="font-poppins font-bold text-black text-[20px] sm:text-[24px] md:text-[32px] lg:text-[40px] xl:text-[48px]">
               Staff Management
             </h2>
             <button
@@ -207,7 +207,7 @@ const StaffManagement = () => {
 
           {/* TITLE - Mobile */}
           <div className="mb-4 mt-4 md:hidden">
-            <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
+            <h2 className="font-poppins font-bold text-black text-[20px] sm:text-[24px]">
               Staff Management
             </h2>
           </div>

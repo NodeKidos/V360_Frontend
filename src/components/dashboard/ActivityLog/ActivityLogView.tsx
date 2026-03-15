@@ -135,13 +135,13 @@ const ActivityLogView = () => {
 
                     {/* Header */}
                     <div className="mb-4 mt-4 flex justify-between items-center">
-                        <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+                        <h2 className="font-poppins font-bold text-black text-[20px] sm:text-[24px] md:text-[32px] lg:text-[40px] xl:text-[48px]">
                             Activity Log
                         </h2>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showFilters ? 'bg-purple-50 border-purple-300 text-purple-700' : 'border-gray-300 text-gray-700'
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-[14px] ${showFilters ? 'bg-purple-50 border-purple-300 text-purple-700' : 'border-gray-300 text-gray-700'
                                     } hover:bg-purple-50`}
                             >
                                 <FiFilter />
@@ -149,7 +149,7 @@ const ActivityLogView = () => {
                             </button>
                             <button
                                 onClick={fetchLogs}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-[14px]"
                             >
                                 <IoMdRefresh />
                                 Refresh

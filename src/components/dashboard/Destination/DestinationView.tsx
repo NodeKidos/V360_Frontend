@@ -192,7 +192,7 @@ const DestinationHotelManagement = () => {
 
                     {/* TITLE - Desktop with Add button */}
                     <div className="mb-4 mt-4 hidden md:flex md:justify-between md:items-center">
-                        <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px] md:text-[36px] lg:text-[40px] xl:text-[48px]">
+                        <h2 className="font-poppins font-bold text-black text-[20px] sm:text-[24px] md:text-[32px] lg:text-[40px] xl:text-[48px]">
                             {t('management.destination.title')}
                         </h2>
                         <button
@@ -208,7 +208,7 @@ const DestinationHotelManagement = () => {
 
                     {/* TITLE - Mobile */}
                     <div className="mb-4 mt-4 md:hidden">
-                        <h2 className="font-poppins font-bold text-black text-[24px] sm:text-[30px]">
+                        <h2 className="font-poppins font-bold text-black text-[20px] sm:text-[24px]">
                             {t('management.destination.title')}
                         </h2>
                     </div>
@@ -311,9 +311,9 @@ const DestinationHotelManagement = () => {
                                     </div>
 
                                     {/* FILTERS - Mobile */}
-                                    <div className="flex items-center justify-between w-full">
+                                    <div className="flex flex-wrap items-center justify-between w-full gap-y-2">
                                         {/* LEFT SIDE DROPDOWNS */}
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-wrap items-center gap-2">
                                             <select
                                                 className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 w-35 py-2 text-[16px] font-poppins bg-white cursor-pointer"
                                                 value={locationFilter}

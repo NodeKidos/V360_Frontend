@@ -267,10 +267,10 @@ const Hotel = ({ hotels, page, itemsPerPage, setPage, setItemsPerPage, setHotels
         </div>
 
         {/* FILTERS - Mobile */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex flex-wrap items-center justify-between w-full gap-y-2">
 
           {/* LEFT SIDE DROPDOWNS */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
               className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 w-35 text-[16px] font-poppins bg-white cursor-pointer"
               value={hotelFilter}

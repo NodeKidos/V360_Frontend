@@ -136,7 +136,7 @@ const SettingsView = () => {
                 <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
                 <div className="bg-white border border-purple-200 rounded-2xl shadow-sm p-6 min-h-[80vh]">
-                    <h1 className="text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-8">
+                    <h1 className="text-2xl sm:text-3xl font-roboto-condensed font-semibold text-[#5B247A] mb-8">
                         {t('settings.title')}
                     </h1>
 
