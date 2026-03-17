@@ -331,7 +331,11 @@
             "types": {
                 "car": "Car",
                 "van": "Van",
-                "suv": "SUV"
+                "suv": "SUV",
+                "luxury": "Luxury",
+                "sedan": "Sedan",
+                "minibus": "Minibus",
+                "bus": "Bus"
             },
             "statusList": {
                 "active": "Active",

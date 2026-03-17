@@ -253,6 +253,10 @@ const VehicleManagement = () => {
                                     <option value="Car">{t('management.vehicle.types.car')}</option>
                                     <option value="Van">{t('management.vehicle.types.van')}</option>
                                     <option value="SUV">{t('management.vehicle.types.suv')}</option>
+                                    <option value="Luxury">{t('management.vehicle.types.luxury')}</option>
+                                    <option value="Sedan">{t('management.vehicle.types.sedan')}</option>
+                                    <option value="Minibus">{t('management.vehicle.types.minibus')}</option>
+                                    <option value="Bus">{t('management.vehicle.types.bus')}</option>
                                 </select>
 
                                 <select
@@ -315,10 +319,14 @@ const VehicleManagement = () => {
                                 className="border border-[#B749DB] text-[#B749DB] rounded-lg px-3 py-2 text-[12px] font-poppins bg-white cursor-pointer"
                                 value={V_TypeFilter}
                                 onChange={(e) => setV_TypeFilter(e.target.value)}
-                            >                                    <option value="">{t('management.vehicle.filters.vType')}</option>
+                                >                                    <option value="">{t('management.vehicle.filters.vType')}</option>
                                 <option value="Car">{t('management.vehicle.types.car')}</option>
                                 <option value="Van">{t('management.vehicle.types.van')}</option>
                                 <option value="SUV">{t('management.vehicle.types.suv')}</option>
+                                <option value="Luxury">{t('management.vehicle.types.luxury')}</option>
+                                <option value="Sedan">{t('management.vehicle.types.sedan')}</option>
+                                <option value="Minibus">{t('management.vehicle.types.minibus')}</option>
+                                <option value="Bus">{t('management.vehicle.types.bus')}</option>
                             </select>
 
                             <select
