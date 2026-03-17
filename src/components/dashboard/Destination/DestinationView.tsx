@@ -390,7 +390,11 @@ const DestinationHotelManagement = () => {
                                                         <td className="px-5 py-1 text-center">
                                                             {d.images && d.images.length > 0 ? (
                                                                 <img
-                                                                    src={d.images[0].startsWith('/') ? `http://localhost:3000${d.images[0]}` : d.images[0]}
+                                                                    src={(() => {
+                                                                        const API_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? `${window.location.origin}/api/v1` : 'http://localhost:3000/api/v1');
+                                                                        const BASE_URL = API_URL.replace('/api/v1', '');
+                                                                        return d.images[0].startsWith('/') ? `${BASE_URL}${d.images[0]}` : d.images[0];
+                                                                    })()}
                                                                     alt={d.name}
                                                                     className="w-16 h-16 object-cover rounded-md mx-auto"
                                                                 />
