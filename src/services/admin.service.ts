@@ -80,7 +80,7 @@ export const adminDriverService = {
         });
       } else if (key === 'languages' && Array.isArray(data[key])) {
         data[key].forEach((lang: string) => {
-          formData.append('languages[]', lang);
+          formData.append('languages', lang);
         });
       } else {
         formData.append(key, data[key]);
@@ -105,7 +105,7 @@ export const adminDriverService = {
       } else if (key === 'languages' && Array.isArray(data[key])) {
         // Handle array of strings for languages
         data[key].forEach((lang: string) => {
-          formData.append('languages[]', lang);
+          formData.append('languages', lang);
         });
       } else {
         formData.append(key, data[key]);

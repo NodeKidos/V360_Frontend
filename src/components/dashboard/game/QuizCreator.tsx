@@ -311,7 +311,7 @@ const QuizCreator = () => {
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
-                                        className="bg-white rounded-[40px] p-8 shadow-xl border border-slate-200 relative overflow-hidden"
+                                        className="bg-white rounded-[40px] p-4 md:p-8 shadow-xl border border-slate-200 relative overflow-hidden"
                                     >
                                         <div className="absolute top-0 right-0 w-64 h-64 bg-game-green/2 rounded-full -mr-32 -mt-32"></div>
 
@@ -399,7 +399,7 @@ const QuizCreator = () => {
                                                                 placeholder={`Answer ${aIdx + 1}...`}
                                                                 value={answer.text}
                                                                 onChange={(e) => handleAnswerChange(activeQuestionIndex, aIdx, 'text', e.target.value)}
-                                                                className="flex-1 bg-transparent px-4 py-2 font-bold text-slate-700 outline-none"
+                                                                className="flex-1 min-w-0 bg-transparent px-4 py-2 font-bold text-slate-700 outline-none"
                                                             />
                                                             <button
                                                                 onClick={() => handleAnswerChange(activeQuestionIndex, aIdx, 'isCorrect', true)}
