@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../AdminSidebar';
 import TopBar from '../../Topbar';
 import { IoMdArrowBack, IoMdAdd, IoMdTrash, IoMdSave } from 'react-icons/io';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import gameService from '../../../services/game.service';
 import type { Quiz, QuizQuestion } from '../../../services/game.service';
 import destinationService from '../../../services/destination.service';
@@ -180,7 +180,7 @@ const QuizCreator = () => {
                         </div>
                         <button
                             onClick={handleSave}
-                            className="bg-game-green text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 shadow-lg shadow-game-green/20"
+                            className="bg-[#B749DB] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#9f37c9] shadow-lg shadow-[#B749DB]/20 transition-all"
                         >
                             <IoMdSave size={20} />
                             Save Quiz
@@ -388,7 +388,7 @@ const QuizCreator = () => {
                                                             key={aIdx}
                                                             className={`relative min-h-[80px] rounded-2xl bg-white border-2 flex items-center p-1 transition-all group ${colors[aIdx]} ${answer.isCorrect ? 'border-game-green ring-4 ring-game-green/5' : ''}`}
                                                         >
-                                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white ml-2 ${bgColors[aIdx]} shadow-sm`}>
+                                                            <div className={`w-12 h-12 shrink-0 rounded-xl flex items-center justify-center text-white ml-2 ${bgColors[aIdx]} shadow-sm`}>
                                                                 {aIdx === 0 && '▲'}
                                                                 {aIdx === 1 && '◆'}
                                                                 {aIdx === 2 && '●'}
@@ -403,7 +403,7 @@ const QuizCreator = () => {
                                                             />
                                                             <button
                                                                 onClick={() => handleAnswerChange(activeQuestionIndex, aIdx, 'isCorrect', true)}
-                                                                className={`p-3 mr-2 rounded-xl transition-all ${answer.isCorrect ? 'bg-game-green text-white scale-110' : 'bg-slate-100 text-slate-300 hover:bg-game-green/10'}`}
+                                                                className={`p-3 mr-2 shrink-0 rounded-xl transition-all ${answer.isCorrect ? 'bg-game-green text-white scale-110' : 'bg-slate-100 text-slate-300 hover:bg-game-green/10'}`}
                                                             >
                                                                 <FaCheckCircle size={20} />
                                                             </button>
@@ -432,7 +432,6 @@ const QuizCreator = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
         </div>
     );
 };

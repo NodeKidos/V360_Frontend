@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"; // Navigate hook
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
@@ -188,9 +188,7 @@ export default function AddDriver() {
                 autoClose: 2000,
             });
 
-            setTimeout(() => {
-                navigate("/driver");
-            }, 2000);
+            navigate("/driver");
         } catch (err: any) {
             console.error('Error creating driver:', err);
             console.error('Error response:', err?.response?.data);
@@ -546,7 +544,6 @@ export default function AddDriver() {
                         {/* FORM END */}
                     </div>
                 </div>
-                <ToastContainer />
             </div>
 
             <ImageModal

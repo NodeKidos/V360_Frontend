@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"; // Navigate hook
 import Sidebar from "../../AdminSidebar";
 import TopBar from "../../Topbar";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { adminDriverService } from "../../../services/admin.service";
 import vehicleService, { type Vehicle } from "../../../services/vehicle.service";
@@ -252,9 +252,7 @@ export default function EditDriver() {
                 autoClose: 2000,
             });
 
-            setTimeout(() => {
-                navigate(userRole === "driver" ? "/driver-profile" : "/driver");
-            }, 2000);
+            navigate(userRole === "driver" ? "/driver-profile" : "/driver");
         } catch (err: any) {
             const errorMessage = err?.response?.data?.message || "Failed to update driver";
             toast.error(errorMessage, {
@@ -664,7 +662,6 @@ export default function EditDriver() {
                             </div>
                         </>
                     )}
-                    <ToastContainer />
                 </div>
             </div>
 
