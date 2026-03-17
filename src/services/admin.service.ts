@@ -68,12 +68,51 @@ export const adminDriverService = {
   },
 
   createDriver: async (data: any): Promise<any> => {
-    const response = await api.post('/drivers', data);
+    const formData = new FormData();
+    
+    // Convert object to FormData
+    Object.keys(data).forEach(key => {
+      if (data[key] === undefined || data[key] === null) return;
+      
+      if (key === 'licenseImage' && Array.isArray(data[key])) {
+        data[key].forEach((file: any) => {
+          formData.append('licenseImage', file);
+        });
+      } else if (key === 'languages' && Array.isArray(data[key])) {
+        data[key].forEach((lang: string) => {
+          formData.append('languages[]', lang);
+        });
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+
+    const response = await api.post('/drivers', formData);
     return response.data;
   },
 
   updateDriver: async (id: string, data: any): Promise<any> => {
-    const response = await api.put(`/drivers/${id}`, data);
+    const formData = new FormData();
+    
+    // Convert object to FormData
+    Object.keys(data).forEach(key => {
+      if (data[key] === undefined || data[key] === null) return;
+      
+      if (key === 'licenseImage' && Array.isArray(data[key])) {
+        data[key].forEach((item: any) => {
+          formData.append('licenseImage', item);
+        });
+      } else if (key === 'languages' && Array.isArray(data[key])) {
+        // Handle array of strings for languages
+        data[key].forEach((lang: string) => {
+          formData.append('languages[]', lang);
+        });
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+
+    const response = await api.put(`/drivers/${id}`, formData);
     return response.data;
   },
 
