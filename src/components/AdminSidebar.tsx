@@ -31,7 +31,7 @@ const sidebarMenuConfig = {
   staff: [
     { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
     { label: 'dashboard.menu.itineraries', icon: <FaRoute />, link: '/itineraries' },
-    { label: 'dashboard.menu.trip', icon: <BiTrip />, link: '/trip' },
+    // { label: 'dashboard.menu.trip', icon: <BiTrip />, link: '/trip' },
     { label: 'dashboard.menu.driver', icon: <FaTruck />, link: '/driver' },
     { label: 'dashboard.menu.settings', icon: <IoMdSettings />, link: '/setting' }
   ],
