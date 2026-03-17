@@ -1,5 +1,4 @@
-import { DotLottiePlayer } from '@dotlottie/react-player';
-import '@dotlottie/react-player/dist/index.css';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface LoaderProps {
     className?: string;
@@ -22,7 +21,7 @@ export const Loader = ({
 
     return (
         <div className={`${containerClass} ${className}`}>
-            <DotLottiePlayer
+            <DotLottieReact
                 src={src}
                 autoplay
                 loop
