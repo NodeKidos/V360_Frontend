@@ -25,7 +25,7 @@ const sidebarMenuConfig = {
     { label: 'dashboard.menu.staff', icon: <FaUsers />, link: '/staff' },
     { label: 'dashboard.menu.activityLog', icon: <FaClipboardList />, link: '/activity-log' },
     { label: 'dashboard.menu.game', icon: <IoGameController />, link: '/v360/game' },
-    { label: 'dashboard.menu.reward', icon: <FaGift />, link: '/reward' },
+    // { label: 'dashboard.menu.reward', icon: <FaGift />, link: '/reward' },
     { label: 'dashboard.menu.settings', icon: <IoMdSettings />, link: '/setting' }
   ],
   staff: [
@@ -47,8 +47,8 @@ const sidebarMenuConfig = {
     { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/user-dashboard' },
     { label: 'dashboard.menu.myItineraries', icon: <FaRoute />, link: '/my-itineraries' },
     { label: 'dashboard.menu.createItinerary', icon: <BiTrip />, link: '/itinerary' },
-    { label: 'dashboard.menu.packagePricing', icon: <IoPricetagOutline />, link: '/package-price' },
-    { label: 'dashboard.menu.reward', icon: <FaGift />, link: '/reward' },
+    // { label: 'dashboard.menu.packagePricing', icon: <IoPricetagOutline />, link: '/package-price' },
+    // { label: 'dashboard.menu.reward', icon: <FaGift />, link: '/reward' },
     { label: 'dashboard.menu.memories', icon: <FaGift />, link: '/memories' },
     { label: 'dashboard.menu.game', icon: <IoGameController />, link: '/play' },
     { label: 'dashboard.menu.profile', icon: <FaUser />, link: '/user-profile' }
