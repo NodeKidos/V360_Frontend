@@ -15,10 +15,20 @@ const GameManagement = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [loading, setLoading] = useState(true);
     const user = useAuthStore((state) => state.user);
     const isDriver = user?.role === UserRole.DRIVER;
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         fetchQuizzes();
@@ -59,15 +69,15 @@ const GameManagement = () => {
             <Sidebar
                 collapsed={collapsed}
                 setCollapsed={setCollapsed}
-                isMobile={false}
+                isMobile={isMobile}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
             />
 
             <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="p-6">
+                <div className="p-4 md:p-6 lg:p-8">
                     <TopBar
-                        isMobile={false}
+                        isMobile={isMobile}
                         setSidebarOpen={setSidebarOpen}
                         searchQuery={searchQuery}
                         onSearchChange={setSearchQuery}

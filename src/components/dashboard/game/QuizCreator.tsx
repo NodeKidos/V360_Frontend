@@ -17,6 +17,7 @@ const QuizCreator = () => {
 
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [destinations, setDestinations] = useState<any[]>([]);
 
     const [quiz, setQuiz] = useState<Partial<Quiz>>({
@@ -29,6 +30,15 @@ const QuizCreator = () => {
     });
 
     const [activeQuestionIndex, setActiveQuestionIndex] = useState<number | null>(null);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         fetchData();
@@ -144,14 +154,14 @@ const QuizCreator = () => {
             <Sidebar
                 collapsed={collapsed}
                 setCollapsed={setCollapsed}
-                isMobile={false}
+                isMobile={isMobile}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
             />
 
             <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="p-6">
-                    <TopBar isMobile={false} setSidebarOpen={setSidebarOpen} />
+                <div className="p-4 md:p-6 lg:p-8">
+                    <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
                     <div className="mt-6 flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">

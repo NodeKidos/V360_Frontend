@@ -13,6 +13,18 @@ export default function DriverInfo() {
     const navigate = useNavigate();  // Initialize navigate function
     const [driver, setDriver] = useState<Driver | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const fetchDriver = async () => {
@@ -46,11 +58,17 @@ export default function DriverInfo() {
 
     return (
         <div className="h-screen bg-white flex overflow-hidden">
-            <Sidebar collapsed={false} setCollapsed={() => { }} isMobile={false} sidebarOpen={false} setSidebarOpen={() => { }} />
+            <Sidebar
+                collapsed={collapsed}
+                setCollapsed={setCollapsed}
+                isMobile={isMobile}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+            />
 
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <div className="p-4 md:p-6 lg:p-8">
-                    <TopBar isMobile={false} setSidebarOpen={() => { }} />
+                    <TopBar isMobile={isMobile} setSidebarOpen={setSidebarOpen} />
 
                     {/* Breadcrumb with Back Button */}
                     <div className="flex items-center gap-2 text-[14px] md:text-[16px] font-medium mt-4 font-poppins">
