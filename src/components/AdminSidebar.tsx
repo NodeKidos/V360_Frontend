@@ -29,10 +29,14 @@ const sidebarMenuConfig = {
     { label: 'dashboard.menu.settings', icon: <IoMdSettings />, link: '/setting' }
   ],
   staff: [
-    { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/staff-dashboard' },
+    { label: 'dashboard.menu.dashboard', icon: <TiThLargeOutline />, link: '/admin-dashboard' },
     { label: 'dashboard.menu.itineraries', icon: <FaRoute />, link: '/itineraries' },
-    // { label: 'dashboard.menu.trip', icon: <BiTrip />, link: '/trip' },
+    { label: 'dashboard.menu.user', icon: <FaUser />, link: '/user' },
+    { label: 'dashboard.menu.hotelDestination', icon: <FaHotel />, link: '/destination-hotel' },
+    { label: 'dashboard.menu.vehicle', icon: <FaCarSide />, link: '/vehicle' },
     { label: 'dashboard.menu.driver', icon: <FaTruck />, link: '/driver' },
+    { label: 'dashboard.menu.activityLog', icon: <FaClipboardList />, link: '/activity-log' },
+    { label: 'dashboard.menu.game', icon: <IoGameController />, link: '/v360/game' },
     { label: 'dashboard.menu.settings', icon: <IoMdSettings />, link: '/setting' }
   ],
   driver: [
