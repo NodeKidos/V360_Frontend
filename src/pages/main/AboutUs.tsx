@@ -5,6 +5,13 @@ import hero from "../../assets/Swing.jpg";
 import hero2 from "../../assets/waterfall1.jpg";
 import hero3 from "../../assets/tiger1.jpg";
 import hero4 from "../../assets/elephantride.jpg";
+import tiger from "../../assets/tiger.jpg";
+import swing from "../../assets/Swing.jpg";
+import elephantride from "../../assets/elephantride.jpg";
+import snorkeling from "../../assets/Snorkeling.jpg";
+import elephant from "../../assets/sustainablityImage/elephant.jpg";
+import nineedge from "../../assets/sustainablityImage/nineedge.jpg";
+import gallefort from "../../assets/sustainablityImage/gallefort.jpg";
 import Navbar from '../../components/home/Navbar';
 import Footer from '../../components/home/Footer';
 import { useState, useEffect } from "react";
@@ -96,17 +103,17 @@ export default function AboutUs() {
 
   // Define images for the collages - Using descriptive placeholders for better visualization
   const heroImages = [
-    { url: "../src/assets/tiger.jpg" },
-    { url: "../src/assets/swing.jpg" },
-    { url: "../src/assets/elephantride.jpg" },
-    { url: "../src/assets/Snorkeling.jpg" },
+    { url: tiger },
+    { url: swing },
+    { url: elephantride },
+    { url: snorkeling },
   ];
 
   // Images for Sustainability Section (121307.png)
   const sustainabilityImages = [
-    { url: "../src/assets/sustainablityImage/elephant.jpg" },
-    { url: "../src/assets/sustainablityImage/nineedge.jpg" },
-    { url: "../src/assets/sustainablityImage/gallefort.jpg" },
+    { url: elephant },
+    { url: nineedge },
+    { url: gallefort },
   ];
 
   const fadeUp: Variants = {
