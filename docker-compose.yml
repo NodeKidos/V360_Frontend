@@ -1,6 +1,6 @@
 services:
   frontendapp:
-    image: ghcr.io/${GITHUB_REPOSITORY}-frontend:stage
+    image: ghcr.io/nodekidos/v360-frontend:stage
     container_name: v360-frontend
     restart: always
     ports:
