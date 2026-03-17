@@ -113,9 +113,11 @@ const ItinerarySummary = () => {
         console.log("Memory book fetched:", book);
         setMemoryBook(book);
       } catch (error: any) {
-        console.error("Failed to load memory book:", error);
-        setMemoryError(error.message || "Failed to load");
-        // setMemoryBook(null); // Keep null
+        // A 404 is expected if the memory book hasn't been generated yet
+        if (error.response?.status !== 404) {
+          console.error("Failed to load memory book:", error);
+          setMemoryError(error.message || "Failed to load");
+        }
       } finally {
         setMemoryLoading(false);
       }
@@ -124,9 +126,6 @@ const ItinerarySummary = () => {
   }, [itineraryId]);
 
   // Debug Logging
-  useEffect(() => {
-    console.log("Memory Debug State Updated:", { memoryLoading, hasBook: !!memoryBook, bookId: memoryBook?.id, error: memoryError });
-  }, [memoryLoading, memoryBook, memoryError]);
 
   // Format date
   const formatDate = (dateString?: string) => {
